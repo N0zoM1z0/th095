@@ -17357,3 +17357,15 @@ The 50-unit Main/lifecycle pilot and all 611 affected exact comparisons pass.
 The updated SDK layout test compiles. Normal SetupDInput retains the target's
 689-byte structure and both normal links resolve the capability references
 to the corrected field. See [the initialization evidence](WINDOW_INPUT_INITIALIZATION.md#capability-storage).
+
+### SEM-361 — photo capture staging fields
+
+The exact SavePhoto accessors now use the first `PhotoStageSlot` directly.
+SavePhoto at 0x0042C450 writes the capture position, dimensions and selected
+slot at +0x2C/+0x38/+0x3C/+0x40. Update at 0x0042AD60 reads and clips that
+same staging record. Both profile declarations already contain the named
+members and the change leaves the existing stage ownership intact.
+
+All six PhotoStage units pass strict comparison with their relocations.
+The normal SavePhoto and CapturePhotoPixels objects also match the target's
+code structure. Normal Update retains its separately maintained body.
