@@ -122,6 +122,15 @@ link. The only additional entry is the CRT security-cookie initializer.
 There are no mismatches in these comparisons. The section-by-section
 experiment is under `.analysis/pi/check-linked-sections.py`.
 
+A retail comparison checks the 548 normal functions whose complete decoded
+instruction layout matches an accepted target extent. In that set, 2,249
+paired writable operands map consistently between the retail addresses and
+normal storage. There are no splits or collisions in those mappings.
+1,069 call operands agree with the accepted addresses of their named
+callees, and 357 floating-point references carry the retail literal bytes.
+The audit uses the normal objects and link map at each paired operand.
+See `.analysis/pi/normal-coff-call-leads.py` for the local recipe.
+
 ## Scene loading and capture against the original
 
 SEM-368 corrected the scene loader's BGM wait to use

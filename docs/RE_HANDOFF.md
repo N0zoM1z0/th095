@@ -29,13 +29,16 @@ persistent score owners. SEM-373 unifies the ECL extension callback
 signature and SEM-374 types the ECL trail configuration. SEM-375 routes the
 ECL bullet ANM accessor through the same BulletInf layout as normal code.
 The inherited ECL ANM declaration still supplies the embedded VM type for
-exact compilation.
+exact compilation. SEM-377 gives PhotoInf a typed display boundary.
+SEM-378 removes the photo task's padded normal view of the captured VM
+IDs. Its exact view still supplies the direct `AnmVmId` receiver.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below
 the lowest observed stack operand. The current pinned build reserves 0x11C
 and differs in keyboard-path register scheduling. A fresh compile reproduced
-2,655 bytes against the target's 2,662. The fresh [expression probes](BUILD_MATCHING.md#getinput-keyboard-expression-probes) leave the frame and register-allocation issue open.
+2,655 bytes against the target's 2,662. The [expression and behavior probes](BUILD_MATCHING.md#getinput-keyboard-expression-probes)
+leave the frame and register-allocation issue open.
 
 ## Local inputs
 
