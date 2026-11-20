@@ -5,7 +5,7 @@
 
 #include "Global.hpp"
 #include "Midi.hpp"
-#include "Supervisor.hpp"
+#include "SupervisorRuntime.hpp"
 #include "utils.hpp"
 
 // MidiOutput's retail ABI uses the global ZunResult enum in both exact and
@@ -63,7 +63,7 @@ BOOL MidiDevice::OpenDevice(UINT uDeviceId)
 
     this->deviceId = uDeviceId;
 
-    return midiOutOpen(&handle, uDeviceId, (DWORD_PTR)g_Supervisor.hwndGameWindow, NULL, CALLBACK_WINDOW) !=
+    return midiOutOpen(&handle, uDeviceId, reinterpret_cast<DWORD_PTR>(g_Supervisor.gameWindow), NULL, CALLBACK_WINDOW) !=
            MMSYSERR_NOERROR;
 }
 

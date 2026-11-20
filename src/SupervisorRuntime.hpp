@@ -15,7 +15,6 @@
 #include "inttypes.hpp"
 #include "GameConfiguration.hpp"
 #include "SupervisorMemberConstruction.hpp"
-#include "MidiOutputApi.hpp"
 #include "ReplayScanWorker.hpp"
 #include "ScreenshotBitmapFileHeader.hpp"
 #include "SupervisorFlags.hpp"
@@ -31,6 +30,7 @@ namespace th095
 struct AnmLoaded;
 struct DummyMidiTimer;
 struct Float3;
+class MidiOutput;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
 

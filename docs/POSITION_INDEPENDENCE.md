@@ -1,0 +1,75 @@
+# Position independence in TH095
+
+A TH095 build is position-independent at link time when code and data can move
+within the executable and each reference still reaches the intended function,
+object or member. ReC98 replaces absolute addresses with symbols so source
+changes can move code and data safely. TH08 checks this by reversing the game
+object order, inspecting the new addresses and exercising the affected paths.
+[ReC98 definition](https://rec98.nmlgc.net/faq#pi-what)
+[TH08 acceptance checks](https://github.com/N0zoM1z0/th08/blob/55e4aad7/docs/POSITION_INDEPENDENCE.md)
+
+The current product under test is the normal VC7.1 i386 PE. A symbolic COFF
+relocation can resolve to an absolute address in that PE. Check that the linker
+recomputes it when the symbol moves. Target ABI member offsets and serialized
+file offsets have separate layout contracts. ASLR and native 64-bit ports have
+separate validation.
+
+## Checking a storage owner
+
+1. Establish the target's actual destination using the instruction, operand
+   width and independent producers or consumers.
+2. Compare that destination with the normal COFF symbol and addend. An exact
+   recipe can reproduce the target with a comparison-only base address, so
+   inspect the normal object even when its instruction bytes compare.
+3. Link the existing normal objects in regular and reversed order. Preserve
+   the library order and write a separate PE and map. Check that the relevant
+   functions and objects moved and that their linked operands follow their
+   symbols. Verify any initialized data and bulk-operation range relied on
+   by the affected paths.
+4. Exercise both layouts with the affected runtime path. Replay the relevant
+   exact units separately with their full extents and relocations.
+
+## Supervisor storage
+
+Window creation publishes the HWND at retail 0x004C46B8. The MIDI device
+opens with the value from that same slot. The previous normal link read
+`g_Supervisor + 0x44`. Its comparison recipe reproduced the original using a
+base shifted by four bytes. Both profiles now address the actual
+`Supervisor::gameWindow` at +0x48.
+
+File reads, writes and replay file handles use `criticalSections[2]` at
++0x694 and `criticalSectionLockCounts[2]` at +0x70E. The implementations and
+their exact comparisons now use the same Supervisor symbol and member
+addends. The lock and count changes keep their target instruction order.
+
+## Windows i386 link experiment
+
+`scripts/build-whole.py` links the regular PE and emits a map. The second
+link used the same objects and flags, with the game objects in reverse order
+and libraries in their original order. The two maps show these moves:
+
+| Symbol | Regular | Reordered |
+| --- | ---: | ---: |
+| `g_Supervisor` | 0x004DCBA8 | 0x004D7178 |
+| `MidiDevice::OpenDevice` | 0x004263E0 | 0x004348F0 |
+| `FileSystem::OpenFile` | 0x0041C960 | 0x0043F9A0 |
+| `g_SharedOpenFileHandle` | 0x004B9308 | 0x004BA6C8 |
+| `g_AnmTexturedVertices` | 0x004BF0C8 | 0x004F5408 |
+
+The 126 checked DIR32 operands in eleven functions resolve to their map symbols
+and COFF addends in both links. The file lock relocation uses the array base
+at +0x664 and the code selects element 2. The count uses +0x70E directly.
+ANM speed and controller input enable initialize to one, and the shared file
+handle starts at `INVALID_HANDLE_VALUE`.
+
+The file-lock client opens and writes a file, reads it back and checks the
+lock count and its neighbors in both layouts. The reordered ANM alignment
+and viewport clients also pass under Wine. The local experiment is under
+`build/position-independence/` with the recipe and outputs under `.analysis/pi/`.
+
+A literal scan of all 88 normal game objects found six unrelocated 32-bit
+instruction operands in the target image range. Each is the mask 0x00400000
+used in bullet, enemy or ANM flags. The scan found no aligned address candidates
+in the initialized COFF data sections it examined. Whole-image PI still
+requires validation of the other initialized data, runtime paths and linked
+libraries.

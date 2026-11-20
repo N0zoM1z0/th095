@@ -20,12 +20,17 @@ the six drawing paths and the behavior of the unhandled value. All 698
 configured exact checks and 45 independent normal-method comparisons passed.
 The old draft and target probes remain under `.analysis/sem357/`.
 
-The PI audit found a retail-layout mismatch in `MidiDevice::OpenDevice`.
-The legacy declaration reads Supervisor +0x44 in the normal PE, while
-window creation and the original MIDI consumer use +0x48. Correct the MIDI
-consumer and compare the actual relocation in a reordered normal link.
-File I/O and ECL player-position accesses are also candidates for shared
-typed ownership. Follow the [semantic index](SEMANTIC_INDEX.md).
+SEM-358 fixes MIDI's window reference and removes the exact-only file
+lock offsets. The normal PE and a reverse-order link both pass the checked
+symbol bindings and file-lock runtime probe.
+[Position independence](POSITION_INDEPENDENCE.md)
+
+The next Supervisor layout correction is `DIDEVCAPS` in `SetupDInput`.
+Target 0x00423BBD and 0x00423BC7 use Supervisor +0x1C. The current normal
+body uses +0x18. The indexed joystick consumers also identify the adjacent
+second device slot at +0x18. Its production path remains open.
+ECL movement and shot helpers are ready for a shared typed player-position
+check. Use the [semantic index](SEMANTIC_INDEX.md).
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below

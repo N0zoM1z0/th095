@@ -7,12 +7,13 @@
 namespace th095
 {
 
-// Fieldless ABI adapter for Supervisor-family translation units. Midi.hpp is
+// Fieldless ABI adapter for Main and MainExact. Midi.hpp is
 // the sole layout/behavior owner, but MainExact.inl defines target-emission
 // MidiTimer types that cannot coexist with that complete graph. Keep this
 // shared declaration canonical in signatures and deliberately empty in state.
-struct MidiOutput
+class MidiOutput
 {
+  public:
     ::ZunResult ReadFileData(i32 slot, const char *path);
     ::ZunResult StopPlayback();
     ::ZunResult ParseFile(i32 index);

@@ -17290,7 +17290,7 @@ Eight /OPT:NOREF Win32 clients link all 88 objects and pass. The new client pass
 The VM flags word at +0x228 stores the X and Y alignment selectors in bits
 18–19 and 20–21. Constructors clear both to CENTER. Opcode 65 takes two
 literal unsigned words at instruction +8/+10 and keeps their low two bits.
-ASCII selects START on both axes. The two photo-laser constructors select
+ASCII selects START on both axes. The two photo-laser initializers select
 CENTER X and END Y on their body VMs. Six geometry consumers establish the
 three handled values and the treatment of value 3. In particular, rotated
 Draw2D uses position.z, and its zero-rotation fallback adds positionOffset.z.
@@ -17308,3 +17308,22 @@ product linked from 88 fresh objects. Independent normal comparisons passed
 code, data and exception-handling references against the previous normal
 objects. The normal alignment, viewport and quad clients exercise the actual
 VM and geometry methods under Wine.
+
+### SEM-358 — Supervisor window and file lock references
+
+`CreateGameWindow` stores the HWND at 0x00420CBF and
+`MidiDevice::OpenDevice` reads it at 0x00421E58. Both access retail
+0x004C46B8, the `gameWindow` member of Supervisor at +0x48. The previous
+normal PE read +0x44. Its exact recipe used a Supervisor base shifted by
+four bytes. MIDI now includes the complete Supervisor declaration and the
+exact relocation uses the real base. The shared Supervisor header needs
+only a forward declaration of MidiOutput. Main and MainExact retain their
+method adapter.
+
+The file read/write units use Supervisor's typed lock array and count in
+both profiles. The relocation for the lock argument uses +0x664, followed
+by element 2 selection. The counter operand uses +0x70E. The normal product
+linked and the full affected set passed 611 strict comparisons across 70
+translation units. The regular and reversed links resolved the window and
+file lock references to the intended members. The file-lock runtime probe
+passed in both layouts. See [the link experiment](POSITION_INDEPENDENCE.md).

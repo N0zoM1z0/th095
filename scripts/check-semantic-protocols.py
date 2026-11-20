@@ -1034,12 +1034,13 @@ def check_midi_output_owner() -> None:
     for path, text in (
         ("Main.hpp", main_header),
         ("MainExact.hpp", main_exact),
-        ("SupervisorRuntime.hpp", supervisor_runtime),
     ):
         if '#include "MidiOutputApi.hpp"' not in text:
             fail(f"{path} no longer routes through the shared MidiOutput API")
         if re.search(r"\b(?:class|struct)\s+MidiOutput\b", text):
             fail(f"{path} restored a private MidiOutput declaration")
+    if '#include "MidiOutputApi.hpp"' in supervisor_runtime or "class MidiOutput;" not in supervisor_runtime:
+        fail("SupervisorRuntime must use a forward declaration of MidiOutput")
     if (
         "struct MidiTimer" not in main_exact_body
         or "struct DummyMidiTimer : MidiTimer" not in main_exact_body
