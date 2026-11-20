@@ -66,8 +66,7 @@
 10	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
 3	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
 3	src/ecl/EclRunTargetHigh.inl	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-3	src/EclDependencies.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/EclDependencies.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+2	src/EclDependencies.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/EclDependencies.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/EclDependencies.cpp	#ifdef DIFFBUILD
 1	src/EclDependencies.cpp	#ifndef DIFFBUILD
@@ -106,7 +105,7 @@
 1	src/EnemyShotAnm.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/EnemyShotAnm.cpp	#ifdef DIFFBUILD
 1	src/EnemyShotDispatch.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-3	src/EnemyShotDispatch.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+2	src/EnemyShotDispatch.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 2	src/EnemyShotDispatch.cpp	#ifndef DIFFBUILD
 1	src/FileSystem.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FileSystem.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)

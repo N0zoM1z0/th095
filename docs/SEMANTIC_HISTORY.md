@@ -17327,3 +17327,19 @@ linked and the full affected set passed 611 strict comparisons across 70
 translation units. The regular and reversed links resolved the window and
 file lock references to the intended members. The file-lock runtime probe
 passed in both layouts. See [the link experiment](POSITION_INDEPENDENCE.md).
+
+### SEM-359 — shared ECL player position
+
+`BeginBoundaryAwareMove` (0x00412200) and `DispatchShotInstruction`
+(0x00412670) now read `PhotoPlayerRuntimeView::playerPosition` in both
+profiles. The target reads the pointer slot at 0x004C4E70 and the X/Y
+components at +0x1E30/+0x1E34. Player construction publishes the receiver to
+this slot at 0x0042EB9C, and the angle helper independently reads the same
+vector. The two ECL implementations keep their movement and shot logic in
+their original translation units. Main defines the pointer slot and the
+Player lifecycle publishes it.
+
+All eleven exact units in the two objects pass. Both normal functions retain
+the target's code structure and resolve their five position relocations to
+the same slot. In the two normal PEs those relocations follow
+`g_RuntimePlayerOwner` from 0x004D76DC to 0x004DCF2C.

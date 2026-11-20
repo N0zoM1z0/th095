@@ -8,10 +8,7 @@
 #include "EclDependenciesPhotoEnemyEmission.hpp"
 #endif
 #include "utils.hpp"
-#include "Player.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "PhotoPlayerRuntime.hpp"
-#endif
 #include "ZunMath.hpp"
 #include <stdlib.h>
 
@@ -56,15 +53,6 @@ extern EclDependencyRuntimeView *g_PhotoEnemyManager;
 
 namespace EclRunLow
 {
-extern Player *g_Th095Player;
-
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define DEP_PLAYER_POSITION (*reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(g_Th095Player) + 0x1e30))
-#else
-#define DEP_PLAYER_POSITION \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, ::th095::g_RuntimePlayerOwner)->playerPosition)
-#endif
-
 #define DEP_READ_INT(enemy, instruction, index) \
     ((instruction)->operandFlags & (1U << (index)) \
          ? EclOperands::ResolveInt((enemy), (instruction)->operands[index].asInt) \
@@ -110,7 +98,8 @@ void __fastcall BeginBoundaryAwareMove(
 {
     f32 angle;
 
-    if (DEP_PLAYER_POSITION.x < enemy->position.x)
+    if (static_cast<const PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)
+            ->playerPosition.x < enemy->position.x)
     {
         angle = AddNormalizeAngle(
             g_Rng.GetRandomF32InRange(1.5707964f) + 2.3561945f, 0.0f);
@@ -373,7 +362,6 @@ void __fastcall SetPrimaryAnmScripts(
 }
 
 #undef DEP_ANM_DIRECTION
-#undef DEP_PLAYER_POSITION
 #undef DEP_MOVEMENT_UPPER
 #undef DEP_MOVEMENT_LOWER
 #undef DEP_MOVEMENT_FLAGS

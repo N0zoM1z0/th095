@@ -29,8 +29,8 @@ The next Supervisor layout correction is `DIDEVCAPS` in `SetupDInput`.
 Target 0x00423BBD and 0x00423BC7 use Supervisor +0x1C. The current normal
 body uses +0x18. The indexed joystick consumers also identify the adjacent
 second device slot at +0x18. Its production path remains open.
-ECL movement and shot helpers are ready for a shared typed player-position
-check. Use the [semantic index](SEMANTIC_INDEX.md).
+SEM-359 moves ECL movement and shot helpers to the shared typed player position.
+Use the [semantic index](SEMANTIC_INDEX.md) for the remaining ECL offsets.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below
