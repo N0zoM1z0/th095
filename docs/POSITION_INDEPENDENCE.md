@@ -73,3 +73,17 @@ used in bullet, enemy or ANM flags. The scan found no aligned address candidates
 in the initialized COFF data sections it examined. Whole-image PI still
 requires validation of the other initialized data, runtime paths and linked
 libraries.
+
+## Expanded normal link coverage
+
+After SEM-360 the two normal links resolve the controller capability store
+and pointer in `SetupDInput` to `g_Supervisor + 0x1C`. The method moved from
+0x004241F0 to 0x004381E0 in the reordered PE.
+
+The broader check pairs the normal object code with both linked PEs for
+643 configured units. It validates 9,746 named DIR32 and REL32 operands
+against the maps and COFF addends in both links. Of these, 9,566 follow a
+destination that moved. The remaining map coverage includes 827 operands
+with private or unpaired symbols and 55 units without a unique linked
+symbol. The linked libraries and remaining initialized-data contracts
+still need their own checks.

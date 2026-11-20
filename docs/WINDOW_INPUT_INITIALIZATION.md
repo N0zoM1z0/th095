@@ -57,6 +57,21 @@ modeled traces. The original setup fixtures stage controller availability at
 the backend boundary. SEM-343 scenarios execute shared device selection;
 SEM-344 also executes the normal axis callback through object enumeration.
 
+## Capability storage
+
+`SetupDInput` stores 0x2C at 0x004C468C from 0x00423BBD and passes that same
+address to GetCapabilities from 0x00423BC7. The `DIDEVCAPS` record begins at
+Supervisor +0x1C and ends immediately before `gameWindow` at +0x48. The old
+normal object used +0x18 for the record because the exact recipe compensated
+with a four-byte-adjusted base. The canonical member, exact relocation and
+normal COFF addend now agree.
+
+The controller input and state helpers address their devices through an
+indexed pointer read at Supervisor +0x14. This makes +0x18 the second slot.
+The TH095 enumeration callback publishes the first slot. Publication of the
+second slot remains open in TH095. TH09 corroborates the placement with its
+own two-controller startup.
+
 ## Device selection and availability publication
 
 The 68-byte device callback at 0x00423C20 ignores context and uses the global

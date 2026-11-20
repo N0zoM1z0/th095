@@ -17343,3 +17343,17 @@ All eleven exact units in the two objects pass. Both normal functions retain
 the target's code structure and resolve their five position relocations to
 the same slot. In the two normal PEs those relocations follow
 `g_RuntimePlayerOwner` from 0x004D76DC to 0x004DCF2C.
+
+### SEM-360 — DirectInput capability record
+
+`SetupDInput` writes the DIDEVCAPS size and passes the record at
+0x004C468C to GetCapabilities. The normal object previously emitted two
+references at Supervisor +0x18. The canonical layout now places the
+indexed second device slot at +0x18, the 0x2C-byte capability record at
++0x1C, and the window at +0x48. The exact metadata uses the actual
+Supervisor base and the +0x1C addend.
+
+The 50-unit Main/lifecycle pilot and all 611 affected exact comparisons pass.
+The updated SDK layout test compiles. Normal SetupDInput retains the target's
+689-byte structure and both normal links resolve the capability references
+to the corrected field. See [the initialization evidence](WINDOW_INPUT_INITIALIZATION.md#capability-storage).
