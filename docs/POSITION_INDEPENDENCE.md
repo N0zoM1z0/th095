@@ -122,10 +122,6 @@ link. The only additional entry is the CRT security-cookie initializer.
 There are no mismatches in these comparisons. The section-by-section
 experiment is under `.analysis/pi/check-linked-sections.py`.
 
-These checks cover the game objects in both link orders. The linked libraries'
-internal references and runtime behavior across the remaining scenes and
-replays are open.
-
 ## Scene loading and capture against the original
 
 SEM-368 corrected the scene loader's BGM wait to use
@@ -205,3 +201,28 @@ The same pair of PEs imports 172 names or ordinals from nine DLLs.
 The import lookup and initial address tables agree within each image.
 127 address-table slots change RVA without changing their DLL and
 name or ordinal.
+
+## Complete attract-mode cycle
+
+The same SEM-375 products played all three archive replays in one unbroken
+title-menu cycle under Wine/Xvfb. The retail build and both reconstructed
+link orders released the replay manager after every replay. Sampling covered
+every input index, including index zero, for 8,127 frames.
+
+| Replay | Scene | Frames | Final score | Photos |
+| --- | --- | ---: | ---: | ---: |
+| `demo/demo0.rpy` | 3-6 | 2,712 | 52,930 | 6 |
+| `demo/demo1.rpy` | 2-1 | 2,331 | 46,530 | 5 |
+| `demo/demo2.rpy` | 7-1 | 3,084 | 282,950 | 8 |
+
+Score, position, RNG seed, camera state and capture fields agree across
+all three executables at every sampled index. The two stage timer fields
+can differ by one tick. Relative to retail, both rebuilt links were one
+tick behind in demo0 and one tick ahead in demo1 after the opening frames.
+In demo2 the regular link agreed with retail and the reordered link was
+one tick ahead. The earlier demo0 runs matched both timers using the same
+mapped PE bytes. This leaves the timing of stage timer advancement
+relative to the replay index open.
+
+The sampler and traces are `.analysis/pi/demo-cycle-trace.py` and
+`build/position-independence/demo-cycle-{retail,regular,reordered}/trace.json`.
