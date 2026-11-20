@@ -5,6 +5,7 @@
 #include "AnmQuadVertex.hpp"
 #include "AnmDrawPath.hpp"
 #include "AnmBlendMode.hpp"
+#include "AnmAlignment.hpp"
 #include "AnmVmId.hpp"
 #include "Rng.hpp"
 #include "ZunResult.hpp"
@@ -127,7 +128,7 @@ enum AnmOpcode
     ANM_OP_FLIP_Y = 62,
     ANM_OP_STOP = 63,
     ANM_OP_INTERRUPT_LABEL = 64,
-    ANM_OP_RENDER_STATE = 65,
+    ANM_OP_ALIGNMENT = 65,
     ANM_OP_BLEND_MODE = 66,
     ANM_OP_RENDER_MODE = 67,
     ANM_OP_RENDER_BYTE = 68,
@@ -335,8 +336,8 @@ struct AnmVmBase
             u32 useSecondaryColor : 1;
             u32 unknownFlag16 : 1;
             u32 scriptDisabled : 1;
-            u32 renderStateA : 2;
-            u32 renderStateB : 2;
+            u32 alignmentX : 2; // AnmAlignment, physical bits 18..19.
+            u32 alignmentY : 2; // AnmAlignment, physical bits 20..21.
             u32 renderModeBits : 4;
 #if defined(TH095_MATCH_EXACT)
             u32 unknownFlag26 : 1;

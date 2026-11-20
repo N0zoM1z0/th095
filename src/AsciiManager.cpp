@@ -335,8 +335,8 @@ void AsciiManager::DrawStrings()
 
     asciiDrawString = &this->strings[0];
     this->largeText.visible = true;
-    this->largeText.renderStateA = 1;
-    this->largeText.renderStateB = 1;
+    this->largeText.alignmentX = ANM_ALIGNMENT_START;
+    this->largeText.alignmentY = ANM_ALIGNMENT_START;
 
     for (asciiDrawIndex = 0; asciiDrawIndex < this->numStrings; asciiDrawIndex++, asciiDrawString++)
     {
@@ -402,8 +402,8 @@ void AsciiManager::DrawGuiStrings()
 
     asciiDrawString = &this->guiStrings[0];
     this->largeText.visible = true;
-    this->largeText.renderStateA = 1;
-    this->largeText.renderStateB = 1;
+    this->largeText.alignmentX = ANM_ALIGNMENT_START;
+    this->largeText.alignmentY = ANM_ALIGNMENT_START;
 
     for (asciiDrawIndex = 0; asciiDrawIndex < this->numGuiStrings; asciiDrawIndex++, asciiDrawString++)
     {

@@ -723,6 +723,28 @@ class SemanticProtocolGuardTests(unittest.TestCase):
     def test_anm_blend_guard_accepts_separate_selector_and_cache_domains(self) -> None:
         GUARD.check_anm_blend_mode()
 
+    def test_anm_alignment_guard_accepts_literal_producers_and_partial_dispatch(self) -> None:
+        GUARD.check_anm_alignment()
+
+    def test_anm_alignment_guard_rejects_representation_and_domain_regressions(self) -> None:
+        mutations = [
+            ("AnmAlignment.hpp", "ANM_ALIGNMENT_UNHANDLED = 3", "ANM_ALIGNMENT_UNHANDLED = 4"),
+            ("AnmManager.hpp", "u32 alignmentX : 2;", "u32 alignmentX : 3;"),
+            ("AnmManager.hpp", "ANM_OP_ALIGNMENT = 65", "ANM_OP_ALIGNMENT = 64"),
+            ("AnmManager.cpp", "vm->alignmentX = currentInstr->shortArgs[0];", "vm->alignmentX = GET_INT_VAR(0);"),
+            ("AsciiManager.cpp", "alignmentX = ANM_ALIGNMENT_START;", "alignmentX = 1;"),
+            ("PhotoEffect.cpp", "alignmentY = ANM_ALIGNMENT_END;", "alignmentY = ANM_ALIGNMENT_START;"),
+            ("AnmDrawCore.cpp", "case ANM_ALIGNMENT_START:", "case ANM_ALIGNMENT_UNHANDLED:"),
+            ("ecl/AnmManagerEclView.hpp", "u32 alignmentY : 2;", "u32 renderStateB : 2;"),
+        ]
+        for name, before, after in mutations:
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            changed = source.replace(before, after, 1)
+            self.assertNotEqual(source, changed)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_anm_alignment({name: changed})
+
     def test_background_anm_guard_accepts_canonical_state_writers(self) -> None:
         GUARD.check_background_anm_owner()
 

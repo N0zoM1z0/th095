@@ -109,7 +109,7 @@ static void SeedVm(AnmVm &vm, AnmLoadedSprite &sprite)
     vm.loadedSprite = &sprite;
     vm.position = Float3(0.25f, 0.125f, 0.25f);
     vm.positionOffset = Float3(0,0,0);
-    vm.renderStateA = vm.renderStateB = 0;
+    vm.alignmentX = vm.alignmentY = ANM_ALIGNMENT_CENTER;
     vm.uvScrollPos.x = vm.uvScrollPos.y = 0;
     D3DXMatrixIdentity(&vm.matrix2);
     vm.matrix2._11 = vm.matrix2._22 = vm.matrix2._33 = 1.0f / 256.0f;

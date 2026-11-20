@@ -4596,6 +4596,68 @@ def check_background_anm_owner(source_text: dict[str, str] | None = None) -> Non
         fail("legacy +0x1768 storage must retain its canonical byte layout")
 
 
+def check_anm_alignment(source_text: dict[str, str] | None = None) -> None:
+    overrides = source_text or {}
+    names = ("AnmAlignment.hpp", "AnmManager.hpp", "AnmManager.cpp",
+             "AnmDrawCore.cpp", "AsciiManager.cpp", "PhotoEffect.cpp",
+             "PhotoEffectExact.inl", "ecl/AnmManagerEclView.hpp")
+    texts = {name: source_without_comments(overrides.get(
+        name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
+    owner = texts["AnmAlignment.hpp"]
+    expected = {"ANM_ALIGNMENT_CENTER": 0, "ANM_ALIGNMENT_START": 1,
+                "ANM_ALIGNMENT_END": 2, "ANM_ALIGNMENT_UNHANDLED": 3}
+    match = re.search(r"enum\s+AnmAlignment\s*\{([^}]+)\}", owner)
+    parts = [part.strip() for part in match[1].split(",") if part.strip()] if match else []
+    entries = [re.fullmatch(r"(ANM_ALIGNMENT_\w+)\s*=\s*(\d+)", part) for part in parts]
+    if (len(parts) != len(expected) or not all(entries) or
+            {entry[1]: int(entry[2]) for entry in entries} != expected):
+        fail("ANM alignment must preserve its complete explicit two-bit domain")
+    if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
+        fail("ANM alignment vocabulary must be profile-independent")
+    for name in ("AnmManager.hpp", "ecl/AnmManagerEclView.hpp"):
+        for axis in ("X", "Y"):
+            if len(re.findall(r"\bu32\s+alignment" + axis + r"\s*:\s*2\s*;", texts[name])) != 1:
+                fail(f"{name}: alignment must retain unsigned two-bit storage")
+    if re.search(r"u32\s+scriptDisabled\s*:\s*1\s*;\s*u32\s+alignmentX\s*:\s*2\s*;\s*u32\s+alignmentY\s*:\s*2\s*;\s*u32\s+renderModeBits\s*:\s*4\s*;", texts["AnmManager.hpp"]) is None:
+        fail("canonical ANM alignment must retain physical bits 18..21")
+    if re.search(r"\bANM_OP_ALIGNMENT\s*=\s*65\s*,", texts["AnmManager.hpp"]) is None:
+        fail("alignment opcode must retain serialized value 65")
+    if re.search(r"case\s+ANM_OP_ALIGNMENT\s*:\s*vm->alignmentX\s*=\s*currentInstr->shortArgs\[0\]\s*;\s*vm->alignmentY\s*=\s*currentInstr->shortArgs\[1\]\s*;\s*break\s*;", texts["AnmManager.cpp"]) is None:
+        fail("alignment opcode must retain two literal short operands independent of varMask")
+    dispatch = texts["AnmDrawCore.cpp"]
+    switches = list(re.finditer(r"\bswitch\s*\(\s*vm->alignment[XY]\s*\)", dispatch))
+    if len(switches) != 12:
+        fail("review the six ANM geometry consumers before changing alignment dispatch")
+    for switch in switches:
+        body = braced_body_after(dispatch, switch.start(), "ANM alignment dispatch")
+        if (re.findall(r"\bcase\s+([^:]+):", body) !=
+                ["ANM_ALIGNMENT_START", "ANM_ALIGNMENT_CENTER", "ANM_ALIGNMENT_END"] or
+                re.search(r"\bdefault\s*:", body)):
+            fail("alignment dispatch must preserve its 1/0/2 handlers and absent value-3 handler")
+    writers = {
+        "AnmManager.cpp": [("X", "currentInstr->shortArgs[0]"), ("Y", "currentInstr->shortArgs[1]")],
+        "AsciiManager.cpp": [("X", "ANM_ALIGNMENT_START"), ("Y", "ANM_ALIGNMENT_START")] * 2,
+        "PhotoEffect.cpp": [("X", "ANM_ALIGNMENT_CENTER"), ("Y", "ANM_ALIGNMENT_END")] * 2,
+        "PhotoEffectExact.inl": [("X", "ANM_ALIGNMENT_CENTER"), ("Y", "ANM_ALIGNMENT_END")] * 2,
+    }
+    for name in names:
+        actual = [(axis, value.strip()) for axis, value in re.findall(
+            r"\balignment([XY])\s*=(?!=)\s*([^;]+);", texts[name])]
+        if actual != writers.get(name, []):
+            fail(f"{name}: alignment writers left the reviewed producer set")
+    for path in SRC.rglob("*"):
+        if path.suffix not in (".hpp", ".cpp", ".inl"):
+            continue
+        name = path.relative_to(SRC).as_posix()
+        text = texts.get(name)
+        if text is None:
+            text = source_without_comments(path.read_text(encoding="utf-8"))
+            if re.search(r"\balignment[XY]\b", text):
+                fail(f"{name}: review new ANM alignment access before extending this protocol")
+        if re.search(r"\b(?:renderStateA|renderStateB|ANM_OP_RENDER_STATE)\b", text):
+            fail(f"{name}: retired provisional alignment vocabulary returned")
+
+
 def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmBlendMode.hpp", "AnmManager.hpp", "AnmManager.cpp",
@@ -4868,6 +4930,7 @@ def main() -> int:
     check_anm_draw_path()
     check_anm_blend_mode()
     check_background_anm_owner()
+    check_anm_alignment()
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()

@@ -17284,3 +17284,27 @@ changed-body exception. Separately selected normal bodies are preserved graphs,
 not wholesale target-byte acceptance inferred from a different exact body.
 
 Eight /OPT:NOREF Win32 clients link all 88 objects and pass. The new client passes 52 cases: twelve receiver/queue publication round trips with a distinct global manager, 24 actual DrawInner consumers over custom/default/secondary colors, and sixteen empty-stage RenderObjects traces. The last checks old-byte visibility during real viewport/flush APIs, unconditional final publication of 1, neighbor/color preservation and ignored device failure. Its aligned 16-byte terminated instance record is an opaque loaded-data fixture, not a fake parent. The prior seven clients retain their coverage. The new owner guard rejects reintroduced projections/casts and changed publication/layout rules; it does not declare a camera namespace closed. Public CI passes 127 workflow tests and the existing native component programs. All 340 source/tool/test inputs and 16 non-recipe configs stay frozen through acceptance. See [BACKGROUND_ANM_STATE.md](BACKGROUND_ANM_STATE.md). No camera meaning, full stage content, GPU output, synchronization or native game ABI is accepted. Semantic reconstruction and platform work remain active-incomplete.
+
+### SEM-357 — ANM axis alignment
+
+The VM flags word at +0x228 stores the X and Y alignment selectors in bits
+18–19 and 20–21. Constructors clear both to CENTER. Opcode 65 takes two
+literal unsigned words at instruction +8/+10 and keeps their low two bits.
+ASCII selects START on both axes. The two photo-laser constructors select
+CENTER X and END Y on their body VMs. Six geometry consumers establish the
+three handled values and the treatment of value 3. In particular, rotated
+Draw2D uses position.z, and its zero-rotation fallback adds positionOffset.z.
+See [the target consumers and addresses](ANM_ALIGNMENT.md).
+
+The shared VM header owns the two-bit fields and the selector vocabulary.
+The interpreter and the original writer and renderer translation units retain
+their existing bodies. Both products compile the same alignment expressions,
+and the legacy ECL declaration retains its existing layout.
+
+All 698 configured comparisons passed across 88 pinned VC7.1 objects after
+323 compiler-private labels were reconciled against the target. The normal
+product linked from 88 fresh objects. Independent normal comparisons passed
+45 methods against the target and preserved 929 named roots and their
+code, data and exception-handling references against the previous normal
+objects. The normal alignment, viewport and quad clients exercise the actual
+VM and geometry methods under Wine.

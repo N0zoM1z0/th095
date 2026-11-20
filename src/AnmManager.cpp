@@ -455,9 +455,9 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
         case ANM_OP_VISIBLE:
             vm->visible = currentInstr->intArgs[0];
             break;
-        case ANM_OP_RENDER_STATE:
-            vm->renderStateA = currentInstr->shortArgs[0];
-            vm->renderStateB = currentInstr->shortArgs[1];
+        case ANM_OP_ALIGNMENT:
+            vm->alignmentX = currentInstr->shortArgs[0];
+            vm->alignmentY = currentInstr->shortArgs[1];
             break;
         case ANM_OP_U_SCROLL:
             vm->uvScrollVel.x = GET_FLOAT_VAR(0);

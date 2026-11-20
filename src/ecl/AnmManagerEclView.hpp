@@ -506,8 +506,8 @@ struct AnmVm
             u32 useSecondaryColor : 1;
             u32 flag16 : 1;
             u32 flag17 : 1;
-            u32 renderStateA : 2;
-            u32 renderStateB : 2;
+            u32 alignmentX : 2;
+            u32 alignmentY : 2;
             u32 renderModeBits : 4;
             u32 flag26 : 1;
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)

@@ -402,8 +402,8 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     AnmManager::ExecuteScript(&this->bodyVm);
     PhotoEffectSetAdditivePhase(&this->bodyVm);
     this->bodyVm.renderModeBits = 1;
-    this->bodyVm.renderStateA = 0;
-    this->bodyVm.renderStateB = 2;
+    this->bodyVm.alignmentX = ANM_ALIGNMENT_CENTER;
+    this->bodyVm.alignmentY = ANM_ALIGNMENT_END;
 
     g_PhotoEffectManager->anm->SetAndExecuteScript(
         &this->tailVm, this->spawn.color + 0xc2);
@@ -568,8 +568,8 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     AnmManager::ExecuteScript(&this->bodyVm);
     PhotoEffectSetAdditivePhase(&this->bodyVm);
     this->bodyVm.renderModeBits = 1;
-    this->bodyVm.renderStateA = 0;
-    this->bodyVm.renderStateB = 2;
+    this->bodyVm.alignmentX = ANM_ALIGNMENT_CENTER;
+    this->bodyVm.alignmentY = ANM_ALIGNMENT_END;
 
     g_PhotoEffectManager->anm->SetAndExecuteScript(
         &this->tailVm, this->spawn.color + 0xc2);

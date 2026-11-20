@@ -381,22 +381,22 @@ ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
     sprite.halfWidth = sprite.width / 2.0f;
     sprite.halfHeight = sprite.height / 2.0f;
 
-    switch (vm->renderStateA)
+    switch (vm->alignmentX)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x;
         g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
             vm->position.x + vm->positionOffset.x + sprite.width;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             (f32)floor(vm->position.x + vm->positionOffset.x -
                        sprite.halfWidth);
         g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
             g_AnmTexturedVertices[0].position.x + sprite.width;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x - sprite.width;
         g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
@@ -404,22 +404,22 @@ ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
         break;
     }
 
-    switch (vm->renderStateB)
+    switch (vm->alignmentY)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y;
         g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
             vm->position.y + vm->positionOffset.y + sprite.height;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             (f32)floor(vm->position.y + vm->positionOffset.y -
                        sprite.halfHeight);
         g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
             g_AnmTexturedVertices[0].position.y + sprite.height;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y - sprite.height;
         g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
@@ -442,21 +442,21 @@ ZunResult AnmManager::DrawNoRotationNoRound(AnmVm *vm)
     sprite.halfWidth = sprite.width / 2.0f;
     sprite.halfHeight = sprite.height / 2.0f;
 
-    switch (vm->renderStateA)
+    switch (vm->alignmentX)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x;
         g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
             vm->position.x + vm->positionOffset.x + sprite.width;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x - sprite.halfWidth;
         g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
             g_AnmTexturedVertices[0].position.x + sprite.width;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x - sprite.width;
         g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
@@ -464,21 +464,21 @@ ZunResult AnmManager::DrawNoRotationNoRound(AnmVm *vm)
         break;
     }
 
-    switch (vm->renderStateB)
+    switch (vm->alignmentY)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y;
         g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
             vm->position.y + vm->positionOffset.y + sprite.height;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y - sprite.halfHeight;
         g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
             g_AnmTexturedVertices[0].position.y + sprite.height;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y - sprite.height;
         g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
@@ -535,33 +535,33 @@ ZunResult AnmManager::Draw2D(AnmVm *vm)
     sprite.spriteWidth = vm->spriteSize.x * vm->scale.x;
     sprite.spriteHeight = vm->spriteSize.y * vm->scale.y;
 
-    switch (vm->renderStateA)
+    switch (vm->alignmentX)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         sprite.x[0] = sprite.x[2] = 0.0f;
         sprite.x[1] = sprite.x[3] = sprite.spriteWidth;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         sprite.x[0] = sprite.x[2] = -sprite.spriteWidth * 0.5f;
         sprite.x[1] = sprite.x[3] = sprite.spriteWidth * 0.5f;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         sprite.x[0] = sprite.x[2] = -sprite.spriteWidth;
         sprite.x[1] = sprite.x[3] = 0.0f;
         break;
     }
 
-    switch (vm->renderStateB)
+    switch (vm->alignmentY)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         sprite.y[0] = sprite.y[1] = 0.0f;
         sprite.y[2] = sprite.y[3] = sprite.spriteHeight;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         sprite.y[0] = sprite.y[1] = -sprite.spriteHeight * 0.5f;
         sprite.y[2] = sprite.y[3] = sprite.spriteHeight * 0.5f;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         sprite.y[0] = sprite.y[1] = -sprite.spriteHeight;
         sprite.y[2] = sprite.y[3] = 0.0f;
         break;
@@ -682,40 +682,40 @@ ZunResult AnmManager::ProjectCameraFacingQuad(AnmVm *vm)
     cameraShallow.sine = (f32)sin(cameraDeep.rotation);
 #endif
 
-    switch (vm->renderStateA)
+    switch (vm->alignmentX)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         cameraDeep.vertexX[0] = cameraDeep.vertexX[2] = 0.0f;
         cameraDeep.vertexX[1] =
             cameraDeep.vertexX[3] = cameraShallow.spriteHalfWidth;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         cameraDeep.vertexX[0] = cameraDeep.vertexX[2] =
             -cameraShallow.spriteHalfWidth * 0.5f;
         cameraDeep.vertexX[1] = cameraDeep.vertexX[3] =
             cameraShallow.spriteHalfWidth * 0.5f;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         cameraDeep.vertexX[0] = cameraDeep.vertexX[2] =
             -cameraShallow.spriteHalfWidth;
         cameraDeep.vertexX[1] = cameraDeep.vertexX[3] = 0.0f;
         break;
     }
 
-    switch (vm->renderStateB)
+    switch (vm->alignmentY)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         cameraDeep.vertexY[0] = cameraDeep.vertexY[1] = 0.0f;
         cameraDeep.vertexY[2] =
             cameraDeep.vertexY[3] = cameraShallow.spriteHalfHeight;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         cameraDeep.vertexY[0] = cameraDeep.vertexY[1] =
             -cameraShallow.spriteHalfHeight * 0.5f;
         cameraDeep.vertexY[2] = cameraDeep.vertexY[3] =
             cameraShallow.spriteHalfHeight * 0.5f;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         cameraDeep.vertexY[0] = cameraDeep.vertexY[1] =
             -cameraShallow.spriteHalfHeight;
         cameraDeep.vertexY[2] = cameraDeep.vertexY[3] = 0.0f;
@@ -858,33 +858,33 @@ ZunResult AnmManager::Project3DQuad(AnmVm *vm)
 
     Float3 vertices[4];
 
-    switch (vm->renderStateA)
+    switch (vm->alignmentX)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         vertices[0].x = vertices[2].x = 0.0f;
         vertices[1].x = vertices[3].x = 256.0f;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         vertices[0].x = vertices[2].x = -128.0f;
         vertices[1].x = vertices[3].x = 128.0f;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         vertices[0].x = vertices[2].x = -256.0f;
         vertices[1].x = vertices[3].x = 0.0f;
         break;
     }
 
-    switch (vm->renderStateB)
+    switch (vm->alignmentY)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         vertices[0].y = vertices[1].y = 0.0f;
         vertices[2].y = vertices[3].y = 256.0f;
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         vertices[0].y = vertices[1].y = -128.0f;
         vertices[2].y = vertices[3].y = 128.0f;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         vertices[0].y = vertices[1].y = -256.0f;
         vertices[2].y = vertices[3].y = 0.0f;
         break;
@@ -1064,35 +1064,37 @@ ZunResult AnmManager::Draw3D(AnmVm *vm)
         vm->updateRotation = false;
     }
 
+    // Direct 3D keeps its distinct -/+fabs(half-size) translation table.
+    // Unhandled alignment preserves the copied matrix translation.
     worldTransformMatrix = vm->matrix2;
-    switch (vm->renderStateA)
+    switch (vm->alignmentX)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         worldTransformMatrix._41 =
             vm->position.x + vm->positionOffset.x -
             (f32)fabs(vm->spriteSize.x * vm->scale.x / 2.0f);
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         worldTransformMatrix._41 = vm->position.x + vm->positionOffset.x;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         worldTransformMatrix._41 =
             vm->position.x + vm->positionOffset.x +
             (f32)fabs(vm->spriteSize.x * vm->scale.x / 2.0f);
         break;
     }
 
-    switch (vm->renderStateB)
+    switch (vm->alignmentY)
     {
-    case 1:
+    case ANM_ALIGNMENT_START:
         worldTransformMatrix._42 =
             vm->position.y + vm->positionOffset.y -
             (f32)fabs(vm->spriteSize.y * vm->scale.y / 2.0f);
         break;
-    case 0:
+    case ANM_ALIGNMENT_CENTER:
         worldTransformMatrix._42 = vm->position.y + vm->positionOffset.y;
         break;
-    case 2:
+    case ANM_ALIGNMENT_END:
         worldTransformMatrix._42 =
             vm->position.y + vm->positionOffset.y +
             (f32)fabs(vm->spriteSize.y * vm->scale.y / 2.0f);

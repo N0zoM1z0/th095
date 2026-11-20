@@ -236,7 +236,7 @@ static unsigned int CheckAnmViewportConsumers(th095::AnmManager *manager)
             vm.rotation.z = turn ? D3DX_PI * 0.5f : 0.0f;
             vm.spriteSize.x = 0.2f; vm.spriteSize.y = 0.3f;
             vm.scale.x = 1.5f; vm.scale.y = 0.75f;
-            vm.renderStateA = horizontal; vm.renderStateB = vertical;
+            vm.alignmentX = horizontal; vm.alignmentY = vertical;
             const Float3 point = vm.position + vm.positionOffset;
             const Float3 center = ProjectAnmFixturePoint(configuration, point);
             const Float3 reference = ProjectAnmFixturePoint(configuration, point + configuration.cameraRight);
@@ -264,7 +264,7 @@ static unsigned int CheckAnmViewportConsumers(th095::AnmManager *manager)
             vm.position = Float3(0.05f, -0.1f, 0.4f);
             vm.positionOffset = Float3(0.1f, 0.2f, 0.05f);
             vm.updateScale = false; vm.updateRotation = false;
-            vm.renderStateA = projectedHorizontal; vm.renderStateB = projectedVertical;
+            vm.alignmentX = projectedHorizontal; vm.alignmentY = projectedVertical;
             D3DXMatrixIdentity(&vm.matrix2);
             vm.matrix2._11 = 0.002f; vm.matrix2._22 = 0.003f;
             vm.matrix2._41 = 0.01f; vm.matrix2._42 = -0.02f; vm.matrix2._43 = 0.17f;
@@ -301,7 +301,7 @@ static unsigned int CheckAnmViewportConsumers(th095::AnmManager *manager)
             vm.rotation.z = 0;
             vm.spriteSize.x = vm.spriteSize.y = 0.2f;
             vm.scale.x = vm.scale.y = 1;
-            vm.renderStateA = vm.renderStateB = 0;
+            vm.alignmentX = vm.alignmentY = 0;
             SeedAnmProjectionVertices();
             AnmVertex before[4]; memcpy(before, g_AnmTexturedVertices, sizeof(before));
             const bool outside = depth == 0 || depth == 4;
