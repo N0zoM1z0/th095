@@ -17680,3 +17680,11 @@ to 0x004DCF28. Retail and both normal builds agree on lifetime publication,
 540 photo task transitions, 144 saves, five best-shot scans and twelve
 preview cases. The local recipes are under
 `.analysis/pi/photo-stage-singleton/`.
+
+Moving the opcode 149 assignment to the canonical field in both ECL
+dispatchers makes the exact build include `PhotoStage.hpp`. That brings the
+canonical ANM and Supervisor declarations into the same translation unit as
+`AnmManagerEclView.hpp` and the legacy ECL Supervisor header. VC7.1 rejects
+the duplicate declarations before emitting RunEcl. The exact raw field
+access remains until those header dependencies are reconciled. The normal
+dispatcher already uses the typed field.
