@@ -65,33 +65,6 @@ struct PhotoHelpMenuTaskView
     i32 closeRequested;
 };
 
-#ifdef DIFFBUILD
-struct PhotoCapacityCounterTaskView
-{
-    i32 capturedPhotoCount;
-    u8 unknown004[4];
-    i32 photoCapacity;
-
-    operator i32()
-    {
-        return this->photoCapacity;
-    }
-};
-
-struct PhotoGameRuntimeTaskView
-{
-#ifdef DIFFBUILD
-    u8 unknown000[0x1e34];
-    f32 hudFade;
-    u8 unknown1e38[0x29e4 - 0x1e38];
-#else
-    u8 unknown000[0x29e4];
-#endif
-    PhotoCapacityCounterTaskView photoCounter;
-};
-
-#endif
-
 // The target DrawHud relocations retain the historical AddFormatText proxy
 // spelling but resolve to canonical AsciiManager::AddGuiFormatText. Keep that
 // proxy receiver/method only for DIFFBUILD; runnable production must enqueue
@@ -149,9 +122,6 @@ extern char g_SelectedReplayPath[0x100];
 #define g_ReplayPath g_SelectedReplayPath
 #endif
 extern PhotoGameTaskView *g_PhotoGameTask;
-#ifdef DIFFBUILD
-extern PhotoGameRuntimeTaskView *g_PhotoGameRuntime;
-#endif
 extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 #define g_PhotoEnemyManagerTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerTaskView, g_RuntimeEnemyManagerOwner)
@@ -175,21 +145,6 @@ extern i32 g_ReplayUsesArchive;
 #ifndef DIFFBUILD
 #define g_PhotoGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_PHOTO_TASK_PLAYER_Y (g_PhotoGameRuntime->hudFade)
-#define TH095_PHOTO_TASK_PHOTO_INDEX \
-    (g_PhotoGameRuntime->photoCounter.capturedPhotoCount)
-#define TH095_PHOTO_TASK_PHOTO_LIMIT \
-    (g_PhotoGameRuntime->photoCounter.photoCapacity)
-#else
-#define TH095_PHOTO_TASK_PLAYER_Y \
-    (g_RuntimePlayerOwner->playerPosition.y)
-#define TH095_PHOTO_TASK_PHOTO_INDEX \
-    (g_RuntimePlayerOwner->camera.photoIndex)
-#define TH095_PHOTO_TASK_PHOTO_LIMIT \
-    (g_RuntimePlayerOwner->camera.photoLimit)
 #endif
 
 PhotoGameTaskView::PhotoGameTaskView()
@@ -249,7 +204,7 @@ i32 PhotoGameTaskView::Update()
         if (this->photoLimitTransitionComplete != 0)
         {
             for (locals.i = 0;
-                 locals.i < TH095_PHOTO_TASK_PHOTO_LIMIT;
+                 locals.i < g_RuntimePlayerOwner->camera.photoLimit;
                  locals.i++)
             {
                 AnmManager::ExecuteScript(
@@ -269,7 +224,7 @@ i32 PhotoGameTaskView::Update()
     if (this->photoLimitTransitionComplete != 0)
     {
         for (locals.j = 0;
-             locals.j < TH095_PHOTO_TASK_PHOTO_LIMIT;
+             locals.j < g_RuntimePlayerOwner->camera.photoLimit;
              locals.j++)
         {
             AnmManager::ExecuteScript(
@@ -321,14 +276,14 @@ i32 PhotoGameTaskView::DrawHud()
     if (g_PhotoStageState->firstCaptureFrame == 0)
     {
         locals.alpha = 0xff;
-        if (TH095_PHOTO_TASK_PLAYER_Y < 64.0f)
+        if (g_RuntimePlayerOwner->playerPosition.y < 64.0f)
         {
             locals.alpha = 0x40;
         }
-        else if (TH095_PHOTO_TASK_PLAYER_Y < 128.0f)
+        else if (g_RuntimePlayerOwner->playerPosition.y < 128.0f)
         {
             locals.alpha =
-                ((u32)(TH095_PHOTO_TASK_PLAYER_Y - 64.0f) * 0xbf >> 6) +
+                ((u32)(g_RuntimePlayerOwner->playerPosition.y - 64.0f) * 0xbf >> 6) +
                 0x40;
         }
 
@@ -355,8 +310,8 @@ i32 PhotoGameTaskView::DrawHud()
             this->score);
 
         g_PhotoAsciiTextColor = locals.alpha << 24 | 0xdfefff;
-        locals.photoLimit = TH095_PHOTO_TASK_PHOTO_LIMIT;
-        locals.photoIndex = TH095_PHOTO_TASK_PHOTO_INDEX;
+        locals.photoLimit = g_RuntimePlayerOwner->camera.photoLimit;
+        locals.photoIndex = g_RuntimePlayerOwner->camera.photoIndex;
         locals.photoCountPosition.x = 409.0f;
         locals.photoCountPosition.y = 19.0f;
         locals.photoCountPosition.z = 0.0f;

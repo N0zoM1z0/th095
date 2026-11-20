@@ -1,4 +1,6 @@
 #include "PhotoItemManager.hpp"
+#include "PhotoGamePlayer.hpp"
+#include "GameplayGlobals.hpp"
 
 namespace th095
 {
@@ -15,21 +17,6 @@ struct ItemBulletManagerView
 };
 
 extern ItemBulletManagerView *g_PhotoBulletManager;
-
-struct ItemPhotoGameView
-{
-    u8 unknown0000[0x1e30];
-    Float3 playerPosition;            // +0x1e30
-    u8 unknown1e3c[0x29bc - 0x1e3c];
-    f32 cameraCharge;                 // +0x29bc
-    u8 unknown29c0[0x29e4 - 0x29c0];
-    i32 photoIndex;                   // +0x29e4
-    u8 unknown29e8[0x29f0 - 0x29e8];
-    u32 cameraFlags;                  // +0x29f0
-    u8 unknown29f4[0x2a28 - 0x29f4];
-    Float3 photoTargetBoundsMin;      // +0x2a28
-    Float3 photoTargetBoundsMax;      // +0x2a34
-};
 
 struct ItemGlobalStateView
 {
@@ -54,7 +41,6 @@ struct ItemSoundPlayerView
     void PlaySoundPositionedByIdx(i32 soundIndex, f32 pan);
 };
 
-extern ItemPhotoGameView *g_PhotoGame;
 extern ItemGlobalStateView *g_PhotoGlobalState;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -158,18 +144,18 @@ static __forceinline void NormalizeAndScaleItemVelocity(
 }
 
 static __forceinline void AddIndexedItemCameraCharge(
-    ItemPhotoGameView *game, i32 photoIndex)
+    PhotoGameUpdateView *game, i32 photoIndex)
 {
-    game->cameraCharge += static_cast<f32>(photoIndex) * 0.0002f + 0.0016f;
-    if (game->cameraCharge > 1.0f)
-        game->cameraCharge = 1.0f;
+    game->camera.charge += static_cast<f32>(photoIndex) * 0.0002f + 0.0016f;
+    if (game->camera.charge > 1.0f)
+        game->camera.charge = 1.0f;
 }
 
-static __forceinline void AddFixedItemCameraCharge(ItemPhotoGameView *game)
+static __forceinline void AddFixedItemCameraCharge(PhotoGameUpdateView *game)
 {
-    game->cameraCharge += 0.004f;
-    if (game->cameraCharge > 1.0f)
-        game->cameraCharge = 1.0f;
+    game->camera.charge += 0.004f;
+    if (game->camera.charge > 1.0f)
+        game->camera.charge = 1.0f;
 }
 
 i32 PhotoItemManagerView::Update()
@@ -203,7 +189,7 @@ i32 PhotoItemManagerView::Update()
         }
         else
         {
-            locals.direction = g_PhotoGame->playerPosition - locals.item->position;
+            locals.direction = g_RuntimePlayerOwner->playerPosition - locals.item->position;
             NormalizeAndScaleItemVelocity(
                 locals.direction, &locals.item->velocity,
                 locals.item->acceleration);
@@ -218,20 +204,20 @@ i32 PhotoItemManagerView::Update()
         locals.boundsMin.y = locals.item->position.y - 0.0f;
         locals.boundsMax.x = locals.item->position.x + 0.0f;
         locals.boundsMax.y = locals.item->position.y + 0.0f;
-        if (!(g_PhotoGame->photoTargetBoundsMin.x > locals.boundsMax.x ||
-              g_PhotoGame->photoTargetBoundsMin.y > locals.boundsMax.y ||
-              g_PhotoGame->photoTargetBoundsMax.x < locals.boundsMin.x ||
-              g_PhotoGame->photoTargetBoundsMax.y < locals.boundsMin.y))
+        if (!(g_RuntimePlayerOwner->photoTargetBoundsMin.x > locals.boundsMax.x ||
+              g_RuntimePlayerOwner->photoTargetBoundsMin.y > locals.boundsMax.y ||
+              g_RuntimePlayerOwner->photoTargetBoundsMax.x < locals.boundsMin.x ||
+              g_RuntimePlayerOwner->photoTargetBoundsMax.y < locals.boundsMin.y))
         {
             locals.item->active = 0;
-            if ((g_PhotoGame->cameraFlags & 1) != 0)
+            if (g_RuntimePlayerOwner->camera.alternateCapture != 0)
             {
                 AddIndexedItemCameraCharge(
-                    g_PhotoGame, g_PhotoGame->photoIndex);
+                    g_RuntimePlayerOwner, g_RuntimePlayerOwner->camera.photoIndex);
             }
             else
             {
-                AddFixedItemCameraCharge(g_PhotoGame);
+                AddFixedItemCameraCharge(g_RuntimePlayerOwner);
             }
             if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
             {

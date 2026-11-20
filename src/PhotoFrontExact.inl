@@ -1,5 +1,7 @@
 #include "AnmManager.hpp"
 #include "PhotoStage.hpp"
+#include "PhotoGamePlayer.hpp"
+#include "GameplayGlobals.hpp"
 
 #include <string.h>
 
@@ -13,12 +15,6 @@ struct PhotoFrontGameTaskView
     i32 bestShotIndex;         // +0x100
     i32 completionActive;       // +0x104
     ZunTimer completionTimer;   // +0x108
-};
-
-struct PhotoFrontRuntimeView
-{
-    u8 unknown000[0x1e34];
-    f32 hudFade;                // +0x1e34
 };
 
 struct PhotoFrontSceneDefinitionView
@@ -82,8 +78,6 @@ struct PhotoFrontUpdateLocals
 };
 
 extern PhotoFrontGameTaskView *g_PhotoFrontGameTask;
-extern PhotoFrontRuntimeView *g_PhotoFrontRuntime;
-extern PhotoStageStateView *g_PhotoStageState;
 extern PhotoFrontSceneDefinitionView *g_PhotoFrontSceneDefinition;
 extern PhotoFrontManagerView *g_PhotoFrontManager;
 extern u32 g_PhotoFrontControllerFlags;
@@ -280,14 +274,14 @@ i32 PhotoFrontManagerView::Update()
         }
 
         locals.alpha = 0xff;
-        if (g_PhotoFrontRuntime->hudFade < 64.0f)
+        if (g_RuntimePlayerOwner->playerPosition.y < 64.0f)
         {
             locals.alpha = 0x40;
         }
-        else if (g_PhotoFrontRuntime->hudFade < 128.0f)
+        else if (g_RuntimePlayerOwner->playerPosition.y < 128.0f)
         {
             locals.alpha =
-                (static_cast<u32>(g_PhotoFrontRuntime->hudFade - 64.0f) *
+                (static_cast<u32>(g_RuntimePlayerOwner->playerPosition.y - 64.0f) *
                  0xbf >> 6) +
                 0x40;
         }

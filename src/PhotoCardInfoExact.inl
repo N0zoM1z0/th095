@@ -1,5 +1,7 @@
 #include "AnmText.hpp"
 #include "PhotoStage.hpp"
+#include "PhotoGamePlayer.hpp"
+#include "GameplayGlobals.hpp"
 #include "AnmVmId.hpp"
 #include "utils.hpp"
 
@@ -19,12 +21,6 @@ typedef char PhotoCardVmHandleSizeIs4[
 struct PhotoCardAnmLoadedView
 {
     PhotoCardVmHandle CreateVm(i32 scriptIndex, Float3 *position);
-};
-
-struct PhotoCardGameRuntimeView
-{
-    u8 unknown000[0x1e34];
-    f32 hudFade;
 };
 
 struct PhotoCardGameTaskView
@@ -72,8 +68,6 @@ typedef char PhotoCardInfoChainsAt60[
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoCardAnmLoadedView *g_PhotoCardBackgroundAnm;
 extern PhotoCardAnmLoadedView *g_PhotoCardUiAnm;
-extern PhotoStageStateView *g_PhotoStageState;
-extern PhotoCardGameRuntimeView *g_PhotoCardGameRuntime;
 extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
 
@@ -256,14 +250,14 @@ i32 PhotoCardInfoView::Update()
                 ->flagsWord |= 2;
         }
 
-        if (g_PhotoCardGameRuntime->hudFade < 64.0f)
+        if (g_RuntimePlayerOwner->playerPosition.y < 64.0f)
         {
             alpha = 0x40;
         }
-        else if (g_PhotoCardGameRuntime->hudFade < 128.0f)
+        else if (g_RuntimePlayerOwner->playerPosition.y < 128.0f)
         {
             alpha =
-                ((u32)(g_PhotoCardGameRuntime->hudFade - 64.0f) * 0xbf >> 6) +
+                ((u32)(g_RuntimePlayerOwner->playerPosition.y - 64.0f) * 0xbf >> 6) +
                 0x40;
         }
     }

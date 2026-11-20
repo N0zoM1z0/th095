@@ -6,6 +6,7 @@
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoStage.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "Main.hpp"
 #include "PhotoCardInfo.hpp"
 #include "utils.hpp"
@@ -14,12 +15,6 @@
 
 namespace th095
 {
-
-struct PhotoCardGameRuntimeView
-{
-    u8 unknown000[0x1e34];
-    f32 hudFade;
-};
 
 struct PhotoCardGameTaskView
 {
@@ -47,7 +42,6 @@ PhotoCardInfoView *g_PhotoCardInfo = NULL;
 #endif
 extern AnmLoaded *g_PhotoCardBackgroundAnm;
 extern AnmLoaded *g_PhotoCardUiAnm;
-extern PhotoCardGameRuntimeView *g_PhotoCardGameRuntime;
 extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
 
@@ -58,8 +52,6 @@ extern u32 g_PhotoScreenFadeColor;
 // those loaded-ANM lifecycles instead of introducing independent pointers.
 #define g_PhotoCardBackgroundAnm (g_AsciiManager.asciiAnm)
 #define g_PhotoCardUiAnm (g_Supervisor.textAnm)
-#define g_PhotoCardGameRuntime \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameRuntimeView, g_RuntimePlayerOwner)
 #define g_PhotoCardGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
@@ -231,14 +223,14 @@ i32 PhotoCardInfoView::Update()
                 ->flagsWord |= 2;
         }
 
-        if (g_PhotoCardGameRuntime->hudFade < 64.0f)
+        if (g_RuntimePlayerOwner->playerPosition.y < 64.0f)
         {
             alpha = 0x40;
         }
-        else if (g_PhotoCardGameRuntime->hudFade < 128.0f)
+        else if (g_RuntimePlayerOwner->playerPosition.y < 128.0f)
         {
             alpha =
-                ((u32)(g_PhotoCardGameRuntime->hudFade - 64.0f) * 0xbf >> 6) +
+                ((u32)(g_RuntimePlayerOwner->playerPosition.y - 64.0f) * 0xbf >> 6) +
                 0x40;
         }
     }

@@ -4,9 +4,7 @@
 #include "PhotoItemManager.hpp"
 #include "PhotoBulletManager.hpp"
 #include "GameplayGlobals.hpp"
-#ifndef DIFFBUILD
-#include "PhotoPlayerRuntime.hpp"
-#endif
+#include "PhotoGamePlayer.hpp"
 #include "SoundPlayer.hpp"
 
 namespace th095
@@ -19,21 +17,6 @@ namespace th095
 
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
-
-struct ItemPhotoGameView
-{
-    u8 unknown0000[0x1e30];
-    Float3 playerPosition;            // +0x1e30
-    u8 unknown1e3c[0x29bc - 0x1e3c];
-    f32 cameraCharge;                 // +0x29bc
-    u8 unknown29c0[0x29e4 - 0x29c0];
-    i32 photoIndex;                   // +0x29e4
-    u8 unknown29e8[0x29f0 - 0x29e8];
-    u32 cameraFlags;                  // +0x29f0
-    u8 unknown29f4[0x2a28 - 0x29f4];
-    Float3 photoTargetBoundsMin;      // +0x2a28
-    Float3 photoTargetBoundsMax;      // +0x2a34
-};
 
 struct ItemGlobalStateView
 {
@@ -54,36 +37,11 @@ struct ItemGlobalStateView
     };
 };
 
-extern ItemPhotoGameView *g_PhotoGame;
 extern ItemGlobalStateView *g_PhotoGlobalState;
 
 #ifndef DIFFBUILD
-#define g_PhotoGame \
-    TH095_RUNTIME_GLOBAL_PTR(ItemPhotoGameView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(ItemGlobalStateView, g_RuntimeGlobalStateOwner)
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_ITEM_PLAYER_POSITION (g_PhotoGame->playerPosition)
-#define TH095_ITEM_CAMERA_CHARGE(game) ((game)->cameraCharge)
-#define TH095_ITEM_PHOTO_INDEX (g_PhotoGame->photoIndex)
-#define TH095_ITEM_CAMERA_FLAGS (g_PhotoGame->cameraFlags)
-#define TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN (g_PhotoGame->photoTargetBoundsMin)
-#define TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX (g_PhotoGame->photoTargetBoundsMax)
-#else
-#define TH095_ITEM_PLAYER_POSITION \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition)
-#define TH095_ITEM_CAMERA_CHARGE(game) \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.charge)
-#define TH095_ITEM_PHOTO_INDEX \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photoIndex)
-#define TH095_ITEM_CAMERA_FLAGS \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.flags)
-#define TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->photoTargetBoundsMin)
-#define TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->photoTargetBoundsMax)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -187,18 +145,18 @@ static __forceinline void NormalizeAndScaleItemVelocity(
 }
 
 static __forceinline void AddIndexedItemCameraCharge(
-    ItemPhotoGameView *game, i32 photoIndex)
+    PhotoGameUpdateView *game, i32 photoIndex)
 {
-    TH095_ITEM_CAMERA_CHARGE(game) += static_cast<f32>(photoIndex) * 0.0002f + 0.0016f;
-    if (TH095_ITEM_CAMERA_CHARGE(game) > 1.0f)
-        TH095_ITEM_CAMERA_CHARGE(game) = 1.0f;
+    game->camera.charge += static_cast<f32>(photoIndex) * 0.0002f + 0.0016f;
+    if (game->camera.charge > 1.0f)
+        game->camera.charge = 1.0f;
 }
 
-static __forceinline void AddFixedItemCameraCharge(ItemPhotoGameView *game)
+static __forceinline void AddFixedItemCameraCharge(PhotoGameUpdateView *game)
 {
-    TH095_ITEM_CAMERA_CHARGE(game) += 0.004f;
-    if (TH095_ITEM_CAMERA_CHARGE(game) > 1.0f)
-        TH095_ITEM_CAMERA_CHARGE(game) = 1.0f;
+    game->camera.charge += 0.004f;
+    if (game->camera.charge > 1.0f)
+        game->camera.charge = 1.0f;
 }
 
 i32 PhotoItemManagerView::Update()
@@ -232,7 +190,7 @@ i32 PhotoItemManagerView::Update()
         }
         else
         {
-            locals.direction = TH095_ITEM_PLAYER_POSITION - locals.item->position;
+            locals.direction = g_RuntimePlayerOwner->playerPosition - locals.item->position;
             NormalizeAndScaleItemVelocity(
                 locals.direction, &locals.item->velocity,
                 locals.item->acceleration);
@@ -247,20 +205,20 @@ i32 PhotoItemManagerView::Update()
         locals.boundsMin.y = locals.item->position.y - 0.0f;
         locals.boundsMax.x = locals.item->position.x + 0.0f;
         locals.boundsMax.y = locals.item->position.y + 0.0f;
-        if (!(TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN.x > locals.boundsMax.x ||
-              TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN.y > locals.boundsMax.y ||
-              TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX.x < locals.boundsMin.x ||
-              TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX.y < locals.boundsMin.y))
+        if (!(g_RuntimePlayerOwner->photoTargetBoundsMin.x > locals.boundsMax.x ||
+              g_RuntimePlayerOwner->photoTargetBoundsMin.y > locals.boundsMax.y ||
+              g_RuntimePlayerOwner->photoTargetBoundsMax.x < locals.boundsMin.x ||
+              g_RuntimePlayerOwner->photoTargetBoundsMax.y < locals.boundsMin.y))
         {
             locals.item->active = 0;
-            if ((TH095_ITEM_CAMERA_FLAGS & 1) != 0)
+            if (g_RuntimePlayerOwner->camera.alternateCapture != 0)
             {
                 AddIndexedItemCameraCharge(
-                    g_PhotoGame, TH095_ITEM_PHOTO_INDEX);
+                    g_RuntimePlayerOwner, g_RuntimePlayerOwner->camera.photoIndex);
             }
             else
             {
-                AddFixedItemCameraCharge(g_PhotoGame);
+                AddFixedItemCameraCharge(g_RuntimePlayerOwner);
             }
             if (g_PhotoGlobalState->photoSoundSuppressed == 0)
             {
@@ -276,13 +234,6 @@ tick:
     }
     return 1;
 }
-
-#undef TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX
-#undef TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN
-#undef TH095_ITEM_CAMERA_FLAGS
-#undef TH095_ITEM_PHOTO_INDEX
-#undef TH095_ITEM_CAMERA_CHARGE
-#undef TH095_ITEM_PLAYER_POSITION
 
 i32 PhotoItemManagerView::Draw()
 {

@@ -2,6 +2,8 @@
 #include "AnmVmId.hpp"
 #include "PhotoStage.hpp"
 #include "SoundPlayer.hpp"
+#include "PhotoGamePlayer.hpp"
+#include "GameplayGlobals.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -96,8 +98,6 @@ struct PhotoStageStateTaskView
 {
     u8 unknown000[0x17720];
     AnmVmId capturedPhotoVms[11];
-    u8 unknown1774c[0x25720 - 0x1774c];
-    u32 flags;
 };
 
 struct PhotoCaptureManagerTaskView
@@ -105,18 +105,6 @@ struct PhotoCaptureManagerTaskView
     u8 unknown000[8];
     i32 captureSlot0;
     i32 captureSlot1;
-};
-
-struct PhotoCapacityCounterTaskView
-{
-    i32 capturedPhotoCount;
-    u8 unknown004[4];
-    i32 photoCapacity;
-
-    operator i32()
-    {
-        return this->photoCapacity;
-    }
 };
 
 struct PhotoReplayInputButtonsTaskView
@@ -127,14 +115,6 @@ struct PhotoReplayInputButtonsTaskView
     {
         return this->current & mask;
     }
-};
-
-struct PhotoGameRuntimeTaskView
-{
-    u8 unknown000[0x1e34];
-    f32 hudFade;
-    u8 unknown1e38[0x29e4 - 0x1e38];
-    PhotoCapacityCounterTaskView photoCounter;
 };
 
 struct PhotoAsciiManagerTaskView
@@ -263,8 +243,7 @@ extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoGameSupervisorView g_PhotoGameSupervisor;
 extern PhotoHelpMenuTaskView *g_PhotoHelpMenu;
 extern PhotoCaptureManagerTaskView *g_PhotoCaptureManager;
-extern PhotoStageStateTaskView *g_PhotoStageState;
-extern PhotoGameRuntimeTaskView *g_PhotoGameRuntime;
+extern PhotoStageStateTaskView *g_PhotoGameTaskStage;
 extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 extern PhotoAsciiManagerTaskView g_PhotoAsciiManager;
 extern u32 g_PhotoAsciiTextColor;
@@ -325,12 +304,14 @@ i32 PhotoGameTaskView::Update()
     {
         if (((this->flags >> 6) & 1) != 0)
         {
+            i32 photoLimit;
             for (locals.i = 0;
-                 locals.i < g_PhotoGameRuntime->photoCounter;
+                 photoLimit = g_RuntimePlayerOwner->camera.photoLimit,
+                 locals.i < photoLimit;
                  locals.i++)
             {
                 AnmManager::ExecuteScript(
-                    g_PhotoStageState
+                    g_PhotoGameTaskStage
                         ->capturedPhotoVms[locals.i]
                         .GetVm());
             }
@@ -345,12 +326,14 @@ i32 PhotoGameTaskView::Update()
 
     if (((this->flags >> 6) & 1) != 0)
     {
+        i32 photoLimit;
         for (locals.j = 0;
-             locals.j < g_PhotoGameRuntime->photoCounter;
+             photoLimit = g_RuntimePlayerOwner->camera.photoLimit,
+             locals.j < photoLimit;
              locals.j++)
         {
             AnmManager::ExecuteScript(
-                g_PhotoStageState
+                g_PhotoGameTaskStage
                     ->capturedPhotoVms[locals.j]
                     .GetVm());
         }
@@ -393,17 +376,17 @@ i32 PhotoGameTaskView::DrawHud()
     {
         return 1;
     }
-    if (((g_PhotoStageState->flags >> 2) & 1) == 0)
+    if (g_PhotoStageState->firstCaptureFrame == 0)
     {
         locals.alpha = 0xff;
-        if (g_PhotoGameRuntime->hudFade < 64.0f)
+        if (g_RuntimePlayerOwner->playerPosition.y < 64.0f)
         {
             locals.alpha = 0x40;
         }
-        else if (g_PhotoGameRuntime->hudFade < 128.0f)
+        else if (g_RuntimePlayerOwner->playerPosition.y < 128.0f)
         {
             locals.alpha =
-                ((u32)(g_PhotoGameRuntime->hudFade - 64.0f) * 0xbf >> 6) +
+                ((u32)(g_RuntimePlayerOwner->playerPosition.y - 64.0f) * 0xbf >> 6) +
                 0x40;
         }
 
@@ -432,9 +415,9 @@ i32 PhotoGameTaskView::DrawHud()
 
         g_PhotoAsciiTextColor = locals.alpha << 24 | 0xdfefff;
         locals.photoCapacity =
-            g_PhotoGameRuntime->photoCounter.photoCapacity;
+            g_RuntimePlayerOwner->camera.photoLimit;
         locals.capturedPhotoCount =
-            g_PhotoGameRuntime->photoCounter.capturedPhotoCount;
+            g_RuntimePlayerOwner->camera.photoIndex;
         locals.photoCountPosition.x = 409.0f;
         locals.photoCountPosition.y = 19.0f;
         locals.photoCountPosition.z = 0.0f;

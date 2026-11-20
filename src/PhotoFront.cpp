@@ -5,11 +5,9 @@
 #include "FileSystem.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoStage.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "Main.hpp"
 #include "PhotoGameTask.hpp"
-#ifndef DIFFBUILD
-#include "PhotoPlayerRuntime.hpp"
-#endif
 #include "SceneData.hpp"
 
 #include <string.h>
@@ -25,14 +23,6 @@ struct PhotoFrontGameTaskView
     i32 bestShotIndex;         // +0x100
     i32 completionActive;      // +0x104
     ZunTimer completionTimer;  // +0x108
-};
-#endif
-
-#ifdef DIFFBUILD
-struct PhotoFrontRuntimeView
-{
-    u8 unknown000[0x1e34];
-    f32 hudFade;                // +0x1e34
 };
 #endif
 
@@ -71,9 +61,6 @@ struct PhotoFrontUpdateLocals
 #ifdef DIFFBUILD
 extern PhotoFrontGameTaskView *g_PhotoFrontGameTask;
 #endif
-#ifdef DIFFBUILD
-extern PhotoFrontRuntimeView *g_PhotoFrontRuntime;
-#endif
 extern PhotoFrontManagerView *g_PhotoFrontManager;
 
 #ifndef DIFFBUILD
@@ -93,14 +80,6 @@ extern PhotoFrontManagerView *g_PhotoFrontManager;
     (g_PhotoFrontGameTask->completion.completionActive)
 #define TH095_PHOTO_FRONT_COMPLETION_TIMER \
     (g_PhotoFrontGameTask->completion.timer)
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_PHOTO_FRONT_PLAYER_Y (g_PhotoFrontRuntime->hudFade)
-#else
-#define TH095_PHOTO_FRONT_PLAYER_Y \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
-         ->playerPosition.y)
 #endif
 
 i32 LoadPhotoFrontAnm()
@@ -293,14 +272,14 @@ i32 PhotoFrontManagerView::Update()
         }
 
         locals.alpha = 0xff;
-        if (TH095_PHOTO_FRONT_PLAYER_Y < 64.0f)
+        if (g_RuntimePlayerOwner->playerPosition.y < 64.0f)
         {
             locals.alpha = 0x40;
         }
-        else if (TH095_PHOTO_FRONT_PLAYER_Y < 128.0f)
+        else if (g_RuntimePlayerOwner->playerPosition.y < 128.0f)
         {
             locals.alpha =
-                (static_cast<u32>(TH095_PHOTO_FRONT_PLAYER_Y - 64.0f) *
+                (static_cast<u32>(g_RuntimePlayerOwner->playerPosition.y - 64.0f) *
                  0xbf >> 6) +
                 0x40;
         }

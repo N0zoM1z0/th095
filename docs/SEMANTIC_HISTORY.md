@@ -17714,3 +17714,27 @@ to each respective pre-change PE. The constructor and destructor fixture
 agrees with retail on publication, chain teardown and ANM cleanup order.
 The 540-case photo task fixture also agrees across the three images. See
 `.analysis/pi/player-owner/` for the local relocation and lifetime checks.
+
+### SEM-383 — use PlayerInf for photo presentation and pickups
+
+PhotoCardInfo, PhotoFront and PhotoGameTask read the PlayerInf Y coordinate
+at +0x1E34 to fade the HUD. The photo task reads +0x29EC for the photo
+limit and +0x29E4 for the displayed index. Both task completion loops sample
+the current limit on every iteration. Naming the sampled value in the loop
+condition preserves the two VC7.1 stack homes previously emitted by the
+implicit conversion. Exact PhotoGameTask still uses its narrow captured
+VM ID view for the two `AnmVmId::GetVm` calls. DrawHud reads the actual
+PhotoInf flag.
+
+ItemInf checks the PlayerInf target bounds, then reads the alternate capture
+flag at +0x29F0 to select indexed or fixed charge. Both profiles now use the
+embedded camera to read the flag and index and update charge at +0x29BC.
+
+All 43 affected strict comparisons pass. `PhotoItemManagerView::Update`
+is the only changed mapped code in each normal link. Its normal body now
+reproduces all 1,235 target bytes with all 29 relocations resolved, including
+the two normal names for task state and sound. All 125 PlayerInf references
+follow the slot in the reversed link. The 384 pickup cases and 548 photo
+task cases agree with retail in both link orders, including eight cases
+where a VM callback changes the limit mid-loop. The local recipes are
+under `.analysis/pi/player-clients/`.
