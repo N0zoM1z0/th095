@@ -105,7 +105,6 @@
 1	src/FrontEndLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameErrorContext.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameplayGlobals.hpp	#if defined(DIFFBUILD)
-1	src/GameplayGlobals.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/GameplayGlobals.hpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/GameplayGlobals.hpp	#ifndef DIFFBUILD
 2	src/Global.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)

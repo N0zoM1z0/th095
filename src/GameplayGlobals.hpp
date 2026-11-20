@@ -15,14 +15,6 @@ namespace th095
 DIFFABLE_EXTERN(void *, g_RuntimeBulletManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeEnemyManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeBackgroundManagerOwner);
-// Target 0x004C4DF4 is Supervisor::photoGameTask at g_Supervisor + 0x784.
-// Production binds a reference to that embedded slot; it is the front-end's
-// publication of the task and is physically distinct from 0x004BDEC8.
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-DIFFABLE_EXTERN(void *, g_RuntimeGameTaskOwner);
-#else
-extern void *&g_RuntimeGameTaskOwner;
-#endif
 DIFFABLE_EXTERN(void *, g_RuntimeItemManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeEffectManagerOwner);
 // PhotoOverlay publishes the PhotoInf allocation and clears it at teardown.

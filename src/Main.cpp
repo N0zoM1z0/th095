@@ -88,11 +88,6 @@ char g_WindowTitle[] =
 void *g_RuntimeBulletManagerOwner = 0;
 void *g_RuntimeEnemyManagerOwner = 0;
 void *g_RuntimeBackgroundManagerOwner = 0;
-// Target 0x004C4DF4 is the Supervisor's embedded game-task publication slot.
-// It mirrors the pointer during steady-state gameplay, but it is not the same
-// storage and must retain its own transition lifetime.
-void *&g_RuntimeGameTaskOwner =
-    reinterpret_cast<void *&>(g_Supervisor.photoGameTask);
 void *g_RuntimeItemManagerOwner = 0;
 void *g_RuntimeEffectManagerOwner = 0;
 PhotoStageStateView *g_PhotoStageState = NULL;

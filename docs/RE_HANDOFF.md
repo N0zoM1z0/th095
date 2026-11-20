@@ -73,6 +73,8 @@ SEM-409 gives the background, photo card, capture and result paths the same
 task fields, including the score, Best Shot index and replay mode.
 SEM-410 shares the active task countdown and transition bits with ECL in
 both profiles. The session opcode copies the countdown into the ANM VM.
+SEM-411 removes the unused reference to the Supervisor task slot. The two
+publications still have separate lifetimes.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

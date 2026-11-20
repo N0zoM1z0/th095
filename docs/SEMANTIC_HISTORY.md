@@ -18420,3 +18420,18 @@ retail agrees for 72 opcode cases and 264 callback cases, with separate
 pointers in the active and Supervisor task slots. The fixtures supply ANM,
 sound and photo-card boundaries and compare the resulting task fields,
 transition countdown and calls. Recipes are in `.analysis/pi/ecl-active-task/`.
+
+### SEM-411 — retire the Supervisor task alias
+
+Supervisor and the front end now access `Supervisor::photoGameTask` directly.
+The unused `g_RuntimeGameTaskOwner` reference previously emitted a pointer
+to that member in Main's initialized data. The reference and its selector
+are removed. The factory's active task slot has its own storage in
+PhotoGameTask and still has 229 direct references in both link orders.
+
+All 372 exact comparisons affected by the shared header pass with their
+original target operands. Both normal link maps omit the alias. Fourteen
+Supervisor scene transitions and 69 title handoff cases agree with retail,
+including creation failure, returning to the title, restarting from results
+and retrying. Recipes are in `.analysis/pi/retire-task-alias/` and
+`.analysis/pi/title-game-handoff/`.
