@@ -18459,3 +18459,21 @@ update cases agree with retail, including the frame-35 marker scripts,
 their positions and the task flag published at the end of capture. The
 fixtures supply ANM and Chain boundaries and give the task's embedded HUD
 pointer a separate value. See `.analysis/pi/photo-front-owner/`.
+
+### SEM-413 — give capture drops the item manager
+
+The ItemInf constructor and destructor publish and clear the slot at
+`0x004C45DC`. Enemies, bullets and both laser types use the published
+receiver for capture drops. Both build profiles now name
+`g_PhotoItemManager`, and PhotoGameTask calls the same lifecycle methods.
+The exact spawn body initializes the item VM through the canonical
+BulletInf ANM field. The unused integer argument to Spawn stays in the ABI.
+
+All 372 affected exact comparisons preserve their extents and relocation
+operands. All ten item-slot references follow the moved symbol in both
+normal link orders. The linked fixtures match retail in four lifetime,
+40 enemy, 24 laser, six bullet and 384 pickup cases. They check drop colors,
+initial positions, full and nearly full pools, and charge and sound
+behavior on pickup. The spawn fixtures supply ANM and Chain boundaries
+and seed retail and reconstructed RNG state alike.
+See `.analysis/pi/photo-item-owner/`.

@@ -3,6 +3,7 @@
 #include "AnmVmId.hpp"
 #include "ControllerInputSlot.hpp"
 #include "PhotoFront.hpp"
+#include "PhotoItemManager.hpp"
 #include "PhotoStage.hpp"
 #include "SoundPlayer.hpp"
 #include "ScoreData.hpp"
@@ -39,12 +40,6 @@ struct PhotoEnemyManagerTaskView
     static PhotoEnemyManagerTaskView *Create();
     void Destroy();
     void RestartPhotoTargetEcls();
-};
-
-struct PhotoItemManagerTaskView
-{
-    static PhotoItemManagerTaskView *Create();
-    void Destroy();
 };
 
 struct ResultScreen
@@ -135,7 +130,7 @@ struct PhotoGameTaskView
     ReplayManagerTaskView *replay;           // +0x010
     PhotoEnemyManagerTaskView *enemies;      // +0x014
     PhotoStageStateView *photoOverlay;       // +0x018
-    PhotoItemManagerTaskView *items;         // +0x01c
+    PhotoItemManagerView *items;         // +0x01c
     ResultScreen *pause;                     // +0x020
     PhotoLaserManagerTaskView *lasers;       // +0x024
     ZunTimer stageTimer;                     // +0x028
@@ -554,7 +549,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->items = PhotoItemManagerTaskView::Create();
+    this->items = PhotoItemManagerView::Create();
     if (this->items == NULL)
     {
         return ZUN_ERROR;

@@ -60,8 +60,6 @@ extern PhotoBulletManagerView *g_PhotoBulletManager;
 #ifndef DIFFBUILD
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
-#define g_ItemManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner)
 #endif
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 // Target .data 0x004A40C0..0x004A424F contains six adjacent, relocation-
@@ -1131,7 +1129,7 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
                     g_PhotoBulletColors4[bullet->color];
         }
         bullet->nextCaptured = NULL;
-        g_ItemManager->Spawn(
+        g_PhotoItemManager->Spawn(
             0, reinterpret_cast<Float3 *>(&bullet->position),
             captureVm->color1.color);
     }

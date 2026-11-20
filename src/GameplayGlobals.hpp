@@ -14,7 +14,6 @@ namespace th095
 // their target-specific extern names and relocation evidence.
 DIFFABLE_EXTERN(void *, g_RuntimeBulletManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeEnemyManagerOwner);
-DIFFABLE_EXTERN(void *, g_RuntimeItemManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeEffectManagerOwner);
 // PhotoOverlay publishes the PhotoInf allocation and clears it at teardown.
 struct PhotoStageStateView;

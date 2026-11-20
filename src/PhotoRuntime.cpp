@@ -2,6 +2,7 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemy.hpp"
 #include "PhotoEnemyManager.hpp"
+#include "PhotoItemManager.hpp"
 
 namespace th095
 {
@@ -22,16 +23,6 @@ struct EclManager
 #else
 #define TH095_PHOTO_RUNTIME_ECL_INIT(manager, context, subroutineId) \
     (manager)->InitializeContext((context), (subroutineId))
-#endif
-
-struct PhotoItemManagerView
-{
-    i32 Spawn(i32 type, Float3 *position, u32 color);
-};
-extern PhotoItemManagerView *g_PhotoItemManager;
-#ifndef DIFFBUILD
-#define g_PhotoItemManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner)
 #endif
 
 // Keep the TH08 Float3 divide body in this call-site allocation phase.

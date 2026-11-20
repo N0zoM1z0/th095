@@ -1,4 +1,5 @@
 #include "PhotoItemManager.hpp"
+#include "PhotoBulletManager.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
@@ -6,18 +7,7 @@
 namespace th095
 {
 
-struct ItemAnmSpawnerView
-{
-    void InitializeVm(AnmVm *vm, i32 scriptIndex);
-};
-
-struct ItemBulletManagerView
-{
-    u8 unknown000000[0x27c5b0];
-    ItemAnmSpawnerView *anmSpawner;
-};
-
-extern ItemBulletManagerView *g_PhotoBulletManager;
+extern PhotoBulletManagerView *g_PhotoBulletManager;
 
 struct ItemSoundPlayerView
 {
@@ -44,7 +34,7 @@ PhotoItemManagerView::PhotoItemManagerView()
 {
     utils::DebugPrint("initialize ItemInf\n");
     memset(this, 0, sizeof(*this));
-    g_ItemManager = this;
+    g_PhotoItemManager = this;
 }
 
 PhotoItemManagerView::~PhotoItemManagerView()
@@ -52,7 +42,7 @@ PhotoItemManagerView::~PhotoItemManagerView()
     utils::DebugPrint("shutdown ItemInf\n");
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    g_ItemManager = NULL;
+    g_PhotoItemManager = NULL;
 }
 
 i32 PhotoItemManagerView::Initialize()
@@ -262,7 +252,7 @@ i32 __fastcall PhotoItemManagerView::OnDraw(PhotoItemManagerView *manager)
 static __forceinline void PhotoItemSpawnVmSetupPhase(PhotoItemView *item, u32 color)
 {
     u8 compilerStorage[0x2c];
-    g_PhotoBulletManager->anmSpawner->InitializeVm(&item->vm, 0x120);
+    g_PhotoBulletManager->bulletAnm->InitializeVm(&item->vm, 0x120);
     item->vm.color1.color = color;
 }
 

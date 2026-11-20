@@ -20,6 +20,7 @@
 #include "PhotoGameTask.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "PhotoFront.hpp"
+#include "PhotoItemManager.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "ReplayManager.hpp"
@@ -49,12 +50,6 @@ struct PhotoEnemyManagerView
         PhotoEnemyManagerView *enemyManager);
 };
 #endif
-
-struct PhotoItemManagerView
-{
-    static PhotoItemManagerView *__fastcall Create();
-    void Destroy();
-};
 
 struct PhotoHelpMenuTaskView
 {

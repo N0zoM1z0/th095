@@ -54,6 +54,6 @@ typedef char PhotoItemManagerSizeIs1BD5C[
 typedef char PhotoItemManagerCalcChainAt1BD54[
     (offsetof(PhotoItemManagerView, calcChain) == 0x1bd54) ? 1 : -1];
 
-extern PhotoItemManagerView *g_ItemManager;
+extern PhotoItemManagerView *g_PhotoItemManager;
 
 } // namespace th095

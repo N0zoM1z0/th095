@@ -11,11 +11,6 @@
 namespace th095
 {
 
-#ifndef DIFFBUILD
-#define g_ItemManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner)
-#endif
-
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
 
@@ -39,7 +34,7 @@ PhotoItemManagerView::PhotoItemManagerView()
 {
     utils::DebugPrint("initialize ItemInf\n");
     memset(this, 0, sizeof(*this));
-    g_ItemManager = this;
+    g_PhotoItemManager = this;
 }
 
 PhotoItemManagerView::~PhotoItemManagerView()
@@ -47,7 +42,7 @@ PhotoItemManagerView::~PhotoItemManagerView()
     utils::DebugPrint("shutdown ItemInf\n");
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    g_ItemManager = NULL;
+    g_PhotoItemManager = NULL;
 }
 
 i32 PhotoItemManagerView::Initialize()
@@ -296,3 +291,8 @@ finished:
 } // namespace th095
 
 #endif // TH095_MATCH_EXACT
+
+namespace th095
+{
+PhotoItemManagerView *g_PhotoItemManager; // Retail 0x004C45DC
+}

@@ -3,6 +3,7 @@
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
+#include "PhotoItemManager.hpp"
 
 namespace th095
 {
@@ -201,12 +202,6 @@ extern PhotoEffectManagerView *g_PhotoEffectManager;
 extern AnmManager *g_AnmManager;
 extern u32 g_PhotoEffectColors[];
 
-struct PhotoCaptureParticleSpawnerView
-{
-    i32 Spawn(i32 type, Float3 *position, u32 color);
-};
-
-extern PhotoCaptureParticleSpawnerView *g_PhotoCaptureParticleSpawner;
 
 
 static inline i32 PhotoEffectEitherFlag(i32 first, i32 second)
@@ -697,7 +692,7 @@ i32 PhotoStraightLaserView::CheckCollision(
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
-                g_PhotoCaptureParticleSpawner->Spawn(
+                g_PhotoItemManager->Spawn(
                     0, &sample, vm->color1.color);
             }
         }
@@ -845,7 +840,7 @@ i32 PhotoRotatingLaserView::CheckCollision(
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
-                g_PhotoCaptureParticleSpawner->Spawn(
+                g_PhotoItemManager->Spawn(
                     0, &sample, vm->color1.color);
             }
         }

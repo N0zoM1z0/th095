@@ -10,9 +10,7 @@
 #include "PhotoEffectRuntime.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
 #include "PhotoStraightLaserArgs.hpp"
-#ifndef DIFFBUILD
 #include "PhotoItemManager.hpp"
-#endif
 
 namespace th095
 {
@@ -110,20 +108,6 @@ u32 g_PhotoEffectColors[16] = {
     0xff808000, 0xff808000, 0xff808000, 0xff808080};
 #else
 extern u32 g_PhotoEffectColors[];
-#endif
-
-#ifdef DIFFBUILD
-struct PhotoCaptureParticleSpawnerView
-{
-    i32 Spawn(i32 type, Float3 *position, u32 color);
-};
-extern PhotoCaptureParticleSpawnerView *g_PhotoCaptureParticleSpawner;
-#define TH095_CAPTURE_PARTICLE_SPAWN(type, position, color) \
-    g_PhotoCaptureParticleSpawner->Spawn((type), (position), (color))
-#else
-#define TH095_CAPTURE_PARTICLE_SPAWN(type, position, color) \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner) \
-        ->Spawn((type), (position), (color))
 #endif
 
 
@@ -576,7 +560,7 @@ i32 PhotoStraightLaserView::CheckCollision(
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
-                TH095_CAPTURE_PARTICLE_SPAWN(
+                g_PhotoItemManager->Spawn(
                     0, &sample, vm->color1.color);
             }
         }
@@ -723,7 +707,7 @@ i32 PhotoRotatingLaserView::CheckCollision(
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
-                TH095_CAPTURE_PARTICLE_SPAWN(
+                g_PhotoItemManager->Spawn(
                     0, &sample, vm->color1.color);
             }
         }
