@@ -17805,3 +17805,30 @@ normal PEs are identical to their respective pre-change builds. Retail and
 both normal links agree in 48 opcode writes, 20 resolver cases and 14
 dispatch cases with nonzero upper call words. The local recipes are under
 `.analysis/pi/enemy-schedule/`.
+
+### SEM-387 — bind capture requests to AnmManager
+
+The PhotoStage producer writes the texture rectangle at +0x3817D0 and the
+entry index at +0x3817F0 for ANM slot 9. It keeps an occupied request intact.
+`TakeScreenshots @ 0x00421D00` reads those fields, calls CaptureToTexture
+and clears the ANM slot. It then handles the independent surface request
+using the rectangle at +0x3817F4. The two consumers now belong to the real
+AnmManager class. Both profiles share the capture fields and PhotoStage's
+publication helper. PhotoStage and the texture consumer use the typed
+entries in `AnmLoaded::textures`.
+
+The pinned compiler shortens PhotoStage Update by one byte with a positive
+free-slot condition. The early return on an occupied slot preserves the
+original conditional branch and jump. Exact PhotoStage's remaining VM
+adapter contains only the scalar-ID method declarations. Exact ResultScreen
+still has its own texture request projection. The surface rectangle producer
+remains unknown.
+
+All 520 affected strict comparisons pass. Eight decorated relocation names
+changed with identical offsets, kinds and target destinations.
+The normal dispatcher and both copy methods also compare exact over their
+complete extents and relocations. Both calls follow their methods in the
+reversed link. The four mapped sections match each respective pre-change
+PE. Retail and both normal links agree in 45 publication cases, 24 dispatch
+cases and 30 texture-copy cases, including failure and release paths. See
+`.analysis/pi/anm-capture-owner/` for the local recipes.

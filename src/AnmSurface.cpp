@@ -14,62 +14,13 @@ struct AnmSurfaceStorageView
     D3DXIMAGE_INFO surfaceInfo[32];
 };
 
-struct AnmSurfaceTextureEntryView
-{
-    IDirect3DTexture8 *texture;
-    u8 *rawData;
-    i32 size;
-    i32 unknown00c;
-};
-
-struct AnmSurfacePreloadSlotView
-{
-    AnmLoaded loaded;
-    u8 unconsumed01c[0x120 - 0x1c];
-};
-
-struct AnmManagerCaptureView
-{
-    u8 unconsumed000[0x2c];
-    AnmSurfacePreloadSlotView slots[13];
-    u8 unconsumedECC[0x3817d0 - 0xecc];
-    i32 textureCaptureSrcX;
-    i32 textureCaptureSrcY;
-    i32 textureCaptureSrcW;
-    i32 textureCaptureSrcH;
-    i32 textureCaptureDstX;
-    i32 textureCaptureDstY;
-    i32 textureCaptureDstW;
-    i32 textureCaptureDstH;
-    i32 textureEntryIndex;
-    i32 surfaceCaptureSrcX;
-    i32 surfaceCaptureSrcY;
-    i32 surfaceCaptureSrcW;
-    i32 surfaceCaptureSrcH;
-    i32 surfaceCaptureDstX;
-    i32 surfaceCaptureDstY;
-    i32 surfaceCaptureDstW;
-    i32 surfaceCaptureDstH;
-
-    void CaptureToTexture(i32 anmIndex, i32 entryIndex, i32 srcX, i32 srcY,
-                          i32 srcW, i32 srcH, i32 dstX, i32 dstY, i32 dstW,
-                          i32 dstH);
-    void CaptureToSurface(i32 surfaceIndex, i32 srcX, i32 srcY, i32 srcW,
-                          i32 srcH, i32 dstX, i32 dstY, i32 dstW, i32 dstH);
-};
-
 typedef char AnmSurfacePrimaryOffset[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
 typedef char AnmSurfaceRestoreCopyOffset[(offsetof(AnmSurfaceStorageView, surfacesBis) == 0x125c) ? 1 : -1];
 typedef char AnmSurfaceDataOffset[(offsetof(AnmSurfaceStorageView, surfaceData) == 0x12dc) ? 1 : -1];
 typedef char AnmSurfaceDataSizeOffset[(offsetof(AnmSurfaceStorageView, surfaceDataSizes) == 0x135c) ? 1 : -1];
 typedef char AnmSurfaceInfoOffset[(offsetof(AnmSurfaceStorageView, surfaceInfo) == 0x13dc) ? 1 : -1];
-typedef char AnmSurfacePreloadSlotSize[(sizeof(AnmSurfacePreloadSlotView) == 0x120) ? 1 : -1];
-typedef char AnmTextureCaptureStateOffset[(offsetof(AnmManagerCaptureView, textureCaptureSrcX) == 0x3817d0) ? 1 : -1];
-typedef char AnmTextureEntryIndexOffset[(offsetof(AnmManagerCaptureView, textureEntryIndex) == 0x3817f0) ? 1 : -1];
-typedef char AnmSurfaceCaptureStateOffset[(offsetof(AnmManagerCaptureView, surfaceCaptureSrcX) == 0x3817f4) ? 1 : -1];
 
 #define surfaceStorage reinterpret_cast<AnmSurfaceStorageView *>(this)
-#define captureManager reinterpret_cast<AnmManagerCaptureView *>(this)
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define TH095_ANM_SURFACE_RESTORE_COPY(owner, index) \
     (reinterpret_cast<AnmSurfaceStorageView *>(owner)->surfacesBis[(index)])
@@ -270,7 +221,7 @@ void AnmManager::CopySurfaceToBackbuffer(
 }
 
 // FUNCTION: TH095 0x00444620.
-void AnmManagerCaptureView::CaptureToTexture(
+void AnmManager::CaptureToTexture(
     i32 anmIndex, i32 entryIndex, i32 srcX, i32 srcY, i32 srcW, i32 srcH,
     i32 dstX, i32 dstY, i32 dstW, i32 dstH)
 {
@@ -282,13 +233,12 @@ void AnmManagerCaptureView::CaptureToTexture(
         RECT srcRect;
     } locals;
 
-    if (reinterpret_cast<AnmSurfaceTextureEntryView *>(
-            this->slots[anmIndex].loaded.textures)[entryIndex].texture == NULL)
+    if (this->slots[anmIndex].loaded.textures[entryIndex].texture == NULL)
     {
         return;
     }
 
-    reinterpret_cast<AnmManager *>(this)->FlushVertexBuffer();
+    this->FlushVertexBuffer();
 
     if (g_Supervisor.d3dDevice->GetBackBuffer(
             0, D3DBACKBUFFER_TYPE_MONO, &locals.backbuffer) != D3D_OK)
@@ -296,8 +246,7 @@ void AnmManagerCaptureView::CaptureToTexture(
         return;
     }
 
-    if (reinterpret_cast<AnmSurfaceTextureEntryView *>(
-            this->slots[anmIndex].loaded.textures)[entryIndex]
+    if (this->slots[anmIndex].loaded.textures[entryIndex]
             .texture->GetSurfaceLevel(0, &locals.textureSurface) != D3D_OK)
     {
         locals.backbuffer->Release();
@@ -327,7 +276,7 @@ void AnmManagerCaptureView::CaptureToTexture(
 }
 
 // FUNCTION: TH095 0x00444760.
-void AnmManagerCaptureView::CaptureToSurface(
+void AnmManager::CaptureToSurface(
     i32 surfaceIndex, i32 srcX, i32 srcY, i32 srcW, i32 srcH, i32 dstX,
     i32 dstY, i32 dstW, i32 dstH)
 {
@@ -338,11 +287,11 @@ void AnmManagerCaptureView::CaptureToSurface(
         RECT srcRect;
     } locals;
 
-    reinterpret_cast<AnmManager *>(this)->FlushVertexBuffer();
+    this->FlushVertexBuffer();
 
-    if (reinterpret_cast<AnmManager *>(this)->surfaces[surfaceIndex] != NULL)
+    if (this->surfaces[surfaceIndex] != NULL)
     {
-        reinterpret_cast<AnmManager *>(this)->ReleaseSurface(surfaceIndex);
+        this->ReleaseSurface(surfaceIndex);
     }
 
     locals.srcRect.left = srcX;
@@ -368,13 +317,13 @@ void AnmManagerCaptureView::CaptureToSurface(
             TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
             g_Supervisor.presentParameters.BackBufferFormat,
             D3DMULTISAMPLE_NONE, TRUE,
-            &reinterpret_cast<AnmManager *>(this)->surfaces[surfaceIndex]) != D3D_OK)
+            &this->surfaces[surfaceIndex]) != D3D_OK)
     {
         if (g_Supervisor.d3dDevice->CreateImageSurface(
                 TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width,
                 TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
                 g_Supervisor.presentParameters.BackBufferFormat,
-                &reinterpret_cast<AnmManager *>(this)->surfaces[surfaceIndex]) != D3D_OK)
+                &this->surfaces[surfaceIndex]) != D3D_OK)
         {
             goto out;
         }
@@ -390,7 +339,7 @@ void AnmManagerCaptureView::CaptureToSurface(
     }
 
     if (D3DXLoadSurfaceFromSurface(
-            reinterpret_cast<AnmManager *>(this)->surfaces[surfaceIndex], NULL,
+            this->surfaces[surfaceIndex], NULL,
             &locals.dstRect, locals.backbuffer, NULL, &locals.srcRect,
             D3DX_DEFAULT, 0) != D3D_OK)
     {
@@ -399,7 +348,7 @@ void AnmManagerCaptureView::CaptureToSurface(
 
     D3DXLoadSurfaceFromSurface(
         TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex), NULL, NULL,
-        reinterpret_cast<AnmManager *>(this)->surfaces[surfaceIndex], NULL,
+        this->surfaces[surfaceIndex], NULL,
         NULL, D3DX_DEFAULT, 0);
 
 out:
@@ -415,35 +364,34 @@ void AnmManager::TakeScreenshots()
 {
     if (this->captureAnmIdx >= 0)
     {
-        captureManager->CaptureToTexture(
-            this->captureAnmIdx, captureManager->textureEntryIndex,
-            captureManager->textureCaptureSrcX,
-            captureManager->textureCaptureSrcY,
-            captureManager->textureCaptureSrcW,
-            captureManager->textureCaptureSrcH,
-            captureManager->textureCaptureDstX,
-            captureManager->textureCaptureDstY,
-            captureManager->textureCaptureDstW,
-            captureManager->textureCaptureDstH);
+        this->CaptureToTexture(
+            this->captureAnmIdx, this->textureCaptureEntryIndex,
+            this->captureSourceX,
+            this->captureSourceY,
+            this->captureSourceWidth,
+            this->captureSourceHeight,
+            this->captureDestinationX,
+            this->captureDestinationY,
+            this->captureDestinationWidth,
+            this->captureDestinationHeight);
         this->captureAnmIdx = -1;
     }
 
     if (this->captureSurfaceIdx >= 0)
     {
-        captureManager->CaptureToSurface(
-            this->captureSurfaceIdx, captureManager->surfaceCaptureSrcX,
-            captureManager->surfaceCaptureSrcY,
-            captureManager->surfaceCaptureSrcW,
-            captureManager->surfaceCaptureSrcH,
-            captureManager->surfaceCaptureDstX,
-            captureManager->surfaceCaptureDstY,
-            captureManager->surfaceCaptureDstW,
-            captureManager->surfaceCaptureDstH);
+        this->CaptureToSurface(
+            this->captureSurfaceIdx, this->surfaceCaptureSourceX,
+            this->surfaceCaptureSourceY,
+            this->surfaceCaptureSourceWidth,
+            this->surfaceCaptureSourceHeight,
+            this->surfaceCaptureDestinationX,
+            this->surfaceCaptureDestinationY,
+            this->surfaceCaptureDestinationWidth,
+            this->surfaceCaptureDestinationHeight);
         this->captureSurfaceIdx = -1;
     }
 }
 
-#undef captureManager
 #undef TH095_ANM_SURFACE_INFO
 #undef TH095_ANM_SURFACE_RESTORE_COPY
 #undef surfaceStorage

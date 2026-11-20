@@ -30,39 +30,7 @@ enum PhotoStageFlags
     PHOTO_STAGE_PLAYER_PASSED = 1 << 3,
 };
 
-struct PhotoStageTextureEntry
-{
-    IDirect3DTexture8 *texture;
-    u8 unknown004[8];
-    i32 bytesPerPixel;
-};
-
 typedef AnmLoaded PhotoStageAnmLoadedView;
-
-struct PhotoStageAnmManagerView
-{
-    u8 unknown000000[0x0c];
-    i32 captureAnmIdx;
-    u8 unknown000010[0x3817d0 - 0x10];
-    i32 captureSourceX;
-    i32 captureSourceY;
-    i32 captureSourceWidth;
-    i32 captureSourceHeight;
-    i32 captureDestinationX;
-    i32 captureDestinationY;
-    i32 captureDestinationWidth;
-    i32 captureDestinationHeight;
-#ifdef DIFFBUILD
-    i32 captureFlags;
-#else
-    i32 textureCaptureEntryIndex;
-#endif
-
-    AnmVm *GetVm(i32 id);
-    void SetInterrupt(i32 id, i32 interrupt);
-    void MarkVmForDeletion(i32 id);
-    void SetPosition(i32 id, Float3 *position);
-};
 
 struct PhotoStageSupervisorView
 {
@@ -137,8 +105,6 @@ struct PhotoStageCaptureLocals
     IDirect3DSurface8 *surface;
 };
 
-typedef char PhotoStageTextureEntrySizeIs10[
-    (sizeof(PhotoStageTextureEntry) == 0x10) ? 1 : -1];
 typedef char PhotoStageScoreEntryTailSizeIs48[
     (sizeof(ResultScoreEntryView) - offsetof(ResultScoreEntryView, detailScore) ==
      0x48)
@@ -177,11 +143,6 @@ DIFFABLE_STATIC(u8, g_PhotoCaptureCountdown);
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
-static inline PhotoStageAnmManagerView *GetPhotoStageAnmManager()
-{
-    return reinterpret_cast<PhotoStageAnmManagerView *>(g_AnmManager);
-}
-
 static __forceinline AnmVmId PhotoStageAnmId(i32 value)
 {
     AnmVmId id;
@@ -193,17 +154,6 @@ static __forceinline AnmVmId PhotoStageAnmId(i32 value)
 #define TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(id, interrupt)     g_AnmManager->SetInterrupt(PhotoStageAnmId(id), (interrupt))
 #define TH095_PHOTO_STAGE_ANM_MARK_DELETE(id)     g_AnmManager->MarkVmForDeletion(PhotoStageAnmId(id))
 #define TH095_PHOTO_STAGE_ANM_SET_POSITION(id, position)     g_AnmManager->SetPosition(PhotoStageAnmId(id), (position))
-
-static inline PhotoStageTextureEntry *GetPhotoStageTextures(PhotoStageStateView *stage)
-{
-    return reinterpret_cast<PhotoStageTextureEntry *>(stage->anm->textures);
-}
-
-static inline PhotoStageAnmLoadedView *GetPhotoStageAnm(
-    PhotoAnmLoadedView *anm)
-{
-    return reinterpret_cast<PhotoStageAnmLoadedView *>(anm);
-}
 
 static __forceinline void PhotoStageInterruptCurrentEntryPhase(
     PhotoStageStateView *state, i32 &entryIndex)
@@ -591,20 +541,7 @@ void PhotoStageSlot::Build(
 #undef ADD_PHOTO_STAGE_SCORE_ROW
 #undef ADD_PHOTO_STAGE_DISPLAY_VM
 
-static __forceinline void PhotoStagePublishCaptureRequestArgs(PhotoStageAnmManagerView *anmManager, i32 captureSlot, i32 left, i32 right, i32 top, i32 bottom)
-{
-    if (anmManager->captureAnmIdx >= 0) { } else {
-        anmManager->captureAnmIdx=9; anmManager->captureSourceX=left; anmManager->captureSourceY=top;
-        anmManager->captureSourceWidth=right-left; anmManager->captureSourceHeight=bottom-top;
-        anmManager->captureDestinationX=3; anmManager->captureDestinationY=3;
-        anmManager->captureDestinationWidth=right-left; anmManager->captureDestinationHeight=bottom-top;
-#ifdef DIFFBUILD
-        anmManager->captureFlags=captureSlot;
-#else
-        anmManager->textureCaptureEntryIndex=captureSlot;
-#endif
-    }
-}
+#include "PhotoStageCaptureRequest.inl"
 
 static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView *state)
 {
@@ -815,7 +752,7 @@ i32 PhotoStageStateView::Update()
                 this->capture.height = bottom - top + 6;
 
                 PhotoStagePublishCaptureRequestArgs(
-                    GetPhotoStageAnmManager(), this->capture.slot,
+                    g_AnmManager, this->capture.slot,
                     readByteCountLocal02, right, top, bottom);
 
                 g_PhotoCaptureCountdown = 99;
@@ -834,7 +771,7 @@ i32 PhotoStageStateView::Update()
             }
 
             resultDrawBacking063.surface = NULL;
-            reinterpret_cast<PhotoStageTextureEntry *>(this->anm->textures)
+            this->anm->textures
                 [this->capture.slot]
                 .texture->GetSurfaceLevel(0, &resultDrawBacking063.surface);
             resultDrawBacking063.surface->LockRect(&resultDrawBacking063.lockedRect, NULL, 0);
@@ -847,8 +784,7 @@ i32 PhotoStageStateView::Update()
                     resultDrawBacking063.row,
                     0,
                     this->capture.width *
-                        reinterpret_cast<PhotoStageTextureEntry *>(
-                            this->anm->textures)[this->capture.slot]
+                        this->anm->textures[this->capture.slot]
                             .bytesPerPixel);
             }
             for (resultDrawBacking063.y = 0; resultDrawBacking063.y < 3; resultDrawBacking063.y++)
@@ -859,8 +795,7 @@ i32 PhotoStageStateView::Update()
                     resultDrawBacking063.row,
                     0xff,
                     this->capture.width *
-                        reinterpret_cast<PhotoStageTextureEntry *>(
-                            this->anm->textures)[this->capture.slot]
+                        this->anm->textures[this->capture.slot]
                             .bytesPerPixel);
             }
             for (resultDrawBacking063.y = this->capture.height - 3;
@@ -873,8 +808,7 @@ i32 PhotoStageStateView::Update()
                     resultDrawBacking063.row,
                     0xff,
                     this->capture.width *
-                        reinterpret_cast<PhotoStageTextureEntry *>(
-                            this->anm->textures)[this->capture.slot]
+                        this->anm->textures[this->capture.slot]
                             .bytesPerPixel);
             }
             for (resultDrawBacking063.y = 3; resultDrawBacking063.y < this->capture.height - 3; resultDrawBacking063.y++)
@@ -883,18 +817,15 @@ i32 PhotoStageStateView::Update()
                     resultDrawBacking063.y * resultDrawBacking063.lockedRect.Pitch;
                 memset(
                     resultDrawBacking063.row, 0xff,
-                    reinterpret_cast<PhotoStageTextureEntry *>(
-                        this->anm->textures)[this->capture.slot]
+                    this->anm->textures[this->capture.slot]
                             .bytesPerPixel *
                         3);
                 memset(
                     resultDrawBacking063.row + (this->capture.width - 3) *
-                        reinterpret_cast<PhotoStageTextureEntry *>(
-                            this->anm->textures)[this->capture.slot]
+                        this->anm->textures[this->capture.slot]
                             .bytesPerPixel,
                     0xff,
-                    reinterpret_cast<PhotoStageTextureEntry *>(
-                        this->anm->textures)[this->capture.slot]
+                    this->anm->textures[this->capture.slot]
                             .bytesPerPixel *
                         3);
             }
@@ -1021,8 +952,7 @@ i32 PhotoStageStateView::Update()
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)
                             ->componentCount =
-                            (u8)((reinterpret_cast<PhotoStageTextureEntry *>(
-                                      this->anm->textures)
+                            (u8)((this->anm->textures
                                       [this->capture.slot]
                                           .bytesPerPixel == 4) +
                                 2);
@@ -1286,7 +1216,7 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
     locals.record->pixelData =
         reinterpret_cast<u8 *>(malloc(locals.allocationSize));
 
-    reinterpret_cast<PhotoStageTextureEntry *>(this->anm->textures)
+    this->anm->textures
         [photoIndex]
             .texture->GetSurfaceLevel(0, &locals.surface);
     locals.surface->LockRect(&locals.lockedRect, NULL, 0);

@@ -8,7 +8,7 @@
 2	src/AnmManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AnmManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/AnmManager.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-8	src/AnmManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+6	src/AnmManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 4	src/AnmManager.hpp	#if defined(TH095_MATCH_EXACT)
 3	src/AnmManager.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AnmManager.hpp	#ifdef TH095_MATCH_EXACT
@@ -184,7 +184,7 @@
 1	src/PhotoOverlay.cpp	#ifndef DIFFBUILD
 2	src/PhotoRuntime.cpp	#ifndef DIFFBUILD
 2	src/PhotoStage.cpp	#if defined(TH095_MATCH_EXACT)
-11	src/PhotoStage.cpp	#ifdef DIFFBUILD
+9	src/PhotoStage.cpp	#ifdef DIFFBUILD
 1	src/PhotoStage.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoStage.cpp	#ifndef DIFFBUILD
 1	src/ReplayBrowser.cpp	#ifdef DIFFBUILD
@@ -205,7 +205,7 @@
 1	src/ReplayScanWorker.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ResultScreen.cpp	#if !defined(DIFFBUILD)
 1	src/ResultScreen.cpp	#if defined(DIFFBUILD)
-26	src/ResultScreen.cpp	#ifdef DIFFBUILD
+25	src/ResultScreen.cpp	#ifdef DIFFBUILD
 3	src/ResultScreen.cpp	#ifdef TH095_MATCH_EXACT
 6	src/ResultScreen.cpp	#ifndef DIFFBUILD
 3	src/ResultScreen.hpp	#ifdef TH095_MATCH_EXACT

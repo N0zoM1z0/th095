@@ -597,38 +597,23 @@ struct AnmManager
     AnmVertex vertexBuffer[0x20000]; // +0x0017c8
     AnmVertex *vertexBufferEndPtr;   // +0x3817c8
     AnmVertex *vertexBufferStartPtr; // +0x3817cc
-    union
-    {
-        u8 unknown3817d0[0x44];
-        struct
-        {
-            i32 captureSourceX;
-            i32 captureSourceY;
-            i32 captureSourceWidth;
-            i32 captureSourceHeight;
-            i32 captureDestinationX;
-            i32 captureDestinationY;
-            i32 captureDestinationWidth;
-            i32 captureDestinationHeight;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            i32 captureFlags;
-#else
-            i32 textureCaptureEntryIndex;
-#endif
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            u8 unknown3817f4[0x20];
-#else
-            i32 surfaceCaptureSourceX;
-            i32 surfaceCaptureSourceY;
-            i32 surfaceCaptureSourceWidth;
-            i32 surfaceCaptureSourceHeight;
-            i32 surfaceCaptureDestinationX;
-            i32 surfaceCaptureDestinationY;
-            i32 surfaceCaptureDestinationWidth;
-            i32 surfaceCaptureDestinationHeight;
-#endif
-        };
-    };
+    i32 captureSourceX;
+    i32 captureSourceY;
+    i32 captureSourceWidth;
+    i32 captureSourceHeight;
+    i32 captureDestinationX;
+    i32 captureDestinationY;
+    i32 captureDestinationWidth;
+    i32 captureDestinationHeight;
+    i32 textureCaptureEntryIndex;
+    i32 surfaceCaptureSourceX;
+    i32 surfaceCaptureSourceY;
+    i32 surfaceCaptureSourceWidth;
+    i32 surfaceCaptureSourceHeight;
+    i32 surfaceCaptureDestinationX;
+    i32 surfaceCaptureDestinationY;
+    i32 surfaceCaptureDestinationWidth;
+    i32 surfaceCaptureDestinationHeight;
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     AnmVmListNode *vmListHead;               // +0x381814
     AnmVmListNode *vmListTail;               // +0x381818
@@ -681,6 +666,10 @@ struct AnmManager
     void ReleaseSurface(i32 surfaceIndex);
     void CopySurfaceToBackbuffer(i32 surfaceIndex, i32 left, i32 top, i32 x, i32 y);
     void TakeScreenshots();
+    void CaptureToTexture(i32 anmIndex, i32 entryIndex, i32 srcX, i32 srcY,
+                          i32 srcW, i32 srcH, i32 dstX, i32 dstY, i32 dstW, i32 dstH);
+    void CaptureToSurface(i32 surfaceIndex, i32 srcX, i32 srcY, i32 srcW,
+                          i32 srcH, i32 dstX, i32 dstY, i32 dstW, i32 dstH);
     i32 RemoveVmListNode(AnmVmListNode *node);
     AnmVm *GetVm(AnmVmId id);
     void SetInterrupt(AnmVmId id, i32 interrupt);
@@ -777,13 +766,15 @@ typedef char AnmManagerSurfaceRestoreCopiesAt125C[
     (offsetof(AnmManager, surfaceRestoreCopies) == 0x125c) ? 1 : -1];
 typedef char AnmManagerSurfaceInfoAt13DC[
     (offsetof(AnmManager, surfaceInfo) == 0x13dc) ? 1 : -1];
+#endif
+typedef char AnmManagerTextureCaptureSourceAt3817D0[
+    (offsetof(AnmManager, captureSourceX) == 0x3817d0) ? 1 : -1];
 typedef char AnmManagerTextureCaptureEntryIndexAt3817F0[
     (offsetof(AnmManager, textureCaptureEntryIndex) == 0x3817f0) ? 1 : -1];
 typedef char AnmManagerSurfaceCaptureSourceAt3817F4[
     (offsetof(AnmManager, surfaceCaptureSourceX) == 0x3817f4) ? 1 : -1];
 typedef char AnmManagerSurfaceCaptureDestinationHeightAt381810[
     (offsetof(AnmManager, surfaceCaptureDestinationHeight) == 0x381810) ? 1 : -1];
-#endif
 typedef char AnmManagerVmListAt381814[(offsetof(AnmManager, vmListHead) == 0x381814) ? 1 : -1];
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 typedef char AnmManagerPreallocatedAt38181C[
