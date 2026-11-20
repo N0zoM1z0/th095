@@ -150,13 +150,37 @@ copies under `build/position-independence/`.
 
 ## Linked library objects
 
-The map names 270 archive members from the pinned VC7.1 CRT and SDK.
-A section comparison checked 7,119 code references and 895 initialized
-data references from those members in both link orders. These references
-resolve consistently with their COFF inputs. The check covers 1,641 code
-sections and 1,920 initialized data sections. It leaves 741 unpaired
-reference slots, including library-private labels in unpaired sections.
-The experiment is under `.analysis/pi/check-linked-library-sections.py`.
+The maps name 270 archive members from the pinned VC7.1 CRT and SDK. The
+final comparison pairs 1,649 code and all 1,953 initialized-data sections.
+All 7,748 code references and 1,007 initialized-data references resolve
+to the COFF symbol and addend in both normal link orders. Of these, 7,498
+code references and all 1,007 initialized-data references follow a moved
+destination. Five input code sections have zero relocation slots. Four
+are duplicate COMDATs whose definitions come from the game objects. The
+regular link folds the one-byte PNG warning stub into a body from another
+D3DX member. Both PEs retain the same return instruction for the symbol.
+
+Diagnostic links with `/DEBUG` and the same optimization flags produce
+PDB section contributions. Archive member, section size, characteristics
+and the raw COFF CRC identify private initialized contributions. Identical
+exception records are disambiguated by their outgoing references to code
+already paired independently. The corresponding normal PE bytes are
+checked using the map's subsection bounds and symbol displacements. Private
+zero-initialized allocations are paired by member and layout, with the
+same `.bss` range and symbol coordinates in each normal/diagnostic pair.
+
+Two identical D3DX allocations need individual symbol names. A second
+diagnostic link changes the storage class of those two symbols in a scratch
+copy of the SDK archive so the map publishes both addresses. All four
+mapped sections have identical RVAs, sizes, flags and bytes in the diagnostic
+and corresponding normal PE. Swapping the two recovered addresses triggers
+16 comparison failures across the pair. The local recipes are
+`.analysis/pi/link-library-pdb.py`, `.analysis/pi/link-library-public-probe.py`
+and `.analysis/pi/library-pdb-anchors.py`.
+
+A literal sweep of the 270 linked archive members found two code immediates
+in the retail image range. One controls DDS flags and the other masks CPU
+features. The aligned data hits are strings or character tables.
 
 ## Attract-mode replay and PE imports
 
@@ -181,15 +205,3 @@ The same pair of PEs imports 172 names or ordinals from nine DLLs.
 The import lookup and initial address tables agree within each image.
 127 address-table slots change RVA without changing their DLL and
 name or ordinal.
-
-
-Unique nonrelocation byte ranges provide additional anchors for the same
-library objects. The extended comparison reaches 7,422 code references
-and 968 initialized-data references in both images with zero mismatches.
-It leaves 365 reference slots unpaired, mainly for library-private
-destinations. See `.analysis/pi/library-immutable-anchors.py` for the
-local experiment.
-
-A literal sweep of the 270 linked archive members found two code
-immediates in the retail image range. One controls DDS flags and the other
-masks CPU features. The aligned data hits are strings or character tables.
