@@ -100,7 +100,7 @@ void *&g_RuntimeGameTaskOwner =
     reinterpret_cast<void *&>(g_Supervisor.photoGameTask);
 void *g_RuntimeItemManagerOwner = 0;
 void *g_RuntimeEffectManagerOwner = 0;
-void *g_RuntimeStageStateOwner = 0;
+PhotoStageStateView *g_PhotoStageState = NULL;
 void *g_RuntimePlayerOwner = 0;
 #endif
 

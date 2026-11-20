@@ -1,4 +1,5 @@
 #include "AnmText.hpp"
+#include "PhotoStage.hpp"
 #include "AnmVmId.hpp"
 #include "utils.hpp"
 
@@ -18,12 +19,6 @@ typedef char PhotoCardVmHandleSizeIs4[
 struct PhotoCardAnmLoadedView
 {
     PhotoCardVmHandle CreateVm(i32 scriptIndex, Float3 *position);
-};
-
-struct PhotoCardStageStateView
-{
-    u8 unknown000[0x25720];
-    u32 flags;
 };
 
 struct PhotoCardGameRuntimeView
@@ -77,7 +72,7 @@ typedef char PhotoCardInfoChainsAt60[
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoCardAnmLoadedView *g_PhotoCardBackgroundAnm;
 extern PhotoCardAnmLoadedView *g_PhotoCardUiAnm;
-extern PhotoCardStageStateView *g_PhotoCardStageState;
+extern PhotoStageStateView *g_PhotoStageState;
 extern PhotoCardGameRuntimeView *g_PhotoCardGameRuntime;
 extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
@@ -227,7 +222,7 @@ i32 PhotoCardInfoView::Update()
     }
 
     i32 alpha = 0xff;
-    if (((g_PhotoCardStageState->flags >> 2) & 1) != 0)
+    if (g_PhotoStageState->firstCaptureFrame != 0)
     {
         if (g_AnmManager->GetVm(
                 *reinterpret_cast<AnmVmId *>(&this->backgroundVmId)) != NULL)

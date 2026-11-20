@@ -29,7 +29,7 @@
 1	src/AnmVmLifecycle.cpp	#ifndef TH095_MATCH_EXACT
 1	src/AnmVmLifecycle.hpp	#if defined(TH095_MATCH_EXACT)
 2	src/AnmVmLifecycle.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-4	src/AsciiManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+2	src/AsciiManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AsciiManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/AsciiManager.cpp	#ifndef DIFFBUILD
 1	src/Background.cpp	#elif defined(DIFFBUILD)
@@ -157,8 +157,8 @@
 1	src/PhotoCamera.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 3	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
-5	src/PhotoCamera.cpp	#ifndef DIFFBUILD
-6	src/PhotoCardInfo.cpp	#ifdef DIFFBUILD
+4	src/PhotoCamera.cpp	#ifndef DIFFBUILD
+4	src/PhotoCardInfo.cpp	#ifdef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD
 8	src/PhotoEffect.cpp	#if defined(TH095_MATCH_EXACT)
@@ -167,7 +167,7 @@
 5	src/PhotoEffect.cpp	#ifndef DIFFBUILD
 1	src/PhotoEffectRuntime.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/PhotoEffectRuntime.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-10	src/PhotoFront.cpp	#ifdef DIFFBUILD
+8	src/PhotoFront.cpp	#ifdef DIFFBUILD
 1	src/PhotoFront.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoFront.cpp	#ifndef DIFFBUILD
 4	src/PhotoGame.cpp	#if defined(DIFFBUILD)
@@ -232,9 +232,7 @@
 1	src/SceneSelectUpdate.cpp	#ifndef DIFFBUILD
 1	src/SceneTexture.cpp	#if defined(DIFFBUILD)
 1	src/SceneTexture.cpp	#ifdef TH095_MATCH_EXACT
-1	src/ScoreData.cpp	#ifdef DIFFBUILD
 2	src/ScoreData.cpp	#ifdef TH095_MATCH_EXACT
-1	src/ScoreData.cpp	#ifndef DIFFBUILD
 3	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT)
 3	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/ScoreData.hpp	#if defined(TH095_MATCH_EXACT)

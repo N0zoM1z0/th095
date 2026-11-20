@@ -8,6 +8,7 @@
 #include "AnmVmId.hpp"
 #include "Background.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoStage.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEnemyManager.hpp"
 #endif
@@ -244,12 +245,6 @@ enum BackgroundInterpolationModeValue
     (((mode) & BACKGROUND_INTERPOLATION_PATH_MASK) == 0)
 #endif
 
-struct BackgroundStageStateView
-{
-    u8 unknown00000[0x2571c];
-    AnmLoaded *anm;
-};
-
 #ifdef TH095_MATCH_EXACT
 struct BackgroundAnmSpawnerView
 {
@@ -316,12 +311,9 @@ typedef char BackgroundStageObjectInstructionPositionAt8[
 typedef char BackgroundStageObjectInstanceSizeIs10[
     (sizeof(BackgroundStageObjectInstance) == 0x10) ? 1 : -1];
 
-extern BackgroundStageStateView *g_BackgroundStageState;
 extern BackgroundRuntimeView *g_BackgroundRuntime;
 extern BackgroundGlobalStateView *g_PhotoGlobalState;
 #ifndef DIFFBUILD
-#define g_BackgroundStageState \
-    TH095_RUNTIME_GLOBAL_PTR(BackgroundStageStateView, g_RuntimeStageStateOwner)
 #define g_BackgroundRuntime \
     TH095_RUNTIME_GLOBAL_PTR(BackgroundRuntimeView, g_RuntimeEnemyManagerOwner)
 #endif
@@ -1561,13 +1553,13 @@ static __forceinline void BackgroundSetPhotoAreaPhase(
     if ((view
              ->photoAreaVms[0].flagsWord & 1) == 0)
     {
-        g_BackgroundStageState->anm->InitializeVm(
+        g_PhotoStageState->anm->InitializeVm(
             &view->photoAreaVms[0],
             0x25);
-        g_BackgroundStageState->anm->InitializeVm(
+        g_PhotoStageState->anm->InitializeVm(
             &view->photoAreaVms[1],
             0x26);
-        g_BackgroundStageState->anm->InitializeVm(
+        g_PhotoStageState->anm->InitializeVm(
             &view->photoAreaVms[2],
             0x27);
     }

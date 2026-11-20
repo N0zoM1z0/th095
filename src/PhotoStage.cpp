@@ -175,9 +175,6 @@ typedef char PhotoStageGlobalReplayModeAt120[
 #ifdef DIFFBUILD
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
 #endif
-extern PhotoStageStateView *g_PhotoStageState;
-#define g_PhotoStageState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 // Target 0x004C45F8 is an independent zero-initialized byte published when a
 // captured texture becomes ready.
 DIFFABLE_STATIC(u8, g_PhotoCaptureCountdown);

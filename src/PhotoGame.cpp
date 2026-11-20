@@ -6,6 +6,7 @@
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoStage.hpp"
 #include "InputRuntime.hpp"
 #ifndef DIFFBUILD
 #include "PhotoEnemyManager.hpp"
@@ -99,15 +100,6 @@ extern PhotoGameGlobalStateView *g_PhotoGameGlobalState;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
-struct PhotoGameStageStateView
-{
-    u8 unknown00000[0x2571c];
-    PhotoAnmLoadedView *anm;
-};
-
-extern PhotoGameStageStateView *g_PhotoStageStateForPlayer;
-#define g_PhotoStageStateForPlayer \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameStageStateView, g_RuntimeStageStateOwner)
 
 struct PhotoPlayerMovementConfigView
 {
@@ -291,16 +283,16 @@ static __forceinline void PhotoCameraInitializeViewfinderPhase(AnmVm *vm)
     // 0x2C VC7.1 allocation phase.  A single live VM pointer is essential:
     // extra explicit parameters add a non-target dword to each inline phase.
     u8 compilerStorage[0x2c];
-    g_PhotoStageStateForPlayer->anm->InitializeVm(vm, 0x24);
+    g_PhotoStageState->anm->InitializeVm(vm, 0x24);
 }
 
 void PhotoCameraState::Initialize()
 {
     memset(this, 0, sizeof(*this));
     this->vmIds[0] = TH095_PHOTO_ANM_CREATE_VM(
-        g_PhotoStageStateForPlayer->anm, 0x16, 0);
+        g_PhotoStageState->anm, 0x16, 0);
     this->vmIds[1] = TH095_PHOTO_ANM_CREATE_VM(
-        g_PhotoStageStateForPlayer->anm, 0x17, 0);
+        g_PhotoStageState->anm, 0x17, 0);
     this->viewfinderPosition = g_PhotoGame->playerPosition;
     this->viewfinderPosition.x = 0.0f;
     this->viewfinderPosition.y = 400.0f;
@@ -318,10 +310,10 @@ void PhotoCameraState::Initialize()
     PhotoCameraInitializeViewfinderPhase(&this->viewfinderVms[1]);
     PhotoCameraInitializeViewfinderPhase(&this->viewfinderVms[2]);
     PhotoCameraInitializeViewfinderPhase(&this->viewfinderVms[3]);
-    g_PhotoStageStateForPlayer->anm->SetSprite(&this->viewfinderVms[0], 0x10);
-    g_PhotoStageStateForPlayer->anm->SetSprite(&this->viewfinderVms[1], 0xf);
-    g_PhotoStageStateForPlayer->anm->SetSprite(&this->viewfinderVms[2], 0xf);
-    g_PhotoStageStateForPlayer->anm->SetSprite(&this->viewfinderVms[3], 0x19);
+    g_PhotoStageState->anm->SetSprite(&this->viewfinderVms[0], 0x10);
+    g_PhotoStageState->anm->SetSprite(&this->viewfinderVms[1], 0xf);
+    g_PhotoStageState->anm->SetSprite(&this->viewfinderVms[2], 0xf);
+    g_PhotoStageState->anm->SetSprite(&this->viewfinderVms[3], 0x19);
 
     this->viewfinderVms[0].position = Float3(-36.0f, -12.0f, 0.0f);
     this->viewfinderVms[1].position = Float3(-27.0f, -12.0f, 0.0f);

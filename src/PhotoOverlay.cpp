@@ -18,13 +18,10 @@ void DebugPrint(char *format, ...);
 }
 
 extern PhotoGameTaskView *g_PhotoGameTask;
-extern PhotoStageStateView *g_PhotoStageState;
 
 #ifndef DIFFBUILD
 #define g_PhotoGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
-#define g_PhotoStageState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 #endif
 
 i32 __fastcall UpdatePhotoStage(PhotoStageStateView *stage);

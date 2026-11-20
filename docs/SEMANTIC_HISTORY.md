@@ -17660,3 +17660,23 @@ navigation and interrupt cases. The save fixture compares the full
 persistent buffer through the write call, including 16-bit dimension
 conversion and a sixty-byte comment. See
 `.analysis/pi/photo-score-packet/check-best-shot.py` for the local recipe.
+
+### SEM-381 — publish one typed PhotoInf pointer
+
+The constructor publishes its receiver at 0x0042A921 after clearing the
+0x25730-byte PhotoInf record. The destructor clears the same cell at
+0x0042AB5D after cutting both chains and scheduling the owned ANM VMs for
+deletion, before destroying the embedded VMs and photo slots. Main owns the
+pointer cell.
+The publisher and normal readers now share `g_PhotoStageState`. ASCII,
+background, card, front end, player and score paths also use the canonical
+fields or method in their exact bodies. Exact ResultScreen, PhotoGameTask
+and RunEcl retain their emission views of the same target cell.
+
+All 372 affected strict comparisons pass. The four mapped sections are
+byte-identical to their respective pre-change builds in both normal link
+orders. All 169 PhotoInf references follow the pointer cell from 0x004D76D8
+to 0x004DCF28. Retail and both normal builds agree on lifetime publication,
+540 photo task transitions, 144 saves, five best-shot scans and twelve
+preview cases. The local recipes are under
+`.analysis/pi/photo-stage-singleton/`.

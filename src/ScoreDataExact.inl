@@ -1,4 +1,5 @@
 #include "ScoreData.hpp"
+#include "PhotoStage.hpp"
 
 #ifdef TH095_MATCH_EXACT
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
@@ -26,12 +27,7 @@ namespace ScoreFileWriter
 
 u8 *__fastcall CompressData(u8 *input, i32 inputSize, i32 *outputSize);
 
-struct ScorePhotoStageView
-{
-    void CapturePhotoPixels(i32 photoIndex);
-};
-
-extern ScorePhotoStageView *g_ScorePhotoStage;
+extern PhotoStageStateView *g_PhotoStageState;
 
 struct ScoreWriteLocals
 {
@@ -75,7 +71,7 @@ typedef char ScoreWriteLocalsRawBufferAt12C[
             if (this->bestShotRecords[locals.pendingBestShotIndex].photoIndex >=
                 0)
             {
-                g_ScorePhotoStage->CapturePhotoPixels(
+                g_PhotoStageState->CapturePhotoPixels(
                     this->bestShotRecords[locals.pendingBestShotIndex]
                         .photoIndex);
             }

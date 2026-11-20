@@ -157,9 +157,6 @@ extern char g_SelectedReplayPath[0x100];
 #define g_ReplayPath g_SelectedReplayPath
 #endif
 extern PhotoGameTaskView *g_PhotoGameTask;
-extern PhotoStageStateView *g_PhotoStageState;
-#define g_PhotoStageState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 #ifdef DIFFBUILD
 extern PhotoGameRuntimeTaskView *g_PhotoGameRuntime;
 #endif

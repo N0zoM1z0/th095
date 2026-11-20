@@ -79,11 +79,6 @@ extern PhotoEffectManagerView *g_PhotoEffectManager;
 #define g_PhotoEffectManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEffectManagerView, g_RuntimeEffectManagerOwner)
 #endif
-extern PhotoStageStateView *g_PhotoStageState;
-#ifndef DIFFBUILD
-#define g_PhotoStageState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
-#endif
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
 #ifndef DIFFBUILD

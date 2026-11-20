@@ -1,4 +1,5 @@
 #include "AnmManager.hpp"
+#include "PhotoStage.hpp"
 
 #include <string.h>
 
@@ -18,12 +19,6 @@ struct PhotoFrontRuntimeView
 {
     u8 unknown000[0x1e34];
     f32 hudFade;                // +0x1e34
-};
-
-struct PhotoFrontStageStateView
-{
-    u8 unknown000[0x25720];
-    u32 flags;                  // +0x25720
 };
 
 struct PhotoFrontSceneDefinitionView
@@ -88,7 +83,7 @@ struct PhotoFrontUpdateLocals
 
 extern PhotoFrontGameTaskView *g_PhotoFrontGameTask;
 extern PhotoFrontRuntimeView *g_PhotoFrontRuntime;
-extern PhotoFrontStageStateView *g_PhotoFrontStageState;
+extern PhotoStageStateView *g_PhotoStageState;
 extern PhotoFrontSceneDefinitionView *g_PhotoFrontSceneDefinition;
 extern PhotoFrontManagerView *g_PhotoFrontManager;
 extern u32 g_PhotoFrontControllerFlags;
@@ -345,7 +340,7 @@ i32 PhotoFrontManagerView::Draw()
 {
     u32 vmIndex;
 
-    if (((g_PhotoFrontStageState->flags >> 2) & 1) == 0)
+    if (g_PhotoStageState->firstCaptureFrame == 0)
     {
         for (vmIndex = 0; vmIndex < 6; vmIndex++)
         {

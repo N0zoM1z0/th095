@@ -1,5 +1,6 @@
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoStage.hpp"
 #include "SupervisorViewportSlot.hpp"
 #include <stdarg.h>
 #include <stdio.h>
@@ -45,25 +46,9 @@ struct AsciiGlobalStateView
     u32 unknownFlags3 : 29;
 };
 
-struct AsciiStageStateView
-{
-    u8 unknown000[0x25720];
-    u32 active : 1;
-    u32 unknownFlag1 : 1;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u32 suppressGuiStrings : 1;
-#else
-    u32 firstCaptureFrame : 1;
-#endif
-    u32 unknownFlags3 : 29;
-};
-
 extern AsciiGlobalStateView *g_AsciiGlobalState;
-extern AsciiStageStateView *g_AsciiStageState;
 
 #ifndef DIFFBUILD
-#define g_AsciiStageState \
-    TH095_RUNTIME_GLOBAL_PTR(AsciiStageStateView, g_RuntimeStageStateOwner)
 #define g_AsciiGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(AsciiGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
@@ -110,12 +95,8 @@ i32 AsciiManager::OnDrawLowPrio(AsciiManager *ascii)
 // FUNCTION: TH095 0x004010B0.
 i32 AsciiManager::OnDrawHighPrio(AsciiManager *ascii)
 {
-    if (g_AsciiStageState != NULL &&
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-        g_AsciiStageState->suppressGuiStrings != 0)
-#else
-        g_AsciiStageState->firstCaptureFrame != 0)
-#endif
+    if (g_PhotoStageState != NULL &&
+        g_PhotoStageState->firstCaptureFrame != 0)
     {
         return 1;
     }

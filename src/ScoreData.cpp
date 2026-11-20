@@ -7,9 +7,7 @@
 #include "Checksum.hpp"
 #include "FileSystem.hpp"
 #include "SceneSelect.hpp"
-#ifndef DIFFBUILD
 #include "PhotoStage.hpp"
-#endif
 
 #include <direct.h>
 #include <stdio.h>
@@ -26,17 +24,6 @@ namespace th095
 
 u8 *__fastcall CompressData(u8 *input, i32 inputSize, i32 *outputSize);
 
-#ifdef DIFFBUILD
-struct ScorePhotoStageView
-{
-    void CapturePhotoPixels(i32 photoIndex);
-};
-
-extern ScorePhotoStageView *g_ScorePhotoStage;
-#else
-#define g_ScorePhotoStage \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
-#endif
 
 struct ScoreWriteLocals
 {
@@ -80,7 +67,7 @@ ScoreDataResult ResultSaveDataView::WriteBestShotData()
             if (this->bestShotRecords[locals.pendingBestShotIndex].photoIndex >=
                 0)
             {
-                g_ScorePhotoStage->CapturePhotoPixels(
+                g_PhotoStageState->CapturePhotoPixels(
                     this->bestShotRecords[locals.pendingBestShotIndex]
                         .photoIndex);
             }

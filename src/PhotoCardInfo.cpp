@@ -5,6 +5,7 @@
 #include "AnmVmId.hpp"
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoStage.hpp"
 #include "Main.hpp"
 #include "PhotoCardInfo.hpp"
 #include "utils.hpp"
@@ -13,26 +14,6 @@
 
 namespace th095
 {
-
-struct PhotoCardStageStateView
-{
-    u8 unknown000[0x25720];
-#ifdef DIFFBUILD
-    u32 flags;
-#else
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlag0 : 1;
-            u32 unknownFlag1 : 1;
-            u32 firstCaptureFrame : 1;
-            u32 unknownFlags3 : 29;
-        };
-    };
-#endif
-};
 
 struct PhotoCardGameRuntimeView
 {
@@ -66,7 +47,6 @@ PhotoCardInfoView *g_PhotoCardInfo = NULL;
 #endif
 extern AnmLoaded *g_PhotoCardBackgroundAnm;
 extern AnmLoaded *g_PhotoCardUiAnm;
-extern PhotoCardStageStateView *g_PhotoCardStageState;
 extern PhotoCardGameRuntimeView *g_PhotoCardGameRuntime;
 extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
@@ -78,8 +58,6 @@ extern u32 g_PhotoScreenFadeColor;
 // those loaded-ANM lifecycles instead of introducing independent pointers.
 #define g_PhotoCardBackgroundAnm (g_AsciiManager.asciiAnm)
 #define g_PhotoCardUiAnm (g_Supervisor.textAnm)
-#define g_PhotoCardStageState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoCardStageStateView, g_RuntimeStageStateOwner)
 #define g_PhotoCardGameRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameRuntimeView, g_RuntimePlayerOwner)
 #define g_PhotoCardGameTask \
@@ -227,11 +205,7 @@ i32 PhotoCardInfoView::Update()
     }
 
     i32 alpha = 0xff;
-#ifdef DIFFBUILD
-    if (((g_PhotoCardStageState->flags >> 2) & 1) != 0)
-#else
-    if (g_PhotoCardStageState->firstCaptureFrame != 0)
-#endif
+    if (g_PhotoStageState->firstCaptureFrame != 0)
     {
         if (g_AnmManager->GetVm(this->backgroundVmId) != NULL)
         {

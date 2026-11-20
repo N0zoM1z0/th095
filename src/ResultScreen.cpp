@@ -219,12 +219,9 @@ const char *g_ResultAlphabet =
 extern i32 g_ResultSceneLimits[];
 extern const char *g_ResultAlphabet;
 #endif
-extern PhotoStageStateView *g_PhotoStageState;
 extern ResultPhotoControllerView *g_ResultPhotoController;
 
 #ifndef DIFFBUILD
-#define g_PhotoStageState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 #define g_ResultPhotoController \
     TH095_RUNTIME_GLOBAL_PTR(ResultPhotoControllerView, g_RuntimePlayerOwner)
 #endif

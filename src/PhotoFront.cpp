@@ -4,6 +4,7 @@
 #include "AnmManager.hpp"
 #include "FileSystem.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoStage.hpp"
 #include "Main.hpp"
 #include "PhotoGameTask.hpp"
 #ifndef DIFFBUILD
@@ -34,26 +35,6 @@ struct PhotoFrontRuntimeView
     f32 hudFade;                // +0x1e34
 };
 #endif
-
-struct PhotoFrontStageStateView
-{
-    u8 unknown000[0x25720];
-#ifdef DIFFBUILD
-    u32 flags;                  // +0x25720
-#else
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlag0 : 1;
-            u32 unknownFlag1 : 1;
-            u32 firstCaptureFrame : 1;
-            u32 unknownFlags3 : 29;
-        };
-    };
-#endif
-};
 
 struct PhotoFrontManagerView
 {
@@ -93,14 +74,11 @@ extern PhotoFrontGameTaskView *g_PhotoFrontGameTask;
 #ifdef DIFFBUILD
 extern PhotoFrontRuntimeView *g_PhotoFrontRuntime;
 #endif
-extern PhotoFrontStageStateView *g_PhotoFrontStageState;
 extern PhotoFrontManagerView *g_PhotoFrontManager;
 
 #ifndef DIFFBUILD
 #define g_PhotoFrontManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoFrontManagerView, g_RuntimeBackgroundManagerOwner)
-#define g_PhotoFrontStageState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoFrontStageStateView, g_RuntimeStageStateOwner)
 #define g_PhotoFrontGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
@@ -375,11 +353,7 @@ i32 PhotoFrontManagerView::Draw()
 {
     u32 vmIndex;
 
-#ifdef DIFFBUILD
-    if (((g_PhotoFrontStageState->flags >> 2) & 1) == 0)
-#else
-    if (g_PhotoFrontStageState->firstCaptureFrame == 0)
-#endif
+    if (g_PhotoStageState->firstCaptureFrame == 0)
     {
         for (vmIndex = 0; vmIndex < 6; vmIndex++)
         {

@@ -3904,7 +3904,7 @@ def check_photo_stage_owner() -> None:
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if "EclStageScoreStateView" in ecl_run:
         fail("EclRun restored the retired stage-score projection")
-    if "TH095_ECL_STAGE_STATE->scoreMultiplier" not in ecl_run:
+    if "g_PhotoStageState->scoreMultiplier" not in ecl_run:
         fail("normal EclRun lost canonical stage score access")
 
 

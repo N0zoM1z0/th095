@@ -98,11 +98,8 @@
 #define TH095_ECL_STAGE_SCORE_MULTIPLIER \
     *reinterpret_cast<f32 *>(TH095_ECL_STAGE_STATE + 0x25718)
 #else
-#define TH095_ECL_STAGE_STATE \
-    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoStageStateView, \
-                             ::th095::g_RuntimeStageStateOwner)
 #define TH095_ECL_STAGE_SCORE_MULTIPLIER \
-    (TH095_ECL_STAGE_STATE->scoreMultiplier)
+    (::th095::g_PhotoStageState->scoreMultiplier)
 #endif
 
 #ifdef DIFFBUILD
