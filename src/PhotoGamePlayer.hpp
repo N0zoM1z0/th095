@@ -86,6 +86,7 @@ struct PhotoGameUpdateView
     ~PhotoGameUpdateView();
     i32 Initialize();
     i32 LoadSht(char *path);
+    f32 AngleToPoint(const Float3 *point);
     f32 AngleFromPoint(Float3 *position);
     i32 CheckBulletCollision(Float3 *position, Float3 *size);
     u32 CalcLaserHitbox(Float3 *origin, f32 angle, f32 width, f32 length);

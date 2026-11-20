@@ -4216,55 +4216,21 @@ def check_ecl_photo_player_owner() -> None:
         if fact not in player:
             fail(f"canonical PlayerInf/camera layout lost fact: {fact}")
 
-    camera_header = (SRC / "PhotoCamera.hpp").read_text(encoding="utf-8")
-    if re.search(r"\bstruct\s+PhotoGameStateView\s*\{", camera_header):
-        fail("PhotoCamera.hpp restored the retired duplicate PlayerInf layout")
+    allocation = (SRC / "PhotoGamePlayer.hpp").read_text(encoding="utf-8")
+    if any(profile in allocation for profile in PROFILE_NAMES):
+        fail("PhotoGamePlayer.hpp must declare one PlayerInf allocation")
+    if "f32 AngleToPoint(const Float3 *point);" not in allocation:
+        fail("PlayerInf lost its forward angle method")
 
-    player_emission = (SRC / "PhotoCameraPlayerEmission.inl").read_text(
-        encoding="utf-8"
-    )
-    if "TH095_MATCH_EXACT" in player_emission or "DIFFBUILD" in player_emission:
-        fail("PhotoCamera Player emission adapter must not select a build profile")
-    if len(re.findall(r"\bstruct\s+PhotoGameStateView\s*\{", player_emission)) != 1:
-        fail("PhotoCamera Player emission adapter must keep one method-only receiver")
-    for token in (
-        "f32 AngleToPoint(const Float3 *point);",
-        "extern PhotoGameStateView *g_PhotoGame;",
-        "deliberately owns no Player or camera storage",
-    ):
-        if token not in player_emission:
-            fail(f"PhotoCamera Player emission adapter lost required token: {token}")
-    for token in (
-        "effectAnm",
-        "effectVm",
-        "movementState",
-        "cameraTrackingMode",
-        "completionTimer",
-        "playerPosition",
-        "PhotoCameraState camera",
-        "u8 unknown",
-    ):
-        if token in player_emission:
-            fail(f"PhotoCamera Player emission adapter restored storage: {token}")
-
-    camera_source = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
-    stage_source = (SRC / "PhotoStage.cpp").read_text(encoding="utf-8")
-    stage_exact = (SRC / "PhotoStageExact.inl").read_text(encoding="utf-8")
-    for path, text in (
-        ("PhotoCamera.cpp", camera_source),
-        ("PhotoStage.cpp", stage_source),
-        ("PhotoStageExact.inl", stage_exact),
-    ):
-        if '#include "PhotoCameraPlayerEmission.inl"' not in text:
-            fail(f"{path} lost the storage-free historical Player emission adapter")
-    if "TH095_PHOTO_CAMERA_PLAYER_STORAGE" not in camera_source:
-        fail("PhotoCamera must route Player fields through the canonical owner")
-    if "PhotoStagePlayer()->camera.photoIndex" not in stage_source:
-        fail("normal PhotoStage must read photoIndex from the canonical Player owner")
-    if "PhotoStageCameraView" in stage_source:
-        fail("normal PhotoStage restored its retired camera projection")
-    if "TH095_PHOTO_STAGE_PLAYER_STORAGE" not in stage_exact:
-        fail("exact PhotoStage must isolate historical decoration from Player storage")
+    for name in ("PhotoCamera.cpp", "PhotoStage.cpp", "PhotoStageExact.inl"):
+        source = (SRC / name).read_text(encoding="utf-8")
+        if '#include "PhotoGamePlayer.hpp"' not in source or "g_RuntimePlayerOwner" not in source:
+            fail(f"{name} must consume the typed PlayerInf owner")
+        if any(token in source for token in (
+            "PhotoCameraPlayerEmission", "PhotoGameStateView",
+            "PhotoPlayerRuntimeView", "PhotoStageCameraView",
+        )):
+            fail(f"{name} restored a retired PlayerInf projection")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if '#include "../PhotoPlayerRuntime.hpp"' not in ecl_run:

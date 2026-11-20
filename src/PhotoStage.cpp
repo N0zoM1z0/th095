@@ -1,7 +1,7 @@
 #ifdef TH095_MATCH_EXACT
 #include "PhotoStageExact.inl"
 #else
-#include "PhotoCamera.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "PhotoBulletManager.hpp"
 #include "PhotoCardInfo.hpp"
 #include "PhotoStage.hpp"
@@ -21,8 +21,6 @@
 
 namespace th095
 {
-
-#include "PhotoCameraPlayerEmission.inl"
 
 enum PhotoStageFlags
 {
@@ -154,8 +152,6 @@ extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
 #endif
 
 #ifndef DIFFBUILD
-#define g_PhotoGame \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoStageGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGlobalStateOwner)
 #define TH095_PHOTO_STAGE_CARD_INFO g_PhotoCardInfo
@@ -209,16 +205,11 @@ static inline PhotoStageAnmLoadedView *GetPhotoStageAnm(
     return reinterpret_cast<PhotoStageAnmLoadedView *>(anm);
 }
 
-static __forceinline PhotoPlayerRuntimeView *PhotoStagePlayer()
-{
-    return reinterpret_cast<PhotoPlayerRuntimeView *>(g_PhotoGame);
-}
-
 static __forceinline void PhotoStageInterruptCurrentEntryPhase(
     PhotoStageStateView *state, i32 &entryIndex)
 {
     u8 compilerStorage[8];
-    entryIndex = PhotoStagePlayer()->camera.photoIndex - 1;
+    entryIndex = g_RuntimePlayerOwner->camera.photoIndex - 1;
     TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
         state->capture.entryVms[entryIndex].value, 1);
 }
@@ -771,9 +762,9 @@ i32 PhotoStageStateView::Update()
     }
 
     if (PhotoStageEntryVmIsZero(this->capture.entryVms[0]) &&
-        PhotoStagePlayer()->camera.photoLimit > 0)
+        g_RuntimePlayerOwner->camera.photoLimit > 0)
     {
-        for (k = 0; k < PhotoStagePlayer()->camera.photoLimit; k++)
+        for (k = 0; k < g_RuntimePlayerOwner->camera.photoLimit; k++)
         {
             entryPosition.x = PhotoStageEntryXValue(k);
             entryPosition.y = 400.0f - (f32)(k % 5) * 80.0f;
@@ -1102,7 +1093,7 @@ i32 PhotoStageStateView::Update()
             if (this->waitingForTexture == 0 &&
                 this->capture.slot != 10)
             {
-                entryIndex = PhotoStagePlayer()->camera.photoIndex - 1;
+                entryIndex = g_RuntimePlayerOwner->camera.photoIndex - 1;
                 TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
                     this->capture.entryVms[entryIndex].value, 1);
 
@@ -1142,11 +1133,11 @@ i32 PhotoStageStateView::Update()
     if (this->playerPassed == 0)
     {
         if (this->displayBoundary.y + 32.0f >
-                PhotoStagePlayer()->playerPosition.y &&
+                g_RuntimePlayerOwner->playerPosition.y &&
             ((this->displayBoundary.x < 320.0f &&
-              PhotoStagePlayer()->playerPosition.x < 0.0f) ||
+              g_RuntimePlayerOwner->playerPosition.x < 0.0f) ||
              (this->displayBoundary.x >= 320.0f &&
-              PhotoStagePlayer()->playerPosition.x >= 0.0f)))
+              g_RuntimePlayerOwner->playerPosition.x >= 0.0f)))
         {
             this->flags |= PHOTO_STAGE_PLAYER_PASSED;
             fadeVm1 = this->displayVms;
@@ -1160,11 +1151,11 @@ i32 PhotoStageStateView::Update()
         }
     }
     else if (!(this->displayBoundary.y + 32.0f >
-                   PhotoStagePlayer()->playerPosition.y &&
+                   g_RuntimePlayerOwner->playerPosition.y &&
                ((this->displayBoundary.x < 320.0f &&
-                 PhotoStagePlayer()->playerPosition.x < 0.0f) ||
+                 g_RuntimePlayerOwner->playerPosition.x < 0.0f) ||
                 (this->displayBoundary.x >= 320.0f &&
-                 PhotoStagePlayer()->playerPosition.x >= 0.0f))))
+                 g_RuntimePlayerOwner->playerPosition.x >= 0.0f))))
     {
         this->flags &= ~PHOTO_STAGE_PLAYER_PASSED;
         fadeVm2 = this->displayVms;
@@ -1241,8 +1232,8 @@ i32 PhotoStageStateView::SavePhoto(
     this->GetCaptureHeight() = height;
     this->GetCaptureSlot() = slotIndex;
 
-    if (PhotoStagePlayer()->playerPosition.y < 224.0f &&
-        PhotoStagePlayer()->playerPosition.x < 0.0f)
+    if (g_RuntimePlayerOwner->playerPosition.y < 224.0f &&
+        g_RuntimePlayerOwner->playerPosition.x < 0.0f)
     {
         locals.photoX = 352.0f;
     }

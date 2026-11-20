@@ -1,5 +1,5 @@
 #include "Background.hpp"
-#include "PhotoCamera.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "PhotoCameraBulletEmission.inl"
 #include "PhotoBulletManager.hpp"
 #include "PhotoEnemy.hpp"
@@ -17,8 +17,6 @@
 #endif
 namespace th095
 {
-
-#include "PhotoCameraPlayerEmission.inl"
 
 struct PhotoAnmVmIdValue
 {
@@ -89,17 +87,9 @@ extern u16 g_PhotoInputPressed;
 #ifndef DIFFBUILD
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
-#define g_PhotoGame \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
-
-#define TH095_PHOTO_CAMERA_PLAYER_STORAGE() \
-    reinterpret_cast<PhotoPlayerRuntimeView *>(g_PhotoGame)
-#define TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM() \
-    reinterpret_cast<PhotoAnmLoadedView *>( \
-        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectAnm)
 
 #define PHOTO_SOUND_SUPPRESSED (g_PhotoGlobalState->photoSoundSuppressed)
 
@@ -218,14 +208,10 @@ static inline u32 PhotoEitherFlag(u32 left, u32 right)
     return left | right;
 }
 
-f32 PhotoGameStateView::AngleToPoint(const Float3 *point)
+f32 PhotoGameUpdateView::AngleToPoint(const Float3 *point)
 {
-    f32 deltaX = point->x -
-                 reinterpret_cast<PhotoPlayerRuntimeView *>(this)
-                     ->playerPosition.x;
-    f32 deltaY = point->y -
-                 reinterpret_cast<PhotoPlayerRuntimeView *>(this)
-                     ->playerPosition.y;
+    f32 deltaX = point->x - this->playerPosition.x;
+    f32 deltaY = point->y - this->playerPosition.y;
 
     if (deltaY == 0.0f && deltaX == 0.0f)
     {
@@ -456,10 +442,10 @@ u32 PhotoCameraState::TakePhoto()
 
     scoreData.nearbyTargetCount = g_PhotoBulletManager->CountNearbyTargets(
         reinterpret_cast<PhotoBulletVector *>(
-            &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition),
+            &g_RuntimePlayerOwner->playerPosition),
         22.0f);
     scoreData.nearbyTargetCount += g_PhotoEffectManager->CountNearbyTargets(
-        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
+        &g_RuntimePlayerOwner->playerPosition, 22.0f);
 
     this->CalculatePhotoScore(
         g_PhotoBulletManager->CapturePhotoTargets(
@@ -499,9 +485,9 @@ u32 PhotoCameraState::TakePhoto()
     {
         this->charge = 0.0f;
         this->mode = PHOTO_CAMERA_DISABLED;
-        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->mode =
+        g_RuntimePlayerOwner->mode =
             PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION;
-        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->completionTimer = 0;
+        g_RuntimePlayerOwner->completionTimer = 0;
     }
     else
     {
@@ -645,7 +631,7 @@ i32 PhotoCameraState::CalculatePhotoScore(
     bounds.playerHalfHeight = 16.0f;
     bounds.playerHalfWidth = 16.0f;
     bounds.playerPosition =
-        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
+        &g_RuntimePlayerOwner->playerPosition;
     bounds.playerHalfWidth *= 0.5f;
     bounds.playerHalfHeight *= 0.5f;
     locals.viewfinderHalfWidth *= 0.5f;
@@ -967,7 +953,7 @@ normalCharge:
         {
             TH095_PHOTO_BULLET_SPAWN_WORLD(
                 g_PhotoBulletManager->bulletAnm, &locals.effect, 0x124,
-                &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
+                &g_RuntimePlayerOwner->playerPosition);
         }
         this->focusChargeFrames++;
         this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
@@ -1103,25 +1089,25 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
             if (g_PhotoRuntime->photoTargets[0] == NULL)
             {
                 camera->cameraOffset =
-                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
+                    g_RuntimePlayerOwner->playerPosition;
                 camera->cameraOffset.y -= 64.0f;
             }
             else
             {
-                if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode ==
+                if (g_RuntimePlayerOwner->cameraTrackingMode ==
                     TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW)
                 {
                     camera->trackingRadius = 56.0f;
                 }
-                else if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode ==
+                else if (g_RuntimePlayerOwner->cameraTrackingMode ==
                          TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET)
                 {
                     f32 playerDistance = PhotoDistance2D(
-                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition,
+                        &g_RuntimePlayerOwner->playerPosition,
                         &camera->viewfinderPosition);
                     f32 bossDistance = PhotoDistance2D(
                         &g_PhotoRuntime->photoTargets[0]->position,
-                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
+                        &g_RuntimePlayerOwner->playerPosition);
                     if (playerDistance < 56.0f)
                     {
                         camera->trackingRadius = 56.0f;
@@ -1148,12 +1134,12 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     camera->trackingRadius += 1.0f;
                 }
 
-                if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode !=
+                if (g_RuntimePlayerOwner->cameraTrackingMode !=
                     TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
                 {
                     camera->cameraOffset = PhotoCameraTrackingDifference(
                         g_PhotoRuntime->photoTargets[0]->position,
-                        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
+                        g_RuntimePlayerOwner->playerPosition);
                     NormalizeAndScalePhotoOffset(
                         camera->cameraOffset,
                         &camera->cameraOffset,
@@ -1162,12 +1148,12 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                 else
                 {
                     Float3 playerDelta =
-                        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition -
+                        g_RuntimePlayerOwner->playerPosition -
                         camera->previousTrackingOrigin;
                     f32 targetAngle;
                     if (playerDelta.y * playerDelta.y + playerDelta.x * playerDelta.x < 0.1f)
                     {
-                        targetAngle = g_PhotoGame->AngleToPoint(
+                        targetAngle = g_RuntimePlayerOwner->AngleToPoint(
                             &g_PhotoRuntime->photoTargets[0]->position);
                     }
                     else
@@ -1181,13 +1167,13 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                         camera->trackingAngle, camera->trackingRadius);
                 }
                 camera->cameraOffset =
-                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition +
+                    g_RuntimePlayerOwner->playerPosition +
                     camera->cameraOffset;
                 camera->previousTrackingOrigin =
-                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
+                    g_RuntimePlayerOwner->playerPosition;
             }
 
-            if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode !=
+            if (g_RuntimePlayerOwner->cameraTrackingMode !=
                 TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
             {
                 camera->viewfinderPosition =
@@ -1196,10 +1182,10 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     camera->viewfinderPosition;
                 Float3 angleDelta =
                     camera->viewfinderPosition -
-                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
+                    g_RuntimePlayerOwner->playerPosition;
                 camera->trackingAngle = atan2f(angleDelta.y, angleDelta.x);
             }
-            else if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState !=
+            else if (g_RuntimePlayerOwner->movementState !=
                      PHOTO_PLAYER_DIRECTION_NONE)
             {
                 camera->viewfinderPosition =
@@ -1218,7 +1204,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
         else
         {
             camera->cameraOffset =
-                TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
+                g_RuntimePlayerOwner->playerPosition;
             camera->viewfinderPosition =
                 (camera->cameraOffset - camera->viewfinderPosition) * 0.4f +
                 camera->viewfinderPosition;
@@ -1357,18 +1343,16 @@ updateCharge:
 cameraActive:
         {
             f32 targetAngle =
-                g_PhotoGame->AngleToPoint(&camera->viewfinderPosition);
+                g_RuntimePlayerOwner->AngleToPoint(&camera->viewfinderPosition);
             targetAngle += 0.3926991f;
             if (targetAngle < 0.0f)
                 targetAngle += 6.2831855f;
             i32 angleSector = (i32)(targetAngle / 0.7853982f);
-            TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM()->SetAndExecuteScriptIdx(
-                reinterpret_cast<AnmVm *>(
-                    &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectVm),
+            g_RuntimePlayerOwner->effectAnm->SetAndExecuteScriptIdx(
+                &g_RuntimePlayerOwner->effectVm,
                 5);
-            TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM()->SetSprite(
-                reinterpret_cast<AnmVm *>(
-                    &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectVm),
+            g_RuntimePlayerOwner->effectAnm->SetSprite(
+                &g_RuntimePlayerOwner->effectVm,
                 angleSector + 0x18);
 
             if (camera->CountPhotoTargets(NULL, NULL) != 0)
@@ -1443,16 +1427,15 @@ cameraActive:
     {
         if (PhotoTimerAdvancedTo(&camera->modeTimer, 20) != 0)
         {
-            if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState ==
+            if (g_RuntimePlayerOwner->movementState ==
                     PHOTO_PLAYER_DIRECTION_NONE ||
-                TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState ==
+                g_RuntimePlayerOwner->movementState ==
                     PHOTO_PLAYER_DIRECTION_UP ||
-                TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState ==
+                g_RuntimePlayerOwner->movementState ==
                     PHOTO_PLAYER_DIRECTION_DOWN)
             {
-                TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM()->InitializeVm(
-                    reinterpret_cast<AnmVm *>(
-                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectVm),
+                g_RuntimePlayerOwner->effectAnm->InitializeVm(
+                    &g_RuntimePlayerOwner->effectVm,
                     0);
             }
             if ((camera->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
@@ -1469,7 +1452,7 @@ cameraActive:
                         g_PhotoStageState->anm, 0x21, 0).value,
                     PhotoToScreen(
                         &effectPosition,
-                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition));
+                        &g_RuntimePlayerOwner->playerPosition));
             }
             else
             {
@@ -1485,7 +1468,7 @@ cameraActive:
                         g_PhotoStageState->anm, 0x22, 0).value,
                     PhotoToScreen(
                         &effectPosition,
-                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition));
+                        &g_RuntimePlayerOwner->playerPosition));
             }
         }
         if (camera->modeTimer >= 60)

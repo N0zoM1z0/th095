@@ -42,7 +42,8 @@ SEM-382 shares the PlayerInf allocation declaration and typed publication
 across PhotoGame and PhotoEffect. The normal photo task uses the same type.
 SEM-383 removes PlayerInf projections in the HUD, card, foreground and
 item paths. The normal pickup body now matches the retail extent and
-relocations.
+relocations. SEM-384 binds Camera and PhotoStage to the same PlayerInf type
+and places the forward angle method on that owner.
 The legacy ECL headers still require the dependency-light Player view.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an

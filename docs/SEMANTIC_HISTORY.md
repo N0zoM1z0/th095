@@ -17738,3 +17738,24 @@ follow the slot in the reversed link. The 384 pickup cases and 548 photo
 task cases agree with retail in both link orders, including eight cases
 where a VM callback changes the limit mid-loop. The local recipes are
 under `.analysis/pi/player-clients/`.
+
+### SEM-384 — bind camera and stage to PlayerInf
+
+Camera tracking calls the forward angle method at 0x00430370. It subtracts
+the PlayerInf coordinates from the supplied point. The reverse angle method
+at 0x004303E0 subtracts the point from the player. Both profiles now declare
+`AngleToPoint` on the allocated PlayerInf type, with its implementation in
+PhotoCamera. The camera's effect animation and the stage's position and
+photo counters also use the same allocation directly.
+
+Replacing the exact stage counter getters with direct expressions shortened
+Update from 5,309 to 5,260 bytes. The target samples the camera limit and
+index into four separate stack temporaries. Two typed inline readers preserve
+those samples and the call sequence without a derived camera view.
+
+All 116 affected strict comparisons pass. The two forward angle calls follow
+the function from 0x0042B600 to 0x0042D540, and all 125 PlayerInf references
+follow the pointer. Both normal links retain the four mapped sections of
+their respective pre-change PE. The 36 forward and reverse angle cases,
+144 saves, five best-shot scans and twelve preview cases agree with retail.
+The angle fixture is under `.analysis/pi/player-camera-stage/`.

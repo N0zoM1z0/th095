@@ -1,5 +1,7 @@
 #include "PhotoStage.hpp"
 #include "ScoreData.hpp"
+#include "PhotoGamePlayer.hpp"
+#include "GameplayGlobals.hpp"
 
 #include <stdlib.h>
 #include <string.h>
@@ -8,11 +10,6 @@
 namespace th095
 {
 
-#include "PhotoCameraPlayerEmission.inl"
-
-#define TH095_PHOTO_STAGE_PLAYER_STORAGE() \
-    reinterpret_cast<PhotoPlayerRuntimeView *>(g_PhotoGame)
-
 struct PhotoAnmVmIdValue
 {
     i32 value;
@@ -20,19 +17,6 @@ struct PhotoAnmVmIdValue
     PhotoAnmVmIdValue(i32 value)
     {
         this->value = value;
-    }
-};
-
-struct PhotoStageCameraView : PhotoCameraState
-{
-    i32 GetPhotoIndex()
-    {
-        return this->photoIndex;
-    }
-
-    i32 GetPhotoLimit()
-    {
-        return this->photoLimit;
     }
 };
 
@@ -167,7 +151,6 @@ extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
 extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
 extern PhotoStagePlayerConfigView *g_PhotoStagePlayerConfig;
-extern PhotoStageStateView *g_PhotoStageState;
 extern u8 g_PhotoCaptureCountdown;
 extern f64 g_PhotoLagNumerator;
 extern f64 g_PhotoLagDenominator;
@@ -194,17 +177,21 @@ static inline PhotoStageAnmLoadedView *GetPhotoStageAnm(
     return reinterpret_cast<PhotoStageAnmLoadedView *>(anm);
 }
 
-static inline PhotoStageCameraView *GetPhotoStageCamera()
+static inline i32 ReadPhotoLimit(const PhotoCameraState *camera)
 {
-    return reinterpret_cast<PhotoStageCameraView *>(
-        &TH095_PHOTO_STAGE_PLAYER_STORAGE()->camera);
+    return camera->photoLimit;
+}
+
+static inline i32 ReadPhotoIndex(const PhotoCameraState *camera)
+{
+    return camera->photoIndex;
 }
 
 static __forceinline void PhotoStageInterruptCurrentEntryPhase(
     PhotoStageStateView *state, i32 &entryIndex)
 {
     u8 compilerStorage[8];
-    entryIndex = GetPhotoStageCamera()->GetPhotoIndex() - 1;
+    entryIndex = ReadPhotoIndex(&g_RuntimePlayerOwner->camera) - 1;
     GetPhotoStageAnmManager()->SetInterrupt(
         state->capture.entryVms[entryIndex].value, 1);
 }
@@ -730,9 +717,9 @@ i32 PhotoStageStateView::Update()
     }
 
     if (PhotoStageEntryVmIsZero(this->capture.entryVms[0]) &&
-        GetPhotoStageCamera()->GetPhotoLimit() > 0)
+        ReadPhotoLimit(&g_RuntimePlayerOwner->camera) > 0)
     {
-        for (k = 0; k < GetPhotoStageCamera()->GetPhotoLimit(); k++)
+        for (k = 0; k < ReadPhotoLimit(&g_RuntimePlayerOwner->camera); k++)
         {
             entryPosition.x = PhotoStageEntryXValue(k);
             entryPosition.y = 400.0f - (f32)(k % 5) * 80.0f;
@@ -1040,7 +1027,7 @@ i32 PhotoStageStateView::Update()
             if (this->waitingForTexture == 0 &&
                 this->capture.slot != 10)
             {
-                entryIndex = GetPhotoStageCamera()->GetPhotoIndex() - 1;
+                entryIndex = ReadPhotoIndex(&g_RuntimePlayerOwner->camera) - 1;
                 GetPhotoStageAnmManager()->SetInterrupt(
                     this->capture.entryVms[entryIndex].value, 1);
 
@@ -1078,11 +1065,11 @@ i32 PhotoStageStateView::Update()
     if (this->playerPassed == 0)
     {
         if (this->displayBoundary.y + 32.0f >
-                TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.y &&
+                g_RuntimePlayerOwner->playerPosition.y &&
             ((this->displayBoundary.x < 320.0f &&
-              TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x < 0.0f) ||
+              g_RuntimePlayerOwner->playerPosition.x < 0.0f) ||
              (this->displayBoundary.x >= 320.0f &&
-              TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x >= 0.0f)))
+              g_RuntimePlayerOwner->playerPosition.x >= 0.0f)))
         {
             this->flags |= PHOTO_STAGE_PLAYER_PASSED;
             fadeVm1 = this->displayVms;
@@ -1096,11 +1083,11 @@ i32 PhotoStageStateView::Update()
         }
     }
     else if (!(this->displayBoundary.y + 32.0f >
-                   TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.y &&
+                   g_RuntimePlayerOwner->playerPosition.y &&
                ((this->displayBoundary.x < 320.0f &&
-                 TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x < 0.0f) ||
+                 g_RuntimePlayerOwner->playerPosition.x < 0.0f) ||
                 (this->displayBoundary.x >= 320.0f &&
-                 TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x >= 0.0f))))
+                 g_RuntimePlayerOwner->playerPosition.x >= 0.0f))))
     {
         this->flags &= ~PHOTO_STAGE_PLAYER_PASSED;
         fadeVm2 = this->displayVms;
@@ -1173,8 +1160,8 @@ i32 PhotoStageStateView::SavePhoto(
     this->GetCaptureHeight() = height;
     this->GetCaptureSlot() = slotIndex;
 
-    if (TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.y < 224.0f &&
-        TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x < 0.0f)
+    if (g_RuntimePlayerOwner->playerPosition.y < 224.0f &&
+        g_RuntimePlayerOwner->playerPosition.x < 0.0f)
     {
         locals.photoX = 352.0f;
     }
