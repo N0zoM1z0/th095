@@ -2202,6 +2202,15 @@ seven input-index references to EBP-0x120. None matches the original
 instruction sequence with the original parameter home. The sources and
 stack operands are under `.analysis/controller-get-input/keyboard-frontends/`.
 
+A separate backend-boundary probe moves complete keyboard acquisition and
+mask updates into force-inlined helpers. Win32 by reference, DirectInput by
+reference, and the two together reproduce the current 2,655 bytes and all 22
+relocations. Returning the Win32 mask by value grows the body to 2,682 bytes
+and reserves 0x120. Calling Win32 through a locally bound typed reference or
+pointer emits 2,675 bytes and also reserves 0x120. The target remains 2,662
+bytes with a 0x124 frame. These probes preserve the existing production
+body. See `.analysis/controller-get-input/backend-boundaries/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
