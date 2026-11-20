@@ -17759,3 +17759,28 @@ follow the pointer. Both normal links retain the four mapped sections of
 their respective pre-change PE. The 36 forward and reverse angle cases,
 144 saves, five best-shot scans and twelve preview cases agree with retail.
 The angle fixture is under `.analysis/pi/player-camera-stage/`.
+
+### SEM-385 — share PlayerInf aiming and collision methods
+
+The reverse angle and the two hit tests now share implementations on the
+allocated PlayerInf type. The bullet and laser tests reject the player death
+and photo-limit transitions. A hit enters `Die @ 0x004306D0`, schedules one
+script-0x121 VM and 32 script-0x122 VMs, resets the timer and halves game
+speed. Normal BulletManager, EnemyManagerUpdate and ECL call those methods
+directly. Exact operand resolvers still need the legacy angle declaration
+because their ANM and Supervisor headers conflict with the full allocation.
+Opcode 141 shares one typed assignment for the exact and normal camera
+declarations.
+
+The scheduled ECL call at 0x00416F79 reads PlayerInf +0x29E4 and compares it
+to the ten thresholds at EnemyInf +0x2C54. This field is the camera photo
+index. Opcode 115 supplies the threshold and subroutine. Both builds now
+read the actual PlayerInf member in place of the historical `frameCounter`
+projection.
+
+All 282 affected strict comparisons pass. The four mapped sections in each
+normal PE are identical to its pre-change build. All eleven reverse-angle
+references, both bullet collision references and both death references
+follow their methods in the reverse link. The 36 angle, 64 collision and
+death, and 14 scheduling cases agree across retail and both normal links.
+The local recipes are under `.analysis/pi/player-combat/`.

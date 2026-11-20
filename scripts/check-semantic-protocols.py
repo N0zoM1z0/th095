@@ -4210,7 +4210,6 @@ def check_ecl_photo_player_owner() -> None:
         "offsetof(PhotoPlayerCameraRuntimeView, photoLimit) == 0x0bb0",
         "offsetof(PhotoPlayerRuntimeView, camera) == 0x1e3c",
         "offsetof(PhotoPlayerRuntimeView, camera.photoLimit) == 0x29ec",
-        "f32 AngleFromPoint(Float3 *position);",
     )
     for fact in required_layout:
         if fact not in player:
@@ -4221,6 +4220,8 @@ def check_ecl_photo_player_owner() -> None:
         fail("PhotoGamePlayer.hpp must declare one PlayerInf allocation")
     if "f32 AngleToPoint(const Float3 *point);" not in allocation:
         fail("PlayerInf lost its forward angle method")
+    if "f32 AngleFromPoint(Float3 *position);" not in allocation:
+        fail("PlayerInf lost its reverse angle method")
 
     for name in ("PhotoCamera.cpp", "PhotoStage.cpp", "PhotoStageExact.inl"):
         source = (SRC / name).read_text(encoding="utf-8")
@@ -4233,7 +4234,7 @@ def check_ecl_photo_player_owner() -> None:
             fail(f"{name} restored a retired PlayerInf projection")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
-    if '#include "../PhotoPlayerRuntime.hpp"' not in ecl_run:
+    if '#include "../PhotoGamePlayer.hpp"' not in ecl_run:
         fail("normal EclRun must consume the canonical PlayerInf declaration")
     if '#include "PhotoCameraEclEmission.hpp"' not in ecl_run:
         fail("EclRun must name its isolated photo-angle emission adapter")
@@ -4254,8 +4255,6 @@ def check_ecl_photo_player_owner() -> None:
             fail(f"EclRun restored retired camera projection: {token}")
     if re.search(r"\bstruct\s+PhotoCamera\s*\{", high):
         fail("EclRunHigh.inl must not restore the padded PhotoCamera owner")
-    if "PhotoPlayerCameraRuntimeView *camera" not in high:
-        fail("RunEcl camera-limit assignment must receive the canonical camera view")
     if "camera->photoLimit = value;" not in high:
         fail("RunEcl camera-limit assignment lost the canonical photoLimit field")
     if "g_Th095PhotoCamera->GetAngle" in high:

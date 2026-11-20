@@ -117,10 +117,6 @@ struct PhotoPlayerRuntimeView
     u8 unknown2a1c[0x2a28 - 0x2a1c];
     Float3 photoTargetBoundsMin;                   // +0x2a28
     Float3 photoTargetBoundsMax;                   // +0x2a34
-
-    f32 AngleFromPoint(Float3 *position);
-    i32 CheckBulletCollision(Float3 *position, Float3 *size);
-    void Die();
 };
 
 typedef char PhotoPlayerRuntimeModeAt0000[

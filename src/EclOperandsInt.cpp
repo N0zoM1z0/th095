@@ -2,7 +2,7 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyEclAccess.hpp"
 #ifndef DIFFBUILD
-#include "PhotoPlayerRuntime.hpp"
+#include "PhotoGamePlayer.hpp"
 #endif
 #include "ecl/EclOperands.hpp"
 
@@ -54,22 +54,20 @@ extern EclOperandPlayerView *g_EclOperandPlayer;
 #define g_EclOperandRuntime \
     TH095_RUNTIME_GLOBAL_PTR( \
         PhotoEnemyEclOperandRuntimeOwner, g_RuntimeEnemyManagerOwner)
-#define g_EclOperandPlayer \
-    TH095_RUNTIME_GLOBAL_PTR(EclOperandPlayerView, g_RuntimePlayerOwner)
 #endif
 
 #ifdef DIFFBUILD
 #define TH095_ECL_INT_PLAYER_ANGLE(point) g_EclOperandPlayer->AngleFromPoint(point)
 #else
 #define TH095_ECL_INT_PLAYER_ANGLE(point) \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->AngleFromPoint(point)
+    g_RuntimePlayerOwner->AngleFromPoint(point)
 #endif
 
 #ifdef DIFFBUILD
 #define TH095_ECL_INT_PLAYER_POSITION (g_EclOperandPlayer->position)
 #else
 #define TH095_ECL_INT_PLAYER_POSITION \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition)
+    (g_RuntimePlayerOwner->playerPosition)
 #endif
 
 #ifdef DIFFBUILD
@@ -77,9 +75,9 @@ extern EclOperandPlayerView *g_EclOperandPlayer;
 #define TH095_ECL_INT_PHOTOS_TAKEN (g_EclOperandPlayer->camera.photosTaken)
 #else
 #define TH095_ECL_INT_PHOTO_INDEX \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photoIndex)
+    (g_RuntimePlayerOwner->camera.photoIndex)
 #define TH095_ECL_INT_PHOTOS_TAKEN \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photosTaken)
+    (g_RuntimePlayerOwner->camera.photosTaken)
 #endif
 
 namespace EclOperands

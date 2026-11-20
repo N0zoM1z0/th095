@@ -36,6 +36,7 @@
 #include "../PhotoCardInfo.hpp"
 #include "../PhotoGameTask.hpp"
 #include "../PhotoStage.hpp"
+#include "../PhotoGamePlayer.hpp"
 #define TH095_ECL_GAME_TASK \
     TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoGameTaskView, \
                              ::th095::g_RuntimeGlobalStateOwner)
@@ -43,10 +44,8 @@
 #endif
 
 #ifndef DIFFBUILD
-#define g_Th095Player \
-    TH095_RUNTIME_GLOBAL_PTR(Player, ::th095::g_RuntimePlayerOwner)
 #define TH095_ECL_PHOTO_PLAYER_OWNER \
-    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoPlayerRuntimeView, ::th095::g_RuntimePlayerOwner)
+    ::th095::g_RuntimePlayerOwner
 #define g_Th095GameManager \
     TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeGlobalStateOwner)
 #endif
@@ -58,11 +57,9 @@
 #define TH095_ECL_PHOTO_ANGLE(point) g_Th095PhotoCamera->GetAngle(point)
 #else
 #define TH095_ECL_PLAYER_ANGLE(point) \
-    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoPlayerRuntimeView, ::th095::g_RuntimePlayerOwner) \
-        ->AngleFromPoint(point)
+    ::th095::g_RuntimePlayerOwner->AngleFromPoint(point)
 #define TH095_ECL_PHOTO_ANGLE(point) \
-    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoPlayerRuntimeView, ::th095::g_RuntimePlayerOwner) \
-        ->AngleFromPoint(point)
+    ::th095::g_RuntimePlayerOwner->AngleFromPoint(point)
 #endif
 
 #ifdef DIFFBUILD

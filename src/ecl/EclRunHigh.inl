@@ -110,8 +110,8 @@ struct PhotoEffectManager
     u32 Spawn(i32 effectType, void *args);
 };
 
-inline void AssignPhotoCameraLimit(
-    PhotoPlayerCameraRuntimeView *camera, i32 value)
+template <typename Camera>
+inline void AssignPhotoCameraLimit(Camera *camera, i32 value)
 {
     camera->photoLimit = value;
 }

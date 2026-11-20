@@ -1,13 +1,13 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "PhotoEnemy.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEnemyManager.hpp"
 #endif
 #ifndef DIFFBUILD
 #include "PhotoBulletManager.hpp"
-#include "PhotoPlayerRuntime.hpp"
 #endif
 #include "SceneData.hpp"
 #include <stdlib.h>
@@ -283,26 +283,6 @@ struct PhotoEnemyBulletManagerView
 typedef PhotoBulletManagerView PhotoEnemyBulletManagerView;
 #endif
 
-struct PhotoEnemyPlayerView
-{
-    i32 CheckBulletCollision(Float3 *position, Float3 *size);
-};
-
-#ifdef DIFFBUILD
-#define TH095_PHOTO_ENEMY_PLAYER_COLLISION(position, size) \
-    g_PhotoEnemyPlayer->CheckBulletCollision((position), (size))
-#else
-#define TH095_PHOTO_ENEMY_PLAYER_COLLISION(position, size) \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
-        ->CheckBulletCollision((position), (size))
-#endif
-
-struct PhotoEnemyGameView
-{
-    u8 unknown0000[0x29e4];
-    i32 frameCounter;
-};
-
 #ifdef TH095_MATCH_EXACT
 struct PhotoEnemySceneDefinitionView
 {
@@ -318,14 +298,12 @@ extern PhotoEnemySceneDefinitionView *g_PhotoEnemySceneDefinition;
 
 extern PhotoEnemyBulletManagerView *g_PhotoEnemyBulletManager;
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
-extern PhotoEnemyPlayerView *g_PhotoEnemyPlayer;
 #ifndef DIFFBUILD
 #define g_PhotoEnemyBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyBulletManagerView, g_RuntimeBulletManagerOwner)
 #define g_PhotoEnemyManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
 #endif
-extern PhotoEnemyGameView *g_PhotoEnemyGame;
 extern f32 g_AnmGameSpeed;
 
 #ifdef TH095_MATCH_EXACT
@@ -333,13 +311,6 @@ extern f32 g_GameSpeed;
 #define TH095_PHOTO_ENEMY_GAME_SPEED g_GameSpeed
 #else
 #define TH095_PHOTO_ENEMY_GAME_SPEED g_AnmGameSpeed
-#endif
-
-#ifndef DIFFBUILD
-#define g_PhotoEnemyPlayer \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyPlayerView, g_RuntimePlayerOwner)
-#define g_PhotoEnemyGame \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyGameView, g_RuntimePlayerOwner)
 #endif
 
 PhotoEnemyView::PhotoEnemyView()
@@ -1065,7 +1036,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
 
         if (enemy->collidable != 0)
         {
-            TH095_PHOTO_ENEMY_PLAYER_COLLISION(
+            g_RuntimePlayerOwner->CheckBulletCollision(
                 reinterpret_cast<Float3 *>(&enemy->position),
                 &enemy->collisionSize);
         }
@@ -1233,7 +1204,7 @@ void PhotoEnemyView::Deactivate()
 // Stock VC7.1 identifier buckets reproduce the target's two scheduled-call
 // locals without relying on the patched TH08 var_order frontend.
 #define scheduledArgumentIndex restartCommandProcessingLocal05
-#define scheduledCurrentFrame averagedPanLocal12
+#define scheduledCurrentPhoto averagedPanLocal12
 
 i32 PhotoEnemyView::UpdateScheduledEclCalls()
 {
@@ -1247,8 +1218,8 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
 
         activeScheduleCount++;
         i32 scheduledArgumentIndex;
-        i32 scheduledCurrentFrame = g_PhotoEnemyGame->frameCounter;
-        if (scheduledCurrentFrame >= this->scheduledCallFrames[scheduleIndex])
+        i32 scheduledCurrentPhoto = g_RuntimePlayerOwner->camera.photoIndex;
+        if (scheduledCurrentPhoto >= this->scheduledCallFrames[scheduleIndex])
         {
             TH095_PHOTO_ECL_INIT(g_PhotoEnemyManager->eclManager,
                 &this->mainEclContext,
@@ -1276,7 +1247,7 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
     return 0;
 }
 #undef scheduledArgumentIndex
-#undef scheduledCurrentFrame
+#undef scheduledCurrentPhoto
 
 } // namespace th095
 

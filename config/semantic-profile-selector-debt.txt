@@ -98,9 +98,9 @@
 2	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT)
 4	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-3	src/EnemyManagerUpdate.cpp	#ifdef DIFFBUILD
+2	src/EnemyManagerUpdate.cpp	#ifdef DIFFBUILD
 4	src/EnemyManagerUpdate.cpp	#ifdef TH095_MATCH_EXACT
-4	src/EnemyManagerUpdate.cpp	#ifndef DIFFBUILD
+3	src/EnemyManagerUpdate.cpp	#ifndef DIFFBUILD
 1	src/EnemyShotAnm.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/EnemyShotAnm.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/EnemyShotAnm.cpp	#ifdef DIFFBUILD

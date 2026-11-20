@@ -5,7 +5,7 @@
 #include "SoundPlayer.hpp"
 #include "GameplayGlobals.hpp"
 #ifndef DIFFBUILD
-#include "PhotoPlayerRuntime.hpp"
+#include "PhotoGamePlayer.hpp"
 #endif
 
 #include <string.h>
@@ -78,14 +78,12 @@ struct PhotoBulletPlayerView
 #else
 static __forceinline f32 PhotoBulletPlayerAngle(PhotoBulletVector *position)
 {
-    return TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)
-        ->AngleFromPoint(reinterpret_cast<Float3 *>(position));
+    return g_RuntimePlayerOwner->AngleFromPoint(reinterpret_cast<Float3 *>(position));
 }
 static __forceinline i32 PhotoBulletPlayerCollision(
     PhotoBulletVector *position, PhotoBulletVector *size)
 {
-    return TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)
-        ->CheckBulletCollision(
+    return g_RuntimePlayerOwner->CheckBulletCollision(
             reinterpret_cast<Float3 *>(position),
             reinterpret_cast<Float3 *>(size));
 }
@@ -103,8 +101,6 @@ extern PhotoBulletManagerView *g_PhotoBulletManager;
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
 #define g_ItemManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner)
-#define g_PhotoBulletPlayer \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletPlayerView, g_RuntimePlayerOwner)
 #endif
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 // Target .data 0x004A40C0..0x004A424F contains six adjacent, relocation-
