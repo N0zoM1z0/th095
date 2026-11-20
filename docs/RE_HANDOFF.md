@@ -39,6 +39,8 @@ remaining exact view and uses the real Supervisor, ANM requests, and input
 slot in the exact task.
 SEM-393 gives ANM loading and texture upload the same storage in both
 profiles. Preload callers now name the asynchronous target directly.
+SEM-394 shares the embedded texture layout and upload code with Scene
+Select and Help, and routes the text texture clears through Supervisor.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

@@ -45,7 +45,6 @@ struct SceneStateHistoryView
 typedef AnmLoadedSprite SceneLoadedSpriteView;
 typedef AnmVm SceneAnmVmView;
 typedef AnmManager SceneAnmManagerView;
-typedef AnmTextureEntryView SceneTextureEntryView;
 
 // Scene controller storage needs a POD four-byte handle because it is overlaid
 // with the preview-text view.  Calls cross the boundary through the canonical
@@ -77,9 +76,6 @@ struct SceneAnmVmId
         g_AnmManager->SetInterrupt(*this, interrupt);
     }
 };
-
-typedef char SceneTextureEntrySizeIs10[
-    (sizeof(SceneTextureEntryView) == 0x10) ? 1 : -1];
 
 i32 __fastcall GetAnmFormat(i32 format);
 

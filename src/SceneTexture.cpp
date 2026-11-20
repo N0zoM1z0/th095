@@ -1,41 +1,15 @@
-#ifdef TH095_MATCH_EXACT
-#include "SceneTextureExact.inl"
-#else
-#include "SceneSelect.hpp"
+#include "AnmManager.hpp"
+#include "AnmWireFormat.hpp"
+#include "PixelFormats.hpp"
 
 #include <string.h>
 
 namespace th095
 {
 
-struct AnmTextureHeaderView
-{
-    char magic[4];
-    u16 unknown004;
-    i16 format;
-    i16 width;
-    i16 height;
-    u16 unknown00c;
-    u16 unknown00e;
-};
-
-typedef char AnmTextureHeaderViewSizeIs10[
-    (sizeof(AnmTextureHeaderView) == 0x10) ? 1 : -1];
-
-// Scene texture upload only consumes the embedded-texture pointer from the
-// serialized 0x40-byte ANM entry.  Keep the unconsumed prefix opaque here.
-struct SceneAnmRawEntryView
-{
-    u8 unconsumed000[0x30];
-    u32 textureOffset;
-};
-
-typedef char SceneAnmRawEntryTextureOffsetAt30[
-    (offsetof(SceneAnmRawEntryView, textureOffset) == 0x30) ? 1 : -1];
-
 struct SceneTextureLoadLocals
 {
-    SceneAnmRawEntryView *rawEntry;
+    AnmRawEntryView *rawEntry;
     AnmTextureHeaderView *header;
     RECT sourceRect;
     IDirect3DSurface8 *surface;
@@ -85,13 +59,7 @@ void __fastcall AccumulateArgb4444Neighbor(u32 *sums, PixelArgb4444 *pixel,
 
 i32 __fastcall GetAnmFormat(i32 format)
 {
-#if defined(DIFFBUILD)
-    if ((*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(&g_Supervisor) +
-                                  0x1e0) &
-         1) != 0)
-#else
     if (g_Supervisor.config.options.force16BitTextures)
-#endif
     {
         if (g_TextureFormatD3D8Mapping[format] == D3DFMT_A8R8G8B8 ||
             g_TextureFormatD3D8Mapping[format] == D3DFMT_UNKNOWN)
@@ -157,7 +125,7 @@ typedef char SceneTextureAlphaBleedSurfaceAt7C[
     (offsetof(SceneTextureAlphaBleedLocals, surface) == 0x7c) ? 1 : -1];
 
 void AnmManager::ApplyTextureAlphaBleed(
-    SceneTextureEntryView *entry)
+    AnmTextureEntryView *entry)
 {
     SceneTextureAlphaBleedLocals locals;
 
@@ -338,13 +306,13 @@ void AnmManager::ApplyTextureAlphaBleed(
     locals.surface->Release();
 }
 
-i32 AnmManager::LoadTexture(SceneTextureEntryView *entry, u8 *data,
-                                     i32 size, i32 format, i32 unused, i32 hasData)
+i32 AnmManager::LoadTexture(AnmTextureEntryView *entry, u8 *data,
+                            i32 size, i32 format, i32, i32 hasData)
 {
     SceneTextureLoadLocals locals;
 
     format = GetAnmFormat(format);
-    entry->rawDataSize = size;
+    entry->size = size;
 
     locals.surface = NULL;
     entry->texture->GetSurfaceLevel(0, &locals.surface);
@@ -355,7 +323,7 @@ i32 AnmManager::LoadTexture(SceneTextureEntryView *entry, u8 *data,
     }
     else
     {
-        locals.rawEntry = reinterpret_cast<SceneAnmRawEntryView *>(data);
+        locals.rawEntry = reinterpret_cast<AnmRawEntryView *>(data);
         locals.header = reinterpret_cast<AnmTextureHeaderView *>(
             reinterpret_cast<u8 *>(locals.rawEntry) +
             locals.rawEntry->textureOffset);
@@ -388,9 +356,9 @@ i32 AnmManager::LoadTexture(SceneTextureEntryView *entry, u8 *data,
 #pragma var_order(regionSurface, regionFileDestinationRect, regionDescription, \
                   regionSourceRect, regionDataDestinationRect, regionHeader, \
                   regionRawEntry, this)
-i32 AnmManager::LoadTextureRegion(SceneTextureEntryView *entry,
-                                           u8 *data, i32 size, i32 format,
-                                           i32 unused, i32 hasData, i32 top)
+i32 AnmManager::LoadTextureRegion(AnmTextureEntryView *entry,
+                                  u8 *data, i32 size, i32 format,
+                                  i32, i32 hasData, i32 top)
 {
     IDirect3DSurface8 *regionSurface;
     RECT regionFileDestinationRect;
@@ -398,10 +366,10 @@ i32 AnmManager::LoadTextureRegion(SceneTextureEntryView *entry,
     RECT regionSourceRect;
     RECT regionDataDestinationRect;
     AnmTextureHeaderView *regionHeader;
-    SceneAnmRawEntryView *regionRawEntry;
+    AnmRawEntryView *regionRawEntry;
 
     format = GetAnmFormat(format);
-    entry->rawDataSize = size;
+    entry->size = size;
 
     regionSurface = NULL;
     entry->texture->GetSurfaceLevel(0, &regionSurface);
@@ -418,7 +386,7 @@ i32 AnmManager::LoadTextureRegion(SceneTextureEntryView *entry,
     }
     else
     {
-        regionRawEntry = reinterpret_cast<SceneAnmRawEntryView *>(data);
+        regionRawEntry = reinterpret_cast<AnmRawEntryView *>(data);
         regionHeader = reinterpret_cast<AnmTextureHeaderView *>(
             reinterpret_cast<u8 *>(regionRawEntry) +
             regionRawEntry->textureOffset);
@@ -481,5 +449,3 @@ void AnmTextureEntryView::Clear()
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

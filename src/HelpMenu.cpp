@@ -48,12 +48,6 @@ extern u16 g_PressedButtons;
 #define g_ResultMenuInput (RuntimeResultMenuInput())
 #define g_PressedButtons (RuntimePressedButtons())
 
-struct HelpAnmStorageView
-{
-    u8 unknown000[0x14];
-    AnmTextureEntryView *textures;
-};
-
 static __forceinline u16 GetHelpPressedButtons(u16 buttons)
 {
     return g_PressedButtons & buttons;
@@ -97,7 +91,7 @@ i32 HelpMenuView::UpdateHelpMenu()
         this->cursor.count = 9;
         this->cursor.Set(0);
 
-        ((HelpAnmStorageView *)this->sceneAnm)->textures[13].Clear();
+        this->sceneAnm->textures[13].Clear();
         for (i32 i = 0; i < 9; i++)
         {
             HelpMenuCreateVmAt(this, 0x91 + i);
@@ -189,12 +183,10 @@ i32 HelpMenuView::UpdateHelpMenu()
     case TH095_HELP_STATE_PAGE_DATA_READY:
     {
         g_AnmManager->LoadTexture(
-            reinterpret_cast<SceneTextureEntryView *>(
-                &((HelpAnmStorageView *)this->sceneAnm)->textures[13]),
+            &this->sceneAnm->textures[13],
             this->helpAnmData, this->helpAnmSize, 1, 0, 1);
         HelpMenuFreeAnmData(this);
-        ((HelpAnmStorageView *)this->sceneAnm)->textures[13]
-            .texture->PreLoad();
+        this->sceneAnm->textures[13].texture->PreLoad();
         HelpMenuCreateVmAt(this, 0x90);
         this->state = TH095_HELP_STATE_PAGE_VIEW;
     }

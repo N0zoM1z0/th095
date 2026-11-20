@@ -48,12 +48,6 @@ static __forceinline void MusicRoomFreeCommentFile(MusicRoomView *view)
     free(block);
 }
 
-struct MusicRoomAnmStorageView
-{
-    u8 unknown000[0x14];
-    AnmTextureEntryView *textures;
-};
-
 static __forceinline u16 GetMusicRoomPressedButtons(u16 buttons)
 {
     return g_PressedButtons & buttons;
@@ -126,8 +120,8 @@ i32 MusicRoomView::UpdateMusicRoom()
         // Target 0x004510E1 reads 0x004C4AAC, Supervisor::textAnm, for the
         // writable text surface.  title.anm remains the owner of the music
         // room's static scripts and its separate dynamic entry 13.
-        ((MusicRoomAnmStorageView *)g_Supervisor.textAnm)->textures[0].Clear();
-        ((MusicRoomAnmStorageView *)this->sceneAnm)->textures[13].Clear();
+        g_Supervisor.textAnm->textures[0].Clear();
+        this->sceneAnm->textures[13].Clear();
 
         this->vmIds.SetInterrupt(0x19, 3);
         this->vmIds.SetInterrupt(0x1a, 3);

@@ -1,4 +1,5 @@
 #include "SceneSelect.hpp"
+#include "AnmManager.hpp"
 
 #include <string.h>
 

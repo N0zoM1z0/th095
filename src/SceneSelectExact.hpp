@@ -168,35 +168,18 @@ struct SceneAnmManagerView
     void SetInterrupt(SceneAnmVmId id, i32 interrupt);
     SceneAnmVmView *GetVm(SceneAnmVmId id);
     void MarkVmForDeletion(SceneAnmVmId id);
-    i32 LoadTexture(struct SceneTextureEntryView *entry, u8 *data, i32 size,
-                    i32 format, i32 unknown, i32 hasData);
-    i32 LoadTextureRegion(struct SceneTextureEntryView *entry, u8 *data,
-                          i32 size, i32 format, i32 unknown, i32 hasData,
-                          i32 top);
-    void ApplyTextureAlphaBleed(struct SceneTextureEntryView *entry);
 };
 
 extern SceneAnmManagerView *g_SceneAnmManager;
 
-struct SceneTextureEntryView
-{
-    IDirect3DTexture8 *texture;
-    u8 *rawData;
-    i32 rawDataSize;
-    i32 bytesPerPixel;
-
-    void Clear();
-};
-
-typedef char SceneTextureEntrySizeIs10[
-    (sizeof(SceneTextureEntryView) == 0x10) ? 1 : -1];
+struct AnmTextureEntryView;
 
 i32 __fastcall GetAnmFormat(i32 format);
 
 struct SceneAnmLoadedView
 {
     u8 unknown000[0x14];
-    SceneTextureEntryView *textures;
+    AnmTextureEntryView *textures;
 
     void SetSprite(SceneAnmVmView *vm, i32 spriteIndex);
     void SetSprite(AnmVm *vm, i32 spriteIndex);

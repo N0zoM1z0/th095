@@ -17995,3 +17995,27 @@ agree in 216 load and reuse cases, two release/service cases and
 allocation and D3D responses and check cancellation, slot bounds, lock
 balance, format conversion, pitch and failure behavior. See
 `.analysis/pi/anm-preload-owner/` for the local recipes.
+
+### SEM-394 — share the scene texture upload path
+
+The preloader and scene uploader now read the same version-4 ANM entry and
+0x10-byte THTX header. The embedded payload offset at +0x30 is measured from
+the ANM entry. The decoder receives pixels after the THTX header and uses
+the header's source format for the pitch. The destination format still
+uses Supervisor's `force16BitTextures` option at +0x1E0 bit 0, which is also
+produced and consumed by the device initialization path.
+
+Scene Select and Help pass their loaded texture records to the real
+`AnmManager`. Help clears its own entry 13. Music Room clears both its entry
+13 and Supervisor's text ANM entry 0. Scene Select also clears that shared
+text entry. The exact header retains its loaded-ANM projection for other
+methods, with a typed pointer to the texture records at +0x14.
+
+The 72 affected strict comparisons preserve the owned extents and effective
+relocation destinations, including alpha bleed's jump tables. All four
+mapped sections in each rebuilt PE match its pre-change link. Across the
+regular and reversed maps, 17 calls to format selection, upload, alpha
+bleed and clear reach their moved targets. The linked-code fixture checks
+144 file and embedded uploads and ten alpha/clear cases against retail.
+It executes the pixel operations and supplies D3D API responses, including
+failed uploads. See `.analysis/pi/scene-texture-owner/` for the recipes.

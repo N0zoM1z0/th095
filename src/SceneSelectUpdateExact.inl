@@ -1,4 +1,5 @@
 #include "SceneSelect.hpp"
+#include "AnmManager.hpp"
 #include "AnmVmInterpolation.hpp"
 
 #include "ReplayBrowser.hpp"
@@ -452,13 +453,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     {
         if (view->pendingTextures.count == 1)
         {
-            g_SceneAnmManager->LoadTexture(
+            g_AnmManager->LoadTexture(
                 &view->sceneAnm->textures[3],
                 view->pendingTextures.primaryData[0],
                 view->pendingTextures.primarySize[0],
                 1, 0, 1);
             view->sceneAnm->textures[3].texture->PreLoad();
-            g_SceneAnmManager->LoadTexture(
+            g_AnmManager->LoadTexture(
                 &view->sceneAnm->textures[4],
                 view->pendingTextures.secondaryData[0],
                 view->pendingTextures.secondarySize[0],
@@ -554,7 +555,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     {
                         groupPreviewDataPositiveValue = 0;
                     }
-                    g_SceneAnmManager->LoadTexture(
+                    g_AnmManager->LoadTexture(
                         &view->sceneAnm->textures[2],
                         groupPreviewDataPositiveValue,
                         groupPreviewSizePositiveValue,
@@ -585,7 +586,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     {
                         scenePreviewDataPositiveValue = 0;
                     }
-                    g_SceneAnmManager->LoadTextureRegion(
+                    g_AnmManager->LoadTextureRegion(
                         &view->sceneAnm->textures[2],
                         scenePreviewDataPositiveValue,
                         scenePreviewSizePositiveValue,
@@ -652,7 +653,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     {
                         groupPreviewDataNegativeValue = 0;
                     }
-                    g_SceneAnmManager->LoadTexture(
+                    g_AnmManager->LoadTexture(
                         &view->sceneAnm->textures[2],
                         groupPreviewDataNegativeValue,
                         groupPreviewSizeNegativeValue,
@@ -700,7 +701,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     case 0:
     {
         g_SceneSupervisor.StopReplayScan();
-        g_SceneUiAnm->textures[0].Clear();
+        g_Supervisor.textAnm->textures[0].Clear();
         SceneSelectInitialTimerViewPhase(view);
         view->groupCursor.Push();
 

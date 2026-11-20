@@ -1,5 +1,6 @@
 #include "Main.hpp"
 #include "HelpMenu.hpp"
+#include "AnmManager.hpp"
 #include "FileSystem.hpp"
 #include "SoundPlayer.hpp"
 
@@ -24,20 +25,6 @@ static __forceinline void HelpMenuFreeAnmData(HelpMenuView *view)
 
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
-
-struct HelpTextureEntryView
-{
-    IDirect3DTexture8 *texture;
-    u8 unknown004[0x0c];
-
-    void Clear();
-};
-
-struct HelpAnmStorageView
-{
-    u8 unknown000[0x14];
-    HelpTextureEntryView *textures;
-};
 
 static __forceinline u16 GetHelpPressedButtons(u16 buttons)
 {
@@ -81,7 +68,7 @@ i32 HelpMenuView::UpdateHelpMenu()
         this->cursor.count = 9;
         this->cursor.Set(0);
 
-        ((HelpAnmStorageView *)this->sceneAnm)->textures[13].Clear();
+        this->sceneAnm->textures[13].Clear();
         for (i32 i = 0; i < 9; i++)
         {
             HelpMenuCreateVmAt(this, 0x91 + i);
@@ -172,13 +159,11 @@ i32 HelpMenuView::UpdateHelpMenu()
 
     case 3:
     {
-        g_SceneAnmManager->LoadTexture(
-            reinterpret_cast<SceneTextureEntryView *>(
-                &((HelpAnmStorageView *)this->sceneAnm)->textures[13]),
+        g_AnmManager->LoadTexture(
+            &this->sceneAnm->textures[13],
             this->helpAnmData, this->helpAnmSize, 1, 0, 1);
         HelpMenuFreeAnmData(this);
-        ((HelpAnmStorageView *)this->sceneAnm)->textures[13]
-            .texture->PreLoad();
+        this->sceneAnm->textures[13].texture->PreLoad();
         HelpMenuCreateVmAt(this, 0x90);
         this->state = 4;
     }

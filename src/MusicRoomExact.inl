@@ -1,7 +1,7 @@
 #include "MusicRoom.hpp"
+#include "AnmManager.hpp"
 #include "FileSystem.hpp"
 #include "SoundPlayer.hpp"
-#include "Supervisor.hpp"
 
 #include <string.h>
 
@@ -31,20 +31,6 @@ static __forceinline void MusicRoomFreeCommentFile(MusicRoomView *view)
     char *block = view->commentFile;
     free(block);
 }
-
-struct MusicRoomTextureEntryView
-{
-    IDirect3DTexture8 *texture;
-    u8 unknown004[0x0c];
-
-    void Clear();
-};
-
-struct MusicRoomAnmStorageView
-{
-    u8 unknown000[0x14];
-    MusicRoomTextureEntryView *textures;
-};
 
 static __forceinline u16 GetMusicRoomPressedButtons(u16 buttons)
 {
@@ -115,8 +101,8 @@ i32 MusicRoomView::UpdateMusicRoom()
         MusicRoomCreateVmAt(this, 0x69);
         MusicRoomCreateVmAt(this, 0x17);
 
-        ((MusicRoomAnmStorageView *)g_SceneUiAnm)->textures[0].Clear();
-        ((MusicRoomAnmStorageView *)this->sceneAnm)->textures[13].Clear();
+        g_Supervisor.textAnm->textures[0].Clear();
+        this->sceneAnm->textures[13].Clear();
 
         this->vmIds.SetInterrupt(0x19, 3);
         this->vmIds.SetInterrupt(0x1a, 3);
