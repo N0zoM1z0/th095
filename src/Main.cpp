@@ -87,7 +87,6 @@ char g_WindowTitle[] =
 // those typed views through these single production owners.
 void *g_RuntimeBulletManagerOwner = 0;
 void *g_RuntimeEnemyManagerOwner = 0;
-void *g_RuntimeEffectManagerOwner = 0;
 PhotoStageStateView *g_PhotoStageState = NULL;
 PhotoGameUpdateView *g_RuntimePlayerOwner = NULL;
 #endif

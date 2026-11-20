@@ -69,12 +69,9 @@ static inline SoundPlayer *PhotoSoundPlayer()
 
 extern PhotoEnemyManagerView *g_PhotoRuntime;
 extern PhotoBulletManagerView *g_PhotoBulletManager;
-extern PhotoEffectManagerView *g_PhotoEffectManager;
 #ifndef DIFFBUILD
 #define g_PhotoRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
-#define g_PhotoEffectManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEffectManagerView, g_RuntimeEffectManagerOwner)
 #endif
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;

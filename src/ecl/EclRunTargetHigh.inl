@@ -446,7 +446,7 @@ enter_subroutine:
 
     case 102:
         TH095_ECL_BULLET_RESET();
-        TH095_ECL_STAGE_RESET();
+        PhotoEffectManagerView::DrawSecondary(g_PhotoEffectManager);
         break;
 
     case 104:

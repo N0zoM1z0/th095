@@ -7,6 +7,7 @@
 #include "PhotoEnemyControl.hpp"
 #include "PhotoEnemyEclAccess.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
+#include "PhotoEffectRuntime.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "Background.hpp"
 #include "PhotoBulletManager.hpp"
@@ -14,7 +15,6 @@
 #include "PhotoEnemyManager.hpp"
 #endif
 #ifndef DIFFBUILD
-#include "PhotoEffectRuntime.hpp"
 #include "ScreenEffect.hpp"
 #endif
 #include "Rng.hpp"
@@ -154,23 +154,6 @@ typedef char ExtendedPhotoEffectNodeVmAt98[(offsetof(ExtendedPhotoEffectNode, vm
 typedef char ExtendedPhotoEffectNodeFlagsAt58C[(offsetof(ExtendedPhotoEffectNode, flags) == 0x58c) ? 1 : -1];
 
 #ifdef DIFFBUILD
-#include "ecl/EclExtendedPhotoEffectEmission.inl"
-#define TH095_EXT_EFFECT_SPAWN(manager, type, args) manager->Spawn(type, args)
-#define TH095_EXT_EFFECT_FIRST(manager) ((manager)->first)
-#else
-typedef ::th095::PhotoEffectManagerView ExtendedPhotoEffectManager;
-#define TH095_EXT_EFFECT_SPAWN(manager, type, args) \
-    (manager)->Spawn(type, args)
-#define TH095_EXT_EFFECT_FIRST(manager) \
-    reinterpret_cast<ExtendedPhotoEffectNode *>((manager)->listRoot.next)
-#endif
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_EXT_EFFECT_SPAWN_ROTATING_LASER 1
-#else
-#define TH095_EXT_EFFECT_SPAWN_ROTATING_LASER PHOTO_EFFECT_SPAWN_ROTATING_LASER
-#endif
-
-#ifdef DIFFBUILD
 #define TH095_EXT_COUNT_PHOTO_TARGETS(camera, distance, rate) \
     TH095_EXT_CAMERA_METHOD(camera)->CountPhotoTargets( \
         (distance), (rate))
@@ -211,7 +194,6 @@ extern AnmManagerLookupView *g_AnmManager;
 extern u8 *g_Background;
 #endif
 extern ExtendedBulletManager *g_PhotoBulletManager;
-extern ExtendedPhotoEffectManager *g_PhotoEffectManager;
 extern ExtendedPhotoEnemyManagerView *g_ExtendedPhotoEnemyManager;
 
 #if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
@@ -225,8 +207,6 @@ static __forceinline u8 *ExtendedBackgroundOwner()
 #ifndef DIFFBUILD
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(ExtendedBulletManager, ::th095::g_RuntimeBulletManagerOwner)
-#define g_PhotoEffectManager \
-    TH095_RUNTIME_GLOBAL_PTR(ExtendedPhotoEffectManager, ::th095::g_RuntimeEffectManagerOwner)
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -760,7 +740,8 @@ typedef char ExtendedEffectCallbackLocalsSize50[(sizeof(ExtendedEffectCallbackLo
 static __forceinline void FindSpawnedExtendedEffect(ExtendedEffectCallbackLocals *locals)
 {
     ExtendedPhotoEffectNode *cursor;
-    cursor = TH095_EXT_EFFECT_FIRST(g_PhotoEffectManager);
+    cursor = reinterpret_cast<ExtendedPhotoEffectNode *>(
+        g_PhotoEffectManager->listRoot.next);
     while (cursor != NULL)
     {
         if (cursor->id == g_PhotoEffectManager->nextId)
@@ -794,9 +775,8 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.angularVelocity = 0.0f;
     locals.args.followPhotoTarget = 0;
 
-    locals.spawnId = TH095_EXT_EFFECT_SPAWN(
-        g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
-        &locals.args);
+    locals.spawnId = g_PhotoEffectManager->Spawn(
+        PHOTO_EFFECT_SPAWN_ROTATING_LASER, &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
@@ -827,9 +807,8 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.angularVelocity = 0.0f;
     locals.args.followPhotoTarget = 0;
 
-    locals.spawnId = TH095_EXT_EFFECT_SPAWN(
-        g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
-        &locals.args);
+    locals.spawnId = g_PhotoEffectManager->Spawn(
+        PHOTO_EFFECT_SPAWN_ROTATING_LASER, &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
@@ -860,9 +839,8 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.angularVelocity = 0.0f;
     locals.args.followPhotoTarget = 0;
 
-    locals.spawnId = TH095_EXT_EFFECT_SPAWN(
-        g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
-        &locals.args);
+    locals.spawnId = g_PhotoEffectManager->Spawn(
+        PHOTO_EFFECT_SPAWN_ROTATING_LASER, &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(

@@ -11,9 +11,9 @@
 #include "Main.hpp"
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
+#include "PhotoEffectRuntime.hpp"
 #include "ScreenEffect.hpp"
 #ifndef DIFFBUILD
-#include "PhotoEffectRuntime.hpp"
 #include "ReplayManager.hpp"
 #endif
 
@@ -37,11 +37,6 @@ typedef AnmLoaded PhotoStageAnmLoadedView;
 #ifdef DIFFBUILD
 extern PhotoCardInfoView *g_PhotoStageRuntime;
 #define TH095_PHOTO_STAGE_CARD_INFO g_PhotoStageRuntime
-
-struct PhotoStageEffectManagerView
-{
-    i32 CommitCapturedObjects();
-};
 
 struct PhotoStageBulletManagerView
 {
@@ -75,10 +70,6 @@ typedef char PhotoStageScoreEntryTailSizeIs48[
      0x48)
         ? 1
         : -1];
-
-#ifdef DIFFBUILD
-extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
-#endif
 
 #ifndef DIFFBUILD
 #define TH095_PHOTO_STAGE_CARD_INFO g_PhotoCardInfo
@@ -937,13 +928,10 @@ i32 PhotoStageStateView::Update()
                     }
                 }
 
+                PhotoEffectManagerView::CheckCollisionStored(g_PhotoEffectManager);
 #ifdef DIFFBUILD
-                g_PhotoStageEffectManager->CommitCapturedObjects();
                 g_PhotoStageBulletManager->ClearCapturedBullets();
 #else
-                PhotoEffectManagerView::CheckCollisionStored(
-                    TH095_RUNTIME_GLOBAL_PTR(
-                        PhotoEffectManagerView, g_RuntimeEffectManagerOwner));
                 TH095_RUNTIME_GLOBAL_PTR(
                     PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
                     ->ClearCapturedBullets();

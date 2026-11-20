@@ -4,6 +4,7 @@
 #include "ControllerInputSlot.hpp"
 #include "PhotoFront.hpp"
 #include "PhotoItemManager.hpp"
+#include "PhotoEffectRuntime.hpp"
 #include "PhotoStage.hpp"
 #include "SoundPlayer.hpp"
 #include "ScoreData.hpp"
@@ -45,12 +46,6 @@ struct PhotoEnemyManagerTaskView
 struct ResultScreen
 {
     static ResultScreen *Create();
-    void Destroy();
-};
-
-struct PhotoLaserManagerTaskView
-{
-    static PhotoLaserManagerTaskView *Create();
     void Destroy();
 };
 
@@ -132,7 +127,7 @@ struct PhotoGameTaskView
     PhotoStageStateView *photoOverlay;       // +0x018
     PhotoItemManagerView *items;         // +0x01c
     ResultScreen *pause;                     // +0x020
-    PhotoLaserManagerTaskView *lasers;       // +0x024
+    PhotoEffectManagerView *lasers;       // +0x024
     ZunTimer stageTimer;                     // +0x028
     // The task initializes this member before clearing its full storage.
     GameConfigurationConstructionAdapter runtimeConfig; // +0x034
@@ -559,7 +554,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->lasers = PhotoLaserManagerTaskView::Create();
+    this->lasers = PhotoEffectManagerView::Create();
     if (this->lasers == NULL)
     {
         return ZUN_ERROR;

@@ -1,5 +1,6 @@
 #include "PhotoStage.hpp"
 #include "PhotoFront.hpp"
+#include "PhotoEffectRuntime.hpp"
 #include "SceneData.hpp"
 #include "ScoreData.hpp"
 #include "PhotoGamePlayer.hpp"
@@ -62,11 +63,6 @@ struct PhotoStageRuntimeView
     char comment[1];
 };
 
-struct PhotoStageEffectManagerView
-{
-    i32 CommitCapturedObjects();
-};
-
 struct PhotoStageBulletManagerView
 {
     i32 ClearCapturedBullets();
@@ -95,7 +91,6 @@ struct PhotoStageCaptureLocals
 
 
 extern PhotoStageRuntimeView *g_PhotoStageRuntime;
-extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
 extern u8 g_PhotoCaptureCountdown;
 extern f64 g_PhotoLagNumerator;
@@ -930,7 +925,7 @@ i32 PhotoStageStateView::Update()
                     }
                 }
 
-                g_PhotoStageEffectManager->CommitCapturedObjects();
+                PhotoEffectManagerView::CheckCollisionStored(g_PhotoEffectManager);
                 g_PhotoStageBulletManager->ClearCapturedBullets();
             }
         }

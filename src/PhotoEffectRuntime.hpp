@@ -13,7 +13,6 @@ struct Float3;
 struct AnmLoaded;
 class ChainElem;
 
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 enum PhotoEffectSpawnKind
 {
     PHOTO_EFFECT_SPAWN_STRAIGHT_LASER = 0,
@@ -33,7 +32,6 @@ enum PhotoEffectState
 };
 typedef char PhotoEffectStateSizeIs4[
     (sizeof(PhotoEffectState) == sizeof(i32)) ? 1 : -1];
-#endif
 
 struct PhotoEffectVector
 {
@@ -91,11 +89,7 @@ struct PhotoEffectBaseView
 
     PhotoEffectBaseView *previous;          // +0x04
     PhotoEffectBaseView *next;              // +0x08
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    i32 state;                              // +0x0c
-#else
     PhotoEffectState state;                 // +0x0c
-#endif
     ZunTimer timer;                         // +0x10
     PhotoEffectVector position;             // +0x1c
     PhotoEffectVector velocity;             // +0x28
@@ -111,6 +105,10 @@ struct PhotoEffectBaseView
 
 typedef char PhotoEffectBaseSizeIs50[
     (sizeof(PhotoEffectBaseView) == 0x50) ? 1 : -1];
+typedef char PhotoEffectBaseListFields[
+    (offsetof(PhotoEffectBaseView, next) == 0x08 &&
+     offsetof(PhotoEffectBaseView, state) == 0x0c &&
+     offsetof(PhotoEffectBaseView, id) == 0x4c) ? 1 : -1];
 
 struct PhotoEffectManagerView
 {
@@ -155,8 +153,12 @@ typedef char PhotoEffectManagerSizeIs80[
     (sizeof(PhotoEffectManagerView) == 0x80) ? 1 : -1];
 typedef char PhotoEffectManagerLastAt50[
     (offsetof(PhotoEffectManagerView, last) == 0x50) ? 1 : -1];
+typedef char PhotoEffectManagerNextIdAt58[
+    (offsetof(PhotoEffectManagerView, nextId) == 0x58) ? 1 : -1];
 typedef char PhotoEffectManagerAnmAt74[
     (offsetof(PhotoEffectManagerView, anm) == 0x74) ? 1 : -1];
 
+
+extern PhotoEffectManagerView *g_PhotoEffectManager;
 
 } // namespace th095

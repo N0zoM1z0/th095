@@ -105,11 +105,6 @@ C_ASSERT(sizeof(SpawnPacketSmall) == 0x10);
 // merge their overlapping prefixes: PhotoStraightLaserSpawnArgs is 0x28 and
 // PhotoRotatingLaserSpawnArgs is 0x48.
 
-struct PhotoEffectManager
-{
-    u32 Spawn(i32 effectType, void *args);
-};
-
 template <typename Camera>
 inline void AssignPhotoCameraLimit(Camera *camera, i32 value)
 {
@@ -156,11 +151,6 @@ struct Th095BulletManager
     void ResetEnemyPatterns();
 };
 
-struct Th095StageController
-{
-    void ResetEnemyState();
-};
-
 struct Th095RuntimeManager
 {
     Enemy *SpawnEnemy(i32 subroutineId, Float3 *position, i32 arg2,
@@ -197,11 +187,9 @@ inline i32 Th095PreserveI32(i32 value)
 #define TH095_ENEMY_PHOTO_PULSE_HANDLE(enemy) \
     TH095_ECL_PHOTO_PULSE_VM((enemy), PhotoAnmHandle)
 
-extern PhotoEffectManager *g_Th095PhotoEffectManager;
 extern u8 *g_Th095StageState;
 extern u8 *g_Th095Runtime;
 extern Th095BulletManager *g_Th095BulletManager;
-extern Th095StageController *g_Th095StageController;
 extern AnmManagerLookup *g_Th095AnmManager;
 extern PhotoModeController *g_Th095PhotoMode;
 extern EclExtendedCallback g_Th095ExInsn[];
@@ -657,7 +645,7 @@ enter_subroutine:
         args.maximumLength = TH08_ECL_READ_F(ctx, 4);
         args.width = TH08_ECL_READ_F(ctx, 5);
         args.initialLength = 0;
-        TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_STRAIGHT_LASER, &args);
         break;
     }
     case 146:
@@ -675,7 +663,7 @@ enter_subroutine:
         args.maximumLength = TH08_ECL_READ_F(ctx, 4);
         args.width = TH08_ECL_READ_F(ctx, 5);
         args.initialLength = 0;
-        TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_STRAIGHT_LASER, &args);
         break;
     }
     case 147:
@@ -697,7 +685,7 @@ enter_subroutine:
         args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
         args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
     case 148:
@@ -721,7 +709,7 @@ enter_subroutine:
         args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
         args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
     case 153:
@@ -743,7 +731,7 @@ enter_subroutine:
         args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
         args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
     case 154:
@@ -767,7 +755,7 @@ enter_subroutine:
         args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
         args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
     case 155:
@@ -792,7 +780,7 @@ enter_subroutine:
         args.velocity.x = TH08_ECL_READ_F(ctx, 11);
         args.velocity.y = TH08_ECL_READ_F(ctx, 12);
         args.speed = 2.0f;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
     case 157:
@@ -817,7 +805,7 @@ enter_subroutine:
         args.velocity.x = TH08_ECL_READ_F(ctx, 11);
         args.velocity.y = TH08_ECL_READ_F(ctx, 12);
         args.speed = 5.0f;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
     case 156:
@@ -844,7 +832,7 @@ enter_subroutine:
         args.velocity.x = TH08_ECL_READ_F(ctx, 11);
         args.velocity.y = TH08_ECL_READ_F(ctx, 12);
         args.speed = 2.0f;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
     case 149:

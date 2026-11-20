@@ -4,6 +4,7 @@
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
+#include "PhotoEffectRuntime.hpp"
 
 namespace th095
 {
@@ -41,7 +42,6 @@ struct PhotoResetTargetView
 
 extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
 extern PhotoResetTargetView *g_PhotoBulletResetTarget;
-extern PhotoResetTargetView *g_PhotoStageResetTarget;
 extern u16 g_PhotoInput;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -678,7 +678,7 @@ i32 PhotoGameUpdateView::Update()
         else if (this->completionTimer == 15)
         {
             g_PhotoBulletResetTarget->ResetForPhotoTransition();
-            g_PhotoStageResetTarget->ResetForPhotoTransition();
+            PhotoEffectManagerView::DrawSecondary(g_PhotoEffectManager);
         }
         else if (this->completionTimer == 30)
         {

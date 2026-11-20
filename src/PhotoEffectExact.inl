@@ -4,82 +4,10 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
 #include "PhotoItemManager.hpp"
+#include "PhotoEffectRuntime.hpp"
 
 namespace th095
 {
-
-struct PhotoEffectVector
-{
-    f32 x;
-    f32 y;
-    f32 z;
-
-    PhotoEffectVector()
-    {
-    }
-
-    PhotoEffectVector(f32 x, f32 y, f32 z)
-    {
-        this->x = x;
-        this->y = y;
-        this->z = z;
-    }
-
-    PhotoEffectVector operator*(f32 scalar) const
-    {
-        return PhotoEffectVector(
-            this->x * scalar,
-            this->y * scalar,
-            this->z * scalar);
-    }
-
-    void operator+=(const PhotoEffectVector &other)
-    {
-        this->x += other.x;
-        this->y += other.y;
-        this->z += other.z;
-    }
-};
-
-typedef char PhotoEffectVectorSizeIsC[
-    (sizeof(PhotoEffectVector) == 0x0c) ? 1 : -1];
-
-struct PhotoEffectBaseView
-{
-    PhotoEffectBaseView()
-    {
-        memset(this, 0, sizeof(*this));
-    }
-
-    virtual i32 Initialize(void *args);
-    virtual i32 Update();
-    virtual i32 Draw();
-    virtual i32 Cleanup();
-    virtual i32 DrawSecondary();
-    virtual i32 CountPhotoTargets(
-        Float3 *position, Float3 *size, i32 capture);
-    virtual i32 CheckCollision(
-        Float3 *position, Float3 *size, i32 capture);
-    virtual i32 CountNearbyTargets(Float3 *position, f32 radius);
-
-    PhotoEffectBaseView *previous;          // +0x04
-    PhotoEffectBaseView *next;              // +0x08
-    i32 state;                              // +0x0c
-    ZunTimer timer;                         // +0x10
-    PhotoEffectVector position;             // +0x1c
-    PhotoEffectVector velocity;             // +0x28
-    f32 angle;                              // +0x34
-    f32 length;                             // +0x38
-    f32 width;                              // +0x3c
-    f32 speed;                              // +0x40
-    f32 tailOffset;                         // +0x44
-    u8 deletionCounter;                    // +0x48
-    u8 unknown49[3];                        // +0x49
-    i32 id;                                 // +0x4c
-};
-
-typedef char PhotoEffectBaseSizeIs50[
-    (sizeof(PhotoEffectBaseView) == 0x50) ? 1 : -1];
 
 struct PhotoEffectArgsSmallView
 {
@@ -190,15 +118,6 @@ struct PhotoEnemyManagerView
 
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 
-struct PhotoEffectAnmView
-{
-    void SetAndExecuteScript(AnmVm *vm, i32 scriptIndex);
-    AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
-};
-
-struct PhotoEffectManagerView;
-
-extern PhotoEffectManagerView *g_PhotoEffectManager;
 extern AnmManager *g_AnmManager;
 extern u32 g_PhotoEffectColors[];
 
@@ -213,52 +132,6 @@ extern i32 __fastcall GetPhotoEffectScriptBase(i32 type);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 void __fastcall RotatePhotoEffectVector(
     Float3 *output, const Float3 *input, f32 angle);
-
-struct PhotoEffectManagerView
-{
-    PhotoEffectBaseView listRoot;           // +0x00
-    PhotoEffectBaseView *last;              // +0x50
-    i32 effectCount;                        // +0x54
-    i32 nextId;                             // +0x58
-    PhotoEffectVector collisionPosition;    // +0x5c
-    PhotoEffectVector collisionSize;        // +0x68
-    PhotoEffectAnmView *anm;                // +0x74
-    ChainElem *calcChain;                   // +0x78
-    ChainElem *drawChain;                   // +0x7c
-
-    PhotoEffectManagerView();
-    ~PhotoEffectManagerView();
-
-    static PhotoEffectManagerView *Create();
-    void Destroy();
-    i32 Initialize();
-
-    void Remove(PhotoEffectBaseView *effect);
-    static i32 __fastcall Update(PhotoEffectManagerView *manager);
-    static i32 __fastcall Draw(PhotoEffectManagerView *manager);
-    static i32 __fastcall OnUpdate(PhotoEffectManagerView *manager);
-    static i32 __fastcall OnDraw(PhotoEffectManagerView *manager);
-    i32 Spawn(i32 type, void *args);
-    void Append(PhotoEffectBaseView *effect)
-    {
-        PhotoEffectBaseView *previous = this->last;
-        effect->previous = previous;
-        previous->next = effect;
-        this->last = effect;
-    }
-    i32 CountPhotoTargets(Float3 *position, Float3 *size);
-    static i32 __fastcall CheckCollisionStored(
-        PhotoEffectManagerView *manager);
-    static i32 __fastcall DrawSecondary(PhotoEffectManagerView *manager);
-    i32 CountNearbyTargets(Float3 *position, f32 radius);
-};
-
-typedef char PhotoEffectManagerSizeIs80[
-    (sizeof(PhotoEffectManagerView) == 0x80) ? 1 : -1];
-typedef char PhotoEffectManagerLastAt50[
-    (offsetof(PhotoEffectManagerView, last) == 0x50) ? 1 : -1];
-typedef char PhotoEffectManagerAnmAt74[
-    (offsetof(PhotoEffectManagerView, anm) == 0x74) ? 1 : -1];
 
 static inline i32 PhotoEffectIsOutsidePlayfield(
     PhotoEffectVector *position, f32 width, f32 height)
@@ -363,9 +236,9 @@ static __forceinline void PhotoEffectSetAdditivePhase(AnmVm *vm)
 i32 PhotoStraightLaserView::Initialize(void *args)
 {
     this->spawn = *static_cast<PhotoEffectArgsSmallView *>(args);
-    this->state = 2;
+    this->state = PHOTO_EFFECT_STATE_ACTIVE;
 
-    g_PhotoEffectManager->anm->SetAndExecuteScript(
+    g_PhotoEffectManager->anm->InitializeVm(
         &this->bodyVm,
         GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
     this->bodyVm.pendingInterrupt = 2;
@@ -375,7 +248,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     this->bodyVm.alignmentX = ANM_ALIGNMENT_CENTER;
     this->bodyVm.alignmentY = ANM_ALIGNMENT_END;
 
-    g_PhotoEffectManager->anm->SetAndExecuteScript(
+    g_PhotoEffectManager->anm->InitializeVm(
         &this->tailVm, this->spawn.color + 0xc2);
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
@@ -443,19 +316,19 @@ i32 PhotoRotatingLaserView::Update()
 
     switch (this->state)
     {
-    case 3:
+    case PHOTO_EFFECT_STATE_STARTUP:
         if (this->timer >= this->spawn.startupDuration)
         {
             this->timer = 0;
-            this->state = 4;
+            this->state = PHOTO_EFFECT_STATE_GROWING;
         }
         break;
 
-    case 4:
+    case PHOTO_EFFECT_STATE_GROWING:
         if (this->timer >= this->spawn.growthDuration)
         {
             this->timer = 0;
-            this->state = 2;
+            this->state = PHOTO_EFFECT_STATE_ACTIVE;
             this->width = this->spawn.maximumWidth;
         }
         else
@@ -467,18 +340,18 @@ i32 PhotoRotatingLaserView::Update()
             break;
         }
 
-    case 2:
+    case PHOTO_EFFECT_STATE_ACTIVE:
         if (this->timer >= this->spawn.sustainDuration)
         {
             this->timer = 0;
-            this->state = 5;
+            this->state = PHOTO_EFFECT_STATE_FADING;
         }
         else
         {
             break;
         }
 
-    case 5:
+    case PHOTO_EFFECT_STATE_FADING:
         if (this->timer >= this->spawn.fadeDuration)
         {
             return 1;
@@ -491,7 +364,7 @@ i32 PhotoRotatingLaserView::Update()
         break;
     }
 
-    if ((this->state == 4 || this->state == 2) &&
+    if ((this->state == PHOTO_EFFECT_STATE_GROWING || this->state == PHOTO_EFFECT_STATE_ACTIVE) &&
         this->length > 16.0f)
     {
         Float3 collisionOrigin;
@@ -529,9 +402,9 @@ i32 PhotoRotatingLaserView::Update()
 i32 PhotoRotatingLaserView::Initialize(void *args)
 {
     this->spawn = *static_cast<PhotoEffectArgsView *>(args);
-    this->state = 3;
+    this->state = PHOTO_EFFECT_STATE_STARTUP;
 
-    g_PhotoEffectManager->anm->SetAndExecuteScript(
+    g_PhotoEffectManager->anm->InitializeVm(
         &this->bodyVm,
         GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
     this->bodyVm.pendingInterrupt = 2;
@@ -541,7 +414,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     this->bodyVm.alignmentX = ANM_ALIGNMENT_CENTER;
     this->bodyVm.alignmentY = ANM_ALIGNMENT_END;
 
-    g_PhotoEffectManager->anm->SetAndExecuteScript(
+    g_PhotoEffectManager->anm->InitializeVm(
         &this->tailVm, this->spawn.color + 0xc2);
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
@@ -599,12 +472,12 @@ i32 PhotoStraightLaserView::DrawSecondary()
     {
         secondaryCount++;
         secondaryVm = g_AnmManager->GetVm(
-            g_PhotoEffectManager->anm->CreateVm(0x126, &secondaryPosition));
+            g_PhotoEffectManager->anm->CreateVmAtWorld(0x126, &secondaryPosition));
         secondaryVm->color1.color = g_PhotoEffectColors[this->spawn.color];
         secondaryPosition += secondaryStep;
         secondaryDistance += 12.0f;
     }
-    this->state = 1;
+    this->state = PHOTO_EFFECT_STATE_RETIRED;
     return secondaryCount;
 }
 
@@ -624,12 +497,12 @@ i32 PhotoRotatingLaserView::DrawSecondary()
     {
         secondaryCount++;
         secondaryVm = g_AnmManager->GetVm(
-            g_PhotoEffectManager->anm->CreateVm(0x126, &secondaryPosition));
+            g_PhotoEffectManager->anm->CreateVmAtWorld(0x126, &secondaryPosition));
         secondaryVm->color1.color = g_PhotoEffectColors[this->spawn.color];
         secondaryPosition += secondaryStep;
         secondaryDistance += 12.0f;
     }
-    this->state = 1;
+    this->state = PHOTO_EFFECT_STATE_RETIRED;
     return secondaryCount;
 }
 #undef secondaryStep
@@ -688,7 +561,7 @@ i32 PhotoStraightLaserView::CheckCollision(
             hits[sampleCount] = 1;
             hitCount++;
             AnmVm *vm = g_AnmManager->GetVm(
-                g_PhotoEffectManager->anm->CreateVm(0x126, &sample));
+                g_PhotoEffectManager->anm->CreateVmAtWorld(0x126, &sample));
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
@@ -775,7 +648,7 @@ i32 PhotoStraightLaserView::CheckCollision(
                 *reinterpret_cast<Float3 *>(&args.position) =
                     preloadBufferLocal03 +
                     CollisionScaleStep(step, static_cast<f32>(gapStart));
-                g_PhotoEffectManager->Spawn(0, &args);
+                g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_STRAIGHT_LASER, &args);
             }
         }
     }
@@ -836,7 +709,7 @@ i32 PhotoRotatingLaserView::CheckCollision(
             hits[sampleCount] = 1;
             hitCount++;
             AnmVm *vm = g_AnmManager->GetVm(
-                g_PhotoEffectManager->anm->CreateVm(0x126, &sample));
+                g_PhotoEffectManager->anm->CreateVmAtWorld(0x126, &sample));
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
@@ -919,7 +792,7 @@ scan_more:
                     args.terminalDistance =
                         this->spawn.maximumLength -
                         static_cast<f32>(gapStart) * 12.0f;
-                    g_PhotoEffectManager->Spawn(0, &args);
+                    g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_STRAIGHT_LASER, &args);
                 }
             }
         }
@@ -1017,8 +890,7 @@ PhotoEffectManagerView::~PhotoEffectManagerView()
 
 i32 PhotoEffectManagerView::Initialize()
 {
-    this->anm = reinterpret_cast<PhotoEffectAnmView *>(
-        g_AnmManager->PreloadAnm(6, "bullet.anm"));
+    this->anm = g_AnmManager->PreloadAnm(6, "bullet.anm");
     if (this->anm == NULL)
     {
         g_GameErrorContext.Log(
@@ -1121,7 +993,7 @@ i32 __fastcall PhotoEffectManagerView::Update(
             }
         }
 
-        if (effect->state == 1)
+        if (effect->state == PHOTO_EFFECT_STATE_RETIRED)
         {
             effect->Cleanup();
             manager->Remove(effect);
@@ -1153,7 +1025,7 @@ i32 __fastcall PhotoEffectManagerView::Draw(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != PHOTO_EFFECT_STATE_RETIRED)
         {
             effect->Draw();
         }
@@ -1225,7 +1097,7 @@ i32 PhotoEffectManagerView::Spawn(i32 type, void *args)
 
     switch (type)
     {
-    case 0:
+    case PHOTO_EFFECT_SPAWN_STRAIGHT_LASER:
     {
         PhotoStraightLaserView *effect = new PhotoStraightLaserView;
         effect->id = this->nextId;
@@ -1234,7 +1106,7 @@ i32 PhotoEffectManagerView::Spawn(i32 type, void *args)
         effect->Initialize(args);
         break;
     }
-    case 1:
+    case PHOTO_EFFECT_SPAWN_ROTATING_LASER:
     {
         PhotoRotatingLaserView *effect = new PhotoRotatingLaserView;
         effect->id = this->nextId;
@@ -1260,7 +1132,7 @@ i32 PhotoEffectManagerView::CountPhotoTargets(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != PHOTO_EFFECT_STATE_RETIRED)
         {
             count += effect->CountPhotoTargets(position, size, 1);
         }
@@ -1277,7 +1149,7 @@ i32 __fastcall PhotoEffectManagerView::CheckCollisionStored(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != PHOTO_EFFECT_STATE_RETIRED)
         {
             count += effect->CheckCollision(
                 reinterpret_cast<Float3 *>(&manager->collisionPosition),
@@ -1296,7 +1168,7 @@ i32 __fastcall PhotoEffectManagerView::DrawSecondary(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != PHOTO_EFFECT_STATE_RETIRED)
         {
             effect->DrawSecondary();
         }
@@ -1313,7 +1185,7 @@ i32 PhotoEffectManagerView::CountNearbyTargets(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != PHOTO_EFFECT_STATE_RETIRED)
         {
             count += effect->CountNearbyTargets(position, radius);
         }

@@ -78,6 +78,8 @@ publications still have separate lifetimes. SEM-412 gives the photo HUD a
 typed allocation and singleton shared with PhotoStage and the task.
 SEM-413 binds captured enemy, bullet and laser drops to the typed ItemInf
 slot and uses the BulletInf ANM for their item scripts.
+SEM-414 shares the PhotoEffect manager, list base and state in both builds.
+ECL and the player completion transition call the secondary draw method.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

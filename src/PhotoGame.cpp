@@ -12,9 +12,7 @@
 #ifndef DIFFBUILD
 #include "PhotoEnemyManager.hpp"
 #endif
-#ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
-#endif
 #include "SoundPlayer.hpp"
 
 namespace th095
@@ -44,7 +42,6 @@ struct PhotoResetTargetView
 #ifdef DIFFBUILD
 extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
 extern PhotoResetTargetView *g_PhotoBulletResetTarget;
-extern PhotoResetTargetView *g_PhotoStageResetTarget;
 #endif
 #define g_PhotoInput (RuntimeHistoryCurrent())
 
@@ -682,13 +679,10 @@ i32 PhotoGameUpdateView::Update()
         {
 #ifdef DIFFBUILD
             g_PhotoBulletResetTarget->ResetForPhotoTransition();
-            g_PhotoStageResetTarget->ResetForPhotoTransition();
 #else
             g_PhotoBulletManager->DespawnAllBullets();
-            PhotoEffectManagerView::DrawSecondary(
-                TH095_RUNTIME_GLOBAL_PTR(
-                    PhotoEffectManagerView, g_RuntimeEffectManagerOwner));
 #endif
+            PhotoEffectManagerView::DrawSecondary(g_PhotoEffectManager);
         }
         else if (this->completionTimer == 30)
         {

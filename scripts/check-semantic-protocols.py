@@ -421,7 +421,6 @@ def check_ecl_extended_type_boundaries() -> None:
         "typedef AnmVmId ExtendedVmHandle;",
         "typedef AnmLoaded ExtendedAnmSpawner;",
         "typedef Float3 ExtendedVector;",
-        "typedef ::th095::PhotoEffectManagerView ExtendedPhotoEffectManager;",
         "typedef ::th095::PhotoBulletView ExtendedBulletView;",
         "typedef ::th095::PhotoBulletManagerView ExtendedBulletManager;",
         "typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;",
@@ -437,12 +436,21 @@ def check_ecl_extended_type_boundaries() -> None:
         if binding not in extended:
             fail(f"normal EclExtended lost canonical type binding: {binding}")
 
+    for access in (
+        '#include "PhotoEffectRuntime.hpp"',
+        "g_PhotoEffectManager->listRoot.next",
+        "g_PhotoEffectManager->nextId",
+        "g_PhotoEffectManager->Spawn(",
+    ):
+        if access not in extended:
+            fail(f"EclExtended lost canonical PhotoEffect access: {access}")
+
     forbidden_normal_debt = (
         "struct AnmManagerLookupView",
         "struct ExtendedVmHandle",
         "struct ExtendedAnmSpawner",
         "struct ExtendedVector",
-        "struct ExtendedPhotoEffectManager",
+        "ExtendedPhotoEffectManager",
         "struct ExtendedPhotoCameraView",
         "struct ExtendedPlayerView",
         "reinterpret_cast<AnmLoaded *>",
@@ -461,10 +469,6 @@ def check_ecl_extended_type_boundaries() -> None:
             "struct ExtendedAnmSpawner",
         ),
         "EclExtendedMathEmission.inl": ("struct ExtendedVector",),
-        "EclExtendedPhotoEffectEmission.inl": (
-            "struct ExtendedPhotoEffectManager",
-            "i32 nextId;",
-        ),
         "EclExtendedBulletEmission.inl": (
             "struct ExtendedBulletView",
             "struct ExtendedBulletManager",
@@ -4079,13 +4083,17 @@ def check_photo_camera_state_owner() -> None:
             fail(f"PhotoCamera restored false PhotoEffect owner: {retired}")
     for fact in (
         '#include "PhotoEffectRuntime.hpp"',
-        "extern PhotoEffectManagerView *g_PhotoEffectManager;",
-        "TH095_RUNTIME_GLOBAL_PTR(PhotoEffectManagerView, g_RuntimeEffectManagerOwner)",
         "g_PhotoEffectManager->CountNearbyTargets(",
         "g_PhotoEffectManager->CountPhotoTargets(",
     ):
         if fact not in source:
             fail(f"PhotoCamera lost canonical PhotoEffect owner access: {fact}")
+
+    effect_header = (SRC / "PhotoEffectRuntime.hpp").read_text(encoding="utf-8")
+    if any(name in effect_header for name in PROFILE_NAMES):
+        fail("PhotoEffectRuntime.hpp must use one profile-independent layout")
+    if "extern PhotoEffectManagerView *g_PhotoEffectManager;" not in effect_header:
+        fail("PhotoEffectRuntime.hpp lost the shared PhotoEffect manager slot")
 
     exact_sources = (
         source,

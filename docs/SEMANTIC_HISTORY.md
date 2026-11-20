@@ -18477,3 +18477,27 @@ initial positions, full and nearly full pools, and charge and sound
 behavior on pickup. The spawn fixtures supply ANM and Chain boundaries
 and seed retail and reconstructed RNG state alike.
 See `.analysis/pi/photo-item-owner/`.
+
+### SEM-414 — share the photo effect manager
+
+Effect construction at `0x0041D580` publishes the manager at
+`0x004C45E0`, and the destructor at `0x0041D6D0` clears it. ECL opcode
+102 and the player photo-limit transition at frame 15 both pass this
+pointer in ECX to `DrawSecondary @ 0x0041E010`. The target saves the next
+link before each virtual call and skips retired effects. PhotoStage calls
+`CheckCollisionStored @ 0x0041DFA0` using the same pointer. The old stage
+reset and capture aliases gave these methods the wrong source signatures.
+
+Both profiles now use the same manager, list node, state enum and runtime
+slot. The exact effect bodies call the canonical ANM methods. ECL spawn
+and extended callbacks use the typed manager and its ID counter. The
+extended callback's rotating-laser body and tail VM access still use the
+existing node projection.
+
+All 372 affected exact units pass. The 46 retagged operands retain their
+target positions, kinds and destinations. All 35 normal references to the
+slot follow it in both link orders. Against retail, 218 focused cases
+agree on publication and teardown, traversal order, ECL opcodes 102 and
+145, frame-15 player transition and extended callback dispatch. Fixtures
+supply virtual effect, ANM and Chain boundaries. Capture-drop and gameplay
+callback fixtures also pass. See `.analysis/pi/photo-effect-owner/`.

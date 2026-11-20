@@ -11,7 +11,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 4);
         TH095_ECL_ASSIGN_FLOAT(args.width, 5);
         args.initialLength = 0;
-        TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_STRAIGHT_LASER, &args);
         break;
     }
 
@@ -29,7 +29,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 4);
         TH095_ECL_ASSIGN_FLOAT(args.width, 5);
         args.initialLength = 0;
-        TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_STRAIGHT_LASER, &args);
         break;
     }
 
@@ -53,7 +53,7 @@
         args.angularVelocity = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
 
@@ -78,7 +78,7 @@
         args.angularVelocity = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
 
@@ -102,7 +102,7 @@
         args.angularVelocity = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
 
@@ -127,7 +127,7 @@
         args.angularVelocity = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
 
@@ -154,7 +154,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.velocity.x, 11);
         TH095_ECL_ASSIGN_FLOAT(args.velocity.y, 12);
         args.speed = 2.0f;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
 
@@ -181,7 +181,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.velocity.x, 11);
         TH095_ECL_ASSIGN_FLOAT(args.velocity.y, 12);
         args.speed = 5.0f;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
 
@@ -209,7 +209,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.velocity.x, 11);
         TH095_ECL_ASSIGN_FLOAT(args.velocity.y, 12);
         args.speed = 2.0f;
-        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
+        g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
 
