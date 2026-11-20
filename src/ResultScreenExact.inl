@@ -1,4 +1,5 @@
 #include "ResultScreen.hpp"
+#include "SceneData.hpp"
 
 #ifdef TH095_MATCH_EXACT
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
@@ -87,13 +88,6 @@ struct ResultRuntimeView
     i16 scene;
 };
 
-struct ResultPlayerConfigView
-{
-    u8 unknown000[4];
-    i32 group;
-    i32 scene;
-};
-
 struct ResultScreenInitializeLocals
 {
     i32 lineIndex;
@@ -117,8 +111,6 @@ typedef char ResultBestShotRecordPhotoIndexAt6C[
 
 extern i32 g_ResultSceneState;
 extern ResultRuntimeView *g_ResultRuntime;
-extern ResultPlayerConfigView *g_ResultPlayerConfig;
-extern u8 *g_ResultPlayerConfigTable[];
 extern i32 g_ResultGroupMap[];
 extern u8 *__fastcall ReadResultHelpLine(
     char *destination, u8 *source, i32 maxLength);
@@ -265,7 +257,7 @@ ResultScreen::~ResultScreen()
             locals.lineIndex++;
         }
     }
-    this->selectedGroup = g_ResultGroupMap[g_ResultPlayerConfig->group];
+    this->selectedGroup = g_ResultGroupMap[g_SelectedScene->group];
     return ZUN_SUCCESS;
 }
 
@@ -566,8 +558,8 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         resultScreen->replayCursor.Set(2);
         resultScreen->replayCursor.count = 4;
 
-        if (g_ResultPlayerConfig->scene >=
-            g_ResultSceneLimits[g_ResultPlayerConfig->group] - 1)
+        if (g_SelectedScene->scene >=
+            g_ResultSceneLimits[g_SelectedScene->group] - 1)
         {
             InitializePhotoDisableCursorPhase(&resultScreen->replayCursor);
             resultScreen->vms[13].color1 = 0x80000000;
@@ -731,10 +723,10 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             .score = g_PhotoStageState->slots[photoIndex].score;
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
-            .group = (u16)(g_ResultPlayerConfig->group + 1);
+            .group = (u16)(g_SelectedScene->group + 1);
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
-            .scene = (u16)(g_ResultPlayerConfig->scene + 1);
+            .scene = (u16)(g_SelectedScene->scene + 1);
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .payloadFormat =
@@ -1071,10 +1063,10 @@ ChainCallbackResult ResultScreen::Update()
                 g_ResultSceneState = 4;
                 break;
             case 1:
-                g_ResultRuntime->scene = (i16)(g_ResultPlayerConfig->scene + 1);
-                g_ResultPlayerConfig = (ResultPlayerConfigView *)(
-                    g_ResultPlayerConfigTable[g_ResultPlayerConfig->group] +
-                    (g_ResultPlayerConfig->scene + 1) * 0x30);
+                g_ResultRuntime->scene = (i16)(g_SelectedScene->scene + 1);
+                g_SelectedScene =
+                    g_SceneGroups[g_SelectedScene->group] +
+                    (g_SelectedScene->scene + 1);
                 g_ResultSceneState = 8;
                 break;
             }
@@ -1176,8 +1168,8 @@ ChainCallbackResult ResultScreen::Update()
                 this->anm->InitializeVm(GetResultVm(this, 12), 12);
                 this->anm->InitializeVm(GetResultVm(this, 13), 13);
                 this->replayCursor.Pop();
-                if (g_ResultPlayerConfig->scene >=
-                    g_ResultSceneLimits[g_ResultPlayerConfig->group] - 1)
+                if (g_SelectedScene->scene >=
+                    g_ResultSceneLimits[g_SelectedScene->group] - 1)
                 {
                     ResultUpdateReplayDisablePhase(&this->replayCursor, 1);
                     this->vms[13].color1 = 0x80000000;
@@ -1589,16 +1581,16 @@ ChainCallbackResult ResultScreen::Draw()
         replayNameTimestamp = localtime(
             reinterpret_cast<time_t *>(
                 &g_ReplayManager->activeInputData->timestamp));
-        if (g_ResultPlayerConfig->group == 10)
+        if (g_SelectedScene->group == 10)
         {
             strcpy(replayNameLevelText, "EX");
         }
         else
         {
             sprintf(replayNameLevelText, " %d",
-                    g_ResultPlayerConfig->group + 1);
+                    g_SelectedScene->group + 1);
         }
-        sprintf(replayNameSceneText, "%d", g_ResultPlayerConfig->scene + 1);
+        sprintf(replayNameSceneText, "%d", g_SelectedScene->scene + 1);
         g_ResultAsciiManager.AddFormatText(
             &replayNamePosition,
             "No.%.2d %s %s-%s %.2d/%.2d %.2d:%.2d %6d",

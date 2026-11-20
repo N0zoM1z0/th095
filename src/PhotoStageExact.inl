@@ -1,4 +1,5 @@
 #include "PhotoStage.hpp"
+#include "SceneData.hpp"
 #include "ScoreData.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
@@ -85,13 +86,6 @@ struct PhotoStageRuntimeView
     char comment[1];
 };
 
-struct PhotoStagePlayerConfigView
-{
-    u8 unknown000[4];
-    i32 group;
-    i32 scene;
-};
-
 struct PhotoStageEffectManagerView
 {
     i32 CommitCapturedObjects();
@@ -129,7 +123,6 @@ extern PhotoStageRuntimeView *g_PhotoStageRuntime;
 extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
 extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
-extern PhotoStagePlayerConfigView *g_PhotoStagePlayerConfig;
 extern u8 g_PhotoCaptureCountdown;
 extern f64 g_PhotoLagNumerator;
 extern f64 g_PhotoLagDenominator;
@@ -905,10 +898,10 @@ i32 PhotoStageStateView::Update()
                                     .score;
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->group =
-                                (u16)(g_PhotoStagePlayerConfig->group + 1);
+                                (u16)(g_SelectedScene->group + 1);
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->scene =
-                                (u16)(g_PhotoStagePlayerConfig->scene + 1);
+                                (u16)(g_SelectedScene->scene + 1);
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->payloadFormat =
                             RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS;

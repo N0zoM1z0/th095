@@ -1,4 +1,5 @@
 #include "ReplayManager.hpp"
+#include "SceneData.hpp"
 
 #ifdef TH095_MATCH_EXACT
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
@@ -51,21 +52,6 @@ struct ReplayGlobalStateView
 
 extern ReplayGlobalStateView *g_ReplayGlobalState;
 
-struct ReplayPlayerConfigView
-{
-    u16 id;
-    u8 unknown002[2];
-    i8 group;
-    u8 unknown005[3];
-    i8 variant;
-    u8 unknown009[0x27];
-};
-
-typedef char ReplayPlayerConfigSizeIs30[
-    (sizeof(ReplayPlayerConfigView) == 0x30) ? 1 : -1];
-
-extern ReplayPlayerConfigView *g_ReplayPlayerConfig;
-extern ReplayPlayerConfigView *g_ReplayPlayerConfigTable[];
 extern i32 g_ReplayUsesArchive;
 extern f64 g_ReplayLagNumerator;
 extern f64 g_ReplayLagDenominator;
@@ -176,10 +162,10 @@ ReplayManager::ReplayManager()
             (u8 *)this->activeInputData + sizeof(ReplayInputData);
         this->fpsCursor = this->fpsData;
 
-        this->activeInputData->playerConfigId = g_ReplayPlayerConfig->id;
-        this->activeInputData->level = g_ReplayPlayerConfig->group;
+        this->activeInputData->playerConfigId = static_cast<u16>(g_SelectedScene->scoreEntryIndex);
+        this->activeInputData->level = static_cast<i8>(g_SelectedScene->group);
         this->activeInputData->scene =
-            g_ReplayPlayerConfig->variant;
+            static_cast<i8>(g_SelectedScene->scene);
         memcpy(this->activeInputData->globalStateSnapshot,
                g_ReplayGlobalState->replayStateSnapshot,
                sizeof(this->activeInputData->globalStateSnapshot));
@@ -199,8 +185,8 @@ ReplayManager::ReplayManager()
         this->fpsCursor = this->fpsData;
         scratch.rngSeed = this->activeInputData->rngSeed;
         g_ReplayRngSeed = scratch.rngSeed;
-        g_ReplayPlayerConfig =
-            g_ReplayPlayerConfigTable[this->activeInputData->level] +
+        g_SelectedScene =
+            g_SceneGroups[this->activeInputData->level] +
             this->activeInputData->scene;
         memcpy(g_ReplayGlobalState->replayStateSnapshot,
                this->activeInputData->globalStateSnapshot,

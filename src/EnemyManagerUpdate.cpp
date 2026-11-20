@@ -283,19 +283,6 @@ struct PhotoEnemyBulletManagerView
 typedef PhotoBulletManagerView PhotoEnemyBulletManagerView;
 #endif
 
-#ifdef TH095_MATCH_EXACT
-struct PhotoEnemySceneDefinitionView
-{
-    u8 unknown000[0x10];
-    char *enemyAnmPath;
-    char *enemyEclPath;
-};
-extern PhotoEnemySceneDefinitionView *g_PhotoEnemySceneDefinition;
-#define TH095_PHOTO_ENEMY_SCENE g_PhotoEnemySceneDefinition
-#else
-#define TH095_PHOTO_ENEMY_SCENE g_SelectedScene
-#endif
-
 extern PhotoEnemyBulletManagerView *g_PhotoEnemyBulletManager;
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 #ifndef DIFFBUILD
@@ -462,7 +449,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
 i32 PhotoEnemyManagerView::LoadResources()
 {
     this->enemyAnm =
-        g_AnmManager->PreloadAnm(8, TH095_PHOTO_ENEMY_SCENE->enemyAnmPath);
+        g_AnmManager->PreloadAnm(8, g_SelectedScene->enemyAnmPath);
     if (this->enemyAnm == NULL)
     {
         g_GameErrorContext.Log(
@@ -476,7 +463,7 @@ i32 PhotoEnemyManagerView::LoadResources()
 
     this->eclManager = new PhotoEnemyEclManagerView;
     if (this->eclManager->Load(
-            TH095_PHOTO_ENEMY_SCENE->enemyEclPath) != ZUN_SUCCESS)
+            g_SelectedScene->enemyEclPath) != ZUN_SUCCESS)
     {
         g_GameErrorContext.Log(
             "\x93\x47\x83\x66\x81\x5b\x83\x5e\x82\xaa"

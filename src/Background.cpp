@@ -1,5 +1,4 @@
 #ifdef TH095_MATCH_EXACT
-#define g_SelectedScene th095_BackgroundSharedSelectedSceneDeclaration
 #define g_PhotoScreenFadeColor th095_BackgroundSharedPhotoScreenFadeColorDeclaration
 #endif
 #define TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
@@ -15,7 +14,6 @@
 #include "SceneData.hpp"
 #include "SupervisorViewportConfiguration.hpp"
 #ifdef TH095_MATCH_EXACT
-#undef g_SelectedScene
 #undef g_PhotoScreenFadeColor
 #endif
 namespace th095
@@ -25,15 +23,6 @@ namespace th095
 #define TH095_BACKGROUND_DIRECT_3D_DRAW_MODE 8
 #else
 #define TH095_BACKGROUND_DIRECT_3D_DRAW_MODE ANM_VM_DRAW_MODE_DIRECT_3D
-#endif
-
-#ifdef TH095_MATCH_EXACT
-struct BackgroundSelectedSceneView
-{
-    u8 unknown000[0x0c];
-    const char *stageDataPath;
-};
-extern BackgroundSelectedSceneView *g_SelectedScene;
 #endif
 
 struct BackgroundGlobalStateView

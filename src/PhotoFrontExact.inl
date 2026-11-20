@@ -1,4 +1,5 @@
 #include "AnmManager.hpp"
+#include "SceneData.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
@@ -15,12 +16,6 @@ struct PhotoFrontGameTaskView
     i32 bestShotIndex;         // +0x100
     i32 completionActive;       // +0x104
     ZunTimer completionTimer;   // +0x108
-};
-
-struct PhotoFrontSceneDefinitionView
-{
-    u8 unknown000[0x1c];
-    i32 frontScriptIndex;       // +0x01c
 };
 
 struct PhotoFrontVmIdView
@@ -78,7 +73,6 @@ struct PhotoFrontUpdateLocals
 };
 
 extern PhotoFrontGameTaskView *g_PhotoFrontGameTask;
-extern PhotoFrontSceneDefinitionView *g_PhotoFrontSceneDefinition;
 extern PhotoFrontManagerView *g_PhotoFrontManager;
 extern u32 g_PhotoFrontControllerFlags;
 extern i32 g_PhotoFrontReplayUsesArchive;
@@ -163,7 +157,7 @@ i32 PhotoFrontManagerView::Initialize()
     else
     {
         this->frontAnm->CreateVm(
-            g_PhotoFrontSceneDefinition->frontScriptIndex + 0xd, 7);
+            g_SelectedScene->frontScriptIndex + 0xd, 7);
     }
 
     if (g_PhotoFrontReplayUsesArchive != 0)

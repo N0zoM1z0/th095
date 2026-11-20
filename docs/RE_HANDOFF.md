@@ -46,8 +46,8 @@ staged preview reads through the saved-data owner.
 SEM-396 shares the loader and record fields. Both file paths derive the
 checksum and serialization bounds from the same record layout.
 SEM-397 shares the initialized scene catalog with the title loader and
-Scene Select's text consumers. Gameplay and replay retain several older
-call-site projections of the selected-scene pointer.
+Scene Select's text consumers. SEM-398 routes gameplay and replay through
+the same selected-scene pointer and group table as Scene Select.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

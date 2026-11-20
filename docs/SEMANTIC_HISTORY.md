@@ -18108,3 +18108,24 @@ using two allocation addresses, including one above 0x80000000. It
 checks ordinary and special records, duplicate entries and failed
 title or mission file loads. ANM, file and resource loading use fixture
 responses. See `.analysis/pi/scene-definition-owner/` for the recipes.
+
+### SEM-398 — share the selected-scene pointer across gameplay and replay
+
+Background, enemy loading, the photo frontend, the photo task and stage,
+replay and the result screen use the scene record from `SceneData.hpp`.
+Replay recording takes the low 16 bits of the 32-bit score entry index
+and the low eight bits of each 32-bit group and scene index. Playback
+and next-scene selection use the typed group table, so the record stride
+comes from the declaration.
+
+All 105 affected strict comparisons pass. Thirty-six references to the
+selected-scene slot at `0x004CA2F0` and two references to the group table
+at `0x004A5800` now name their canonical symbols. Both symbols move in
+the reverse link order, and all 38 references follow them. Each rebuilt
+PE preserves the four mapped sections of its previous link.
+
+The linked fixtures check 12 recording cases, 32 playback and load-only
+cases, and 65 background, enemy and frontend resource paths against retail.
+They exercise high bits in the recording indices and resource failures
+with fixture responses at the allocation and loading boundaries. See
+`.analysis/pi/selected-scene-owner/` for the recipes.

@@ -1,4 +1,5 @@
 #include "AnmManager.hpp"
+#include "SceneData.hpp"
 #include "AnmVmId.hpp"
 #include "ControllerInputSlot.hpp"
 #include "PhotoStage.hpp"
@@ -128,15 +129,6 @@ typedef char PhotoGameTaskUpdateLoopIAt10[
 typedef char PhotoRuntimeConfigSizeIsC8[
     (sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
 
-struct PhotoSceneDefinitionTaskView
-{
-    i32 bestShotIndex;                  // +0x00
-    i32 level;                          // +0x04
-    i32 scene;                          // +0x08
-    u8 unknown0c[0x0c];
-    char *musicPath;                    // +0x18
-};
-
 struct PhotoSceneSaveDataTaskView
 {
     u8 bytes[1];
@@ -190,7 +182,6 @@ typedef char PhotoGameTaskChainsAt118[
     (offsetof(PhotoGameTaskView, calcChain) == 0x118) ? 1 : -1];
 
 extern char g_ReplayPath[];
-extern PhotoSceneDefinitionTaskView *g_PhotoSceneDefinition;
 extern PhotoSceneSaveDataTaskView *g_PhotoSceneSaveData;
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoGameTaskView *g_PhotoGameTask;
@@ -380,7 +371,7 @@ i32 PhotoGameTaskView::DrawHud()
             locals.capturedPhotoCount,
             locals.photoCapacity);
 
-        if (g_PhotoSceneDefinition->level != 10)
+        if (g_SelectedScene->group != 10)
         {
             locals.scenePosition.x = 472.0f;
             locals.scenePosition.y = 32.0f;
@@ -388,8 +379,8 @@ i32 PhotoGameTaskView::DrawHud()
             g_PhotoAsciiManager.AddFormatText(
                 &locals.scenePosition,
                 "%2d-%d",
-                g_PhotoSceneDefinition->level + 1,
-                g_PhotoSceneDefinition->scene + 1);
+                g_SelectedScene->group + 1,
+                g_SelectedScene->scene + 1);
         }
         else
         {
@@ -399,7 +390,7 @@ i32 PhotoGameTaskView::DrawHud()
             g_PhotoAsciiManager.AddFormatText(
                 &locals.extraScenePosition,
                 "EX-%d",
-                g_PhotoSceneDefinition->scene + 1);
+                g_SelectedScene->scene + 1);
         }
         g_PhotoAsciiTextColor = 0xffffffff;
     }
@@ -519,26 +510,26 @@ i32 PhotoGameTaskView::InitializeSubsystems()
         return ZUN_ERROR;
     }
 
-    this->bestShotIndex = g_PhotoSceneDefinition->bestShotIndex;
+    this->bestShotIndex = g_SelectedScene->scoreEntryIndex;
     utils::DebugPrint(
         "Start %d-%d\n",
-        g_PhotoSceneDefinition->level + 1,
-        g_PhotoSceneDefinition->scene + 1);
+        g_SelectedScene->group + 1,
+        g_SelectedScene->scene + 1);
 
-    if (g_PhotoSceneDefinition->level != 10)
+    if (g_SelectedScene->group != 10)
     {
         sprintf(
             bestShotPath,
             "bestshot/bs_%.2d_%d.dat",
-            g_PhotoSceneDefinition->level + 1,
-            g_PhotoSceneDefinition->scene + 1);
+            g_SelectedScene->group + 1,
+            g_SelectedScene->scene + 1);
     }
     else
     {
         sprintf(
             bestShotPath,
             "bestshot/bs_ex_%d.dat",
-            g_PhotoSceneDefinition->scene + 1);
+            g_SelectedScene->scene + 1);
     }
 
     if (!PhotoGameFileSystemView::CheckIfFileAlreadyExists(bestShotPath))
@@ -601,7 +592,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
         g_ReplayUsesArchive == 0)
     {
         g_Supervisor.LoadMusic(
-            0, g_PhotoSceneDefinition->musicPath);
+            0, g_SelectedScene->musicPath);
     }
     g_PhotoGameClock2 = g_PhotoGameClock = 0.0;
     return ZUN_SUCCESS;
