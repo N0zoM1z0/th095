@@ -1,7 +1,7 @@
 #include "MainExact.hpp"
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
-#include "ControllerInputSlot.hpp"
+#include "Controller.hpp"
 
 #include <direct.h>
 #include <math.h>
@@ -54,11 +54,6 @@ extern PhotoGameTaskView *g_PhotoGameTask;
 struct SupervisorSoundPlayerView
 {
     void UpdateFades();
-};
-
-struct SupervisorControllerView
-{
-    static u16 GetInput(i32 inputIndex);
 };
 
 struct SupervisorAnmManagerView
@@ -1084,7 +1079,7 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
     }
 
     g_SupervisorSoundPlayer.UpdateFades();
-    SupervisorControllerView::GetInput(0);
+    Controller::GetInput(0);
 
     g_SupervisorAnmManager->ClearSprite();
     g_SupervisorAnmManager->ClearTexture();

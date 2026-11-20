@@ -84,12 +84,6 @@ struct GameErrorContext
     void Flush();
 };
 
-struct Controller
-{
-    static void GetJoystickCaps();
-    static void ResetKeyboard();
-};
-
 struct FileSystem
 {
     static u8 *OpenFile(char *path, i32 *fileSize, i32 isExternalResource);

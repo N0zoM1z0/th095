@@ -18272,3 +18272,26 @@ saved-data query cases. The transition fixture gives the two task slots
 opposite load states to verify the active slot is read. Factory, audio and
 VM calls use fixture responses. See `.analysis/pi/title-game-handoff/` for
 the handoff and relocation recipes.
+
+### SEM-404 — share the Supervisor controller API
+
+The retail frame callback at `0x00423440` zeroes ECX before calling
+`Controller::GetInput` at `0x00423482`. An attested reference query and a
+separate scan of the executable's `.text` found one direct caller. The
+frame callback polls slot zero after updating audio fades, including while
+a close request waits for the replay worker to finish. The second slot has
+its own configuration and `GetInput` supports its index. The verified frame
+callback leaves its live history untouched.
+
+`Main.cpp` and `MainExact.inl` now take the three Controller declarations
+from `Controller.hpp`. This also corrects the exact startup declaration of
+`GetJoystickCaps` to return `u16`. The caller discards the result. The API
+header no longer brings the inherited engine declarations into Main.
+
+All 56 affected exact comparisons pass. The startup and frame call
+operands follow their destinations in both normal links. `GetInput` moves
+from `0x004143A0` to `0x00447600`. Four frame and close scenarios agree
+with the retail code through the input return, and the existing 1,312
+input scenarios and both controller device cases pass in both links.
+The fixture supplies audio, keyboard and device API responses. See
+`.analysis/controller-get-input/frame-poller/` for the recipes.

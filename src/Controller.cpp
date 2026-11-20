@@ -1,4 +1,5 @@
 #include "Controller.hpp"
+#include "Global.hpp"
 #include "Main.hpp"
 
 #include <mmsystem.h>

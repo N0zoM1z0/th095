@@ -1,5 +1,6 @@
 #include "OptionsMenu.hpp"
 #include "Controller.hpp"
+#include "Global.hpp"
 #include "SoundPlayer.hpp"
 
 namespace th095

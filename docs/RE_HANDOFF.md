@@ -19,8 +19,9 @@ orders, initialized data, library and import references, and the three built-in
 replays. The full cycle agrees on the gameplay samples, with one-tick
 scene timer differences at startup. SEM-358 and SEM-360 correct MIDI and
 DirectInput storage. SEM-376 makes the normal readers honor both controller
-indices. Publication of the second controller slot remains open. SEM-390
-shares the Controller storage declarations and corrects signed dead zones.
+indices. SEM-404 confirms the retail frame callback polls slot zero and
+shares the Controller API between profiles. SEM-390 shares Controller
+storage declarations and corrects signed dead zones.
 SEM-391 binds configuration initialization, loading and Options to the
 same live slot mappings. Both input-slot and configuration owners share the
 nine-button layout.

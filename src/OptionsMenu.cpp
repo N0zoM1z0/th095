@@ -3,6 +3,7 @@
 #else
 #include "OptionsMenu.hpp"
 #include "Controller.hpp"
+#include "Global.hpp"
 #include "InputRuntime.hpp"
 #include "Main.hpp"
 #include "SoundPlayer.hpp"

@@ -41,7 +41,6 @@
 1	src/Main.cpp	struct	OnUpdateLocals
 1	src/Main.cpp	struct	PhotoGameTaskView
 1	src/Main.cpp	struct	ScreenshotCaptureLocals
-1	src/Main.cpp	struct	SupervisorControllerView
 1	src/Main.cpp	struct	SupervisorGameTaskView
 1	src/Main.cpp	struct	TextHelperView
 1	src/MusicRoom.cpp	struct	MusicCommentLocals

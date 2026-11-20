@@ -4,9 +4,9 @@
 #define DIRECTINPUT_VERSION 0x0800
 
 #include "ControllerInputSlot.hpp"
-#include "Global.hpp"
 
 #include <dinput.h>
+#include <mmsystem.h>
 
 namespace th095
 {

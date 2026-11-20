@@ -2181,6 +2181,17 @@ and NOT emits 2,635 bytes. All variants reserve 0x11C. The current linked
 builds again agree with retail on all 1,312 input cases. See
 `.analysis/controller-get-input/slot-and-mask/`.
 
+VC7.1 can put switch-expression temporaries below the parameter. A switch
+on the keyboard backend emits 2,662 bytes and a 0x120-byte frame. Adding a
+switch on the DirectInput status emits 2,680 bytes, 584 instructions and
+a 0x124-byte frame. Both keep all seven uses of `inputIndex` at EBP-0x11C.
+The two-switch body accesses EBP-0x120 once and EBP-0x124 three times.
+Retail has 579 instructions and no access to either slot. The five other
+condition and comparison variants reserve 0x11C. The two baseline objects
+still agree on the 2,655 instruction bytes and all 22 relocations. See
+`.analysis/controller-get-input/frame-poller/` for the sources and stack
+operands.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
