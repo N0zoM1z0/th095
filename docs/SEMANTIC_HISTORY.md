@@ -17447,3 +17447,18 @@ retain their target destinations and addends.
 All six PhotoStage units pass exact. The six normal bodies retain their
 previous instruction bytes and relocation contracts, and both game link
 orders pass the section comparisons.
+
+
+### SEM-368 — wait for the SoundPlayer BGM queue during scene loading
+
+The read at 0x00417D8B is SoundPlayer +0x1F88, the opcode in the first
+BGM command. Supervisor LoadMusic enqueues command 1 through that same
+owner. GameWindow Render calls ProcessQueues to drain it. A separate
+zero-initialized `g_PhotoLoadWaitFlag` had caused the normal loader to
+skip its wait. Both profiles now read the actual command.
+
+All ten PhotoGameTask units pass exact. The normal loader independently
+retains the target's 335-byte code structure. Its queue operand follows
+the moved SoundPlayer in both links. Under Wine the original kept opcode
+1 pending with the WAV configuration. With music off it entered scene 1-1
+and captured a temporary photo, as did both rebuilt layouts.

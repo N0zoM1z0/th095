@@ -1,5 +1,6 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "SoundPlayer.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -88,11 +89,6 @@ struct PhotoGameSupervisorView
     void StopReplayScan();
     void CompleteLoading();
     void FailLoading();
-};
-
-struct PhotoSoundPlayerTaskView
-{
-    void PlaySoundByIdx(i32 soundIndex, i32 pan);
 };
 
 struct PhotoHelpMenuTaskView
@@ -270,7 +266,6 @@ extern PhotoSceneSaveDataTaskView *g_PhotoSceneSaveData;
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoGameSupervisorView g_PhotoGameSupervisor;
-extern PhotoSoundPlayerTaskView g_PhotoGameSoundPlayer;
 extern PhotoHelpMenuTaskView *g_PhotoHelpMenu;
 extern PhotoCaptureManagerTaskView *g_PhotoCaptureManager;
 extern PhotoStageStateTaskView *g_PhotoStageState;
@@ -285,7 +280,6 @@ extern i32 g_ReplayUsesArchive;
 extern double g_PhotoGameClock;
 extern double g_PhotoGameClock2;
 extern u32 g_PhotoScreenFadeColor;
-extern i32 g_PhotoLoadWaitFlag;
 
 PhotoGameTaskView::PhotoGameTaskView()
 {
@@ -377,13 +371,13 @@ i32 PhotoGameTaskView::Update()
             locals.previousSecond !=
                 static_cast<i32>(this->completion.timer) / 60)
         {
-            g_PhotoGameSoundPlayer.PlaySoundByIdx(0x24, 0);
+            g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x24), 0);
         }
         else if (static_cast<i32>(this->completion.timer) / 60 <= 10 &&
                  locals.previousSecond !=
                      static_cast<i32>(this->completion.timer) / 60)
         {
-            g_PhotoGameSoundPlayer.PlaySoundByIdx(0x1b, 0);
+            g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x1b), 0);
         }
 
         if (this->completion.timer <= 0)
@@ -540,7 +534,7 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
         goto failure;
     }
 
-    while (g_PhotoLoadWaitFlag != 0)
+    while (g_SoundPlayer.commandQueue[0].opcode != SOUNDPLAYER_COMMAND_NONE)
     {
         Sleep(16);
     }

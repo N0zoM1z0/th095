@@ -205,7 +205,6 @@ extern i32 g_ReplayUsesArchive;
 #endif
 // Target 0x004C6E70 is the zero-initialized load barrier consumed by this
 // task's loading loop.
-DIFFABLE_STATIC(i32, g_PhotoLoadWaitFlag);
 #ifndef DIFFBUILD
 #define g_PhotoGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
@@ -499,7 +498,7 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
         goto failure;
     }
 
-    while (g_PhotoLoadWaitFlag != 0)
+    while (g_SoundPlayer.commandQueue[0].opcode != SOUNDPLAYER_COMMAND_NONE)
     {
         Sleep(16);
     }
