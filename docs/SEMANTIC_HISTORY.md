@@ -17398,3 +17398,11 @@ objects compile and link, and SavePhoto, CapturePhotoPixels and the Update
 callback independently retain their target structure.
 The capture path ran in regular and reverse-order links.
 [Capture validation](POSITION_INDEPENDENCE.md#expanded-normal-link-coverage)
+
+### SEM-364 — use the score entry in photo-result initialization
+
+InitializePhotoResultScreen now indexes ResultSaveDataView::scoreEntries
+directly. The target comparison uses the same save-data pointer and
+0x60-byte records at +0x460. All 24 ResultScreen exact units pass with
+their complete extents and relocations. The normal initializer already
+used the same declaration.
