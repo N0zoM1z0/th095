@@ -364,7 +364,7 @@ void AsciiManager::DrawStrings()
         {
             if (*asciiDrawText == '\n')
             {
-                this->largeText.position.y += 16.0f * asciiDrawString->scaleY;
+                this->largeText.position.y += 14.0f * asciiDrawString->scaleY;
                 this->largeText.position.x = asciiDrawString->position.x;
             }
             else if (*asciiDrawText == ' ')
@@ -431,7 +431,7 @@ void AsciiManager::DrawGuiStrings()
         {
             if (*asciiDrawText == '\n')
             {
-                this->largeText.position.y += 16.0f * asciiDrawString->scaleY;
+                this->largeText.position.y += 14.0f * asciiDrawString->scaleY;
                 this->largeText.position.x = asciiDrawString->position.x;
             }
             else if (*asciiDrawText == ' ')

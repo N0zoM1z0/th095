@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import struct
 import tomllib
 
@@ -22,6 +23,7 @@ TARGET = ROOT / "resources" / "th095.exe"
 TARGET_MANIFEST = ROOT / "config" / "target.toml"
 UNITS_MANIFEST = ROOT / "config" / "match-units.toml"
 COFF_RELOCATION_NAMES = {0x0006: "DIR32", 0x0014: "REL32"}
+COFF_FLOAT_LITERAL = re.compile(r"__real@([0-9a-fA-F]{8}|[0-9a-fA-F]{16})")
 
 
 def read_c_string(data: bytes) -> str:
@@ -128,15 +130,33 @@ def object_function(
         target_symbol = symbols.get(target_index)
         if target_symbol is None:
             raise ValueError(f"relocation references auxiliary/unknown symbol index {target_index}")
-        relocations.append(
-            {
-                "offset": local_offset,
-                "type_id": type_id,
-                "type": COFF_RELOCATION_NAMES.get(type_id, f"0x{type_id:04X}"),
-                "symbol": target_symbol["name"],
-                "addend": struct.unpack_from("<I", code, local_offset)[0],
-            }
-        )
+        symbol_name = str(target_symbol["name"])
+        relocation = {
+            "offset": local_offset,
+            "type_id": type_id,
+            "type": COFF_RELOCATION_NAMES.get(type_id, f"0x{type_id:04X}"),
+            "symbol": symbol_name,
+            "addend": struct.unpack_from("<I", code, local_offset)[0],
+        }
+        literal = COFF_FLOAT_LITERAL.fullmatch(symbol_name)
+        if literal and type_id == 0x0006:
+            literal_size = len(literal[1]) // 2
+            section_number = int(target_symbol["section"])
+            value = int(target_symbol["value"])
+            if not 1 <= section_number <= len(sections):
+                raise ValueError(f"floating literal {symbol_name} has no data section")
+            literal_section = sections[section_number - 1]
+            literal_offset = int(literal_section["raw_offset"])
+            literal_start = literal_offset + value
+            literal_end = literal_start + literal_size
+            if (
+                not literal_offset
+                or value + literal_size > int(literal_section["size"])
+                or literal_end > len(data)
+            ):
+                raise ValueError(f"truncated floating literal {symbol_name}")
+            relocation["float_data"] = data[literal_start:literal_end].hex()
+        relocations.append(relocation)
     return code, relocations
 
 
@@ -264,7 +284,8 @@ def compare_unit(name: str) -> dict[str, object]:
             f"object function size {len(code):#x} differs from manifest "
             f"comparison extent {compare_size:#x}"
         )
-    target = pe_bytes_at(verified_target(), address, compare_size)
+    target_image = verified_target()
+    target = pe_bytes_at(target_image, address, compare_size)
 
     expected = list(unit.get("relocations", []))
     normalized_expected = []
@@ -292,9 +313,20 @@ def compare_unit(name: str) -> dict[str, object]:
     if actual_key != expected_key:
         raise ValueError(f"COFF relocations differ from manifest: actual={actual_key!r} expected={expected_key!r}")
 
+    literals = {int(row["offset"]): row["float_data"] for row in actual if "float_data" in row}
     replay = []
     for relocation in normalized_expected:
         offset = int(relocation["offset"])
+        if offset in literals:
+            literal_bytes = bytes.fromhex(str(literals[offset]))
+            retail_bytes = pe_bytes_at(
+                target_image, int(relocation["target"]), len(literal_bytes)
+            )
+            if literal_bytes != retail_bytes:
+                raise ValueError(
+                    f"floating literal at {address + offset:#010x} ({relocation['symbol']}) "
+                    f"contains {literal_bytes.hex()} in COFF and {retail_bytes.hex()} at the target"
+                )
         addend = struct.unpack_from("<I", code, offset)[0]
         if relocation["type_id"] == 0x0006:
             value = int(relocation["target"]) + addend

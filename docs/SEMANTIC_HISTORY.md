@@ -17475,3 +17475,21 @@ The shared implementation now loads the target values. All eleven
 PhotoCamera units replay exactly and the normal object emits the same
 four corrected constant references. A no-music run of scene 1-1 confirms
 the rebuilt capture reaches the original's 256-pixel width.
+
+### SEM-370 — check the data referenced by floating-point relocations
+
+An audit of 762 f32 and f64 references in 116 exact units found sixteen
+references whose COFF bytes differed from the verified PE. The first four
+were the camera constants corrected in SEM-369. The remaining changes
+restore the ECL interpolation selectors 10026–10028, an FPS sample limit
+of 256, a 256-pixel preview texture scale, an 8-pixel keyboard animation
+scale, a straight laser collision width threshold of 3, and 14-pixel
+line spacing in both large-text drawing paths.
+
+Strict comparison now reads the referenced floating-point literal from
+the COFF data section and compares its bytes with the target at the
+relocation destination. The preserved pre-fix ECL object is rejected at
+0x0040F5ED. The five rebuilt objects pass all 88 affected strict exact
+units, and the full literal audit now agrees at all 762 references. The
+normal objects contain the corrected values, and both links pass the
+code and initialized-data comparisons.

@@ -541,7 +541,7 @@ ChainCallbackResult ReplayManager::ProcessFrame()
 
         if (this->frameCounter % 30 == 0)
         {
-            *this->fpsCursor = 255.0f <= g_Supervisor.currentFps + 0.5f
+            *this->fpsCursor = 256.0f <= g_Supervisor.currentFps + 0.5f
                                    ? 0xff
                                    : (u8)(g_Supervisor.currentFps + 0.5f);
             this->fpsCursor++;

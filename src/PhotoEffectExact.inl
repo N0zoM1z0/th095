@@ -350,7 +350,7 @@ i32 PhotoStraightLaserView::Update()
         }
     }
 
-    if (this->length > 16.0f && this->width > 40.0f)
+    if (this->length > 16.0f && this->width > 3.0f)
     {
         Float3 collisionOrigin;
         collisionOrigin.FromAngleMagnitude(this->angle, 8.0f);

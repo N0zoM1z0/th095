@@ -394,9 +394,9 @@ low_advance_instruction:
                 if (entry->timer >= entry->duration)
                     entry->callback = 0;
 
-                if (entry->affectedVariable == 10042.0f ||
-                    entry->affectedVariable == 10043.0f ||
-                    entry->affectedVariable == 10044.0f)
+                if (entry->affectedVariable == 10026.0f ||
+                    entry->affectedVariable == 10027.0f ||
+                    entry->affectedVariable == 10028.0f)
                     restorePosition = 1;
             }
         }

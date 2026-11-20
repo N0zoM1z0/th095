@@ -831,8 +831,8 @@ void ResultScreen::PrepareBestShot()
             &this->vms[23], bestShot * 2 + 1);
 
         ResultScreenAnmVm *vm = &this->vms[23];
-        vm->spriteSize.x = vm->loadedSprite->uvEndX * 255.0f;
-        vm->spriteSize.y = vm->loadedSprite->uvEndY * 255.0f;
+        vm->spriteSize.x = vm->loadedSprite->uvEndX * 256.0f;
+        vm->spriteSize.y = vm->loadedSprite->uvEndY * 256.0f;
 
         g_ResultPhotoData->photoVms[bestShot].SetInterrupt(2);
         PrepareBestShotCursorSetPhase(&this->photoCursor, bestShot);
@@ -906,8 +906,8 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             resultScreen->vms[23].SetInterrupt((direction > 0) + 9);
 
             vm = &resultScreen->vms[23];
-            vm->spriteSize.x = vm->loadedSprite->uvEndX * 255.0f;
-            vm->spriteSize.y = vm->loadedSprite->uvEndY * 255.0f;
+            vm->spriteSize.x = vm->loadedSprite->uvEndX * 256.0f;
+            vm->spriteSize.y = vm->loadedSprite->uvEndY * 256.0f;
 
             ResultPhotoInterruptPreviousPhase(resultScreen);
             ResultPhotoInterruptCurrentPhase(photoIndex);
@@ -1885,7 +1885,7 @@ ChainCallbackResult ResultScreen::Draw()
                     }
                     g_AsciiManager.scaleX = offsetY;
                     g_AsciiManager.scaleY = offsetY;
-                    offsetY = -(offsetY - 1.0f) * 4.0f;
+                    offsetY = -(offsetY - 1.0f) * 8.0f;
                     offsetX = offsetY;
                 }
                 else

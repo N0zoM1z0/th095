@@ -125,3 +125,18 @@ experiment is under `.analysis/pi/check-linked-sections.py`.
 These checks cover the game objects in both link orders. The linked libraries'
 internal references and runtime behavior across the remaining scenes and
 replays are open.
+
+## Scene loading and capture against the original
+
+SEM-368 corrected the scene loader's BGM wait to use
+`g_SoundPlayer.commandQueue[0].opcode`. Its linked operand follows the
+owner at +0x1F88 in both layouts. The target's WAV configuration under
+the local Wine setup left opcode 1 pending at 0x004C6E70. With music
+disabled in the isolated configuration, retail and both reconstructed
+layouts entered scene 1-1 and saved a temporary photo.
+
+The retail photo was 256 pixels wide while the two pre-fix builds produced
+208 pixels. SEM-369 corrected the camera's viewfinder base size from 48
+to the target's 96. Both layouts subsequently produced a 256-pixel photo.
+The height was 191 or 192 pixels in the individual runs. These were
+live keyboard samples at different frame timings.

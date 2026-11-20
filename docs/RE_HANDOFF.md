@@ -42,6 +42,11 @@ the canonical stage declaration between its exact and normal bodies. Use
 the [source map](SOURCE_MAP.md) for the remaining exact lifetime adapter.
 SEM-364 and SEM-365 bind result initialization and capture updates to
 the same persistent score-entry layout.
+SEM-367 applies the same canonical owner to Best Shot metadata and pixels.
+SEM-366 types RunEcl's subroutine slots and shared player access.
+SEM-368 binds the photo loader to the BGM command queue. SEM-369 and
+SEM-370 correct sixteen floating-point references and make the exact
+comparator check the referenced COFF data bytes.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below
