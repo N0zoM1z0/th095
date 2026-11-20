@@ -519,22 +519,25 @@ def check_ecl_extended_type_boundaries() -> None:
 
 
 def check_photo_bullet_owner() -> None:
-    header = (SRC / "PhotoBulletManager.hpp").read_text(encoding="utf-8")
+    entry = (SRC / "PhotoBulletManager.hpp").read_text(encoding="utf-8")
+    header = (SRC / "PhotoBulletManagerLayout.hpp").read_text(encoding="utf-8")
     descriptor = (SRC / "PhotoBulletSpawnDescriptor.hpp").read_text(
         encoding="utf-8"
     )
-    if "TH095_MATCH_EXACT" in header or "DIFFBUILD" in header:
-        fail("canonical PhotoBulletManager.hpp must not select a build-profile layout")
+    if any(name in entry or name in header for name in PROFILE_NAMES):
+        fail("canonical BulletInf declaration must not select a build-profile layout")
+    if '#include "PhotoBulletManagerLayout.hpp"' not in entry:
+        fail("PhotoBulletManager.hpp must import the canonical BulletInf layout")
     if "TH095_MATCH_EXACT" in descriptor or "DIFFBUILD" in descriptor:
         fail("canonical PhotoBulletSpawnDescriptor.hpp must be profile-independent")
     if '#include "PhotoBulletSpawnDescriptor.hpp"' not in header:
-        fail("PhotoBulletManager.hpp must consume the shared spawn descriptor")
+        fail("PhotoBulletManagerLayout.hpp must consume the shared spawn descriptor")
     if len(re.findall(r"\bstruct\s+PhotoBulletSpawnDescriptor\s*\{", descriptor)) != 1:
         fail("PhotoBulletSpawnDescriptor.hpp must define exactly one descriptor")
-    if re.search(r"\bstruct\s+PhotoBulletSpawnDescriptor\s*\{", header):
-        fail("PhotoBulletManager.hpp must not restore a duplicate spawn descriptor")
-    if len(re.findall(r"\bstruct\s+PhotoBulletManagerView\s*\{", header)) != 1:
-        fail("PhotoBulletManager.hpp must define exactly one canonical BulletInf owner")
+    if re.search(r"\bstruct\s+PhotoBulletSpawnDescriptor\s*\{", entry + header):
+        fail("BulletInf must not restore a duplicate spawn descriptor")
+    if len(re.findall(r"\bstruct\s+PhotoBulletManagerView\s*\{", entry + header)) != 1:
+        fail("BulletInf must define exactly one canonical owner")
     required_layout = (
         "sizeof(PhotoBulletView) == 0x65c",
         "offsetof(PhotoBulletManagerView, bullets) == 0x4c",
@@ -553,7 +556,6 @@ def check_photo_bullet_owner() -> None:
         SRC / "PhotoGame.cpp",
         SRC / "PhotoStage.cpp",
         SRC / "EclExtended.cpp",
-        SRC / "ecl" / "EclRun.cpp",
         SRC / "EnemyShotDispatch.cpp",
         SRC / "PhotoGameTask.cpp",
         SRC / "PhotoItemManager.cpp",
@@ -563,6 +565,9 @@ def check_photo_bullet_owner() -> None:
         text = path.read_text(encoding="utf-8")
         if 'PhotoBulletManager.hpp"' not in text:
             fail(f"{path.relative_to(SRC)} must consume canonical PhotoBulletManager.hpp")
+    ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
+    if 'PhotoBulletManagerLayout.hpp"' not in ecl_run:
+        fail("EclRun must consume the canonical BulletInf layout")
 
     camera_header = (SRC / "PhotoCamera.hpp").read_text(encoding="utf-8")
     if any(name in camera_header for name in PROFILE_NAMES):

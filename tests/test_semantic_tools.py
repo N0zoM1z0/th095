@@ -84,7 +84,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
 
     def test_photo_bullet_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_photo_bullet_owner()
-        header = (ROOT / "src" / "PhotoBulletManager.hpp").read_text(
+        header = (ROOT / "src" / "PhotoBulletManagerLayout.hpp").read_text(
             encoding="utf-8"
         )
         self.assertNotIn("TH095_MATCH_EXACT", header)

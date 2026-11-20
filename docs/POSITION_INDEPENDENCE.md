@@ -169,13 +169,27 @@ score 52930 and six photos.
 Read-only process samples compared the two stage timer fields, score,
 three player coordinates, RNG seed, camera mode and charge, photo index,
 photos taken and photo limit. Retail and the regular link agreed at all
-2,712 frame indices including startup index zero. The reordered link
-agreed at all 2,710 sampled indices. The observer missed two intermediate
-indices in that run. The local recipe and traces are
+2,712 frame indices including startup index zero. The first reordered
+run agreed at 2,710 sampled indices. A second run captured all 2,712 and
+agreed with retail at each one. The final SEM-375 PE files match all four
+mapped sections of the respective regular and repeated reordered test
+images, including their RVAs and sizes. The recipe and traces are
 `.analysis/pi/demo-replay-trace.py` and
-`build/position-independence/demo-{retail,regular,reordered}/trace.json`.
+`build/position-independence/demo-{retail,regular,reordered-repeat}/trace.json`.
 
 The same pair of PEs imports 172 names or ordinals from nine DLLs.
 The import lookup and initial address tables agree within each image.
 127 address-table slots change RVA without changing their DLL and
 name or ordinal.
+
+
+Unique nonrelocation byte ranges provide additional anchors for the same
+library objects. The extended comparison reaches 7,422 code references
+and 968 initialized-data references in both images with zero mismatches.
+It leaves 365 reference slots unpaired, mainly for library-private
+destinations. See `.analysis/pi/library-immutable-anchors.py` for the
+local experiment.
+
+A literal sweep of the 270 linked archive members found two code
+immediates in the retail image range. One controls DDS flags and the other
+masks CPU features. The aligned data hits are strings or character tables.

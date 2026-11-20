@@ -15,6 +15,7 @@
 #include "ItemManager.hpp"
 #include "Player.hpp"
 #include "Spellcard.hpp"
+#include "../PhotoBulletManagerLayout.hpp"
 #include "../PhotoPlayerRuntime.hpp"
 
 #include <string.h>
@@ -28,7 +29,6 @@
 
 #include "../GameplayGlobals.hpp"
 #ifndef DIFFBUILD
-#include "../PhotoBulletManager.hpp"
 #include "../PhotoEffectRuntime.hpp"
 #endif
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
@@ -147,15 +147,10 @@
     TH095_ECL_BULLET_MANAGER->SpawnBulletPattern( \
         reinterpret_cast<::th095::PhotoBulletSpawnDescriptor *>(descriptor))
 #endif
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_ECL_BULLET_ANM_SPAWNER \
-    (*reinterpret_cast<EclRunHigh::PhotoAnmSpawner **>( \
-        reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0))
-#else
 #define TH095_ECL_BULLET_ANM_SPAWNER \
     reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>( \
-        TH095_ECL_BULLET_MANAGER->bulletAnm)
-#endif
+        reinterpret_cast<::th095::PhotoBulletManagerView *>( \
+            TH095_ECL_BULLET_MANAGER)->bulletAnm)
 
 #ifdef DIFFBUILD
 #define TH095_ECL_ANM_MANAGER EclRunHigh::g_Th095AnmManager

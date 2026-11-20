@@ -24,8 +24,10 @@ data comparison in exact replay.
 
 [The source map](SOURCE_MAP.md) tracks the shared photo capture and
 persistent score owners. SEM-373 unifies the ECL extension callback
-signature and SEM-374 types the ECL trail configuration. The exact ECL
-bullet ANM accessor still crosses the inherited ANM declaration boundary.
+signature and SEM-374 types the ECL trail configuration. SEM-375 routes the
+ECL bullet ANM accessor through the same BulletInf layout as normal code.
+The inherited ECL ANM declaration still supplies the embedded VM type for
+exact compilation.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below

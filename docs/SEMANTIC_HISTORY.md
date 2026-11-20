@@ -17547,3 +17547,17 @@ accessor uses the asserted +0x2C4C constant and keeps its VC7.1 expression
 shape. All 166 affected exact comparisons pass, the normal RunEcl code and
 relocation destinations are unchanged, and both normal links pass the game
 section comparison.
+
+### SEM-375 — share the BulletInf layout with ECL
+
+RunEcl reads BulletInf +0x27C5B0 at 0x0040CFC4 and 0x0040D167 to select the
+bullet animation file. This is the same field that BulletInf Initialize
+publishes at startup. ECL now reads `PhotoBulletManagerView::bulletAnm`
+through the shared layout declaration. Its existing ANM declaration
+boundary supplies the embedded VM type for exact compilation.
+
+All 142 affected exact comparisons pass. The normal build links in both
+orders. All mapped PE sections match the respective regular and repeated
+reordered images used for the scene 3-6 replay. The existing BulletInf
+guard and focused test follow the layout header and reject a displaced
+owner declaration.

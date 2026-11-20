@@ -61,7 +61,7 @@
 1	src/ecl/EclManager.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/ecl/EclOperands.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/ecl/EclRun.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-2	src/ecl/EclRun.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+1	src/ecl/EclRun.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/ecl/EclRun.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 10	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
 3	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
