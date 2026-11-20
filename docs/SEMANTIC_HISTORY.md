@@ -17856,3 +17856,30 @@ interrupt, and 32 photo-limit cases. Three raw slow-rate payloads also
 survive the save unchanged. The limit cases vary the number of photos taken
 independently of the limit. See `.analysis/pi/result-capture-owner/` for the
 local recipes.
+
+### SEM-389 — share the photo result save and preview owners
+
+Manual Best Shot saves and automatic capture write the same 0x60-byte
+score entry. The target copies the PhotoInf score packet, capture timestamp
+and slow rate to save-data displacements +0x478, +0x49C and +0x4AC for the
+selected entry. The result browser now writes those fields directly through
+`ResultScoreEntryView`. The two capture dimensions narrow from signed
+32-bit slot fields to unsigned 16-bit record fields, and assigning the typed
+slow rate preserves every payload bit under build 3077.
+
+The browser and preview preparer use the real captured VM IDs at PhotoInf
++0x17720. The exact calls pass the four-byte handle directly to `AnmVmId`.
+Using the `PhotoAnmVmId` methods alone adds two receiver temporaries per
+function, growing PrepareBestShot from 380 to 400 bytes and
+UpdatePhotoResultScreen from 1,323 to 1,338. Both profiles now update the
+preview suppression bit on `AnmVm` itself.
+
+All 175 affected strict comparisons pass. Ten PhotoInf relocations gain
+the canonical decorated name and retain their target destinations. The
+normal and reverse links preserve all four mapped sections relative to
+their pre-change builds, and all 169 PhotoInf pointer references resolve
+after the link-order change, including 18 in ResultScreen. Retail and both
+links agree in 32 preview-preparation cases as well as the prior save and
+navigation checks. A patterned score-entry fixture verifies that manual
+overwrite preserves every unrelated byte. See
+`.analysis/pi/result-photo-owner/` for the local recipes.

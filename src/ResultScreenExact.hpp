@@ -129,46 +129,6 @@ struct ResultScreenLoadedSpriteView
     f32 uvEndY;
 };
 
-struct ResultPhotoSlotView
-{
-    u8 unknown0000[0x21d4];
-    u32 metadata[8];
-    i32 score;                        // +0x21f4
-    i32 replayValue;                  // +0x21f8
-    i32 stageValue;                   // +0x21fc
-    u16 width;                        // +0x2200
-    u16 unknown2202;
-    u16 height;                       // +0x2204
-    u16 unknown2206;
-    char comment[12];                 // +0x2208
-};
-
-struct ResultPhotoDataView
-{
-    ResultPhotoSlotView slots[11];
-    u8 unknown176dc[0x17720 - 0x176dc];
-    AnmVmId photoVms[11];
-    u8 unknown1774c[0x2571c - 0x1774c];
-
-};
-
-typedef char ResultPhotoSlotViewSizeIs2214[
-    (sizeof(ResultPhotoSlotView) == 0x2214) ? 1 : -1];
-typedef char ResultPhotoSlotMetadataAt21D4[
-    (offsetof(ResultPhotoSlotView, metadata) == 0x21d4) ? 1 : -1];
-typedef char ResultPhotoSlotScoreAt21F4[
-    (offsetof(ResultPhotoSlotView, score) == 0x21f4) ? 1 : -1];
-typedef char ResultPhotoSlotReplayValueAt21F8[
-    (offsetof(ResultPhotoSlotView, replayValue) == 0x21f8) ? 1 : -1];
-typedef char ResultPhotoSlotStageValueAt21FC[
-    (offsetof(ResultPhotoSlotView, stageValue) == 0x21fc) ? 1 : -1];
-typedef char ResultPhotoSlotWidthAt2200[
-    (offsetof(ResultPhotoSlotView, width) == 0x2200) ? 1 : -1];
-typedef char ResultPhotoSlotHeightAt2204[
-    (offsetof(ResultPhotoSlotView, height) == 0x2204) ? 1 : -1];
-typedef char ResultPhotoSlotCommentAt2208[
-    (offsetof(ResultPhotoSlotView, comment) == 0x2208) ? 1 : -1];
-
 struct ResultScreenSceneLabel
 {
     char firstLine[0x2c];

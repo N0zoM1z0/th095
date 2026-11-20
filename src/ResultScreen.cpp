@@ -130,23 +130,6 @@ typedef char ResultAsciiScaleXAt8070[
 typedef char ResultAsciiScaleYAt8074[
     (offsetof(ResultAsciiManagerView, scaleY) == 0x8074) ? 1 : -1];
 
-struct ResultAnmVmHandleView
-{
-    u8 unknown000[0x228];
-    union
-    {
-        u32 flagsWord;
-#if !defined(DIFFBUILD)
-        struct
-        {
-            u32 unknownFlags00_27 : 28;
-            u32 bypassPhotoGameSuppression : 1;
-            u32 unknownFlags29_31 : 3;
-        };
-#endif
-    };
-};
-
 extern ResultScreenGlobalStateView *g_ResultScreenGlobalState;
 
 #ifndef DIFFBUILD
@@ -166,21 +149,6 @@ struct ResultScreenInitializeLocals
 typedef char ResultScreenInitializeLocalsSizeIs50[
     (sizeof(ResultScreenInitializeLocals) == 0x50) ? 1 : -1];
 
-typedef char ResultBestShotImageScoreAt10[
-    (offsetof(ResultBestShotImageView, score) == 0x10) ? 1 : -1];
-#ifdef DIFFBUILD
-typedef char ResultBestShotImageMetadataAt18[
-    (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
-#else
-typedef char ResultBestShotImageScoreBreakdownAt18[
-    (offsetof(ResultBestShotImageView, scoreBreakdown) == 0x18) ? 1 : -1];
-#endif
-typedef char ResultBestShotImageCaptureTimeAt3C[
-    (offsetof(ResultBestShotImageView, captureTime) == 0x3c) ? 1 : -1];
-typedef char ResultBestShotImageHighScoreSlowRateAt48[
-    (offsetof(ResultBestShotImageView, highScoreSlowRate) == 0x48) ? 1 : -1];
-typedef char ResultBestShotImageBestShotSlowRateAt4C[
-    (offsetof(ResultBestShotImageView, bestShotSlowRate) == 0x4c) ? 1 : -1];
 typedef char ResultBestShotRecordCommentAt18[
     (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordValidAt68[
@@ -815,15 +783,8 @@ void ResultScreen::PrepareBestShot()
                  i < ReadResultPhotoLimit(&g_RuntimePlayerOwner->camera);
                  i++)
             {
-#ifdef DIFFBUILD
-                reinterpret_cast<ResultAnmVmHandleView *>(
-                    g_PhotoStageState->capturedPhotoVms[i].GetVm())
-                    ->flagsWord |= 0x10000000;
-#else
-                reinterpret_cast<ResultAnmVmHandleView *>(
-                    g_PhotoStageState->capturedPhotoVms[i].GetVm())
-                    ->bypassPhotoGameSuppression = 1;
-#endif
+                g_PhotoStageState->capturedPhotoVms[i].GetVm()->flagsWord |=
+                    ANM_VM_BYPASS_PHOTO_GAME_SUPPRESSION;
             }
         }
     }
@@ -888,19 +849,10 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
     {
         i32 photoIndex = resultScreen->photoCursor.GetCurrent();
 
-#ifdef DIFFBUILD
-        memcpy(
-            g_ResultSaveData
-                ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-                .metadata,
-            &g_PhotoStageState->slots[photoIndex].scoreBreakdown,
-            sizeof(g_ResultSaveData->bestShotImages[0].metadata));
-#else
         g_ResultSaveData
-            ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+            ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
             .scoreBreakdown =
             g_PhotoStageState->slots[photoIndex].scoreBreakdown;
-#endif
         g_ResultSaveData->UpdateBestShotRecord(
             g_ResultScreenGlobalState->bestShotIndex);
 
@@ -943,10 +895,10 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             .componentCount =
             (u8)((g_PhotoStageState->anm->textures[photoIndex].format == 4) + 2);
         g_ResultSaveData
-            ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+            ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
             .bestShotSlowRate = g_PhotoStageState->slots[photoIndex].slowRate;
         g_ResultSaveData
-            ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+            ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
             .captureTime = g_PhotoStageState->slots[photoIndex].timestamp;
         strcpy(
             g_ResultSaveData
@@ -1534,7 +1486,7 @@ static __forceinline void DrawResultTotalScorePhase(Float3 *position)
     i32 totalScore = 0;
     for (u32 scoreIndex = 0; scoreIndex < 120; scoreIndex++)
     {
-        totalScore += g_ResultSaveData->bestShotImages[scoreIndex].score;
+        totalScore += g_ResultSaveData->scoreEntries[scoreIndex].score;
     }
     position->x = 230.0f;
     position->y = 68.0f;
@@ -1683,7 +1635,7 @@ ChainCallbackResult ResultScreen::Draw()
         g_AsciiManager.AddFormatText(
             &highScorePosition, " High Score  %.7d",
             g_ResultSaveData
-                ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+                ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
                 .score);
 
         DrawResultTotalScorePhase(&totalScorePosition);
@@ -1704,7 +1656,7 @@ ChainCallbackResult ResultScreen::Draw()
         g_AsciiManager.AddFormatText(
             &slowRatePosition, "  Slow Rate      %2.0f%%",
             g_ResultSaveData
-                ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+                ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
                 .highScoreSlowRate);
         g_AsciiManager.color.color = 0xffffffff;
 

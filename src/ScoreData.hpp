@@ -68,33 +68,6 @@ enum PhotoScoreFlags
 };
 #endif
 
-struct ResultBestShotImageView
-{
-    u8 unknown000[0x10];
-    i32 score;
-    u8 unknown014[4];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u32 metadata[8];
-#else
-    PhotoScoreBreakdownView scoreBreakdown;
-#endif
-    u8 unknown038[4];
-#ifdef TH095_MATCH_EXACT
-    i32 replayValue;
-#else
-    i32 captureTime;
-#endif
-    u8 unknown040[0x48 - 0x40];
-#ifdef TH095_MATCH_EXACT
-    f32 slowRate;
-    i32 stageValue;
-#else
-    f32 highScoreSlowRate;
-    f32 bestShotSlowRate;
-#endif
-    u8 unknown050[0x60 - 0x50];
-};
-
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 typedef u8 ResultBestShotPayloadFormat;
 enum ResultBestShotPayloadFormatValue
@@ -210,7 +183,6 @@ struct ResultSaveDataView
     {
         ResultScoreEntryView scoreEntries[120];
         ResultScoreEntryView sceneScores[120];
-        ResultBestShotImageView bestShotImages[120];
     };
     ResultBestShotRecordView bestShotRecords[120];
 
@@ -239,8 +211,6 @@ typedef char ScoreFileHeaderSizeIs18[
 typedef char ScoreFileHeaderVersionAt08[
     (offsetof(ScoreFileHeader, version) == 0x08) ? 1 : -1];
 #endif
-typedef char ResultBestShotImageSizeIs60[
-    (sizeof(ResultBestShotImageView) == 0x60) ? 1 : -1];
 typedef char ResultBestShotRecordSizeIs78[
     (sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
@@ -253,6 +223,14 @@ typedef char ResultScoreEntrySizeIs60[
     (sizeof(ResultScoreEntryView) == 0x60) ? 1 : -1];
 typedef char ResultScoreEntryScoreBreakdownAt18[
     (offsetof(ResultScoreEntryView, scoreBreakdown) == 0x18) ? 1 : -1];
+typedef char ResultScoreEntryScoreAt10[
+    (offsetof(ResultScoreEntryView, score) == 0x10) ? 1 : -1];
+typedef char ResultScoreEntryCaptureTimeAt3C[
+    (offsetof(ResultScoreEntryView, captureTime) == 0x3c) ? 1 : -1];
+typedef char ResultScoreEntryHighScoreSlowRateAt48[
+    (offsetof(ResultScoreEntryView, highScoreSlowRate) == 0x48) ? 1 : -1];
+typedef char ResultScoreEntryBestShotSlowRateAt4C[
+    (offsetof(ResultScoreEntryView, bestShotSlowRate) == 0x4c) ? 1 : -1];
 typedef char ResultScoreEntryUnknown038At38[
     (offsetof(ResultScoreEntryView, unknown038) == 0x38) ? 1 : -1];
 typedef char ResultSaveProfileDataAt08[
@@ -272,13 +250,6 @@ typedef char ResultSaveDataSizeIs69A0[
 typedef char ResultSaveSelectionAt1E[
     (offsetof(ResultSaveDataView, lastSelectedGroup) == 0x1e &&
      offsetof(ResultSaveDataView, lastSelectedScene) == 0x20) ? 1 : -1];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-typedef char ResultBestShotImageMetadataAt18[
-    (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
-#else
-typedef char ResultBestShotImageScoreBreakdownAt18[
-    (offsetof(ResultBestShotImageView, scoreBreakdown) == 0x18) ? 1 : -1];
-#endif
 typedef char ResultBestShotRecordCommentAt18[
     (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordValidAt68[

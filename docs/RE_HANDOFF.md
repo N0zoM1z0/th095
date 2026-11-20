@@ -34,10 +34,9 @@ SEM-378 removes the photo task's padded normal view of the captured VM
 IDs. Its exact view still supplies the direct `AnmVmId` receiver.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
-breakdown between PhotoCamera, PhotoInf and ScoreData. Normal ResultScreen
-now uses the canonical slots while the exact result view remains. SEM-381
-replaces the normal PhotoInf pointer projections with one typed singleton.
-Exact ResultScreen, PhotoGameTask and ECL still have recorded emission views.
+breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
+normal PhotoInf pointer projections with one typed singleton. PhotoGameTask
+and ECL still have recorded exact emission views.
 SEM-382 shares the PlayerInf allocation declaration and typed publication
 across PhotoGame and PhotoEffect. The normal photo task uses the same type.
 SEM-383 removes PlayerInf projections in the HUD, card, foreground and
@@ -51,7 +50,9 @@ schedule with separate photo-index thresholds and full call words.
 SEM-387 uses the same ANM manager fields for capture publication and
 dispatch in both profiles. SEM-388 shares those fields with the result
 initializers and gives both result profiles the actual PlayerInf photo limit.
-The legacy ECL headers still require the dependency-light Player view.
+SEM-389 removes the remaining result-browser PhotoInf view and shares the
+saved score entry with automatic capture. The legacy ECL headers still require
+the dependency-light Player view.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below

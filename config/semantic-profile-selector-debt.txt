@@ -203,9 +203,8 @@
 1	src/ReplayManager.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayManagerExact.inl	#ifdef TH095_MATCH_EXACT
 1	src/ReplayScanWorker.cpp	#ifdef TH095_MATCH_EXACT
-1	src/ResultScreen.cpp	#if !defined(DIFFBUILD)
 1	src/ResultScreen.cpp	#if defined(DIFFBUILD)
-25	src/ResultScreen.cpp	#ifdef DIFFBUILD
+22	src/ResultScreen.cpp	#ifdef DIFFBUILD
 3	src/ResultScreen.cpp	#ifdef TH095_MATCH_EXACT
 5	src/ResultScreen.cpp	#ifndef DIFFBUILD
 3	src/ResultScreen.hpp	#ifdef TH095_MATCH_EXACT
@@ -235,8 +234,8 @@
 3	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT)
 3	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/ScoreData.hpp	#if defined(TH095_MATCH_EXACT)
-3	src/ScoreData.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-6	src/ScoreData.hpp	#ifdef TH095_MATCH_EXACT
+1	src/ScoreData.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+4	src/ScoreData.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreDataExact.inl	#ifdef TH095_MATCH_EXACT
 1	src/ScoreLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreLoad.cpp	#if !defined(TH095_MATCH_EXACT)

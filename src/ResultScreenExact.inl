@@ -77,12 +77,6 @@ typedef char ResultAsciiScaleXAt8070[
 typedef char ResultAsciiScaleYAt8074[
     (offsetof(ResultAsciiManagerView, scaleY) == 0x8074) ? 1 : -1];
 
-struct ResultAnmVmHandleView
-{
-    u8 unknown000[0x228];
-    u32 flagsWord;
-};
-
 extern ResultScreenGlobalStateView *g_ResultScreenGlobalState;
 
 struct ResultRuntimeView
@@ -112,16 +106,6 @@ struct ResultScreenInitializeLocals
 typedef char ResultScreenInitializeLocalsSizeIs50[
     (sizeof(ResultScreenInitializeLocals) == 0x50) ? 1 : -1];
 
-typedef char ResultBestShotImageScoreAt10[
-    (offsetof(ResultBestShotImageView, score) == 0x10) ? 1 : -1];
-typedef char ResultBestShotImageMetadataAt18[
-    (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
-typedef char ResultBestShotImageReplayValueAt3C[
-    (offsetof(ResultBestShotImageView, replayValue) == 0x3c) ? 1 : -1];
-typedef char ResultBestShotImageSlowRateAt48[
-    (offsetof(ResultBestShotImageView, slowRate) == 0x48) ? 1 : -1];
-typedef char ResultBestShotImageStageValueAt4C[
-    (offsetof(ResultBestShotImageView, stageValue) == 0x4c) ? 1 : -1];
 typedef char ResultBestShotRecordCommentAt18[
     (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordValidAt68[
@@ -140,7 +124,6 @@ extern u8 *__fastcall ReadResultHelpLine(
     char *destination, u8 *source, i32 maxLength);
 extern i32 g_ResultSceneLimits[];
 extern const char *g_ResultAlphabet;
-extern ResultPhotoDataView *g_ResultPhotoData;
 extern ResultSaveDataView *g_ResultSaveData;
 extern ResultAsciiManagerView g_ResultAsciiManager;
 extern ResultScreenAnmLoadedView *g_ResultAuxAnm;
@@ -641,7 +624,10 @@ void ResultScreen::PrepareBestShot()
         vm->spriteSize.x = vm->loadedSprite->uvEndX * 256.0f;
         vm->spriteSize.y = vm->loadedSprite->uvEndY * 256.0f;
 
-        g_ResultPhotoData->photoVms[bestShot].SetInterrupt(2);
+        // Pass the same trivial handle storage to the AnmVmId ABI directly.
+        // VC7.1 adds receiver temporaries through the PhotoAnmVmId methods.
+        reinterpret_cast<AnmVmId *>(
+            &g_PhotoStageState->capturedPhotoVms[bestShot])->SetInterrupt(2);
         PrepareBestShotCursorSetPhase(&this->photoCursor, bestShot);
 
         if (bestShot < ReadResultPhotoLimit(&g_RuntimePlayerOwner->camera))
@@ -653,9 +639,9 @@ void ResultScreen::PrepareBestShot()
                  i < ReadResultPhotoLimit(&g_RuntimePlayerOwner->camera);
                  i++)
             {
-                reinterpret_cast<ResultAnmVmHandleView *>(
-                    g_ResultPhotoData->photoVms[i].GetVm())
-                    ->flagsWord |= 0x10000000;
+                reinterpret_cast<AnmVmId *>(&g_PhotoStageState->capturedPhotoVms[i])
+                    ->GetVm()->flagsWord |=
+                    ANM_VM_BYPASS_PHOTO_GAME_SUPPRESSION;
             }
         }
     }
@@ -665,15 +651,16 @@ static __forceinline void ResultPhotoInterruptPreviousPhase(
     ResultScreen *resultScreen)
 {
     u8 compilerStorage[0x24];
-    g_ResultPhotoData
-        ->photoVms[resultScreen->photoCursor.GetPrevious()]
-        .SetInterrupt(3);
+    reinterpret_cast<AnmVmId *>(
+        &g_PhotoStageState->capturedPhotoVms[resultScreen->photoCursor.GetPrevious()])
+        ->SetInterrupt(3);
 }
 
 static __forceinline void ResultPhotoInterruptCurrentPhase(i32 photoIndex)
 {
     u8 compilerStorage[8];
-    g_ResultPhotoData->photoVms[photoIndex].SetInterrupt(2);
+    reinterpret_cast<AnmVmId *>(
+        &g_PhotoStageState->capturedPhotoVms[photoIndex])->SetInterrupt(2);
 }
 
 void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
@@ -720,12 +707,10 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
     {
         i32 photoIndex = resultScreen->photoCursor.GetCurrent();
 
-        memcpy(
-            g_ResultSaveData
-                ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-                .metadata,
-            g_ResultPhotoData->slots[photoIndex].metadata,
-            sizeof(g_ResultSaveData->bestShotImages[0].metadata));
+        g_ResultSaveData
+            ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
+            .scoreBreakdown =
+            g_PhotoStageState->slots[photoIndex].scoreBreakdown;
         g_ResultSaveData->UpdateBestShotRecord(
             g_ResultScreenGlobalState->bestShotIndex);
 
@@ -737,10 +722,10 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             .magic = 0x53545342;
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
-            .width = g_ResultPhotoData->slots[photoIndex].width;
+            .width = static_cast<u16>(g_PhotoStageState->slots[photoIndex].width);
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
-            .height = g_ResultPhotoData->slots[photoIndex].height;
+            .height = static_cast<u16>(g_PhotoStageState->slots[photoIndex].height);
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .score = g_PhotoStageState->slots[photoIndex].score;
@@ -761,16 +746,16 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             .componentCount =
             (u8)((g_PhotoStageState->anm->textures[photoIndex].bytesPerPixel == 4) + 2);
         g_ResultSaveData
-            ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-            .stageValue = g_ResultPhotoData->slots[photoIndex].stageValue;
+            ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
+            .bestShotSlowRate = g_PhotoStageState->slots[photoIndex].slowRate;
         g_ResultSaveData
-            ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-            .replayValue = g_ResultPhotoData->slots[photoIndex].replayValue;
+            ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
+            .captureTime = g_PhotoStageState->slots[photoIndex].timestamp;
         strcpy(
             g_ResultSaveData
                 ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
                 .comment,
-            g_ResultPhotoData->slots[photoIndex].comment);
+            g_PhotoStageState->slots[photoIndex].comment);
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .photoIndex = photoIndex;
@@ -1327,7 +1312,7 @@ static __forceinline void DrawResultTotalScorePhase(Float3 *position)
     i32 totalScore = 0;
     for (u32 scoreIndex = 0; scoreIndex < 120; scoreIndex++)
     {
-        totalScore += g_ResultSaveData->bestShotImages[scoreIndex].score;
+        totalScore += g_ResultSaveData->scoreEntries[scoreIndex].score;
     }
     position->x = 230.0f;
     position->y = 68.0f;
@@ -1476,7 +1461,7 @@ ChainCallbackResult ResultScreen::Draw()
         g_ResultAsciiManager.AddFormatText(
             &highScorePosition, " High Score  %.7d",
             g_ResultSaveData
-                ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+                ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
                 .score);
 
         DrawResultTotalScorePhase(&totalScorePosition);
@@ -1497,8 +1482,8 @@ ChainCallbackResult ResultScreen::Draw()
         g_ResultAsciiManager.AddFormatText(
             &slowRatePosition, "  Slow Rate      %2.0f%%",
             g_ResultSaveData
-                ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-                .slowRate);
+                ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
+                .highScoreSlowRate);
         g_ResultAsciiManager.color = 0xffffffff;
 
         if (this->notificationTimer > 0)

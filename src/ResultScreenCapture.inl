@@ -1,3 +1,5 @@
+static const u32 ANM_VM_BYPASS_PHOTO_GAME_SUPPRESSION = 1u << 28;
+
 static __forceinline void InitializeResultCapturePhase()
 {
     AnmManager *anmManager = g_AnmManager;

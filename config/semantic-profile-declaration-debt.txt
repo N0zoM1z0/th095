@@ -107,7 +107,6 @@
 1	src/ReplayManager.cpp	struct	ReplayUserDataHeader
 1	src/ReplayManager.cpp	struct	ReplayWriteLocals
 1	src/ResultScreen.cpp	struct	ResultAnmVmDrawView
-1	src/ResultScreen.cpp	struct	ResultAnmVmHandleView
 1	src/ResultScreen.cpp	struct	ResultAsciiManagerView
 1	src/ResultScreen.cpp	struct	ResultScreenGlobalStateView
 1	src/ResultScreen.cpp	struct	ResultScreenInitializeLocals
