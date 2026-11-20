@@ -18047,3 +18047,36 @@ the existing VM call sites: the trial body grows from 16,066 to 16,423
 bytes. The preview call therefore converts the existing loaded-ANM
 projection at its boundary while the older VM methods retain their
 emission. See `.analysis/pi/scene-preview-owner/` for the local recipes.
+
+### SEM-396 — share the Best Shot file owner
+
+The Scene Select worker uses `ResultSaveDataView::LoadBestShotForScene` in
+both profiles. The loader checks the selected score entry's capture time
+at +0x3C. A missing file clears the capture time and detail score. A
+failed open or checksum leaves the staged record unavailable. Cleanup
+frees the raw file at +0x70 and decoded pixels at +0x74 separately.
+
+Both profiles now use the same payload format and byte-buffer fields.
+The loader, writer and checksum code derive the 24-byte header and
+80-byte comment bounds from the staged record layout. The reader retains
+the pixels-only case and the fallback that reads a comment for other
+format values. PhotoStage and ResultScreen both write format 2.
+
+All 167 affected exact comparisons pass. The two normal link orders
+resolve the worker's saved-data pointer, the loader call and the scene
+table reference to their moved destinations. The twelve group pointers
+select the same 93 score indices as retail. Both rebuilt PEs preserve all
+four mapped sections of their previous link.
+
+The linked-code fixture executes the old-record cleanup, compressor,
+decompressor and checksum routines with mocked file and heap calls. It
+checks 240 loader cases and 16 round trips through the Best Shot writer
+branch. The header, comment, compressed pixels and saved checksum agree
+with retail. The result-screen fixture also verifies 144 save cases.
+
+The existing allocation helper still contains the compiler storage used
+by the accepted match. A plain wrapper matches 933 of 970 comparable bytes.
+Passing width, height and components, passing the pixel count, and
+passing the whole record by reference all change the extent. A comment
+copy using memcpy preserves the extent but changes 25 comparable bytes.
+The local probes and fixtures are under `.analysis/pi/best-shot-file-owner/`.

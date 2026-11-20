@@ -82,7 +82,7 @@ ScoreDataResult ResultSaveDataView::WriteBestShotData()
                 CalculateAlignedChecksum(
                     reinterpret_cast<i32 *>(
                         &this->bestShotRecords[locals.pendingBestShotIndex]),
-                    0x18) +
+                    RESULT_BEST_SHOT_FILE_HEADER_SIZE) +
                 CalculateAlignedChecksum(
                     reinterpret_cast<i32 *>(
                         this->bestShotRecords[locals.pendingBestShotIndex]
@@ -112,7 +112,8 @@ ScoreDataResult ResultSaveDataView::WriteBestShotData()
 
             FileSystem::OpenWriteFile(locals.path);
             FileSystem::WriteToOpenFile(
-                &this->bestShotRecords[locals.pendingBestShotIndex], 0x18);
+                &this->bestShotRecords[locals.pendingBestShotIndex],
+                RESULT_BEST_SHOT_FILE_HEADER_SIZE);
             FileSystem::WriteToOpenFile(
                 this->bestShotRecords[locals.pendingBestShotIndex].comment,
                 sizeof(this->bestShotRecords[0].comment));

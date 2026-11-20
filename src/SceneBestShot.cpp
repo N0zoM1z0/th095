@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#include "SceneBestShotExact.inl"
-#else
 #include "SceneSelect.hpp"
 
 #include "Checksum.hpp"
@@ -55,8 +52,7 @@ i32 ResultSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
         return -1;
     }
 
-    reinterpret_cast<ResultSaveDataView *>(this)
-        ->UpdateBestShotRecord(recordIndex);
+    this->UpdateBestShotRecord(recordIndex);
 
     if (group != 10)
     {
@@ -80,25 +76,21 @@ i32 ResultSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
         goto load_failed;
     {
         memcpy(&this->bestShotRecords[recordIndex],
-               this->bestShotRecords[recordIndex].rawFileData, 0x18);
-        io.input = reinterpret_cast<u8 *>(
-                        this->bestShotRecords[recordIndex].rawFileData) +
-                    0x18;
+               this->bestShotRecords[recordIndex].rawFileData,
+               RESULT_BEST_SHOT_FILE_HEADER_SIZE);
+        io.input = this->bestShotRecords[recordIndex].rawFileData +
+                   RESULT_BEST_SHOT_FILE_HEADER_SIZE;
         this->bestShotRecords[recordIndex].pixelData =
             SceneBestShotPixelAlloc(
                 this->bestShotRecords[recordIndex].width *
                 this->bestShotRecords[recordIndex].height *
                 this->bestShotRecords[recordIndex].componentCount);
 
-#ifdef DIFFBUILD
-        if (this->bestShotRecords[recordIndex].type == 1)
-#else
         if (this->bestShotRecords[recordIndex].payloadFormat ==
             RESULT_BEST_SHOT_PAYLOAD_COMPRESSED_PIXELS)
-#endif
         {
             DecompressData(
-                io.input, fileSize - 0x18,
+                io.input, fileSize - RESULT_BEST_SHOT_FILE_HEADER_SIZE,
                 this->bestShotRecords[recordIndex].pixelData,
                 this->bestShotRecords[recordIndex].width *
                     this->bestShotRecords[recordIndex].height *
@@ -112,7 +104,7 @@ i32 ResultSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
                 *reinterpret_cast<const SceneBestShotCommentBlock *>(io.input);
             io.input += sizeof(this->bestShotRecords[recordIndex].comment);
             DecompressData(
-                io.input, fileSize - 0x68,
+                io.input, fileSize - RESULT_BEST_SHOT_FILE_HEADER_WITH_COMMENT_SIZE,
                 this->bestShotRecords[recordIndex].pixelData,
                 this->bestShotRecords[recordIndex].width *
                     this->bestShotRecords[recordIndex].height *
@@ -121,9 +113,11 @@ i32 ResultSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
 
         if (this->sceneScores[recordIndex].bestShotChecksum !=
             CalculateAlignedChecksum(
-                reinterpret_cast<i32 *>(&this->bestShotRecords[recordIndex]), 0x18) +
+                reinterpret_cast<i32 *>(&this->bestShotRecords[recordIndex]),
+                RESULT_BEST_SHOT_FILE_HEADER_SIZE) +
             CalculateAlignedChecksum(
-                reinterpret_cast<i32 *>(this->bestShotRecords[recordIndex].comment), 0x50) +
+                reinterpret_cast<i32 *>(this->bestShotRecords[recordIndex].comment),
+                sizeof(this->bestShotRecords[recordIndex].comment)) +
             CalculateAlignedChecksum(
                 reinterpret_cast<i32 *>(this->bestShotRecords[recordIndex].pixelData),
                 this->bestShotRecords[recordIndex].width *
@@ -147,5 +141,3 @@ load_failed:
 #undef io
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

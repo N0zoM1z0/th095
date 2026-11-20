@@ -877,23 +877,17 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .scene = (u16)(g_SelectedScene->scene + 1);
-#ifdef DIFFBUILD
-        g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
-            .type = 2;
-#else
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .payloadFormat =
             RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS;
-#endif
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .version = 0x102;
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .componentCount =
-            (u8)((g_PhotoStageState->anm->textures[photoIndex].format == 4) + 2);
+            (u8)((g_PhotoStageState->anm->textures[photoIndex].bytesPerPixel == 4) + 2);
         g_ResultSaveData
             ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
             .bestShotSlowRate = g_PhotoStageState->slots[photoIndex].slowRate;

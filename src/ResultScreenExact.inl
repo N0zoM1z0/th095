@@ -378,12 +378,12 @@ i32 PhotoStageStateView::FindBestShot()
 
 void ResultSaveDataView::UpdateBestShotRecord(i32 index)
 {
-    if (this->bestShotRecords[index].componentData0 != NULL)
+    if (this->bestShotRecords[index].rawFileData != NULL)
     {
         g_ZunMemory.Free(
-            this->bestShotRecords[index].componentData0);
+            this->bestShotRecords[index].rawFileData);
     }
-    this->bestShotRecords[index].componentData0 = NULL;
+    this->bestShotRecords[index].rawFileData = NULL;
 
     if (this->bestShotRecords[index].pixelData != NULL)
     {
@@ -737,7 +737,8 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             .scene = (u16)(g_ResultPlayerConfig->scene + 1);
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
-            .type = 2;
+            .payloadFormat =
+            RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS;
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .version = 0x102;

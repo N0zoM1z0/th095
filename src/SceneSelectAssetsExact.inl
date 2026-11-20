@@ -220,7 +220,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                 AssetQueueRead(&locals.view->selectionQueue,
                                &locals.queueValue);
 
-                if (g_SceneSaveData->LoadBestShotForScene(
+                if (g_ResultSaveData->LoadBestShotForScene(
                         locals.queueValue >> 8,
                         locals.queueValue & 0xff) == 0)
                 {

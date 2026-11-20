@@ -68,23 +68,17 @@ enum PhotoScoreFlags
 };
 #endif
 
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 typedef u8 ResultBestShotPayloadFormat;
 enum ResultBestShotPayloadFormatValue
 {
     RESULT_BEST_SHOT_PAYLOAD_COMPRESSED_PIXELS = 1,
     RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS = 2,
 };
-#endif
 
 struct ResultBestShotRecordView
 {
     u32 magic;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u8 type;
-#else
     ResultBestShotPayloadFormat payloadFormat;
-#endif
     u8 componentCount;
     u16 group;
     u16 scene;
@@ -102,12 +96,14 @@ struct ResultBestShotRecordView
     u8 componentsLoaded;
     u8 unknown06a[2];
     i32 photoIndex;
-#ifdef TH095_MATCH_EXACT
-    void *componentData0;
-#else
-    void *rawFileData;
-#endif
+    u8 *rawFileData;
     u8 *pixelData;
+};
+
+enum
+{
+    RESULT_BEST_SHOT_FILE_HEADER_SIZE = offsetof(ResultBestShotRecordView, comment),
+    RESULT_BEST_SHOT_FILE_HEADER_WITH_COMMENT_SIZE = offsetof(ResultBestShotRecordView, valid),
 };
 
 struct ResultScoreEntryView
@@ -213,12 +209,10 @@ typedef char ScoreFileHeaderVersionAt08[
 #endif
 typedef char ResultBestShotRecordSizeIs78[
     (sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 typedef char ResultBestShotPayloadFormatSizeIs1[
     (sizeof(ResultBestShotPayloadFormat) == 1) ? 1 : -1];
 typedef char ResultBestShotPayloadFormatAt04[
     (offsetof(ResultBestShotRecordView, payloadFormat) == 0x04) ? 1 : -1];
-#endif
 typedef char ResultScoreEntrySizeIs60[
     (sizeof(ResultScoreEntryView) == 0x60) ? 1 : -1];
 typedef char ResultScoreEntryScoreBreakdownAt18[
@@ -257,12 +251,7 @@ typedef char ResultBestShotRecordValidAt68[
 typedef char ResultBestShotRecordPhotoIndexAt6C[
     (offsetof(ResultBestShotRecordView, photoIndex) == 0x6c) ? 1 : -1];
 typedef char ResultBestShotRecordBuffersAt70[
-    (
-#ifdef TH095_MATCH_EXACT
-     offsetof(ResultBestShotRecordView, componentData0) == 0x70 &&
-#else
-     offsetof(ResultBestShotRecordView, rawFileData) == 0x70 &&
-#endif
+    (offsetof(ResultBestShotRecordView, rawFileData) == 0x70 &&
      offsetof(ResultBestShotRecordView, pixelData) == 0x74) ? 1 : -1];
 
 extern ResultSaveDataView *g_ResultSaveData;

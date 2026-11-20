@@ -910,7 +910,8 @@ i32 PhotoStageStateView::Update()
                             g_PhotoStageGlobalState->scoreIndex)->scene =
                                 (u16)(g_PhotoStagePlayerConfig->scene + 1);
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->type = 2;
+                            g_PhotoStageGlobalState->scoreIndex)->payloadFormat =
+                            RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS;
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->version =
                             0x102;

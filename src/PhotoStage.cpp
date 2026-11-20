@@ -938,14 +938,9 @@ i32 PhotoStageStateView::Update()
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->scene =
                                 (u16)(g_SelectedScene->scene + 1);
-#ifdef DIFFBUILD
-                        GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->type = 2;
-#else
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->payloadFormat =
                             RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS;
-#endif
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->version =
                             0x102;

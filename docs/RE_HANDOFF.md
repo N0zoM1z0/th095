@@ -43,6 +43,8 @@ SEM-394 shares the embedded texture layout and upload code with Scene
 Select and Help, and routes the text texture clears through Supervisor.
 SEM-395 shares the Best Shot preview renderer and routes Scene Select's
 staged preview reads through the saved-data owner.
+SEM-396 shares the loader and record fields. Both file paths derive the
+checksum and serialization bounds from the same record layout.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

@@ -86,7 +86,7 @@ typedef char ScoreWriteLocalsRawBufferAt12C[
                 CalculateAlignedChecksum(
                     reinterpret_cast<i32 *>(
                         &this->bestShotRecords[locals.pendingBestShotIndex]),
-                    0x18) +
+                    RESULT_BEST_SHOT_FILE_HEADER_SIZE) +
                 CalculateAlignedChecksum(
                     reinterpret_cast<i32 *>(
                         this->bestShotRecords[locals.pendingBestShotIndex]
@@ -116,7 +116,8 @@ typedef char ScoreWriteLocalsRawBufferAt12C[
 
             ScoreFileWriter::Open(locals.path);
             ScoreFileWriter::Write(
-                &this->bestShotRecords[locals.pendingBestShotIndex], 0x18);
+                &this->bestShotRecords[locals.pendingBestShotIndex],
+                RESULT_BEST_SHOT_FILE_HEADER_SIZE);
             ScoreFileWriter::Write(
                 this->bestShotRecords[locals.pendingBestShotIndex].comment,
                 sizeof(this->bestShotRecords[0].comment));

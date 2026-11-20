@@ -319,7 +319,6 @@ struct SceneSaveDataView
     SceneScoreEntryView sceneScores[120];
     ResultBestShotRecordView bestShotRecords[120];
 
-    i32 LoadBestShotForScene(i32 group, i32 scene);
     i32 IsSceneGroupUnlocked(i32 group);
     i32 FindHighestUnlockedSceneGroup();
     i32 CountCapturedScenes();
