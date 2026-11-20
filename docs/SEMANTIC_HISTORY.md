@@ -17581,3 +17581,21 @@ fixture. The sixteen operands follow the Supervisor from 0x004DCBA0 to
 0x004D7178. The existing input initialization fixture still passes all
 694 cases. The pinned SDK layout and API probes compile, as do the MinGW
 x86 and x64 SDK API fixtures.
+
+### SEM-377 — type the PhotoInf display boundary
+
+At 0x0042E70B the photo display builder copies the three words of its
+position to PhotoInf +0x2570C through +0x25717. The independent Update
+routine loads X at +0x2570C and Y at +0x25710 for the display fade test.
+Both stages now use a Float3 member for the complete copy. The exact
+PhotoOverlay lifetime declaration has the same vector and offset.
+
+All 40 affected strict comparisons pass. The regular and reordered
+normal PE entry points and mapped sections are identical to their
+respective pre-change products.
+
+The separate PhotoGameTask receiver still uses its existing VM ID view
+for photo completion. In the pinned exact probe, routing Update through
+PhotoStageStateView's PhotoAnmVmId wrapper adds a stack temporary to each
+of its two GetVm calls and increases 790 bytes to 802. DrawHud retains its
+617-byte extent with the canonical firstCaptureFrame field.

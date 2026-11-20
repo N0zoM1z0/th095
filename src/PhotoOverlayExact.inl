@@ -1,4 +1,5 @@
 #include "Chain.hpp"
+#include "ZunMath.hpp"
 #include "inttypes.hpp"
 #include <windows.h>
 #include <stddef.h>
@@ -94,9 +95,7 @@ struct PhotoOverlayManagerView
     PhotoStageSlotLifetimeView slots[11];
     u32 capturedPhotoVms[11];
     AnmVm displayVms[80];
-    f32 boundaryX;
-    f32 boundaryY;
-    i32 unknown25714;
+    Float3 displayBoundary;
     f32 scoreMultiplier;
     AnmLoaded *anm;
     u32 flags;
@@ -119,6 +118,8 @@ typedef char PhotoOverlayIdsAt17720[
     (offsetof(PhotoOverlayManagerView, capturedPhotoVms) == 0x17720) ? 1 : -1];
 typedef char PhotoOverlayDisplayAt1774C[
     (offsetof(PhotoOverlayManagerView, displayVms) == 0x1774c) ? 1 : -1];
+typedef char PhotoOverlayDisplayBoundaryAt2570C[
+    (offsetof(PhotoOverlayManagerView, displayBoundary) == 0x2570c) ? 1 : -1];
 typedef char PhotoOverlayScoreMultiplierAt25718[
     (offsetof(PhotoOverlayManagerView, scoreMultiplier) == 0x25718) ? 1 : -1];
 typedef char PhotoOverlayAnmAt2571C[

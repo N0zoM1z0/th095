@@ -77,9 +77,7 @@ struct PhotoStageStateView
     PhotoStageSlot slots[11];
     PhotoAnmVmId capturedPhotoVms[11];
     AnmVm displayVms[80];
-    f32 boundaryX;
-    f32 boundaryY;
-    i32 unknown25714;
+    Float3 displayBoundary;
     f32 scoreMultiplier;
     PhotoAnmLoadedView *anm;
     union
@@ -141,8 +139,10 @@ typedef char PhotoStageCapturedVmsAt17720[
     (offsetof(PhotoStageStateView, capturedPhotoVms) == 0x17720) ? 1 : -1];
 typedef char PhotoStageDisplayVmsAt1774C[
     (offsetof(PhotoStageStateView, displayVms) == 0x1774c) ? 1 : -1];
-typedef char PhotoStageBoundaryXAt2570C[
-    (offsetof(PhotoStageStateView, boundaryX) == 0x2570c) ? 1 : -1];
+typedef char PhotoStageDisplayBoundaryAt2570C[
+    (offsetof(PhotoStageStateView, displayBoundary) == 0x2570c) ? 1 : -1];
+typedef char PhotoStageFlagsAt25720[
+    (offsetof(PhotoStageStateView, flags) == 0x25720) ? 1 : -1];
 typedef char PhotoStageCaptureFrameAt25724[
     (offsetof(PhotoStageStateView, captureFrame) == 0x25724) ? 1 : -1];
 typedef char PhotoStageScoreMultiplierAt25718[

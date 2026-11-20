@@ -561,8 +561,7 @@ void PhotoStageDisplayView::Build(
         displayPosition.y += 12.0f;
     }
 
-    *reinterpret_cast<Float3 *>(&g_PhotoStageState->boundaryX) =
-        displayPosition;
+    g_PhotoStageState->displayBoundary = displayPosition;
 }
 
 #undef digitPosition
@@ -1084,11 +1083,11 @@ i32 PhotoStageStateView::Update()
 
     if (this->playerPassed == 0)
     {
-        if (this->boundaryY + 32.0f >
+        if (this->displayBoundary.y + 32.0f >
                 TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.y &&
-            ((this->boundaryX < 320.0f &&
+            ((this->displayBoundary.x < 320.0f &&
               TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x < 0.0f) ||
-             (this->boundaryX >= 320.0f &&
+             (this->displayBoundary.x >= 320.0f &&
               TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x >= 0.0f)))
         {
             this->flags |= PHOTO_STAGE_PLAYER_PASSED;
@@ -1102,11 +1101,11 @@ i32 PhotoStageStateView::Update()
             }
         }
     }
-    else if (!(this->boundaryY + 32.0f >
+    else if (!(this->displayBoundary.y + 32.0f >
                    TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.y &&
-               ((this->boundaryX < 320.0f &&
+               ((this->displayBoundary.x < 320.0f &&
                  TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x < 0.0f) ||
-                (this->boundaryX >= 320.0f &&
+                (this->displayBoundary.x >= 320.0f &&
                  TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x >= 0.0f))))
     {
         this->flags &= ~PHOTO_STAGE_PLAYER_PASSED;
