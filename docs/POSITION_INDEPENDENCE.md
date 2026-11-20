@@ -245,3 +245,12 @@ active. The gameplay-loading bit was clear throughout the sampled window.
 The ten gameplay fields still agree at every index. The local recipe and
 traces are `.analysis/pi/demo-startup-menu.py` and
 `build/position-independence/demo-startup-menu-{retail,regular,reordered}/trace.json`.
+
+SEM-379 removed the nested PhotoInf display lifetime. After rebuilding,
+both links completed demo0 again with all ten gameplay fields matching
+retail at all 2,712 indices. The stage timer first advanced at index 28
+in the regular link and 29 in the reversed link, compared with 27 in
+the retail reference. The new PE comparison covers 927 game code
+sections and 11,500 code relocations. All 639 initialized-data relocations,
+8,755 library relocations and 172 imports also pass. The traces are under
+`build/position-independence/photo-overlay-owner/demo-{regular,reordered}/`.

@@ -2148,6 +2148,13 @@ The fixture covers both keyboard APIs, DirectInput reacquisition paths and
 repeat-count boundaries. See
 `.analysis/controller-get-input/verify-published-semantics.py`.
 
+With the same Controller source and pinned flags, replacing `/Zi` with
+`/Z7`, `/Zd` or omitting debug information produces identical GetInput
+code and all 22 relocation records. Each reserves 0x11C and emits 2,655
+bytes. The no-debug object records the full extent in its function
+COMDAT section. The local compile results are under
+`build/controller-get-input/debug-profiles/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
