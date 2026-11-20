@@ -105,3 +105,23 @@ header and saved slot agreed on dimensions, and both runs published a photo
 VM and timestamp. This exercises the empty-comment path. The local read-only
 probe and screenshots are under `.analysis/pi/photo-layout-runtime.py`
 and `build/position-independence/photo-{regular,reordered}/`.
+
+## Game object sections in both links
+
+After SEM-363, a COFF section comparison covers all 929 code sections in the
+88 game objects. It compares the nonrelocation bytes and resolves 11,502
+relocations in both images. Of those references, 11,297 follow a moved
+destination. The remaining references include the absolute
+`__except_list` offset used with the FS segment.
+
+The comparison also covers 844 initialized game sections and their 639
+relocations, all of which have moved destinations. These sections include
+the exception metadata reached through private code references. The ten
+`.CRT$XCU` contributions register all seventeen game initializers in each
+link. The only additional entry is the CRT security-cookie initializer.
+There are no mismatches in these comparisons. The section-by-section
+experiment is under `.analysis/pi/check-linked-sections.py`.
+
+These checks cover the game objects in both link orders. The linked libraries'
+internal references and runtime behavior across the remaining scenes and
+replays are open.
