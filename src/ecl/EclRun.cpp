@@ -1,3 +1,6 @@
+// Establish the TH095 Supervisor declarations before the legacy ECL headers.
+#include "../PhotoGameTask.hpp"
+#include "../ZunBool.hpp"
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
 #include "EnemyEclRuntimeView.hpp"
@@ -34,20 +37,13 @@
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "../PhotoEnemyManager.hpp"
 #include "../PhotoCardInfo.hpp"
-#include "../PhotoGameTask.hpp"
 #include "../PhotoStage.hpp"
 #include "../PhotoGamePlayer.hpp"
-#define TH095_ECL_GAME_TASK \
-    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoGameTaskView, \
-                             ::th095::g_RuntimeGlobalStateOwner)
-#define TH095_ECL_COMPLETION_STATE (TH095_ECL_GAME_TASK->completion)
 #endif
 
 #ifndef DIFFBUILD
 #define TH095_ECL_PHOTO_PLAYER_OWNER \
     ::th095::g_RuntimePlayerOwner
-#define g_Th095GameManager \
-    TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeGlobalStateOwner)
 #endif
 
 #ifdef DIFFBUILD

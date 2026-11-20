@@ -53,7 +53,6 @@
 1	src/ecl/EclRun.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 10	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
 3	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
-2	src/ecl/EclRunTargetHigh.inl	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 2	src/EclDependencies.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/EclDependencies.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/EclDependencies.cpp	#ifdef DIFFBUILD

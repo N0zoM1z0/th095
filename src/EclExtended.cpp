@@ -1,6 +1,8 @@
+// Establish the TH095 Supervisor declarations before the legacy ECL headers.
+#include "PhotoGameTask.hpp"
+#include "ZunBool.hpp"
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
-#include "PhotoGameTaskState.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #include "PhotoEnemyControl.hpp"
 #include "PhotoEnemyEclAccess.hpp"
@@ -10,7 +12,6 @@
 #include "PhotoBulletManager.hpp"
 #include "PhotoCamera.hpp"
 #include "PhotoEnemyManager.hpp"
-#include "PhotoGameTask.hpp"
 #endif
 #ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
@@ -59,7 +60,6 @@ typedef AnmLoaded ExtendedAnmSpawner;
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#include "ecl/EclExtendedGlobalStateEmission.inl"
 #include "ecl/EclExtendedPlayerEmission.inl"
 struct ExtendedPhotoEnemyView;
 struct ExtendedPhotoEnemyManagerView
@@ -227,8 +227,6 @@ static __forceinline u8 *ExtendedBackgroundOwner()
     TH095_RUNTIME_GLOBAL_PTR(ExtendedBulletManager, ::th095::g_RuntimeBulletManagerOwner)
 #define g_PhotoEffectManager \
     TH095_RUNTIME_GLOBAL_PTR(ExtendedPhotoEffectManager, ::th095::g_RuntimeEffectManagerOwner)
-#define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoGameTaskView, ::th095::g_RuntimeGlobalStateOwner)
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -453,16 +451,14 @@ void __fastcall SetBackgroundVmsState3(
 void __fastcall SetPhotoFlag200(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
-        PHOTO_GAME_TASK_FLAG_PHOTO_SOUND_SUPPRESSED;
+    g_RuntimeGlobalStateOwner->photoSoundSuppressed = 1;
 }
 
 // ECL extended callback table entry 16 @ 0x00414260.
 void __fastcall ClearPhotoFlag200(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) &=
-        ~PHOTO_GAME_TASK_FLAG_PHOTO_SOUND_SUPPRESSED;
+    g_RuntimeGlobalStateOwner->photoSoundSuppressed = 0;
 }
 
 // ECL extended callback table entry 18 @ 0x00414430.
@@ -471,8 +467,7 @@ void __fastcall EnablePhotoTransition(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
-        PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
+    g_RuntimeGlobalStateOwner->photoTransitionActive = 1;
     firstVm = TH095_EXT_ANM_GET_VM(
         TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 2;
@@ -491,8 +486,7 @@ void __fastcall DisablePhotoTransition(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) &=
-        ~PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
+    g_RuntimeGlobalStateOwner->photoTransitionActive = 0;
     firstVm = TH095_EXT_ANM_GET_VM(
         TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 3;
@@ -666,8 +660,7 @@ void __fastcall RunPhotoTransition(
         --enemy->activeEclContext->extraIntVariables[2];
         if (enemy->activeEclContext->extraIntVariables[2] == 60)
         {
-            TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) &=
-                ~PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
+            g_RuntimeGlobalStateOwner->photoTransitionActive = 0;
             locals.firstEndVm = TH095_EXT_ANM_GET_VM(
                 TH095_EXT_BACKGROUND_VM_ID(0));
             locals.firstEndVm->pendingInterrupt = 3;
@@ -680,16 +673,14 @@ void __fastcall RunPhotoTransition(
         }
     }
 
-    if (((TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) >>
-          PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_BIT) & 1U) == 0 &&
+    if (!g_RuntimeGlobalStateOwner->photoTransitionActive &&
         enemy->activeEclContext->extraIntVariables[2] == 0 &&
         ExtendedCameraIsCharging(
             &TH095_EXT_PLAYER_STORAGE(g_Player)->camera) &&
         TH095_EXT_COUNT_PHOTO_TARGETS(
             TH095_EXT_PLAYER_STORAGE(g_Player)->camera, NULL, NULL) != 0)
     {
-        TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
-            PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
+        g_RuntimeGlobalStateOwner->photoTransitionActive = 1;
         locals.firstStartVm = TH095_EXT_ANM_GET_VM(
             TH095_EXT_BACKGROUND_VM_ID(0));
         locals.firstStartVm->pendingInterrupt = 2;

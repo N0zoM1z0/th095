@@ -3730,24 +3730,16 @@ def check_photo_enemy_owner() -> None:
 
 def check_photo_game_task_ecl_owner() -> None:
     header = (SRC / "PhotoGameTask.hpp").read_text(encoding="utf-8")
-    state = (SRC / "PhotoGameTaskState.hpp").read_text(encoding="utf-8")
-    extended_emission = (
-        SRC / "ecl" / "EclExtendedGlobalStateEmission.inl"
-    ).read_text(encoding="utf-8")
     mode_header = (SRC / "ReplayManagerMode.hpp").read_text(encoding="utf-8")
     if any(name in header for name in PROFILE_NAMES):
         fail("canonical PhotoGameTask.hpp must not select a build-profile layout")
-    if any(name in state for name in PROFILE_NAMES):
-        fail("PhotoGameTaskState.hpp must be profile-independent")
-    if any(name in extended_emission for name in PROFILE_NAMES):
-        fail("EclExtended global-state emission adapter must be profile-independent")
     if any(name in mode_header for name in PROFILE_NAMES):
         fail("ReplayManagerMode.hpp must be profile-independent")
     if len(re.findall(r"\bstruct\s+PhotoGameTaskView\s*\{", header)) != 1:
         fail("PhotoGameTask.hpp must define exactly one canonical task owner")
     required_layout = (
         "sizeof(PhotoGameTaskView) == 0x124",
-        "offsetof(PhotoGameTaskView, flags) == PHOTO_GAME_TASK_FLAGS_OFFSET",
+        "offsetof(PhotoGameTaskView, flags) == 0xfc",
         "offsetof(PhotoGameTaskView, completion) == 0x104",
         "offsetof(PhotoGameTaskView, completion.completionActive) == 0x104",
         "offsetof(PhotoGameTaskView, completion.timer) == 0x108",
@@ -3756,27 +3748,6 @@ def check_photo_game_task_ecl_owner() -> None:
     for fact in required_layout:
         if fact not in header:
             fail(f"canonical PhotoGameTask layout lost assertion: {fact}")
-    if '#include "PhotoGameTaskState.hpp"' not in header:
-        fail("canonical PhotoGameTask owner must pin the dependency-light state bridge")
-    required_state = (
-        "PHOTO_GAME_TASK_FLAGS_OFFSET = 0xfc",
-        "PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_BIT = 10",
-        "PHOTO_GAME_TASK_FLAG_PHOTO_SOUND_SUPPRESSED = 0x00000200",
-        "PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE = 0x00000400",
-        "TH095_PHOTO_GAME_TASK_FLAGS(task)",
-    )
-    for fact in required_state:
-        if fact not in state:
-            fail(f"PhotoGameTask state bridge lost target-proven fact: {fact}")
-    if "struct PhotoGameTaskView" in state:
-        fail("dependency-light state bridge must not restore a second task owner")
-    if "struct PhotoGlobalStateView;" not in extended_emission:
-        fail("EclExtended emission adapter lost its target-facing extern type spelling")
-    if "extern PhotoGlobalStateView *g_PhotoGlobalState;" not in extended_emission:
-        fail("EclExtended emission adapter lost its target-facing extern declaration")
-    if "{" in source_without_comments(extended_emission):
-        fail("EclExtended emission adapter must not define a state layout")
-
     camera = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
     manifest = (ROOT / "config" / "match-units.toml").read_text(
         encoding="utf-8"
@@ -3798,54 +3769,45 @@ def check_photo_game_task_ecl_owner() -> None:
     ):
         if fact not in camera:
             fail(f"PhotoCamera lost canonical PhotoGameTask access: {fact}")
-    draw = tomllib.loads(manifest)["units"]["photo-camera-draw"]
-    task_refs = [row for row in draw["relocations"] if row["target"] == 0x004BDEC8]
-    if not task_refs or any(row["symbol"] !=
-                            "?g_RuntimeGlobalStateOwner@th095@@3PAUPhotoGameTaskView@1@A"
-                            for row in task_refs):
-        fail("PhotoCamera draw lost the active task slot")
-
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
-    if '#include "../PhotoGameTask.hpp"' not in ecl_run:
-        fail("normal EclRun must consume canonical PhotoGameTask.hpp")
     ecl_target_high = (SRC / "ecl" / "EclRunTargetHigh.inl").read_text(
         encoding="utf-8"
     )
+    extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
+    for name, source in (("EclRun", ecl_run), ("EclExtended", extended)):
+        if not re.match(r'^#include "(?:\.\./)?PhotoGameTask\.hpp"',
+                        source_without_comments(source).lstrip()):
+            fail(f"{name} must include the canonical task before legacy headers")
+
     for retired in (
         "EclGlobalStateFlagsView",
         "EclCompletionStateView",
         "EclGlobalCompletionStateView",
+        "g_Th095GameManager",
+        "g_PhotoGlobalState",
+        "TH095_PHOTO_GAME_TASK_FLAGS",
     ):
-        if retired in ecl_run:
-            fail(f"EclRun restored retired task projection: {retired}")
-    if "TH095_ECL_GAME_TASK->completion" not in ecl_run:
-        fail("normal EclRun lost canonical task completion access")
-    if "TH095_ECL_GAME_TASK->playerDeathTransitionComplete" not in ecl_target_high:
-        fail("normal RunEcl high dispatch lost canonical task flag access")
+        if any(retired in source for source in (ecl_run, ecl_target_high, extended)):
+            fail(f"ECL restored retired task access: {retired}")
 
-    extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
-    if '#include "PhotoGameTaskState.hpp"' not in extended:
-        fail("EclExtended must consume the shared PhotoGameTask state protocol")
-    if '#include "PhotoGameTask.hpp"' not in extended:
-        fail("normal EclExtended must bind the canonical PhotoGameTask owner")
-    for retired in (
-        "struct PhotoGlobalStateView\n{",
-        "PhotoGlobalFlagsAtFC",
-        "g_PhotoGlobalState->flags",
-        "g_PhotoGlobalState->photoSoundSuppressed",
-        "g_PhotoGlobalState->photoTransitionActive",
+    units = tomllib.loads(manifest)["units"]
+    for name in (
+        "photo-camera-draw",
+        "ecl-manager-run-ecl",
+        "ecl-extended-set-photo-flag200",
+        "ecl-extended-clear-photo-flag200",
+        "ecl-extended-enable-photo-transition",
+        "ecl-extended-disable-photo-transition",
+        "ecl-extended-run-photo-transition",
     ):
-        if retired in extended:
-            fail(f"EclExtended restored retired global-state projection: {retired}")
-    if extended.count("TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState)") != 7:
-        fail("EclExtended must route all seven task-flag operations through the bridge")
-    for marker in (
-        "PHOTO_GAME_TASK_FLAG_PHOTO_SOUND_SUPPRESSED",
-        "PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_BIT",
-        "PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE",
-    ):
-        if marker not in extended:
-            fail(f"EclExtended lost named PhotoGameTask state access: {marker}")
+        task_refs = [
+            row for row in units[name]["relocations"] if row["target"] == 0x004BDEC8
+        ]
+        if not task_refs or any(
+            row["symbol"] != "?g_RuntimeGlobalStateOwner@th095@@3PAUPhotoGameTaskView@1@A"
+            for row in task_refs
+        ):
+            fail(f"{name} lost the active task slot")
 
 
 def check_photo_stage_owner() -> None:
@@ -4985,7 +4947,7 @@ def main() -> int:
     print("  FrontEnd pending texture data: shared native-pointer columns and shift transition")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
-    print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")
+    print("  ECL task state: canonical profile-independent 0x124 owner shared by both ECL profiles")
     print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  CardInf: canonical profile-independent 0x68 owner")
     print("  PhotoCamera state: shared mode/handle/loaded-ANM/flags/focus representation")

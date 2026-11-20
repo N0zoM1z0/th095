@@ -18401,3 +18401,22 @@ agree with retail. The fixtures vary the two task slots independently
 and supply D3D, text and file boundaries. The existing Best Shot save,
 preview and capture publication checks pass as well. See
 `.analysis/pi/photo-task-record-consumers/` for the recipes.
+
+### SEM-410 — share the active task with ECL
+
+RunEcl opcode 114 assigns the resolved operand to the active task's
+completion gate and countdown. Opcode 142 sets the death-transition bit.
+Opcode 104 copies the current countdown into the spawned ANM VM's
+`counterVar0`. EclExtended sets and clears sound suppression and runs
+the photo transition through the same task bitfields. Including the task
+header before the legacy ECL headers brings the canonical Supervisor into
+scope and removes both task aliases, the raw flag bridge and two selectors.
+
+All 346 affected exact comparisons across 21 translation units pass.
+The 18 retagged task relocations and the updated compiler-local labels
+retain their original target operands. All 229 normal references to the
+active slot follow it in both link orders. An emulated comparison against
+retail agrees for 72 opcode cases and 264 callback cases, with separate
+pointers in the active and Supervisor task slots. The fixtures supply ANM,
+sound and photo-card boundaries and compare the resulting task fields,
+transition countdown and calls. Recipes are in `.analysis/pi/ecl-active-task/`.

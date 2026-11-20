@@ -174,15 +174,9 @@ enter_subroutine:
 
     case 114:
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        *reinterpret_cast<ZunTimer *>(g_Th095GameManager + 0x108) =
-            *reinterpret_cast<i32 *>(g_Th095GameManager + 0x104) =
+        g_RuntimeGlobalStateOwner->completion.timer =
+            g_RuntimeGlobalStateOwner->completion.completionActive =
                 TH08_ECL_READ_I(ctx, 0);
-#else
-        TH095_ECL_COMPLETION_STATE.timer =
-            TH095_ECL_COMPLETION_STATE.completionActive =
-                TH08_ECL_READ_I(ctx, 0);
-#endif
         break;
     }
 
@@ -440,11 +434,7 @@ enter_subroutine:
         break;
 
     case 142:
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        *reinterpret_cast<u32 *>(g_Th095GameManager + 0xfc) |= 0x20U;
-#else
-        TH095_ECL_GAME_TASK->playerDeathTransitionComplete = 1;
-#endif
+        g_RuntimeGlobalStateOwner->playerDeathTransitionComplete = 1;
         break;
 
     case 143:
@@ -475,11 +465,9 @@ enter_subroutine:
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_BULLET_ANM_SPAWNER, 0xd2,
                 TH095_TARGET_ENEMY_POSITION_PTR(enemy));
-        *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(
-            TH095_ECL_ANM_GET_VM(
-                TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy).value)) + 0x138) =
-            Th095PreserveI32(
-                *reinterpret_cast<i32 *>(g_Th095GameManager + 0x110));
+        TH095_ECL_ANM_GET_VM(
+            TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy).value)->counterVar0 =
+                Th095PreserveI32(g_RuntimeGlobalStateOwner->completion.timer.current);
         break;
     }
 

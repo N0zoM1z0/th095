@@ -202,7 +202,6 @@ extern u8 *g_Th095StageState;
 extern u8 *g_Th095Runtime;
 extern Th095BulletManager *g_Th095BulletManager;
 extern Th095StageController *g_Th095StageController;
-extern u8 *g_Th095GameManager;
 extern AnmManagerLookup *g_Th095AnmManager;
 extern PhotoModeController *g_Th095PhotoMode;
 extern EclExtendedCallback g_Th095ExInsn[];
