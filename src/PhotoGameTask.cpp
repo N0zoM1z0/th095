@@ -317,7 +317,7 @@ i32 PhotoGameTaskView::DrawHud()
             locals.photoIndex,
             locals.photoLimit);
 
-        if (g_SelectedScene->level != 10)
+        if (g_SelectedScene->group != 10)
         {
             locals.scenePosition.x = 472.0f;
             locals.scenePosition.y = 32.0f;
@@ -325,7 +325,7 @@ i32 PhotoGameTaskView::DrawHud()
             TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
                 &locals.scenePosition,
                 "%2d-%d",
-                g_SelectedScene->level + 1,
+                g_SelectedScene->group + 1,
                 g_SelectedScene->scene + 1);
         }
         else
@@ -467,18 +467,18 @@ i32 PhotoGameTaskView::InitializeSubsystems()
         return ZUN_ERROR;
     }
 
-    this->bestShotIndex = g_SelectedScene->bestShotIndex;
+    this->bestShotIndex = g_SelectedScene->scoreEntryIndex;
     utils::DebugPrint(
         "Start %d-%d\n",
-        g_SelectedScene->level + 1,
+        g_SelectedScene->group + 1,
         g_SelectedScene->scene + 1);
 
-    if (g_SelectedScene->level != 10)
+    if (g_SelectedScene->group != 10)
     {
         sprintf(
             bestShotPath,
             "bestshot/bs_%.2d_%d.dat",
-            g_SelectedScene->level + 1,
+            g_SelectedScene->group + 1,
             g_SelectedScene->scene + 1);
     }
     else

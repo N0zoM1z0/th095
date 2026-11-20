@@ -10,60 +10,6 @@ namespace th095
 // 0x004A4690..0x004A57FF, followed by the twelve group pointers and counts at
 // 0x004A5800/0x004A5830.  mission.msg fills scoreRequirement, encodedTitleText, and displayState at
 // runtime; the remaining fields below are the target-observed static catalog.
-// Keep a plain storage view here because SceneDefinitionView exposes several
-// offsets through unions whose first aggregate member is not always the
-// pointer-shaped interpretation needed by a static initializer.
-struct SceneDefinitionStorage
-{
-    i32 scoreEntryIndex;
-    i32 group;
-    i32 scene;
-    const char *stageDataPath;
-    const char *enemyAnmPath;
-    const char *enemyEclPath;
-    const char *musicPath;
-    i32 frontScriptIndex;
-#ifdef DIFFBUILD
-    i8 groupDisplayValue;
-    i8 sceneDisplayValue;
-#else
-    i8 groupPreviewAssetSelector;
-    i8 scenePreviewAssetSelector;
-#endif
-    u8 unknown022[2];
-    i32 scoreRequirement;
-    const u8 *encodedTitleText;
-    i8 displayState;
-    u8 unknown02d[3];
-};
-
-typedef char SceneDefinitionStorageSizeIs30[
-    (sizeof(SceneDefinitionStorage) == sizeof(SceneDefinitionView)) ? 1 : -1];
-typedef char SceneDefinitionStoragePathsAt0C[
-    (offsetof(SceneDefinitionStorage, stageDataPath) == 0x0c &&
-     offsetof(SceneDefinitionStorage, musicPath) == 0x18)
-        ? 1
-        : -1];
-typedef char SceneDefinitionStorageRuntimeFieldsAt24[
-    (offsetof(SceneDefinitionStorage, scoreRequirement) == 0x24 &&
-     offsetof(SceneDefinitionStorage, encodedTitleText) == 0x28 &&
-     offsetof(SceneDefinitionStorage, displayState) == 0x2c)
-        ? 1
-        : -1];
-#ifdef DIFFBUILD
-typedef char SceneDefinitionStoragePreviewSelectorsAt20[
-    (offsetof(SceneDefinitionStorage, groupDisplayValue) == 0x20 &&
-     offsetof(SceneDefinitionStorage, sceneDisplayValue) == 0x21)
-        ? 1
-        : -1];
-#else
-typedef char SceneDefinitionStoragePreviewSelectorsAt20[
-    (offsetof(SceneDefinitionStorage, groupPreviewAssetSelector) == 0x20 &&
-     offsetof(SceneDefinitionStorage, scenePreviewAssetSelector) == 0x21)
-        ? 1
-        : -1];
-#endif
-
 #define TH095_SCENE(scoreIndex, groupIndex, sceneIndex, stagePath, anmPath,   \
                     eclPath, bgmPath, frontScript, groupPreviewSelector,     \
                     scenePreviewSelector)                                    \
@@ -73,7 +19,7 @@ typedef char SceneDefinitionStoragePreviewSelectorsAt20[
             {0, 0}, 0, 0, 0, {0, 0, 0}                                       \
     }
 
-static SceneDefinitionStorage g_SceneDefinitions[93] = {
+static SceneDefinitionView g_SceneDefinitions[93] = {
     // Scene group 0: 6 scene(s).
     TH095_SCENE(0, 0, 0, "world01.std", "enm1.anm", "ecl1_a.ecl", "bgm/th095_01.wav", 0, 1, 3),
     TH095_SCENE(1, 0, 1, "world01.std", "enm2.anm", "ecl2_a.ecl", "bgm/th095_01.wav", 0, 2, 3),
@@ -184,18 +130,18 @@ static SceneDefinitionStorage g_SceneDefinitions[93] = {
 #undef TH095_SCENE
 
 SceneDefinitionView *g_SceneGroups[12] = {
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[0]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[6]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[12]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[20]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[29]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[37]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[45]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[53]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[61]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[69]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[77]),
-    reinterpret_cast<SceneDefinitionView *>(&g_SceneDefinitions[85]),
+    &g_SceneDefinitions[0],
+    &g_SceneDefinitions[6],
+    &g_SceneDefinitions[12],
+    &g_SceneDefinitions[20],
+    &g_SceneDefinitions[29],
+    &g_SceneDefinitions[37],
+    &g_SceneDefinitions[45],
+    &g_SceneDefinitions[53],
+    &g_SceneDefinitions[61],
+    &g_SceneDefinitions[69],
+    &g_SceneDefinitions[77],
+    &g_SceneDefinitions[85],
 };
 i32 g_SceneGroupCounts[12] = {6, 6, 8, 9, 8, 8, 8, 8, 8, 8, 8, 8};
 i32 g_SceneUnlockScoreRequirements[12];

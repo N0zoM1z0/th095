@@ -45,6 +45,9 @@ SEM-395 shares the Best Shot preview renderer and routes Scene Select's
 staged preview reads through the saved-data owner.
 SEM-396 shares the loader and record fields. Both file paths derive the
 checksum and serialization bounds from the same record layout.
+SEM-397 shares the initialized scene catalog with the title loader and
+Scene Select's text consumers. Gameplay and replay retain several older
+call-site projections of the selected-scene pointer.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

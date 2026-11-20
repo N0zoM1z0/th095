@@ -11,24 +11,6 @@ namespace th095
 // scratch buffer.
 DIFFABLE_STATIC_ARRAY(u8, 0x40, g_SceneTextBuffer);
 
-#ifdef DIFFBUILD
-#define TH095_SCENE_LOCKED_ENCODED_TEXT(view) ((view)->previewTextSources.lockedTextId)
-#define TH095_SCENE_UNATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.unattemptedTextId)
-#define TH095_SCENE_BELOW_REQUIREMENT_ENCODED_TEXT(view) ((view)->previewTextSources.belowRequirementTextId)
-#define TH095_SCENE_ATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.attemptedTextId)
-#define TH095_SCENE_TITLE_ENCODED_TEXT(scene) ((scene)->titleTextId)
-#define TH095_SCENE_GROUP_PREVIEW_ASSET_SELECTOR(scene) ((scene)->groupDisplayValue)
-#define TH095_SCENE_SCENE_PREVIEW_ASSET_SELECTOR(scene) ((scene)->sceneDisplayValue)
-#else
-#define TH095_SCENE_LOCKED_ENCODED_TEXT(view) ((view)->previewTextSources.lockedEncodedText)
-#define TH095_SCENE_UNATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.unattemptedEncodedText)
-#define TH095_SCENE_BELOW_REQUIREMENT_ENCODED_TEXT(view) ((view)->previewTextSources.belowRequirementEncodedText)
-#define TH095_SCENE_ATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.attemptedEncodedText)
-#define TH095_SCENE_TITLE_ENCODED_TEXT(scene) ((scene)->encodedTitleText)
-#define TH095_SCENE_GROUP_PREVIEW_ASSET_SELECTOR(scene) ((scene)->groupPreviewAssetSelector)
-#define TH095_SCENE_SCENE_PREVIEW_ASSET_SELECTOR(scene) ((scene)->scenePreviewAssetSelector)
-#endif
-
 void __cdecl SceneWriteText(SceneAnmManagerView *manager,
                             SceneAnmVmView *vm, u32 color, u32 shadowColor,
                             const char *text)
@@ -90,9 +72,9 @@ void SceneSelectControllerView::RefreshSceneSelection(
     if (g_ResultSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
     {
         this->groupPreviewQueue.Push(
-            TH095_SCENE_GROUP_PREVIEW_ASSET_SELECTOR(g_SelectedScene));
+            g_SelectedScene->groupPreviewAssetSelector);
         this->scenePreviewQueue.Push(
-            TH095_SCENE_SCENE_PREVIEW_ASSET_SELECTOR(g_SelectedScene));
+            g_SelectedScene->scenePreviewAssetSelector);
     }
     else
     {
@@ -173,7 +155,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
                 g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00df8f8f, 0,                                               \
                 this->ResolveSceneText(                                       \
-                    TH095_SCENE_LOCKED_ENCODED_TEXT(this), columnIndex,       \
+                    this->previewTextSources.lockedEncodedText, columnIndex, \
                     0x62, 0));                                                \
         }                                                                     \
         else if (g_ResultSaveData                                              \
@@ -190,7 +172,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
                         this->previewTextVmIds[vmSlot]),                       \
                     0x00df8f8f, 0,                                           \
                     this->ResolveSceneText(                                   \
-                        TH095_SCENE_UNATTEMPTED_ENCODED_TEXT(this),           \
+                        this->previewTextSources.unattemptedEncodedText,     \
                         columnIndex, 0x62, 1));                               \
             }                                                                 \
             else                                                              \
@@ -201,7 +183,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
                         this->previewTextVmIds[vmSlot]),                       \
                     0x00df8f8f, 0,                                           \
                     this->ResolveSceneText(                                   \
-                        TH095_SCENE_ATTEMPTED_ENCODED_TEXT(this), columnIndex,\
+                        this->previewTextSources.attemptedEncodedText, columnIndex,\
                         0x62, 3));                                            \
             }                                                                 \
         }                                                                     \
@@ -214,7 +196,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
                 g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00df8f8f, 0,                                               \
                 this->ResolveSceneText(                                       \
-                    TH095_SCENE_BELOW_REQUIREMENT_ENCODED_TEXT(this),          \
+                    this->previewTextSources.belowRequirementEncodedText,    \
                     columnIndex, 0x62, 2));                                   \
         }                                                                     \
         else                                                                  \
@@ -223,11 +205,11 @@ void SceneSelectControllerView::RefreshSceneSelection(
                 g_AnmManager,                                            \
                 g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00cfcfff, 0,                                               \
-                TH095_SCENE_TITLE_ENCODED_TEXT(g_SelectedScene) != 0                             \
+                g_SelectedScene->encodedTitleText != 0                             \
                     ? this->ResolveSceneText(                                 \
-                          TH095_SCENE_TITLE_ENCODED_TEXT(g_SelectedScene), columnIndex,           \
-                          g_SelectedScene->titleArgument1,                     \
-                          g_SelectedScene->titleArgument2)                     \
+                          g_SelectedScene->encodedTitleText, columnIndex,           \
+                          g_SelectedScene->group,                            \
+                          g_SelectedScene->scene)                            \
                     : " ");                                                   \
         }                                                                     \
     }
@@ -256,26 +238,23 @@ void SceneSelectControllerView::BuildScenePreviewText()
     this->previewTimer++;
 }
 
+#undef BUILD_SCENE_PREVIEW_LINE
+
+} // namespace th095
+
+#endif // TH095_MATCH_EXACT
+
+namespace th095
+{
+
 char *SceneSelectControllerView::ResolveSceneText(
-#ifdef DIFFBUILD
-    i32 textId,
-#else
     SceneEncodedText encodedText,
-#endif
     i32 column, i32 argument1, i32 argument2)
 {
-#ifdef DIFFBUILD
-    u8 *source;
-#else
     const u8 *source;
-#endif
     {
         u8 key;
-#ifdef DIFFBUILD
-        source = (u8 *)(textId + column * 0x40);
-#else
         source = encodedText + column * 0x40;
-#endif
         key = argument2 * 11 + argument1 * 7 + 58;
         for (i32 index = 0; index < 0x40; index++, source++)
         {
@@ -286,8 +265,4 @@ char *SceneSelectControllerView::ResolveSceneText(
     return (char *)g_SceneTextBuffer;
 }
 
-#undef BUILD_SCENE_PREVIEW_LINE
-
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

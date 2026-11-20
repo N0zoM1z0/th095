@@ -14,6 +14,8 @@
 #include "SupervisorFlags.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
+#include "SceneData.hpp"
+#include "ScenePreviewTextSources.hpp"
 #include "ZunTimer.hpp"
 #include <time.h>
 
@@ -48,33 +50,6 @@ struct SceneScoreEntryView
     };
     u8 unknown054[0x0c];
 };
-
-struct SceneDefinitionView
-{
-    i32 scoreEntryIndex;
-    union
-    {
-        i32 titleArgument1;
-        i32 group;
-    };
-    union
-    {
-        i32 titleArgument2;
-        i32 scene;
-    };
-    u8 unknown00c[4];
-    char *enemyAnmPath;
-    char *enemyEclPath;
-    u8 unknown018[8];
-    i8 groupDisplayValue;
-    i8 sceneDisplayValue;
-    u8 unknown022[2];
-    i32 scoreRequirement;
-    i32 titleTextId;
-    i8 displayState;
-    u8 unknown02d[3];
-};
-
 
 struct SceneGroupCursorView
 {
@@ -202,16 +177,6 @@ struct SceneAnmVmIdArray
     }
 };
 
-struct ScenePreviewTextSourcesView
-{
-    u8 unknown0bf4[0x26c];
-    i32 lockedTextId;
-    i32 unattemptedTextId;
-    i32 belowRequirementTextId;
-    i32 attemptedTextId;
-    u8 unknown0e70[0x18];
-};
-
 struct SceneSelectControllerView
 {
     SceneAnmLoadedView *sceneAnm;
@@ -298,7 +263,7 @@ struct SceneSelectControllerView
         g_SceneAnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord &= ~2;
     }
 
-    char *ResolveSceneText(i32 textId, i32 column, i32 argument1,
+    char *ResolveSceneText(SceneEncodedText encodedText, i32 column, i32 argument1,
                            i32 argument2);
 };
 
@@ -339,13 +304,6 @@ typedef char SceneScoreEntryFlagsAt50[
 typedef char SceneScoreEntryRatesAt48[
     (offsetof(SceneScoreEntryView, slowRate) == 0x48 &&
      offsetof(SceneScoreEntryView, successRate) == 0x4c) ? 1 : -1];
-typedef char SceneDefinitionSizeIs30[
-    (sizeof(SceneDefinitionView) == 0x30) ? 1 : -1];
-typedef char SceneDefinitionTitleArgumentsAt04[
-    (offsetof(SceneDefinitionView, titleArgument1) == 0x04 &&
-     offsetof(SceneDefinitionView, titleArgument2) == 0x08) ? 1 : -1];
-typedef char SceneDefinitionTitleTextIdAt28[
-    (offsetof(SceneDefinitionView, titleTextId) == 0x28) ? 1 : -1];
 typedef char SceneAnmVmIdSizeIs4[
     (sizeof(SceneAnmVmId) == 4) ? 1 : -1];
 typedef char SceneAnmVmGlyphSizeAt2C0[
@@ -399,7 +357,7 @@ typedef char SceneSelectDisplayStatesAtE88[
     (offsetof(SceneSelectControllerView, lockedDisplayState) == 0xe88) ? 1 : -1];
 typedef char SceneSelectPreviewTextSourcesAtE60[
     (offsetof(SceneSelectControllerView, previewTextSources) +
-         offsetof(ScenePreviewTextSourcesView, lockedTextId) == 0xe60) ? 1 : -1];
+         offsetof(ScenePreviewTextSourcesView, lockedEncodedText) == 0xe60) ? 1 : -1];
 typedef char SceneSelectPreviewTextVmIdsAtE94[
     (offsetof(SceneSelectControllerView, previewTextVmIds) == 0xe94) ? 1 : -1];
 typedef char SceneSelectPreviewTimerAtEA0[

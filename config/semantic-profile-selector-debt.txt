@@ -110,7 +110,7 @@
 3	src/FrontEndController.cpp	#ifdef TH095_MATCH_EXACT
 3	src/FrontEndController.cpp	#ifndef DIFFBUILD
 3	src/FrontEndLifecycle.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-11	src/FrontEndLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+6	src/FrontEndLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FrontEndLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameErrorContext.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameplayGlobals.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
@@ -207,15 +207,11 @@
 1	src/Rng.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/SceneControllerDraw.cpp	#ifdef DIFFBUILD
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT
-2	src/SceneData.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/SceneDetail.cpp	#ifdef TH095_MATCH_EXACT
-2	src/SceneSelect.cpp	#ifdef DIFFBUILD
 1	src/SceneSelect.cpp	#ifdef TH095_MATCH_EXACT
-4	src/SceneSelect.hpp	#ifdef DIFFBUILD
 1	src/SceneSelect.hpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelect.hpp	#ifndef DIFFBUILD
 1	src/SceneSelectAssets.cpp	#ifdef TH095_MATCH_EXACT
-4	src/SceneSelectController.cpp	#ifdef DIFFBUILD
 1	src/SceneSelectController.cpp	#ifdef TH095_MATCH_EXACT
 2	src/SceneSelectUpdate.cpp	#ifdef DIFFBUILD
 1	src/SceneSelectUpdate.cpp	#ifdef TH095_MATCH_EXACT

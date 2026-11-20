@@ -54,8 +54,8 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
     refreshUnlockGroup = this->selectedGroup;
     if (g_SceneSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
     {
-        this->groupPreviewQueue.Push(g_SelectedScene->groupDisplayValue);
-        this->scenePreviewQueue.Push(g_SelectedScene->sceneDisplayValue);
+        this->groupPreviewQueue.Push(g_SelectedScene->groupPreviewAssetSelector);
+        this->scenePreviewQueue.Push(g_SelectedScene->scenePreviewAssetSelector);
     }
     else
     {
@@ -133,7 +133,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
                 g_SceneAnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00df8f8f, 0,                                               \
                 this->ResolveSceneText(                                       \
-                    this->previewTextSources.lockedTextId, columnIndex,       \
+                    this->previewTextSources.lockedEncodedText, columnIndex, \
                     0x62, 0));                                                \
         }                                                                     \
         else if (g_SceneSaveData                                              \
@@ -150,7 +150,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
                         this->previewTextVmIds[vmSlot]),                       \
                     0x00df8f8f, 0,                                           \
                     this->ResolveSceneText(                                   \
-                        this->previewTextSources.unattemptedTextId,           \
+                        this->previewTextSources.unattemptedEncodedText,     \
                         columnIndex, 0x62, 1));                               \
             }                                                                 \
             else                                                              \
@@ -161,7 +161,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
                         this->previewTextVmIds[vmSlot]),                       \
                     0x00df8f8f, 0,                                           \
                     this->ResolveSceneText(                                   \
-                        this->previewTextSources.attemptedTextId, columnIndex,\
+                        this->previewTextSources.attemptedEncodedText, columnIndex,\
                         0x62, 3));                                            \
             }                                                                 \
         }                                                                     \
@@ -174,7 +174,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
                 g_SceneAnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00df8f8f, 0,                                               \
                 this->ResolveSceneText(                                       \
-                    this->previewTextSources.belowRequirementTextId,          \
+                    this->previewTextSources.belowRequirementEncodedText,    \
                     columnIndex, 0x62, 2));                                   \
         }                                                                     \
         else                                                                  \
@@ -183,11 +183,11 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
                 g_SceneAnmManager,                                            \
                 g_SceneAnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00cfcfff, 0,                                               \
-                g_SelectedScene->titleTextId != 0                             \
+                g_SelectedScene->encodedTitleText != 0                             \
                     ? this->ResolveSceneText(                                 \
-                          g_SelectedScene->titleTextId, columnIndex,           \
-                          g_SelectedScene->titleArgument1,                     \
-                          g_SelectedScene->titleArgument2)                     \
+                          g_SelectedScene->encodedTitleText, columnIndex,           \
+                          g_SelectedScene->group,                            \
+                          g_SelectedScene->scene)                            \
                     : " ");                                                   \
         }                                                                     \
     }
@@ -214,24 +214,6 @@ void SceneSelectControllerView::BuildScenePreviewText()
     }
 
     this->previewTimer++;
-}
-
-char *SceneSelectControllerView::ResolveSceneText(i32 textId, i32 column,
-                                                  i32 argument1,
-                                                  i32 argument2)
-{
-    u8 *source;
-    {
-        u8 key;
-        source = (u8 *)(textId + column * 0x40);
-        key = argument2 * 11 + argument1 * 7 + 58;
-        for (i32 index = 0; index < 0x40; index++, source++)
-        {
-            g_SceneTextBuffer[index] = *source + key;
-            key += (column + 1) * 23 + index;
-        }
-    }
-    return (char *)g_SceneTextBuffer;
 }
 
 #undef BUILD_SCENE_PREVIEW_LINE

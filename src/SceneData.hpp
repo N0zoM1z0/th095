@@ -1,82 +1,48 @@
 #pragma once
 
 #include "inttypes.hpp"
+#include <stddef.h>
 
 namespace th095
 {
 
-// One 0x30 scene record is shared by replay, result, background and photo
-// subsystems.  The names in the unions document the role each subsystem gives
-// the same target-observed offset; they are not separate address-bound views.
+typedef const u8 *SceneEncodedText;
+
+// Static scene resources and the fields populated from mission.msg.
 struct SceneDefinitionView
 {
-    union
-    {
-        i32 scoreEntryIndex;
-        i32 bestShotIndex;
-        struct
-        {
-            u16 id;
-            u16 unknownIdHigh;
-        };
-    };
-    union
-    {
-        i32 titleArgument1;
-        i32 group;
-        i32 level;
-    };
-    union
-    {
-        i32 titleArgument2;
-        i32 scene;
-        i32 variant;
-    };
-    union
-    {
-        u8 unknown00c[4];
-        const char *stageDataPath;
-    };
+    i32 scoreEntryIndex;
+    i32 group;
+    i32 scene;
+    const char *stageDataPath;
     char *enemyAnmPath;
     char *enemyEclPath;
-    union
-    {
-        u8 unknown018[4];
-        char *musicPath;
-    };
-    union
-    {
-        u8 unknown01c[4];
-        i32 frontScriptIndex;
-    };
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    i8 groupDisplayValue;
-    i8 sceneDisplayValue;
-#else
+    char *musicPath;
+    i32 frontScriptIndex;
     i8 groupPreviewAssetSelector;
     i8 scenePreviewAssetSelector;
-#endif
     u8 unknown022[2];
-    union
-    {
-        i32 scoreRequirement;
-        i32 textId;
-    };
-    union
-    {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        i32 titleTextId;
-        char *text;
-#else
-        const u8 *encodedTitleText;
-#endif
-    };
+    i32 scoreRequirement;
+    SceneEncodedText encodedTitleText;
     i8 displayState;
     u8 unknown02d[3];
 };
 
 typedef char SceneDefinitionSizeIs30[
     (sizeof(SceneDefinitionView) == 0x30) ? 1 : -1];
+typedef char SceneDefinitionGroupAndSceneAt04[
+    (offsetof(SceneDefinitionView, group) == 0x04 &&
+     offsetof(SceneDefinitionView, scene) == 0x08) ? 1 : -1];
+typedef char SceneDefinitionPathsAt0C[
+    (offsetof(SceneDefinitionView, stageDataPath) == 0x0c &&
+     offsetof(SceneDefinitionView, musicPath) == 0x18) ? 1 : -1];
+typedef char SceneDefinitionPreviewSelectorsAt20[
+    (offsetof(SceneDefinitionView, groupPreviewAssetSelector) == 0x20 &&
+     offsetof(SceneDefinitionView, scenePreviewAssetSelector) == 0x21) ? 1 : -1];
+typedef char SceneDefinitionMissionFieldsAt24[
+    (offsetof(SceneDefinitionView, scoreRequirement) == 0x24 &&
+     offsetof(SceneDefinitionView, encodedTitleText) == 0x28 &&
+     offsetof(SceneDefinitionView, displayState) == 0x2c) ? 1 : -1];
 
 extern SceneDefinitionView *g_SceneGroups[12];
 extern i32 g_SceneGroupCounts[12];

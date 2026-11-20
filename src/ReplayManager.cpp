@@ -202,10 +202,10 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
             (u8 *)this->activeInputData + sizeof(ReplayInputData);
         this->fpsCursor = this->fpsStreamBase;
 
-        this->activeInputData->playerConfigId = g_SelectedScene->id;
+        this->activeInputData->playerConfigId = static_cast<u16>(g_SelectedScene->scoreEntryIndex);
         this->activeInputData->level = g_SelectedScene->group;
         this->activeInputData->scene =
-            g_SelectedScene->variant;
+            g_SelectedScene->scene;
         memcpy(this->activeInputData->globalStateSnapshot,
                g_ReplayGlobalState->replayStateSnapshot,
                sizeof(this->activeInputData->globalStateSnapshot));

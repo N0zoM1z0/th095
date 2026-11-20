@@ -102,16 +102,16 @@ typedef char ScoreWriteLocalsRawBufferAt12C[
                         this->bestShotRecords[locals.pendingBestShotIndex]
                             .componentCount);
 
-            if (g_SelectedScene->titleArgument1 != 10)
+            if (g_SelectedScene->group != 10)
             {
                 sprintf(locals.path, "bestshot/bs_%.2d_%d.dat",
-                        g_SelectedScene->titleArgument1 + 1,
-                        g_SelectedScene->titleArgument2 + 1);
+                        g_SelectedScene->group + 1,
+                        g_SelectedScene->scene + 1);
             }
             else
             {
                 sprintf(locals.path, "bestshot/bs_ex_%d.dat",
-                        g_SelectedScene->titleArgument2 + 1);
+                        g_SelectedScene->scene + 1);
             }
 
             ScoreFileWriter::Open(locals.path);

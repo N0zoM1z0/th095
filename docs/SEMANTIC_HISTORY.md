@@ -18080,3 +18080,31 @@ Passing width, height and components, passing the pixel count, and
 passing the whole record by reference all change the extent. A comment
 copy using memcpy preserves the extent but changes 25 comparable bytes.
 The local probes and fixtures are under `.analysis/pi/best-shot-file-owner/`.
+
+### SEM-397 — share the scene catalog and mission text
+
+The initialized array contains 93 instances of the same 0x30-byte scene
+record used by the title loader and selector. The twelve group pointers
+address that array directly. The header names the group, scene, score
+entry and static preview selectors. During initialization the title
+controller writes the score requirement, borrowed title bytes and display
+state at +0x24, +0x28 and +0x2C. Special entries publish their text and
+display state in the controller. The controller owns the message allocation.
+
+The scene title and four preview text sources use the same byte-pointer
+type in both profiles. Both build paths emit one rolling-key column
+decoder. In the loader, ordinary pointer addition changes VC7.1's register
+order even with the offset written first. Offset-first integer addition
+using `uintptr_t` preserves the target order and the full base width.
+
+All 155 affected strict comparisons pass. Three mission writes and
+fifteen calls to the decoder retain their retail destinations. Both
+normal link orders move those destinations and the decoder's scratch
+buffer. All 93 scene records and their four paths agree with retail in
+both links. Each rebuilt PE preserves its four prior mapped sections.
+
+The linked fixture checks 24 initialization cases and 90 decoded columns
+using two allocation addresses, including one above 0x80000000. It
+checks ordinary and special records, duplicate entries and failed
+title or mission file loads. ANM, file and resource loading use fixture
+responses. See `.analysis/pi/scene-definition-owner/` for the recipes.

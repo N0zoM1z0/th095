@@ -59,20 +59,6 @@ struct FrontEndSupervisorView
 extern FrontEndSupervisorView g_FrontEndSupervisor;
 extern SupervisorFlags g_FrontEndSupervisorFlags;
 
-struct FrontEndSceneDefinitionView
-{
-    u8 unknown000[0x24];
-    i32 scoreRequirement;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    char *text;
-#else
-    const u8 *encodedTitleText;
-#endif
-    u8 displayState;
-    u8 unknown02d[3];
-};
-extern FrontEndSceneDefinitionView *g_FrontEndSceneGroups[12];
-
 #define TH095_FRONT_CONTROLLER_STORAGE g_FrontEndController
 #define TH095_FRONT_CONTROLLER_VALUE g_FrontEndController
 #define TH095_FRONT_ANM_PRELOAD(index, path) g_FrontEndAnmManager->PreloadAnm((index), (path))
@@ -84,7 +70,6 @@ extern FrontEndSceneDefinitionView *g_FrontEndSceneGroups[12];
 #define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_FrontEndSupervisor.BeginLoadingCompletion()
 #define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_FrontEndSupervisor.StartReplayScan((callback), (argument))
 #define TH095_FRONT_RESULT_SAVE_DATA g_FrontEndResultSaveData
-#define TH095_FRONT_SCENE_GROUPS g_FrontEndSceneGroups
 #else
 #define TH095_FRONT_CONTROLLER_STORAGE g_ActiveMenuController
 #define TH095_FRONT_CONTROLLER_VALUE reinterpret_cast<FrontEndLifecycleView *>(g_ActiveMenuController)
@@ -97,7 +82,6 @@ extern FrontEndSceneDefinitionView *g_FrontEndSceneGroups[12];
 #define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_Supervisor.BeginLoadingCompletion()
 #define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_Supervisor.StartReplayScan((callback), (argument))
 #define TH095_FRONT_RESULT_SAVE_DATA g_ResultSaveData
-#define TH095_FRONT_SCENE_GROUPS g_SceneGroups
 #endif
 
 extern i32 g_SoundInitializationComplete;
@@ -123,8 +107,12 @@ struct FrontEndMissionEntryView
     u8 displayState;
     u8 unknown005[3];
     i32 scoreRequirement;
-    char encodedText[1];
+    u8 encodedText[1];
 };
+
+typedef char FrontEndMissionEntryFields[
+    (offsetof(FrontEndMissionEntryView, scoreRequirement) == 0x08 &&
+     offsetof(FrontEndMissionEntryView, encodedText) == 0x0c) ? 1 : -1];
 
 struct FrontEndInitializeLocals
 {
@@ -160,12 +148,8 @@ struct FrontEndLifecycleView
     ResultScreenReplayCursor secondaryCursor;
     ResultScreenReplayCursor sceneCursors[12];
     u8 unknown0bf0[0x26c];
-    void *ownedMissionMessageData;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    char *specialText[10];
-#else
-    const u8 *specialEncodedText[10];
-#endif
+    u8 *ownedMissionMessageData;
+    SceneEncodedText specialEncodedText[10];
     i8 specialDisplayStates[10];
     i8 currentDisplayState;
     u8 unknown0e93[0x15];
@@ -220,13 +204,8 @@ typedef char FrontEndLifecycleOwnedMissionDataAtE5C[
     (offsetof(FrontEndLifecycleView, ownedMissionMessageData) == 0xe5c)
         ? 1
         : -1];
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-typedef char FrontEndLifecycleSpecialTextAtE60[
-    (offsetof(FrontEndLifecycleView, specialText) == 0xe60) ? 1 : -1];
-#else
 typedef char FrontEndLifecycleSpecialEncodedTextAtE60[
     (offsetof(FrontEndLifecycleView, specialEncodedText) == 0xe60) ? 1 : -1];
-#endif
 typedef char FrontEndLifecycleDisplayStateAtE92[
     (offsetof(FrontEndLifecycleView, currentDisplayState) == 0xe92) ? 1
                                                                    : -1];
@@ -313,32 +292,24 @@ i32 FrontEndLifecycleView::Initialize()
     locals.offset = reinterpret_cast<i32 *>(this->ownedMissionMessageData) + 1;
     for (locals.i = 0; locals.i < locals.count; locals.i++)
     {
+        // Keep offset-first addition for VC7.1's register order. The file
+        // stores a relative offset and the base retains the full pointer width.
         locals.entry = reinterpret_cast<FrontEndMissionEntryView *>(
             *locals.offset +
-            reinterpret_cast<i32>(this->ownedMissionMessageData));
+            reinterpret_cast<uintptr_t>(this->ownedMissionMessageData));
         if (locals.entry->group < 12)
         {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
-                .text = locals.entry->encodedText;
-#else
-            TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
-                .encodedTitleText =
-                    reinterpret_cast<const u8 *>(locals.entry->encodedText);
-#endif
-            TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
+            g_SceneGroups[locals.entry->group][locals.entry->scene]
+                .encodedTitleText = locals.entry->encodedText;
+            g_SceneGroups[locals.entry->group][locals.entry->scene]
                 .displayState = locals.entry->displayState;
-            TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
+            g_SceneGroups[locals.entry->group][locals.entry->scene]
                 .scoreRequirement = locals.entry->scoreRequirement;
         }
         else
         {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            this->specialText[locals.entry->scene] = locals.entry->encodedText;
-#else
             this->specialEncodedText[locals.entry->scene] =
-                reinterpret_cast<const u8 *>(locals.entry->encodedText);
-#endif
+                locals.entry->encodedText;
             this->specialDisplayStates[locals.entry->scene] =
                 locals.entry->displayState;
         }
