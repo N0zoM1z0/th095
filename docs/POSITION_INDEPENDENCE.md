@@ -87,3 +87,13 @@ destination that moved. The remaining map coverage includes 827 operands
 with private or unpaired symbols and 55 units without a unique linked
 symbol. The linked libraries and remaining initialized-data contracts
 still need their own checks.
+
+The regular and reordered SEM-360 executables both reached the title menu,
+accepted confirmation into Mission Select and started scene 1-1 under
+Wine/Xvfb. Captures show active enemy and bullet updates. For this test each
+executable was staged beside the two original data archives because
+`CPbgFile::GetFullFilePath` resolves archive paths from the executable
+directory. The first launch placed the archives only in the working
+directory and the original executable also failed that setup. Local captures
+are under `build/position-independence/windowed-regular/` and
+`build/position-independence/windowed-reordered/`.
