@@ -67,11 +67,6 @@ static inline SoundPlayer *PhotoSoundPlayer()
     return &g_SoundPlayer;
 }
 
-extern PhotoEnemyManagerView *g_PhotoRuntime;
-#ifndef DIFFBUILD
-#define g_PhotoRuntime \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
-#endif
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
 #ifndef DIFFBUILD
@@ -440,7 +435,7 @@ u32 PhotoCameraState::TakePhoto()
             reinterpret_cast<PhotoBulletVector *>(
                 &this->viewfinderSize)),
         &scoreData,
-        g_PhotoRuntime->CountPhotoTargets(
+        g_PhotoEnemyManager->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize),
         g_PhotoEffectManager->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize));
@@ -807,41 +802,41 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
     for (locals.enemyIndex = 0; locals.enemyIndex < 8;
          locals.enemyIndex++)
     {
-        if (g_PhotoRuntime->photoTargets[locals.enemyIndex] == NULL)
+        if (g_PhotoEnemyManager->photoTargets[locals.enemyIndex] == NULL)
         {
             continue;
         }
-        if (g_PhotoRuntime->photoTargets[locals.enemyIndex]
+        if (g_PhotoEnemyManager->photoTargets[locals.enemyIndex]
                     ->hiddenFromDrawGroups != 0 ||
-            ((g_PhotoRuntime->photoTargets[locals.enemyIndex]
+            ((g_PhotoEnemyManager->photoTargets[locals.enemyIndex]
                     ->flags1 >> 5) & 1) != 0 ||
-            g_PhotoRuntime->photoTargets[locals.enemyIndex]
+            g_PhotoEnemyManager->photoTargets[locals.enemyIndex]
                     ->showPhotoMarker != 0)
         {
             continue;
         }
 
         if (!PhotoEnemyIsOffscreen(
-                &g_PhotoRuntime->photoTargets[locals.enemyIndex]->position))
+                &g_PhotoEnemyManager->photoTargets[locals.enemyIndex]->position))
         {
             if (PhotoRectangleContains(
-                    &g_PhotoRuntime->photoTargets[locals.enemyIndex]->position,
+                    &g_PhotoEnemyManager->photoTargets[locals.enemyIndex]->position,
                     8.0f, 8.0f, &this->viewfinderPosition,
                     this->viewfinderSize.x, this->viewfinderSize.y))
             {
                 locals.currentValue = PhotoDistance2D(
-                    &g_PhotoRuntime->photoTargets[locals.enemyIndex]->position,
+                    &g_PhotoEnemyManager->photoTargets[locals.enemyIndex]->position,
                     &this->viewfinderPosition);
                 if (locals.currentValue < locals.nearestTarget)
                 {
                     locals.nearestTarget = locals.currentValue;
                 }
-                if (g_PhotoRuntime->photoTargets[locals.enemyIndex]
+                if (g_PhotoEnemyManager->photoTargets[locals.enemyIndex]
                             ->HasActivePhotoPulse() &&
                     (locals.currentValue = PhotoRatio(
-                         g_PhotoRuntime->photoTargets[locals.enemyIndex]
+                         g_PhotoEnemyManager->photoTargets[locals.enemyIndex]
                              ->photoPulseDurationTimer.subFrame,
-                         g_PhotoRuntime->photoTargets[locals.enemyIndex]
+                         g_PhotoEnemyManager->photoTargets[locals.enemyIndex]
                              ->photoPulseTimer.subFrame),
                      locals.currentValue > locals.highestBossRate))
                 {
@@ -1072,7 +1067,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
     case PHOTO_CAMERA_TRACKING:
         if (PHOTO_CAMERA_FOCUSED(camera->flags) == 0)
         {
-            if (g_PhotoRuntime->photoTargets[0] == NULL)
+            if (g_PhotoEnemyManager->photoTargets[0] == NULL)
             {
                 camera->cameraOffset =
                     g_RuntimePlayerOwner->playerPosition;
@@ -1092,7 +1087,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                         &g_RuntimePlayerOwner->playerPosition,
                         &camera->viewfinderPosition);
                     f32 bossDistance = PhotoDistance2D(
-                        &g_PhotoRuntime->photoTargets[0]->position,
+                        &g_PhotoEnemyManager->photoTargets[0]->position,
                         &g_RuntimePlayerOwner->playerPosition);
                     if (playerDistance < 56.0f)
                     {
@@ -1124,7 +1119,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
                 {
                     camera->cameraOffset = PhotoCameraTrackingDifference(
-                        g_PhotoRuntime->photoTargets[0]->position,
+                        g_PhotoEnemyManager->photoTargets[0]->position,
                         g_RuntimePlayerOwner->playerPosition);
                     NormalizeAndScalePhotoOffset(
                         camera->cameraOffset,
@@ -1140,7 +1135,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     if (playerDelta.y * playerDelta.y + playerDelta.x * playerDelta.x < 0.1f)
                     {
                         targetAngle = g_RuntimePlayerOwner->AngleToPoint(
-                            &g_PhotoRuntime->photoTargets[0]->position);
+                            &g_PhotoEnemyManager->photoTargets[0]->position);
                     }
                     else
                     {

@@ -14,9 +14,7 @@
 #include "Main.hpp"
 #include "PhotoBulletManager.hpp"
 #include "PhotoCardInfo.hpp"
-#ifndef DIFFBUILD
 #include "PhotoEnemyManager.hpp"
-#endif
 #include "PhotoGameTask.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "PhotoFront.hpp"
@@ -42,14 +40,6 @@ struct PhotoEnemyManagerTaskView
     static PhotoEnemyManagerTaskView *Create();
 };
 
-#ifdef DIFFBUILD
-struct PhotoEnemyManagerView
-{
-    void Destroy();
-    static void __fastcall RestartPhotoTargetEcls(
-        PhotoEnemyManagerView *enemyManager);
-};
-#endif
 
 struct PhotoHelpMenuTaskView
 {
@@ -113,9 +103,6 @@ extern char g_ReplayPath[];
 extern char g_SelectedReplayPath[0x100];
 #define g_ReplayPath g_SelectedReplayPath
 #endif
-extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
-#define g_PhotoEnemyManagerTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerTaskView, g_RuntimeEnemyManagerOwner)
 extern u32 g_PhotoAsciiTextColor;
 #ifndef DIFFBUILD
 // Target 0x004B1FEC is g_AsciiManager @ 0x004A9F80 + 0x806C, the
@@ -236,9 +223,7 @@ i32 PhotoGameTaskView::Update()
 
         if (this->completion.timer <= 0)
         {
-            PhotoEnemyManagerView::RestartPhotoTargetEcls(
-                reinterpret_cast<PhotoEnemyManagerView *>(
-                    g_PhotoEnemyManagerTask));
+            PhotoEnemyManagerView::RestartPhotoTargetEcls(g_PhotoEnemyManager);
         }
     }
 

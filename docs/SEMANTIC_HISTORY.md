@@ -18528,3 +18528,29 @@ operands, and the last usable bullet and sentinel in the extended motion
 callback. The fixtures supply Chain, ANM and shot-spawn boundaries.
 Capture-drop, task-lifetime and player-transition fixtures also pass.
 See `.analysis/pi/photo-bullet-manager-owner/`.
+
+### SEM-416 — share the enemy manager and its ECL access
+
+EnemyInf publishes `g_PhotoEnemyManager @ 0x004BDDC0` from its constructor
+and clears it during teardown. Both profiles now use the same compact
+enemy and manager layouts through their established ANM headers. The
+layout includes the ECL manager at +0x4DF4, the enemy ANM at +0x4DF8 and the
+photo-target array at +0x26AE00. The target reads the ANM pointer at +0x4DFC
+in the alternate path. Its publication and lifetime still need evidence.
+
+ECL operand readers, call setup, spawn, reset and photo-target registration
+bind to the typed manager. The mutable float resolver also uses the typed
+Player slot for its three position selectors. The camera, effects and
+PhotoGame now share the same EnemyInf pointer. The old exact receiver
+names for the spawn and reset calls are replaced with the implemented
+methods. The Task factory and the script parameter-block declarations
+remain separate work.
+
+All 375 affected exact comparisons pass. The 83 renamed relocations retain
+their target offsets, kinds and destinations. Both normal links resolve
+all 91 EnemyInf references from 14 objects to the moved slot. The 61
+focused retail comparisons cover manager lifetime, the ECL parameter and
+player-position selectors, ECL context pushes and opcodes 83, 84, 85 and
+109. The fixtures supply ECL entry, ANM and Chain boundaries, and compare
+the pointer reloaded after the call setup. Capture-drop, effect and
+task-lifetime fixtures also pass. See `.analysis/pi/photo-enemy-manager-owner/`.

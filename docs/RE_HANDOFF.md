@@ -82,6 +82,8 @@ SEM-414 shares the PhotoEffect manager, list base and state in both builds.
 ECL and the player completion transition call the secondary draw method.
 SEM-415 publishes the typed BulletInf slot and shares the shot descriptor
 with the dispatcher and ECL opcode 99.
+SEM-416 shares the EnemyInf slot, layout, ANM and photo targets across
+ECL, camera and gameplay.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

@@ -460,7 +460,7 @@ static EclRawInstruction *__fastcall CompareOperands(
 #endif
     case 58:
         (*reinterpret_cast<AnmLoaded **>(
-            TH095_ECL_RUNTIME + 0x4dfc))
+            g_PhotoEnemyManager->unknown4dfc))
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
@@ -503,7 +503,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         else
         {
             (*reinterpret_cast<AnmLoaded **>(
-                TH095_ECL_RUNTIME + 0x4dfc))
+                g_PhotoEnemyManager->unknown4dfc))
                 ->SetAndExecuteScriptIdx(
                 &enemy->vm,
                 TH095_ECL_SPECIAL_ANM_SCRIPT(enemy));

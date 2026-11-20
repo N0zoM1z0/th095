@@ -145,12 +145,6 @@ struct PhotoModeController
     void End();
 };
 
-struct Th095RuntimeManager
-{
-    Enemy *SpawnEnemy(i32 subroutineId, Float3 *position, i32 arg2,
-                      i32 arg3, i32 arg4, i32 *intVariables);
-    void ResetEnemies();
-};
 
 // The target's inlined allocation wrapper keeps its size parameter addressable,
 // so VC7.1 materializes it in RunEcl's shared temporary region before malloc.
@@ -182,7 +176,6 @@ inline i32 Th095PreserveI32(i32 value)
     TH095_ECL_PHOTO_PULSE_VM((enemy), PhotoAnmHandle)
 
 extern u8 *g_Th095StageState;
-extern u8 *g_Th095Runtime;
 extern AnmManagerLookup *g_Th095AnmManager;
 extern PhotoModeController *g_Th095PhotoMode;
 extern EclExtendedCallback g_Th095ExInsn[];

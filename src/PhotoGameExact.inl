@@ -5,6 +5,7 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
 #include "PhotoEffectRuntime.hpp"
+#include "PhotoEnemyManager.hpp"
 
 namespace th095
 {
@@ -34,12 +35,7 @@ static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
     *vm = clearedVm;
 }
 
-struct PhotoResetTargetView
-{
-    void ResetForPhotoTransition();
-};
 
-extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
 extern u16 g_PhotoInput;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -671,7 +667,8 @@ i32 PhotoGameUpdateView::Update()
     case PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION:
         if (this->completionTimer == 4)
         {
-            g_PhotoRuntimeResetTarget->ResetForPhotoTransition();
+            PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
+                g_PhotoEnemyManager);
         }
         else if (this->completionTimer == 15)
         {

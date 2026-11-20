@@ -2,11 +2,7 @@
 #include "GameplayGlobals.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "PhotoEnemyManager.hpp"
-#else
-#include "EclDependenciesPhotoEnemyEmission.hpp"
-#endif
+#include "PhotoEnemyManagerLayout.hpp"
 #include "utils.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #include "ZunMath.hpp"
@@ -33,22 +29,6 @@ typedef char EclDependencyManagerParametersAt168[(offsetof(PhotoEnemyEclManagerV
 #define TH095_ECL_DEP_INIT(manager, context, subroutineId) \
     reinterpret_cast<EclManager *>(manager)->CallEclSub( \
         reinterpret_cast<EnemyEclContext *>(context), (subroutineId))
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct EclDependencyRuntimeView
-{
-    u8 unknown0000[0x4df4];
-    PhotoEnemyEclManagerView *eclManager;
-};
-typedef char EclDependencyRuntimeManagerAt4DF4[(offsetof(EclDependencyRuntimeView, eclManager) == 0x4df4) ? 1 : -1];
-#else
-typedef PhotoEnemyManagerView EclDependencyRuntimeView;
-#endif
-extern EclDependencyRuntimeView *g_PhotoEnemyManager;
-#ifndef DIFFBUILD
-#define g_PhotoEnemyManager \
-    TH095_RUNTIME_GLOBAL_PTR(EclDependencyRuntimeView, g_RuntimeEnemyManagerOwner)
 #endif
 
 namespace EclRunLow

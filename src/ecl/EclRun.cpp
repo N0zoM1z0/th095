@@ -10,7 +10,6 @@
 #include "BackgroundEclEmission.hpp"
 #include "EnemyFloatOperandEclEmission.hpp"
 #include "PhotoCameraEclEmission.hpp"
-#include "PhotoEnemyEclEmission.hpp"
 #else
 #include "Background.hpp"
 #endif
@@ -32,8 +31,8 @@
 
 #include "../GameplayGlobals.hpp"
 #include "../PhotoEffectRuntime.hpp"
+#include "../PhotoEnemyManagerLayout.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "../PhotoEnemyManager.hpp"
 #include "../PhotoCardInfo.hpp"
 #include "../PhotoStage.hpp"
 #include "../PhotoGamePlayer.hpp"
@@ -56,33 +55,9 @@
     ::th095::g_RuntimePlayerOwner->AngleFromPoint(point)
 #endif
 
-#ifdef DIFFBUILD
-#define TH095_ECL_RUNTIME EclRunHigh::g_Th095Runtime
-#define TH095_ECL_ENEMY_SPAWN(subroutineId, position, life, itemDrop, score, contextValues) \
-    reinterpret_cast<EclRunHigh::Th095RuntimeManager *>(TH095_ECL_RUNTIME)->SpawnEnemy( \
-        (subroutineId), (position), (life), (itemDrop), (score), (contextValues))
-#define TH095_ECL_ENEMY_RESET() \
-    reinterpret_cast<EclRunHigh::Th095RuntimeManager *>(TH095_ECL_RUNTIME)->ResetEnemies()
-#else
-#define TH095_ECL_RUNTIME \
-    TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeEnemyManagerOwner)
-#define TH095_ECL_ENEMY_SPAWN(subroutineId, position, life, itemDrop, score, contextValues) \
-    ::th095::Th095EclSpawnEnemy( \
-        (subroutineId), (position), (life), (itemDrop), (score), (contextValues))
-#define TH095_ECL_ENEMY_RESET() ::th095::Th095EclResetEnemies()
-#endif
-
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_ECL_PRIMARY_ENEMY_ANM \
-    (*reinterpret_cast<AnmLoaded **>(TH095_ECL_RUNTIME + 0x4df8))
-#define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
-    (*reinterpret_cast<EclRunHigh::PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
-#else
-#define TH095_ECL_PRIMARY_ENEMY_ANM \
-    (reinterpret_cast<::th095::PhotoEnemyManagerView *>(TH095_ECL_RUNTIME)->enemyAnm)
+#define TH095_ECL_PRIMARY_ENEMY_ANM (g_PhotoEnemyManager->enemyAnm)
 #define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
     reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(TH095_ECL_PRIMARY_ENEMY_ANM)
-#endif
 
 #ifdef DIFFBUILD
 #define TH095_ECL_STAGE_STATE EclRunHigh::g_Th095StageState
@@ -115,11 +90,10 @@
 
 #ifdef DIFFBUILD
 #define TH095_ECL_PHOTO_CARD_SESSION \
-    *reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28)
+    reinterpret_cast<PhotoSession *&>(g_PhotoEnemyManager->eclPhotoCardSession)
 #else
 #define TH095_ECL_PHOTO_CARD_SESSION \
-    reinterpret_cast<::th095::PhotoEnemyManagerView *>(TH095_ECL_RUNTIME) \
-        ->eclPhotoCardSession
+    (g_PhotoEnemyManager->eclPhotoCardSession)
 #endif
 
 #define TH095_ECL_BULLET_ANM_SPAWNER \
@@ -174,21 +148,6 @@ namespace th095
 #ifndef DIFFBUILD
 struct AnmVertex;
 extern AnmManager *g_AnmManager;
-static __forceinline Enemy *Th095EclSpawnEnemy(
-    i32 subroutineId, Float3 *position, i32 life,
-    i32 itemDrop, i32 score, i32 *contextValues)
-{
-    return reinterpret_cast<Enemy *>(
-        reinterpret_cast<PhotoEnemyManagerView *>(TH095_ECL_RUNTIME)
-            ->SpawnWithContext(
-                subroutineId, position, life, itemDrop, score, contextValues));
-}
-static __forceinline void Th095EclResetEnemies()
-{
-    PhotoEnemyManagerView *manager =
-        reinterpret_cast<PhotoEnemyManagerView *>(TH095_ECL_RUNTIME);
-    PhotoEnemyManagerView::ResetNonPhotoTargets(manager);
-}
 static __forceinline AnmVmId Th095EclAnmId(i32 value)
 {
     AnmVmId id;

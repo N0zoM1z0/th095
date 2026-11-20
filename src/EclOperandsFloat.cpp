@@ -1,6 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyEclAccess.hpp"
+#include "PhotoEnemyManagerLayout.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "ecl/EclOperands.hpp"
 #endif
@@ -55,14 +56,8 @@ struct EclFloatOperandPlayerView
     f32 AngleFromPoint(Float3 *point);
 };
 
-extern PhotoEnemyEclOperandRuntimeOwner *g_EclFloatOperandRuntime;
 extern EclFloatOperandPlayerView *g_EclFloatOperandPlayer;
 
-#ifndef DIFFBUILD
-#define g_EclFloatOperandRuntime \
-    TH095_RUNTIME_GLOBAL_PTR( \
-        PhotoEnemyEclOperandRuntimeOwner, g_RuntimeEnemyManagerOwner)
-#endif
 
 #ifdef DIFFBUILD
 #define TH095_ECL_FLOAT_PLAYER_ANGLE(point) g_EclFloatOperandPlayer->AngleFromPoint(point)
@@ -123,14 +118,14 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x275b: return (f32)TH095_ECL_ITEM_DROP_TYPE(this);
     case 0x275c: return (f32)TH095_ECL_ENEMY_SCORE(this);
 
-    case 0x273c: return (f32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->intVariables[0];
-    case 0x273d: return (f32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->intVariables[1];
-    case 0x273e: return (f32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->intVariables[2];
-    case 0x273f: return (f32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->intVariables[3];
-    case 0x2740: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->floatVariables[0];
-    case 0x2741: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->floatVariables[1];
-    case 0x2742: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->floatVariables[2];
-    case 0x2743: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->floatVariables[3];
+    case 0x273c: return (f32)reinterpret_cast<EclSharedFloatOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[0];
+    case 0x273d: return (f32)reinterpret_cast<EclSharedFloatOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[1];
+    case 0x273e: return (f32)reinterpret_cast<EclSharedFloatOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[2];
+    case 0x273f: return (f32)reinterpret_cast<EclSharedFloatOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[3];
+    case 0x2740: return reinterpret_cast<EclSharedFloatOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[0];
+    case 0x2741: return reinterpret_cast<EclSharedFloatOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[1];
+    case 0x2742: return reinterpret_cast<EclSharedFloatOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[2];
+    case 0x2743: return reinterpret_cast<EclSharedFloatOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[3];
 
     case 0x2718: return this->activeEclContext->floatVariables[0];
     case 0x2719: return this->activeEclContext->floatVariables[1];
@@ -195,8 +190,8 @@ f32 Enemy::ResolveFloat(f32 operand)
         return (f32)(i32)TH095_ECL_FLOAT_PHOTO_INDEX;
     case 0x2764:
         return (f32)(i32)TH095_ECL_FLOAT_PHOTOS_TAKEN;
-    case 0x2762: return TH095_ECL_RUNTIME_PHOTO_TARGET(g_EclFloatOperandRuntime, 0, Enemy)->worldPosition.x;
-    case 0x2763: return TH095_ECL_RUNTIME_PHOTO_TARGET(g_EclFloatOperandRuntime, 0, Enemy)->worldPosition.y;
+    case 0x2762: return g_PhotoEnemyManager->photoTargets[0]->worldPosition.x;
+    case 0x2763: return g_PhotoEnemyManager->photoTargets[0]->worldPosition.y;
     default: return operand;
     }
 }

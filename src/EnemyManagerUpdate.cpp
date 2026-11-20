@@ -3,9 +3,7 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "PhotoEnemy.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEnemyManager.hpp"
-#endif
 #include "PhotoBulletManager.hpp"
 #include "SceneData.hpp"
 #include <stdlib.h>
@@ -190,26 +188,15 @@ i32 PhotoEnemyEclManagerView::InitializeContext(
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct PhotoEnemyTimelineView
+inline PhotoEnemyTimelineView::PhotoEnemyTimelineView()
 {
-    ZunTimer timer;
-    void *instruction;
-
-    PhotoEnemyTimelineView()
-    {
-        // VC7.1 retains one 0x28 allocation phase for the generated
-        // sixteen-timeline construction loop in PhotoEnemyManagerView.
-        // 0x24 and 0x2C controls move the same deep compiler-home family
-        // one dword shallow/deep, so keep the phase on this real constructor
-        // frontend rather than reserving storage in the manager body.
-        u8 compilerStorage[0x28];
-    }
-
-    void Run();
-};
-
-typedef char PhotoEnemyTimelineSizeIs10[
-    (sizeof(PhotoEnemyTimelineView) == 0x10) ? 1 : -1];
+    // VC7.1 retains one 0x28 allocation phase for the generated
+    // sixteen-timeline construction loop in PhotoEnemyManagerView.
+    // 0x24 and 0x2C controls move the same deep compiler-home family
+    // one dword shallow/deep, so keep the phase on this real constructor
+    // frontend rather than reserving storage in the manager body.
+    u8 compilerStorage[0x28];
+}
 #endif
 
 struct PhotoEnemyTimelineInstruction
@@ -261,11 +248,7 @@ struct PhotoEnemyTimelineExtendedSpawnArgs
     i32 score;
 };
 
-extern PhotoEnemyManagerView *g_PhotoEnemyManager;
-#ifndef DIFFBUILD
-#define g_PhotoEnemyManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
-#endif
+PhotoEnemyManagerView *g_PhotoEnemyManager; // Retail 0x004BDDC0
 extern f32 g_AnmGameSpeed;
 
 #ifdef TH095_MATCH_EXACT
@@ -287,72 +270,6 @@ PhotoEnemyTimelineView::PhotoEnemyTimelineView()
 }
 #endif
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct PhotoEnemyManagerView
-{
-    PhotoEnemyView spawnTemplate;          // +0x0000
-    PhotoEnemyTimelineView timelines[16];  // +0x4cc0
-    PhotoEnemyView *drawGroupHeads[4];     // +0x4dc0
-    u8 unknown4dd0[4];
-    i32 timelineEventSlots[4];             // +0x4dd4
-    PhotoEnemyView *timelineEnemySlots[4];  // +0x4de4
-    PhotoEnemyEclManagerView *eclManager;  // +0x4df4
-    AnmLoaded *enemyAnm;                   // +0x4df8
-    u8 unknown4dfc[4];
-    PhotoEnemyView enemies[128];           // +0x4e00
-    PhotoEnemyView *photoTargets[8];        // +0x26ae00
-    ChainElem *calcChain;                  // +0x26ae20
-    ChainElem *drawChain;                  // +0x26ae24
-    u8 unknown26ae28[4];
-    i32 activeEnemyCount;                  // +0x26ae2c
-
-    PhotoEnemyManagerView();
-    ~PhotoEnemyManagerView();
-    void Destroy();
-    i32 LoadResources();
-    static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
-    PhotoEnemyView *Spawn(
-        i32 subroutineId,
-        const Float3 *position,
-        i32 life,
-        i32 itemDrop,
-        i32 score,
-        u32 mirrorMovementX);
-    PhotoEnemyView *SpawnWithContext(
-        i32 subroutineId,
-        const Float3 *position,
-        i32 life,
-        i32 itemDrop,
-        i32 score,
-        const i32 *contextValues);
-    static void __fastcall ResetNonPhotoTargets(
-        PhotoEnemyManagerView *enemyManager);
-    static void __fastcall RestartPhotoTargetEcls(
-        PhotoEnemyManagerView *enemyManager);
-    static void __fastcall ResetNonPhotoTargetsAndPhotoTargetEcls(
-        PhotoEnemyManagerView *enemyManager);
-};
-
-typedef char PhotoEnemyManagerTimelinesAt4CC0[
-    (offsetof(PhotoEnemyManagerView, timelines) == 0x4cc0) ? 1 : -1];
-typedef char PhotoEnemyManagerTimelineEventsAt4DD4[
-    (offsetof(PhotoEnemyManagerView, timelineEventSlots) == 0x4dd4) ? 1 : -1];
-typedef char PhotoEnemyManagerEnemiesAt4E00[
-    (offsetof(PhotoEnemyManagerView, enemies) == 0x4e00) ? 1 : -1];
-typedef char PhotoEnemyManagerCountAt26AE2C[
-    (offsetof(PhotoEnemyManagerView, activeEnemyCount) == 0x26ae2c) ? 1 : -1];
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(owner) (&(owner)->spawnTemplate)
-#define PHOTO_ENEMY_MANAGER_FIRST_ENEMY(owner) (&(owner)->enemies[0])
-#define PHOTO_ENEMY_MANAGER_ENEMY_AT(owner, index) (&(owner)->enemies[(index)])
-#else
-#define PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(owner) ((owner)->SpawnTemplate())
-#define PHOTO_ENEMY_MANAGER_FIRST_ENEMY(owner) ((owner)->EnemyAt(0))
-#define PHOTO_ENEMY_MANAGER_ENEMY_AT(owner, index) ((owner)->EnemyAt(index))
-#endif
-
 #pragma var_order(i, enemy, this)
 PhotoEnemyManagerView::PhotoEnemyManagerView()
 {
@@ -368,7 +285,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
         this->timelineEventSlots[i] = -1;
     }
 
-    enemy = PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(this);
+    enemy = &this->spawnTemplate;
     memset(enemy, 0, sizeof(*enemy));
     for (i = 0; i < 96; ++i)
     {
@@ -467,7 +384,7 @@ PhotoEnemyManagerView::~PhotoEnemyManagerView()
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
 
-    PhotoEnemyView *enemy = PHOTO_ENEMY_MANAGER_FIRST_ENEMY(this);
+    PhotoEnemyView *enemy = &this->enemyPool[0];
     for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
     {
         for (i32 argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
@@ -672,7 +589,7 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
     i32 enemyIndex;
     PhotoEnemyView *enemy;
 
-    enemy = PHOTO_ENEMY_MANAGER_FIRST_ENEMY(this);
+    enemy = &this->enemyPool[0];
     for (enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
     {
         if (enemy->active != 0)
@@ -728,7 +645,7 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
     i32 enemyIndex;
     PhotoEnemyView *enemy;
 
-    enemy = PHOTO_ENEMY_MANAGER_FIRST_ENEMY(this);
+    enemy = &this->enemyPool[0];
     for (enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
     {
         if (enemy->active != 0)
@@ -811,7 +728,7 @@ static __forceinline void PhotoEnemyMovementPhase(PhotoEnemyView *enemy)
 i32 __fastcall PhotoEnemyManagerView::OnUpdate(
     PhotoEnemyManagerView *enemyManager)
 {
-    PhotoEnemyView *enemy = PHOTO_ENEMY_MANAGER_FIRST_ENEMY(enemyManager);
+    PhotoEnemyView *enemy = &enemyManager->enemyPool[0];
 
     for (i32 timelineIndex = 0;
          timelineIndex < enemyManager->eclManager->eclFile->timelineCount;
@@ -1083,9 +1000,9 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargets(
 {
     for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex)
     {
-        if (PHOTO_ENEMY_MANAGER_ENEMY_AT(enemyManager, enemyIndex)->photoTarget == 0)
+        if (enemyManager->enemyPool[enemyIndex].photoTarget == 0)
         {
-            PHOTO_ENEMY_MANAGER_ENEMY_AT(enemyManager, enemyIndex)->Deactivate();
+            enemyManager->enemyPool[enemyIndex].Deactivate();
         }
     }
 }
@@ -1107,9 +1024,9 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
 {
     for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex)
     {
-        if (PHOTO_ENEMY_MANAGER_ENEMY_AT(enemyManager, enemyIndex)->photoTarget == 0)
+        if (enemyManager->enemyPool[enemyIndex].photoTarget == 0)
         {
-            PHOTO_ENEMY_MANAGER_ENEMY_AT(enemyManager, enemyIndex)->Deactivate();
+            enemyManager->enemyPool[enemyIndex].Deactivate();
         }
     }
 
@@ -1192,7 +1109,7 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
 
             memcpy(
                 &this->bulletSpawnDescriptor,
-                &PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(g_PhotoEnemyManager)->bulletSpawnDescriptor,
+                &g_PhotoEnemyManager->spawnTemplate.bulletSpawnDescriptor,
                 sizeof(this->bulletSpawnDescriptor));
             this->shootIntervalFrames = 0;
         }

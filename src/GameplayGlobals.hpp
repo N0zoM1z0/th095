@@ -12,7 +12,6 @@ namespace th095
 // translation unit.  Production builds must share the pointer value so that
 // lifecycle stores are visible to every consumer.  DIFFBUILD units retain
 // their target-specific extern names and relocation evidence.
-DIFFABLE_EXTERN(void *, g_RuntimeEnemyManagerOwner);
 // PhotoOverlay publishes the PhotoInf allocation and clears it at teardown.
 struct PhotoStageStateView;
 extern PhotoStageStateView *g_PhotoStageState;
@@ -26,11 +25,6 @@ extern PhotoGameUpdateView *g_RuntimePlayerOwner;
 // source-local production owner aliases below this include are still suppressed.
 #if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #define DIFFBUILD
-#endif
-
-#ifndef DIFFBUILD
-#define TH095_RUNTIME_GLOBAL_PTR(type, storage) \
-    (*reinterpret_cast<type **>(&(storage)))
 #endif
 
 #if defined(DIFFBUILD)

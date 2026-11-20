@@ -4,6 +4,7 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
 #include "PhotoItemManager.hpp"
+#include "PhotoEnemyManager.hpp"
 #include "PhotoEffectRuntime.hpp"
 
 namespace th095
@@ -104,19 +105,8 @@ typedef char PhotoRotatingLaserTailVmAt364[
 
 extern f32 g_GameSpeed;
 
-struct PhotoEnemyView
-{
-    u8 unknown0000[0x28a0];
-    PhotoEffectVector worldPosition;
-};
 
-struct PhotoEnemyManagerView
-{
-    u8 unknown000000[0x26ae00];
-    PhotoEnemyView *photoTargets[8];
-};
 
-extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 
 extern AnmManager *g_AnmManager;
 extern u32 g_PhotoEffectColors[];
@@ -309,7 +299,8 @@ i32 PhotoRotatingLaserView::Update()
         g_PhotoEnemyManager->photoTargets[0] != NULL)
     {
         this->position =
-            g_PhotoEnemyManager->photoTargets[0]->worldPosition;
+            *reinterpret_cast<PhotoEffectVector *>(
+                &g_PhotoEnemyManager->photoTargets[0]->position);
     }
 
     this->position += this->spawn.velocity * g_GameSpeed;

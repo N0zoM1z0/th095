@@ -1,6 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyEclAccess.hpp"
+#include "PhotoEnemyManagerLayout.hpp"
 #ifndef DIFFBUILD
 #include "PhotoGamePlayer.hpp"
 #endif
@@ -47,14 +48,8 @@ struct EclOperandPlayerView
     f32 AngleFromPoint(Float3 *point);
 };
 
-extern PhotoEnemyEclOperandRuntimeOwner *g_EclOperandRuntime;
 extern EclOperandPlayerView *g_EclOperandPlayer;
 
-#ifndef DIFFBUILD
-#define g_EclOperandRuntime \
-    TH095_RUNTIME_GLOBAL_PTR( \
-        PhotoEnemyEclOperandRuntimeOwner, g_RuntimeEnemyManagerOwner)
-#endif
 
 #ifdef DIFFBUILD
 #define TH095_ECL_INT_PLAYER_ANGLE(point) g_EclOperandPlayer->AngleFromPoint(point)
@@ -133,14 +128,14 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case TH095_ECL_CALL_PARAMETER_FLOAT2: return (i32)enemy->activeEclContext->callParameterFloats[2];
     case TH095_ECL_CALL_PARAMETER_FLOAT3: return (i32)enemy->activeEclContext->callParameterFloats[3];
 
-    case 0x273c: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclOperandRuntime, EclSharedOperandView)->intVariables[0];
-    case 0x273d: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclOperandRuntime, EclSharedOperandView)->intVariables[1];
-    case 0x273e: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclOperandRuntime, EclSharedOperandView)->intVariables[2];
-    case 0x273f: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclOperandRuntime, EclSharedOperandView)->intVariables[3];
-    case 0x2740: return (i32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclOperandRuntime, EclSharedOperandView)->floatVariables[0];
-    case 0x2741: return (i32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclOperandRuntime, EclSharedOperandView)->floatVariables[1];
-    case 0x2742: return (i32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclOperandRuntime, EclSharedOperandView)->floatVariables[2];
-    case 0x2743: return (i32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclOperandRuntime, EclSharedOperandView)->floatVariables[3];
+    case 0x273c: return reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[0];
+    case 0x273d: return reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[1];
+    case 0x273e: return reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[2];
+    case 0x273f: return reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[3];
+    case 0x2740: return (i32)reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[0];
+    case 0x2741: return (i32)reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[1];
+    case 0x2742: return (i32)reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[2];
+    case 0x2743: return (i32)reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[3];
 
     case 0x272a: return (i32)enemy->worldPosition.x;
     case 0x272b: return (i32)enemy->worldPosition.y;
@@ -183,8 +178,8 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
         return TH095_ECL_INT_PHOTO_INDEX;
     case 0x2764:
         return TH095_ECL_INT_PHOTOS_TAKEN;
-    case 0x2762: return (i32)TH095_ECL_RUNTIME_PHOTO_TARGET(g_EclOperandRuntime, 0, Enemy)->worldPosition.x;
-    case 0x2763: return (i32)TH095_ECL_RUNTIME_PHOTO_TARGET(g_EclOperandRuntime, 0, Enemy)->worldPosition.y;
+    case 0x2762: return (i32)g_PhotoEnemyManager->photoTargets[0]->worldPosition.x;
+    case 0x2763: return (i32)g_PhotoEnemyManager->photoTargets[0]->worldPosition.y;
     default: return operand;
     }
 }

@@ -67,9 +67,6 @@ typedef char PhotoRotatingLaserTailVmAt364[
 
 extern f32 g_AnmGameSpeed;
 
-extern PhotoEnemyManagerView *g_PhotoEnemyManager;
-#define g_PhotoEnemyManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
 
 extern AnmManager *g_AnmManager;
 #ifndef DIFFBUILD

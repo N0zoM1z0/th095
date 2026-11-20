@@ -9,9 +9,7 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
 #include "PhotoStage.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEnemyManager.hpp"
-#endif
 #include "SceneData.hpp"
 #include "SupervisorViewportConfiguration.hpp"
 #ifdef TH095_MATCH_EXACT
@@ -208,25 +206,9 @@ struct BackgroundAnmSpawnerView
 };
 #endif
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct BackgroundRuntimeView
-{
-    u8 unknown0000[0x4df8];
-#ifdef TH095_MATCH_EXACT
-    BackgroundAnmSpawnerView *anmSpawner;
-#else
-    AnmLoaded *anmSpawner;
-#endif
-};
-#define TH095_BACKGROUND_ENEMY_ANM(runtime) ((runtime)->anmSpawner)
-#else
-typedef PhotoEnemyManagerView BackgroundRuntimeView;
-#define TH095_BACKGROUND_ENEMY_ANM(runtime) ((runtime)->enemyAnm)
-#endif
-
 #ifdef TH095_MATCH_EXACT
 #define TH095_BACKGROUND_CREATE_WORLD_VM(spawner, script, position) \
-    (spawner)->CreateVm((script), (position))
+    reinterpret_cast<BackgroundAnmSpawnerView *>(spawner)->CreateVm((script), (position))
 #else
 #define TH095_BACKGROUND_CREATE_WORLD_VM(spawner, script, position) \
     (spawner)->CreateVmAtWorld((script), (position))
@@ -267,11 +249,6 @@ typedef char BackgroundStageObjectInstructionPositionAt8[
 typedef char BackgroundStageObjectInstanceSizeIs10[
     (sizeof(BackgroundStageObjectInstance) == 0x10) ? 1 : -1];
 
-extern BackgroundRuntimeView *g_BackgroundRuntime;
-#ifndef DIFFBUILD
-#define g_BackgroundRuntime \
-    TH095_RUNTIME_GLOBAL_PTR(BackgroundRuntimeView, g_RuntimeEnemyManagerOwner)
-#endif
 #ifdef TH095_MATCH_EXACT
 extern ZunColor g_PhotoScreenFadeColor;
 #elif defined(DIFFBUILD)
@@ -1505,13 +1482,13 @@ void Background::StartSpellBackground()
     *reinterpret_cast<AnmVmId *>(
         &this->spellBackgroundVmIds[0]) =
         TH095_BACKGROUND_CREATE_WORLD_VM(
-            TH095_BACKGROUND_ENEMY_ANM(g_BackgroundRuntime),
+            g_PhotoEnemyManager->enemyAnm,
             0, &Float3(0.0f, 0.0f, 0.0f));
 
     *reinterpret_cast<AnmVmId *>(
         &this->spellBackgroundVmIds[1]) =
         TH095_BACKGROUND_CREATE_WORLD_VM(
-            TH095_BACKGROUND_ENEMY_ANM(g_BackgroundRuntime),
+            g_PhotoEnemyManager->enemyAnm,
             1, &Float3(0.0f, 0.0f, 0.0f));
 }
 

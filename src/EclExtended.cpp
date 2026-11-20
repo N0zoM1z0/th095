@@ -8,11 +8,11 @@
 #include "PhotoEnemyEclAccess.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
 #include "PhotoEffectRuntime.hpp"
+#include "PhotoEnemyManagerLayout.hpp"
 #include "PhotoBulletManagerLayout.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "Background.hpp"
 #include "PhotoCamera.hpp"
-#include "PhotoEnemyManager.hpp"
 #endif
 #ifndef DIFFBUILD
 #include "ScreenEffect.hpp"
@@ -28,15 +28,6 @@ extern f32 g_AnmGameSpeed;
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 extern AnmManager *g_AnmManager;
-struct PhotoEnemyView;
-#if defined(TH095_MATCH_EXACT)
-struct PhotoEnemyManagerView
-{
-    PhotoEnemyView *Spawn(
-        i32 subroutineId, const Float3 *position, i32 life,
-        i32 itemDrop, i32 score, u32 mirrorMovementX);
-};
-#endif
 static __forceinline AnmManager *EclExtendedCanonicalAnmManager()
 {
     return g_AnmManager;
@@ -61,28 +52,11 @@ typedef AnmLoaded ExtendedAnmSpawner;
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "ecl/EclExtendedPlayerEmission.inl"
-struct ExtendedPhotoEnemyView;
-struct ExtendedPhotoEnemyManagerView
-{
-    ExtendedPhotoEnemyView *Spawn(
-        i32 subroutineId, const Float3 *position, i32 life,
-        i32 itemDrop, i32 score, u32 mirrorMovementX);
-};
 #else
-typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;
 #define TH095_EXT_PLAYER_TYPE ::th095::PhotoPlayerRuntimeView
 #define TH095_EXT_PLAYER_STORAGE(player) (player)
 #define TH095_EXT_CAMERA_METHOD(camera) \
     reinterpret_cast<::th095::PhotoCameraState *>(&(camera))
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_EXT_ENEMY_SPAWN(manager, subroutineId, position, life, itemDrop, score, mirror) \
-    (manager)->Spawn((subroutineId), (position), (life), (itemDrop), (score), (mirror))
-#else
-#define TH095_EXT_ENEMY_SPAWN(manager, subroutineId, position, life, itemDrop, score, mirror) \
-    reinterpret_cast<::th095::PhotoEnemyManagerView *>(manager)->Spawn( \
-        (subroutineId), (position), (life), (itemDrop), (score), (mirror))
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -173,26 +147,12 @@ typedef char ExtendedPhotoEffectNodeFlagsAt58C[(offsetof(ExtendedPhotoEffectNode
 typedef ::th095::PhotoBulletView ExtendedBulletView;
 #endif
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct ExtendedRuntimeView
-{
-    u8 unknown0000[0x4df8];
-    ExtendedAnmSpawner *enemyAnm;
-
-};
-typedef char ExtendedRuntimeEnemyAnmAt4DF8[
-    (offsetof(ExtendedRuntimeView, enemyAnm) == 0x4df8) ? 1 : -1];
-#else
-typedef ::th095::PhotoEnemyManagerView ExtendedRuntimeView;
-#endif
-
 #ifdef DIFFBUILD
 extern AnmManagerLookupView *g_AnmManager;
 #endif
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 extern u8 *g_Background;
 #endif
-extern ExtendedPhotoEnemyManagerView *g_ExtendedPhotoEnemyManager;
 
 #if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 static __forceinline u8 *ExtendedBackgroundOwner()
@@ -292,14 +252,6 @@ static __forceinline void FinalizeExtendedBulletAfterExecute(
     vm->color1Final.a = 0x40;
 }
 
-extern ExtendedRuntimeView *g_ExtendedRuntime;
-#ifndef DIFFBUILD
-#define g_ExtendedPhotoEnemyManager \
-    TH095_RUNTIME_GLOBAL_PTR(ExtendedPhotoEnemyManagerView, ::th095::g_RuntimeEnemyManagerOwner)
-#define g_ExtendedRuntime \
-    TH095_RUNTIME_GLOBAL_PTR(ExtendedRuntimeView, ::th095::g_RuntimeEnemyManagerOwner)
-#endif
-
 #define TH095_ECL_EXT_RNG ::th095::g_Rng
 #ifdef TH095_MATCH_EXACT
 extern f32 g_AnmGameSpeed;
@@ -314,7 +266,7 @@ extern u32 g_PhotoScreenFadeColor;
 
 #ifndef DIFFBUILD
 #define g_Player \
-    TH095_RUNTIME_GLOBAL_PTR(TH095_EXT_PLAYER_TYPE, ::th095::g_RuntimePlayerOwner)
+    reinterpret_cast<TH095_EXT_PLAYER_TYPE *>(::th095::g_RuntimePlayerOwner)
 #endif
 #ifdef DIFFBUILD
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -595,7 +547,7 @@ void __fastcall SpawnEnemyMarkerVm(
     } locals;
 
     TH095_EXT_CREATE_VM_WORLD_INTO(
-        g_ExtendedRuntime->enemyAnm, &locals.handle,
+        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.handle,
         enemy->activeEclContext->extraIntVariables[2],
         &enemy->worldPosition);
     locals.vm = TH095_EXT_HANDLE_GET_VM(locals.handle);
@@ -777,7 +729,7 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
-        g_ExtendedRuntime->enemyAnm, &locals.effect->vm,
+        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->vm,
         enemy->activeEclContext->extraIntVariables[2]);
     locals.PublishFlags();
 }
@@ -809,7 +761,7 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
-        g_ExtendedRuntime->enemyAnm, &locals.effect->vm,
+        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->vm,
         enemy->activeEclContext->extraIntVariables[2]);
     locals.PublishFlags();
 }
@@ -841,7 +793,7 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
-        g_ExtendedRuntime->enemyAnm, &locals.effect->vm,
+        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->vm,
         enemy->activeEclContext->extraIntVariables[2]);
     locals.PublishFlags();
 }
@@ -896,8 +848,8 @@ void __fastcall Callback01(Enemy *enemy, EclRawInstruction *instruction)
 #endif
             continue;
 
-        TH095_EXT_ENEMY_SPAWN(
-            g_ExtendedPhotoEnemyManager, 0,
+        g_PhotoEnemyManager->Spawn(
+            0,
             reinterpret_cast<const Float3 *>(&index->position),
             1, 0, 0, 0);
     }

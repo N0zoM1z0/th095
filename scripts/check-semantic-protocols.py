@@ -422,8 +422,6 @@ def check_ecl_extended_type_boundaries() -> None:
         "typedef AnmLoaded ExtendedAnmSpawner;",
         "typedef Float3 ExtendedVector;",
         "typedef ::th095::PhotoBulletView ExtendedBulletView;",
-        "typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;",
-        "typedef ::th095::PhotoEnemyManagerView ExtendedRuntimeView;",
         "#define TH095_EXT_PLAYER_TYPE ::th095::PhotoPlayerRuntimeView",
         "#define TH095_EXT_PLAYER_STORAGE(player) (player)",
         "reinterpret_cast<::th095::PhotoCameraState *>(&(camera))",
@@ -3412,12 +3410,12 @@ def check_front_end_pending_texture_owner(header_text: str | None = None) -> Non
 
 
 def check_photo_enemy_owner() -> None:
-    element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
+    element = (SRC / "PhotoEnemyLayout.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
     operand_access = (SRC / "PhotoEnemyEclAccess.hpp").read_text(
         encoding="utf-8"
     )
-    manager = (SRC / "PhotoEnemyManager.hpp").read_text(encoding="utf-8")
+    manager = (SRC / "PhotoEnemyManagerLayout.hpp").read_text(encoding="utf-8")
     if any(name in element for name in PROFILE_NAMES):
         fail("canonical PhotoEnemy.hpp must not select a build-profile layout")
     if any(name in control for name in PROFILE_NAMES):
@@ -3429,7 +3427,9 @@ def check_photo_enemy_owner() -> None:
     if len(re.findall(r"\bstruct\s+PhotoEnemyView\s*\{", element)) != 1:
         fail("PhotoEnemy.hpp must define exactly one canonical compact enemy owner")
     if len(re.findall(r"\bstruct\s+PhotoEnemyManagerView\s*\{", manager)) != 1:
-        fail("PhotoEnemyManager.hpp must define exactly one canonical EnemyInf owner")
+        fail("PhotoEnemyManagerLayout.hpp must define exactly one canonical EnemyInf owner")
+    if "extern PhotoEnemyManagerView *g_PhotoEnemyManager;" not in manager:
+        fail("EnemyInf layout must declare the shared manager slot")
     required_element_layout = (
         "sizeof(PhotoEnemyView) == 0x4cc0",
         "PhotoEnemyPositionAt28A0",
@@ -3506,8 +3506,10 @@ def check_photo_enemy_owner() -> None:
     )
     for path in direct_consumers:
         text = path.read_text(encoding="utf-8")
-        if 'PhotoEnemyManager.hpp"' not in text:
-            fail(f"{path.relative_to(SRC)} must consume canonical PhotoEnemyManager.hpp")
+        if not any(f'{name}"' in text for name in (
+            "PhotoEnemyManager.hpp", "PhotoEnemyManagerLayout.hpp"
+        )):
+            fail(f"{path.relative_to(SRC)} must consume the canonical EnemyInf layout")
 
     canonical_element_consumers = (
         SRC / "EnemyManagerUpdate.cpp",
@@ -3546,9 +3548,7 @@ def check_photo_enemy_owner() -> None:
                     f"{path.relative_to(SRC)} restored duplicate EnemyInf projection: "
                     f"{retired}"
                 )
-    if "extern PhotoEnemyManagerView *g_PhotoRuntime;" not in camera:
-        fail("PhotoCamera must type g_PhotoRuntime as the canonical EnemyInf owner")
-    if "g_PhotoRuntime->photoTargets" not in camera:
+    if "g_PhotoEnemyManager->photoTargets" not in camera:
         fail("PhotoCamera must consume canonical EnemyInf photoTargets")
     if "int PhotoEnemyManagerView::CountPhotoTargets(" not in runtime:
         fail("PhotoRuntime must define CountPhotoTargets on canonical EnemyInf")
@@ -3569,7 +3569,7 @@ def check_photo_enemy_owner() -> None:
                 f"{path.relative_to(ROOT)} restored the retired PhotoRuntimeView ABI"
             )
     for symbol in (
-        "?g_PhotoRuntime@th095@@3PAUPhotoEnemyManagerView@1@A",
+        "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A",
         "?CountPhotoTargets@PhotoEnemyManagerView@th095@@QAEHPBUFloat3@2@0@Z",
     ):
         if symbol not in manifest:
@@ -3628,9 +3628,7 @@ def check_photo_enemy_owner() -> None:
             fail(f"{path.relative_to(SRC)} restored a duplicate operand field view")
         if re.search(r"\bstruct\s+Ecl\w*OperandRuntimeView\b", text):
             fail(f"{path.relative_to(SRC)} restored a duplicate runtime-manager view")
-        if "PhotoEnemyEclOperandRuntimeOwner" not in text:
-            fail(f"{path.relative_to(SRC)} lost the shared opaque runtime owner")
-        if "TH095_ECL_RUNTIME_SHARED_OPERANDS" not in text:
+        if "g_PhotoEnemyManager->eclManager" not in text:
             fail(f"{path.relative_to(SRC)} bypasses the shared runtime operand path")
 
     float_lvalue = (SRC / "EclOperandsFloatLValue.cpp").read_text(
@@ -3669,10 +3667,7 @@ def check_photo_enemy_owner() -> None:
         fail("EnemyEclRuntimeView.hpp must route through shared compact access")
 
     required_emission_adapters = (
-        SRC / "EnemyShotAnmEmission.hpp",
-        SRC / "EclDependenciesPhotoEnemyEmission.hpp",
         SRC / "EclHelpersPhotoEnemyEmission.hpp",
-        SRC / "ecl" / "PhotoEnemyEclEmission.hpp",
     )
     for path in required_emission_adapters:
         if not path.exists():
@@ -3682,7 +3677,7 @@ def check_photo_enemy_owner() -> None:
             fail(f"{path.relative_to(ROOT)} must not contain a profile selector")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
-    if "PhotoEnemyManagerView *>(TH095_ECL_RUNTIME)->enemyAnm" not in ecl_run:
+    if "g_PhotoEnemyManager->enemyAnm" not in ecl_run:
         fail("normal EclRun must consume canonical EnemyInf::enemyAnm")
     if "EclEnemyAnmRuntimeView" in ecl_run:
         fail("EclRun restored the retired normal +0x4DF8 projection")
@@ -3729,7 +3724,7 @@ def check_photo_enemy_owner() -> None:
     if ").calls[TH08_ECL_READ_I(ctx, 0)].rawValue =" not in run_surfaces:
         fail("ECL opcode 115 must store the complete scheduled call word")
     for marker in (
-        "TH095_ECL_RUNTIME_PHOTO_TARGET",
+        "g_PhotoEnemyManager->photoTargets",
         "TH095_ECL_SHOOT_INTERVAL_FRAMES",
         "TH095_ECL_CHILD_BLOCK",
         "TH095_ENEMY_ECL_CONTROL_BITS",
@@ -3920,7 +3915,7 @@ def check_photo_card_info_owner() -> None:
     if "TH095_PHOTO_STAGE_CARD_INFO->text" not in stage:
         fail("PhotoStage lost canonical CardInf text access")
 
-    enemy_manager = (SRC / "PhotoEnemyManager.hpp").read_text(encoding="utf-8")
+    enemy_manager = (SRC / "PhotoEnemyManagerLayout.hpp").read_text(encoding="utf-8")
     if "PhotoCardInfoView *eclPhotoCardSession" not in enemy_manager:
         fail("EnemyInf lost its typed ECL-held CardInf session handle")
 

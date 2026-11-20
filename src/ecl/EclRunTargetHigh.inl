@@ -106,16 +106,15 @@
     case 109:
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
-            TH095_ECL_RUNTIME_PHOTO_TARGET(
-                TH095_ECL_RUNTIME, TH08_ECL_READ_I(ctx, 0), Enemy) = enemy;
+            g_PhotoEnemyManager->photoTargets[TH08_ECL_READ_I(ctx, 0)] =
+                reinterpret_cast<PhotoEnemyView *>(enemy);
             TH095_RUN_ECL_CONTROL_WORD(enemy) |= 2U;
             TH095_ECL_PHOTO_TARGET_SLOT(enemy) =
                 static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
         }
         else
         {
-            TH095_ECL_RUNTIME_PHOTO_TARGET(
-                TH095_ECL_RUNTIME, TH095_ECL_PHOTO_TARGET_SLOT(enemy), Enemy) = 0;
+            g_PhotoEnemyManager->photoTargets[TH095_ECL_PHOTO_TARGET_SLOT(enemy)] = 0;
             TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~2U;
         }
         break;
@@ -261,7 +260,7 @@ enter_subroutine:
     case 83:
         if (TH095_TARGET_ENEMY_LIFE(enemy) > 0)
         {
-            TH095_ECL_ENEMY_SPAWN(
+            g_PhotoEnemyManager->SpawnWithContext(
                 TH08_ECL_RAW_I(ctx, 0),
                 TH095_TARGET_ENEMY_POSITION_PTR(enemy),
                 10, 0, 0,
@@ -273,7 +272,7 @@ enter_subroutine:
         if (TH095_TARGET_ENEMY_LIFE(enemy) > 0)
         {
             SpawnPacketSmall packet;
-            Enemy *spawned;
+            PhotoEnemyView *spawned;
             {
                 Float3 position;
                 memcpy(&packet, instruction->operands, sizeof(packet));
@@ -288,7 +287,7 @@ enter_subroutine:
                     : packet.position.z;
                 position += TH095_TARGET_ENEMY_POSITION(enemy);
                 spawned =
-                TH095_ECL_ENEMY_SPAWN(
+                g_PhotoEnemyManager->SpawnWithContext(
                     packet.eclSubroutineId, &position, 10, 0, 0,
                     enemy->activeEclContext->intVariables);
             }
@@ -297,7 +296,7 @@ enter_subroutine:
         break;
 
     case 85:
-        TH095_ECL_ENEMY_RESET();
+        PhotoEnemyManagerView::ResetNonPhotoTargets(g_PhotoEnemyManager);
         break;
 
     case 124:

@@ -9,9 +9,7 @@
 #include "PhotoGameTask.hpp"
 #include "PhotoStage.hpp"
 #include "InputRuntime.hpp"
-#ifndef DIFFBUILD
 #include "PhotoEnemyManager.hpp"
-#endif
 #include "PhotoEffectRuntime.hpp"
 #include "SoundPlayer.hpp"
 
@@ -32,16 +30,6 @@ static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
     *vm = clearedVm;
 }
 
-#ifdef DIFFBUILD
-struct PhotoResetTargetView
-{
-    void ResetForPhotoTransition();
-};
-#endif
-
-#ifdef DIFFBUILD
-extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
-#endif
 #define g_PhotoInput (RuntimeHistoryCurrent())
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -661,13 +649,8 @@ i32 PhotoGameUpdateView::Update()
     case PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION:
         if (this->completionTimer == 4)
         {
-#ifdef DIFFBUILD
-            g_PhotoRuntimeResetTarget->ResetForPhotoTransition();
-#else
             PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
-                TH095_RUNTIME_GLOBAL_PTR(
-                    PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner));
-#endif
+                g_PhotoEnemyManager);
         }
         else if (this->completionTimer == 15)
         {

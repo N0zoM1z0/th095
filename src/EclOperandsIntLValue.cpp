@@ -1,6 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyEclAccess.hpp"
+#include "PhotoEnemyManagerLayout.hpp"
 #include "ecl/EclOperands.hpp"
 
 namespace th095
@@ -12,12 +13,6 @@ struct EclSharedIntLValueView
     i32 intVariables[4];
 };
 
-extern PhotoEnemyEclOperandRuntimeOwner *g_EclIntLValueRuntime;
-#ifndef DIFFBUILD
-#define g_EclIntLValueRuntime \
-    TH095_RUNTIME_GLOBAL_PTR( \
-        PhotoEnemyEclOperandRuntimeOwner, g_RuntimeEnemyManagerOwner)
-#endif
 
 namespace EclOperands
 {
@@ -56,10 +51,10 @@ i32 *__fastcall ResolveIntLValue(
     case 0x275b: return &TH095_ECL_ITEM_DROP_TYPE(enemy);
     case 0x275c: return &TH095_ECL_ENEMY_SCORE(enemy);
 
-    case 0x273c: return &TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclIntLValueRuntime, EclSharedIntLValueView)->intVariables[0];
-    case 0x273d: return &TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclIntLValueRuntime, EclSharedIntLValueView)->intVariables[1];
-    case 0x273e: return &TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclIntLValueRuntime, EclSharedIntLValueView)->intVariables[2];
-    case 0x273f: return &TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclIntLValueRuntime, EclSharedIntLValueView)->intVariables[3];
+    case 0x273c: return &reinterpret_cast<EclSharedIntLValueView *>(g_PhotoEnemyManager->eclManager)->intVariables[0];
+    case 0x273d: return &reinterpret_cast<EclSharedIntLValueView *>(g_PhotoEnemyManager->eclManager)->intVariables[1];
+    case 0x273e: return &reinterpret_cast<EclSharedIntLValueView *>(g_PhotoEnemyManager->eclManager)->intVariables[2];
+    case 0x273f: return &reinterpret_cast<EclSharedIntLValueView *>(g_PhotoEnemyManager->eclManager)->intVariables[3];
     default: return operand;
     }
 }

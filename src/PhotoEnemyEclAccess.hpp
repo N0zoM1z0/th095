@@ -109,7 +109,6 @@ struct PhotoEnemyTrailConfig
 // owner; its offsetof assertions pin these constants back to that declaration.
 // This opaque spelling keeps the legacy Enemy ABI header out of the canonical
 // manager header while giving exact and normal builds the same source path.
-struct PhotoEnemyEclOperandRuntimeOwner;
 
 enum PhotoEnemyEclOperandRuntimeOffset
 {
@@ -309,14 +308,3 @@ enum PhotoEnemyEclOperandRuntimeOffset
 #define TH095_ECL_PHOTO_TARGET_SLOT(owner) \
     TH095_PHOTO_ENEMY_U8( \
         (owner), th095::PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET)
-#define TH095_PHOTO_ENEMY_MANAGER_POINTER(owner, offset, type) \
-    TH095_PHOTO_ENEMY_POINTER((owner), (offset), type)
-#define TH095_ECL_RUNTIME_SHARED_OPERANDS(owner, type) \
-    TH095_PHOTO_ENEMY_MANAGER_POINTER( \
-        (owner), th095::PHOTO_ENEMY_ECL_MANAGER_OFFSET, type)
-#define TH095_ECL_RUNTIME_PHOTO_TARGET(owner, index, type) \
-    TH095_PHOTO_ENEMY_MANAGER_POINTER( \
-        (owner), \
-        th095::PHOTO_ENEMY_ECL_PHOTO_TARGETS_OFFSET + \
-            sizeof(void *) * (index), \
-        type)

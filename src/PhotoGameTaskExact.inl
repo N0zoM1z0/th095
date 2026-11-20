@@ -6,6 +6,7 @@
 #include "PhotoItemManager.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "PhotoBulletManager.hpp"
+#include "PhotoEnemyManager.hpp"
 #include "PhotoStage.hpp"
 #include "SoundPlayer.hpp"
 #include "ScoreData.hpp"
@@ -35,7 +36,6 @@ struct PhotoEnemyManagerTaskView
 {
     static PhotoEnemyManagerTaskView *Create();
     void Destroy();
-    void RestartPhotoTargetEcls();
 };
 
 struct ResultScreen
@@ -161,7 +161,6 @@ typedef char PhotoGameTaskChainsAt118[
 extern char g_ReplayPath[];
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoHelpMenuTaskView *g_PhotoHelpMenu;
-extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 extern PhotoAsciiManagerTaskView g_PhotoAsciiManager;
 extern u32 g_PhotoAsciiTextColor;
 extern i32 g_ReplayUsesArchive;
@@ -279,7 +278,7 @@ i32 PhotoGameTaskView::Update()
 
         if (this->completion.timer <= 0)
         {
-            g_PhotoEnemyManagerTask->RestartPhotoTargetEcls();
+            PhotoEnemyManagerView::RestartPhotoTargetEcls(g_PhotoEnemyManager);
         }
     }
 

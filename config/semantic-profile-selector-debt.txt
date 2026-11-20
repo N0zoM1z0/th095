@@ -26,11 +26,9 @@
 2	src/AnmVmLifecycle.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AsciiManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/Background.cpp	#elif defined(DIFFBUILD)
-1	src/Background.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 6	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-2	src/Background.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-9	src/Background.cpp	#ifdef TH095_MATCH_EXACT
-1	src/Background.cpp	#ifndef DIFFBUILD
+1	src/Background.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+8	src/Background.cpp	#ifdef TH095_MATCH_EXACT
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 23	src/BulletManager.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -49,47 +47,39 @@
 1	src/ecl/EclManager.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/ecl/EclOperands.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/ecl/EclRun.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/ecl/EclRun.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/ecl/EclRun.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-8	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
+7	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
 2	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
-2	src/EclDependencies.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/EclDependencies.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+1	src/EclDependencies.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/EclDependencies.cpp	#ifdef DIFFBUILD
-1	src/EclDependencies.cpp	#ifndef DIFFBUILD
 2	src/EclExtended.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 9	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-2	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
+1	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-11	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-9	src/EclExtended.cpp	#ifdef DIFFBUILD
+10	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+8	src/EclExtended.cpp	#ifdef DIFFBUILD
 3	src/EclExtended.cpp	#ifdef TH095_MATCH_EXACT
-4	src/EclExtended.cpp	#ifndef DIFFBUILD
+3	src/EclExtended.cpp	#ifndef DIFFBUILD
 1	src/EclExtended.cpp	#ifndef TH095_MATCH_EXACT
 1	src/EclHelpers.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/EclOperandsFloat.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/EclOperandsFloat.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/EclOperandsFloat.cpp	#ifdef DIFFBUILD
-2	src/EclOperandsFloat.cpp	#ifndef DIFFBUILD
-1	src/EclOperandsFloatLValue.cpp	#ifndef DIFFBUILD
+1	src/EclOperandsFloat.cpp	#ifndef DIFFBUILD
 3	src/EclOperandsInt.cpp	#ifdef DIFFBUILD
-2	src/EclOperandsInt.cpp	#ifndef DIFFBUILD
-1	src/EclOperandsIntLValue.cpp	#ifndef DIFFBUILD
+1	src/EclOperandsInt.cpp	#ifndef DIFFBUILD
 3	src/EnemyManagerTask.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/EnemyManagerTask.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/EnemyManagerTask.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/EnemyManagerTask.cpp	#ifdef TH095_MATCH_EXACT
 1	src/EnemyManagerTask.cpp	#ifndef DIFFBUILD
 1	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT)
-2	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+1	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT)
-3	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+1	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/EnemyManagerUpdate.cpp	#ifdef DIFFBUILD
 1	src/EnemyManagerUpdate.cpp	#ifdef TH095_MATCH_EXACT
-2	src/EnemyManagerUpdate.cpp	#ifndef DIFFBUILD
-1	src/EnemyShotAnm.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/EnemyShotAnm.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/EnemyShotAnm.cpp	#ifdef DIFFBUILD
+1	src/EnemyManagerUpdate.cpp	#ifndef DIFFBUILD
 1	src/FileSystem.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FileSystem.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FileWrite.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -102,7 +92,6 @@
 1	src/GameErrorContext.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameplayGlobals.hpp	#if defined(DIFFBUILD)
 1	src/GameplayGlobals.hpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/GameplayGlobals.hpp	#ifndef DIFFBUILD
 2	src/Global.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/Global.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Global.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -137,7 +126,7 @@
 1	src/PhotoCamera.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 3	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
-3	src/PhotoCamera.cpp	#ifndef DIFFBUILD
+2	src/PhotoCamera.cpp	#ifndef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD
 1	src/PhotoEffect.cpp	#ifdef DIFFBUILD
@@ -145,13 +134,11 @@
 1	src/PhotoEffect.cpp	#ifndef DIFFBUILD
 1	src/PhotoFront.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoGame.cpp	#if defined(DIFFBUILD)
-3	src/PhotoGame.cpp	#ifdef DIFFBUILD
 1	src/PhotoGame.cpp	#ifdef TH095_MATCH_EXACT
-1	src/PhotoGame.cpp	#ifndef DIFFBUILD
 2	src/PhotoGameTask.cpp	#if defined(TH095_MATCH_EXACT)
-3	src/PhotoGameTask.cpp	#ifdef DIFFBUILD
+2	src/PhotoGameTask.cpp	#ifdef DIFFBUILD
 1	src/PhotoGameTask.cpp	#ifdef TH095_MATCH_EXACT
-4	src/PhotoGameTask.cpp	#ifndef DIFFBUILD
+3	src/PhotoGameTask.cpp	#ifndef DIFFBUILD
 1	src/PhotoItemManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoRuntime.cpp	#ifndef DIFFBUILD
 2	src/PhotoStage.cpp	#ifdef DIFFBUILD

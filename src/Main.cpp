@@ -85,7 +85,6 @@ char g_WindowTitle[] =
 // The retail image has one pointer slot for each gameplay subsystem.  Exact
 // units keep their target-facing per-TU symbol names; the runnable build routes
 // those typed views through these single production owners.
-void *g_RuntimeEnemyManagerOwner = 0;
 PhotoStageStateView *g_PhotoStageState = NULL;
 PhotoGameUpdateView *g_RuntimePlayerOwner = NULL;
 #endif

@@ -1,40 +1,18 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "ecl/EclManager.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "PhotoEnemyManager.hpp"
-#else
-#include "EnemyShotAnmEmission.hpp"
-#endif
+#include "PhotoEnemyManagerLayout.hpp"
 
 namespace th095
 {
 namespace EclRunHigh
 {
-extern u8 *g_Th095Runtime;
 void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruction);
 }
 
-#ifdef DIFFBUILD
-#define TH095_ENEMY_SHOT_RUNTIME EclRunHigh::g_Th095Runtime
-#else
-#define TH095_ENEMY_SHOT_RUNTIME \
-    TH095_RUNTIME_GLOBAL_PTR(u8, g_RuntimeEnemyManagerOwner)
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_ENEMY_PRIMARY_ANM \
-    (*reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4df8))
+#define TH095_ENEMY_PRIMARY_ANM (g_PhotoEnemyManager->enemyAnm)
 #define TH095_ENEMY_UNKNOWN_4DFC_ANM \
-    (*reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4dfc))
-#else
-#define TH095_ENEMY_MANAGER_RUNTIME \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
-#define TH095_ENEMY_PRIMARY_ANM (TH095_ENEMY_MANAGER_RUNTIME->enemyAnm)
-#define TH095_ENEMY_UNKNOWN_4DFC_ANM \
-    (*reinterpret_cast<AnmLoaded **>( \
-        &TH095_ENEMY_MANAGER_RUNTIME->unknown4dfc[0]))
-#endif
+    (*reinterpret_cast<AnmLoaded **>(&g_PhotoEnemyManager->unknown4dfc[0]))
 
 static __forceinline i32 &TargetEnemyLife(Enemy *enemy)
 {
