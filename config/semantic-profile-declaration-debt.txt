@@ -86,7 +86,6 @@
 1	src/ReplayManager.cpp	struct	FreeSlots
 1	src/ReplayManager.cpp	struct	ReplayAsciiManagerView
 1	src/ReplayManager.cpp	struct	ReplayFrameScratch
-1	src/ReplayManager.cpp	struct	ReplayGlobalStateView
 1	src/ReplayManager.cpp	struct	ReplayInitializeScratch
 1	src/ReplayManager.cpp	struct	ReplayInputFrameView
 1	src/ReplayManager.cpp	struct	ReplayLoadLocals

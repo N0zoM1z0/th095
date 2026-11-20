@@ -1,4 +1,5 @@
 #include "ReplayManager.hpp"
+#include "PhotoGameTask.hpp"
 #include "SceneData.hpp"
 
 #ifdef TH095_MATCH_EXACT
@@ -39,18 +40,6 @@ typedef char ReplayAsciiManagerColorAt806c[
     (offsetof(ReplayAsciiManagerView, color) == 0x806c) ? 1 : -1];
 
 extern ReplayAsciiManagerView g_ReplayAsciiManager;
-
-struct ReplayGlobalStateView
-{
-    u8 unknown000[0x34];
-    u8 replayStateSnapshot[0xc8];
-    u32 unknownFlag0 : 1;
-    u32 unknownFlag1 : 1;
-    u32 suppressReplayCallbacks : 1;
-    u32 unknownFlags : 29;
-};
-
-extern ReplayGlobalStateView *g_ReplayGlobalState;
 
 extern i32 g_ReplayUsesArchive;
 extern f64 g_ReplayLagNumerator;
@@ -167,7 +156,7 @@ ReplayManager::ReplayManager()
         this->activeInputData->scene =
             static_cast<i8>(g_SelectedScene->scene);
         memcpy(this->activeInputData->globalStateSnapshot,
-               g_ReplayGlobalState->replayStateSnapshot,
+               &g_RuntimeGlobalStateOwner->runtimeConfig,
                sizeof(this->activeInputData->globalStateSnapshot));
         this->activeInputData->rngSeed = g_ReplayRngSeed;
     }
@@ -188,7 +177,7 @@ ReplayManager::ReplayManager()
         g_SelectedScene =
             g_SceneGroups[this->activeInputData->level] +
             this->activeInputData->scene;
-        memcpy(g_ReplayGlobalState->replayStateSnapshot,
+        memcpy(&g_RuntimeGlobalStateOwner->runtimeConfig,
                this->activeInputData->globalStateSnapshot,
                sizeof(this->activeInputData->globalStateSnapshot));
     }
@@ -541,24 +530,6 @@ ChainCallbackResult ReplayManager::DrawFps()
         g_ReplayAsciiManager.SetColor(0xffffffff);
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;
-}
-
-ChainCallbackResult ReplayManager::OnUpdate(ReplayManager *replayManager)
-{
-    if (g_ReplayGlobalState->suppressReplayCallbacks)
-    {
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
-    }
-    return replayManager->ProcessFrame();
-}
-
-ChainCallbackResult ReplayManager::OnDraw(ReplayManager *replayManager)
-{
-    if (g_ReplayGlobalState->suppressReplayCallbacks)
-    {
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
-    }
-    return replayManager->DrawFps();
 }
 
 } // namespace th095

@@ -65,6 +65,8 @@ task's mode.
 SEM-406 gives the active slot a typed declaration and moves its storage to
 PhotoGameTask. The factory, loader, destructor, FPS sampler and front-end
 handoff bind to it directly.
+SEM-407 binds animation, ASCII and replay callbacks to the active task and
+names the configuration member copied during replay initialization.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

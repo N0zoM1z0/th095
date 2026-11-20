@@ -3,6 +3,7 @@
 #include "AnmVmId.hpp"
 #include "AnmVmLifecycle.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #include "SupervisorViewportSlot.hpp"
 namespace th095
 {
@@ -43,17 +44,9 @@ struct AnmVmDrawNodeView
         struct
         {
             u32 unknownFlags00 : 26;
-#if defined(TH095_MATCH_EXACT)
-            u32 flag26 : 1;
-#else
             u32 pendingDeletion : 1;
-#endif
             u32 flag27 : 1;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            u32 flag28 : 1;
-#else
             u32 bypassPhotoGameSuppression : 1;
-#endif
             u32 unknownFlags29 : 3;
         };
     };
@@ -67,40 +60,6 @@ struct AnmManagerDrawLayerView
 
     i32 DrawLayer(i32 layer);
 };
-
-struct PhotoGameTaskDrawGateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            u32 flag0 : 1;
-            u32 flag1 : 1;
-            u32 drawVms : 1;
-            u32 unknownFlags3 : 7;
-            u32 flag10 : 1;
-#else
-            u32 captureActive : 1;
-            u32 capturedPhotoActive : 1;
-            u32 gameplayLoadActive : 1;
-            u32 unknownFlags3_9 : 7;
-            u32 photoTransitionActive : 1;
-#endif
-            u32 unknownFlags11 : 21;
-        };
-    };
-
-};
-
-extern PhotoGameTaskDrawGateView *g_PhotoGameTask;
-
-#ifndef DIFFBUILD
-#define g_PhotoGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskDrawGateView, g_RuntimeGlobalStateOwner)
-#endif
 
 static __forceinline i32 AnmUpdateEitherFlag(i32 first, i32 second)
 {
@@ -120,17 +79,9 @@ struct AnmVmUpdateView
         struct
         {
             u32 unknownFlags00 : 26;
-#if defined(TH095_MATCH_EXACT)
-            u32 flag26 : 1;
-#else
             u32 pendingDeletion : 1;
-#endif
             u32 flag27 : 1;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            u32 flag28 : 1;
-#else
             u32 bypassPhotoGameSuppression : 1;
-#endif
             u32 unknownFlags29 : 3;
         };
     };
@@ -261,28 +212,16 @@ i32 AnmManagerUpdateView::UpdateVms()
     while (vm != NULL)
     {
         next = vm->next;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (g_PhotoGameTask != NULL && !vm->flag28 &&
-            (AnmUpdateEitherFlag((i32)g_PhotoGameTask->flag0,
-                                 g_PhotoGameTask->drawVms) != 0 ||
-             g_PhotoGameTask->flag1 != 0 ||
-             g_PhotoGameTask->flag10 != 0))
-#else
-        if (g_PhotoGameTask != NULL && !vm->bypassPhotoGameSuppression &&
-            (AnmUpdateEitherFlag((i32)g_PhotoGameTask->captureActive,
-                                 g_PhotoGameTask->gameplayLoadActive) != 0 ||
-             g_PhotoGameTask->capturedPhotoActive != 0 ||
-             g_PhotoGameTask->photoTransitionActive != 0))
-#endif
+        if (g_RuntimeGlobalStateOwner != NULL && !vm->bypassPhotoGameSuppression &&
+            (AnmUpdateEitherFlag((i32)g_RuntimeGlobalStateOwner->captureActive,
+                                 g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0 ||
+             g_RuntimeGlobalStateOwner->capturedPhotoActive != 0 ||
+             g_RuntimeGlobalStateOwner->photoTransitionActive != 0))
         {
             goto addToDrawLayer;
         }
         {
-#if defined(TH095_MATCH_EXACT)
-            if (vm->flag26)
-#else
             if (vm->pendingDeletion)
-#endif
             {
                 reinterpret_cast<AnmManagerVmLifecycleView *>(this)->RemoveVm(
                     reinterpret_cast<AnmVmDeleteView *>(vm));
@@ -315,21 +254,12 @@ i32 AnmManagerDrawLayerView::DrawLayer(i32 layer)
     vm = this->drawLayerHeads[layer].nextInDrawLayer;
     while (vm != NULL)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (g_PhotoGameTask != NULL && vm->flag28 == 0 &&
-            g_PhotoGameTask->drawVms != 0)
-#else
-        if (g_PhotoGameTask != NULL &&
+        if (g_RuntimeGlobalStateOwner != NULL &&
             vm->bypassPhotoGameSuppression == 0 &&
-            g_PhotoGameTask->gameplayLoadActive != 0)
-#endif
+            g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
         {
         }
-#if defined(TH095_MATCH_EXACT)
-        else if (!vm->flag26)
-#else
         else if (!vm->pendingDeletion)
-#endif
         {
             reinterpret_cast<AnmManager *>(this)->Draw(
                 reinterpret_cast<AnmVm *>(vm));

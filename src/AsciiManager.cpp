@@ -1,5 +1,6 @@
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #include "PhotoStage.hpp"
 #include "SupervisorViewportSlot.hpp"
 #include <stdarg.h>
@@ -33,26 +34,6 @@ struct AsciiAnmLoadedView : AnmLoaded
     }
 };
 
-struct AsciiGlobalStateView
-{
-    u8 unknown000[0xfc];
-    u32 active : 1;
-    u32 unknownFlag1 : 1;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u32 suppressStringReset : 1;
-#else
-    u32 gameplayLoadActive : 1;
-#endif
-    u32 unknownFlags3 : 29;
-};
-
-extern AsciiGlobalStateView *g_AsciiGlobalState;
-
-#ifndef DIFFBUILD
-#define g_AsciiGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(AsciiGlobalStateView, g_RuntimeGlobalStateOwner)
-#endif
-
 DIFFABLE_STATIC(AsciiManager, g_AsciiManager);
 DIFFABLE_STATIC(ChainElem, g_AsciiManagerCalcChain);
 DIFFABLE_STATIC(ChainElem, g_AsciiManagerDrawChainLowPrio);
@@ -66,15 +47,10 @@ static __forceinline i32 AsciiEitherFlag(i32 first, i32 second)
 // FUNCTION: TH095 0x00401000.
 i32 AsciiManager::OnUpdate(AsciiManager *ascii)
 {
-    if (g_AsciiGlobalState != NULL &&
-        AsciiEitherFlag(g_AsciiGlobalState->active,
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-                        g_AsciiGlobalState->suppressStringReset) != 0 &&
-        g_AsciiGlobalState->suppressStringReset == 0)
-#else
-                        g_AsciiGlobalState->gameplayLoadActive) != 0 &&
-        g_AsciiGlobalState->gameplayLoadActive == 0)
-#endif
+    if (g_RuntimeGlobalStateOwner != NULL &&
+        AsciiEitherFlag(g_RuntimeGlobalStateOwner->captureActive,
+                        g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0 &&
+        g_RuntimeGlobalStateOwner->gameplayLoadActive == 0)
     {
         return 1;
     }

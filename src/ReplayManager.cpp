@@ -2,6 +2,7 @@
 #include "ReplayManagerExact.inl"
 #else
 #include "ReplayManager.hpp"
+#include "PhotoGameTask.hpp"
 #include "AsciiManager.hpp"
 #ifndef DIFFBUILD
 #include "FileSystem.hpp"
@@ -63,23 +64,6 @@ struct ReplayAsciiManagerView
 
 typedef char ReplayAsciiManagerColorAt806c[
     (offsetof(ReplayAsciiManagerView, color) == 0x806c) ? 1 : -1];
-
-struct ReplayGlobalStateView
-{
-    u8 unknown000[0x34];
-    u8 replayStateSnapshot[0xc8];
-    u32 unknownFlag0 : 1;
-    u32 unknownFlag1 : 1;
-    u32 gameplayLoadActive : 1;
-    u32 unknownFlags : 29;
-};
-
-extern ReplayGlobalStateView *g_ReplayGlobalState;
-
-#ifndef DIFFBUILD
-#define g_ReplayGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(ReplayGlobalStateView, g_RuntimeGlobalStateOwner)
-#endif
 
 #ifdef DIFFBUILD
 extern i32 g_ReplayUsesArchive;
@@ -207,7 +191,7 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
         this->activeInputData->scene =
             g_SelectedScene->scene;
         memcpy(this->activeInputData->globalStateSnapshot,
-               g_ReplayGlobalState->replayStateSnapshot,
+               &g_RuntimeGlobalStateOwner->runtimeConfig,
                sizeof(this->activeInputData->globalStateSnapshot));
         this->activeInputData->rngSeed = g_Rng.seed;
     }
@@ -228,7 +212,7 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
         g_SelectedScene =
             g_SceneGroups[this->activeInputData->level] +
             this->activeInputData->scene;
-        memcpy(g_ReplayGlobalState->replayStateSnapshot,
+        memcpy(&g_RuntimeGlobalStateOwner->runtimeConfig,
                this->activeInputData->globalStateSnapshot,
                sizeof(this->activeInputData->globalStateSnapshot));
     }
@@ -585,9 +569,16 @@ ChainCallbackResult ReplayManager::DrawFps()
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+} // namespace th095
+
+#endif // TH095_MATCH_EXACT
+
+namespace th095
+{
+
 ChainCallbackResult ReplayManager::OnUpdate(ReplayManager *replayManager)
 {
-    if (g_ReplayGlobalState->gameplayLoadActive)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
@@ -596,7 +587,7 @@ ChainCallbackResult ReplayManager::OnUpdate(ReplayManager *replayManager)
 
 ChainCallbackResult ReplayManager::OnDraw(ReplayManager *replayManager)
 {
-    if (g_ReplayGlobalState->gameplayLoadActive)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
@@ -604,5 +595,3 @@ ChainCallbackResult ReplayManager::OnDraw(ReplayManager *replayManager)
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

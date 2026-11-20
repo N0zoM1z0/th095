@@ -18338,3 +18338,25 @@ teardowns, 243 FPS samples, 384 asynchronous load cases and 540 photo
 task updates. The fixtures run the original and linked bodies with
 controlled subsystem, timing and thread responses. See
 `.analysis/pi/active-photo-task/` for the lifetime and relocation recipes.
+
+### SEM-407 — use the active task in animation, text and replay
+
+ANM update skips script execution for capture, captured-photo display,
+loading and photo transitions unless the VM overrides suppression. It
+still puts suppressed VMs on the draw lists. ANM drawing checks loading
+and pending deletion. ASCII preserves its queues only during capture
+with loading clear. Replay's frame and FPS callbacks skip their work
+during loading. Both profiles now read the active task directly.
+
+Replay initialization copies the 0xC8-byte `PhotoGameTaskView::runtimeConfig`
+to the record on recording and restores it on playback. Load-only mode
+leaves it untouched. The source now names the configuration member and
+keeps the recorded bytes and copy bounds.
+
+All 46 affected exact comparisons pass. The fifteen changed operands
+retain their target destinations. All 229 active-slot references continue
+to follow the symbol in both normal links. The linked fixtures agree with
+retail in 52 ANM lifecycle cases, 26 ASCII cases, 26 replay callback calls
+and ten configuration snapshots. They run the real dispatch and snapshot
+bodies with controlled script, rendering, and file-loader responses. See
+`.analysis/pi/active-task-consumers/` for the recipes.
