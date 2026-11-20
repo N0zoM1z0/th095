@@ -4293,7 +4293,7 @@ def check_ecl_photo_player_owner() -> None:
     target = (SRC / "ecl" / "EclRunTargetHigh.inl").read_text(encoding="utf-8")
     if "AssignPhotoCameraLimit(" not in target:
         fail("RunEcl opcode 141 lost its canonical camera-limit assignment")
-    if "TH095_ECL_PHOTO_PLAYER_OWNER)->camera" not in target:
+    if not re.search(r"\bTH095_ECL_PHOTO_PLAYER_OWNER\s*\)?\s*->\s*camera\b", target):
         fail("RunEcl opcode 141 must derive the camera subobject from PlayerInf")
     for token in retired_tokens:
         if token in target:
