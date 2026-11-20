@@ -7,6 +7,7 @@
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
 #include "Main.hpp"
+#include "PhotoStage.hpp"
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
 #include "SoundPlayer.hpp"
@@ -218,12 +219,12 @@ const char *g_ResultAlphabet =
 extern i32 g_ResultSceneLimits[];
 extern const char *g_ResultAlphabet;
 #endif
-extern ResultPhotoDataView *g_ResultPhotoData;
+extern PhotoStageStateView *g_PhotoStageState;
 extern ResultPhotoControllerView *g_ResultPhotoController;
 
 #ifndef DIFFBUILD
-#define g_ResultPhotoData \
-    TH095_RUNTIME_GLOBAL_PTR(ResultPhotoDataView, g_RuntimeStageStateOwner)
+#define g_PhotoStageState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 #define g_ResultPhotoController \
     TH095_RUNTIME_GLOBAL_PTR(ResultPhotoControllerView, g_RuntimePlayerOwner)
 #endif
@@ -513,7 +514,7 @@ i32 ZunTimer::Tick()
     return this->current;
 }
 
-i32 ResultPhotoDataView::FindBestShot()
+i32 PhotoStageStateView::FindBestShot()
 {
     i32 bestShot;
 
@@ -644,17 +645,17 @@ static __forceinline void InitializeReplayExtraTailPhase(
     resultScreen->replayCursor.count = 2;
     // Target 0x00428B1C/0x00428B36 read the same Supervisor::textAnm owner
     // used by the normal replay-label path below.
-    g_Supervisor.textAnm->InitializeVm(&resultScreen->vms[21], 9);
-    g_Supervisor.textAnm->InitializeVm(&resultScreen->vms[22], 10);
-    resultScreen->vms[21].glyphWidth = 0x12;
-    resultScreen->vms[21].glyphHeight = 0x12;
-    resultScreen->vms[22].glyphWidth = 0x12;
-    resultScreen->vms[22].glyphHeight = 0x12;
+    g_Supervisor.textAnm->InitializeVm(&resultScreen->auxiliaryVms[0], 9);
+    g_Supervisor.textAnm->InitializeVm(&resultScreen->auxiliaryVms[1], 10);
+    resultScreen->auxiliaryVms[0].glyphWidth = 0x12;
+    resultScreen->auxiliaryVms[0].glyphHeight = 0x12;
+    resultScreen->auxiliaryVms[1].glyphWidth = 0x12;
+    resultScreen->auxiliaryVms[1].glyphHeight = 0x12;
     reinterpret_cast<AnmTextManagerView *>(g_AnmManager)->DrawTextLeft(
-        reinterpret_cast<AnmTextVmView *>(&resultScreen->vms[21]),
+        reinterpret_cast<AnmTextVmView *>(&resultScreen->auxiliaryVms[0]),
         0xffe0c0, 0x300000, " ");
     reinterpret_cast<AnmTextManagerView *>(g_AnmManager)->DrawTextLeft(
-        reinterpret_cast<AnmTextVmView *>(&resultScreen->vms[22]),
+        reinterpret_cast<AnmTextVmView *>(&resultScreen->auxiliaryVms[1]),
         0xffe0c0, 0x300000, " ");
 }
 
@@ -690,21 +691,21 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
         // Exact relocations at 0x00428DC0/0x00428DD9 read target
         // 0x004C4AAC, Supervisor::textAnm.  These two VMs render writable
         // replay labels and are not owned by the result-screen ANM.
-        g_Supervisor.textAnm->InitializeVm(&resultScreen->vms[21], 9);
-        g_Supervisor.textAnm->InitializeVm(&resultScreen->vms[22], 10);
-        resultScreen->vms[21].glyphWidth = 0x12;
-        resultScreen->vms[21].glyphHeight = 0x12;
-        resultScreen->vms[22].glyphWidth = 0x12;
-        resultScreen->vms[22].glyphHeight = 0x12;
+        g_Supervisor.textAnm->InitializeVm(&resultScreen->auxiliaryVms[0], 9);
+        g_Supervisor.textAnm->InitializeVm(&resultScreen->auxiliaryVms[1], 10);
+        resultScreen->auxiliaryVms[0].glyphWidth = 0x12;
+        resultScreen->auxiliaryVms[0].glyphHeight = 0x12;
+        resultScreen->auxiliaryVms[1].glyphWidth = 0x12;
+        resultScreen->auxiliaryVms[1].glyphHeight = 0x12;
 
         reinterpret_cast<AnmTextManagerView *>(g_AnmManager)->DrawTextLeft(
-            reinterpret_cast<AnmTextVmView *>(&resultScreen->vms[21]),
+            reinterpret_cast<AnmTextVmView *>(&resultScreen->auxiliaryVms[0]),
             0xffe0c0, 0x300000,
             resultScreen->sceneLabels[resultScreen->selectedGroup]
                 [g_ResultSaveData->profile.nextSceneByGroup[
                     resultScreen->selectedGroup]].firstLine);
         reinterpret_cast<AnmTextManagerView *>(g_AnmManager)->DrawTextLeft(
-            reinterpret_cast<AnmTextVmView *>(&resultScreen->vms[22]),
+            reinterpret_cast<AnmTextVmView *>(&resultScreen->auxiliaryVms[1]),
             0xffe0c0, 0x300000,
             resultScreen->sceneLabels[resultScreen->selectedGroup]
                 [g_ResultSaveData->profile.nextSceneByGroup[
@@ -824,17 +825,17 @@ static __forceinline void PrepareBestShotCursorSetPhase(
 
 void ResultScreen::PrepareBestShot()
 {
-    i32 bestShot = g_ResultPhotoData->FindBestShot();
+    i32 bestShot = g_PhotoStageState->FindBestShot();
     if (bestShot >= 0)
     {
-        g_ResultPhotoData->anm->InitializeVm(
-            &this->vms[23], bestShot * 2 + 1);
+        g_PhotoStageState->anm->InitializeVm(
+            &this->photoVm, bestShot * 2 + 1);
 
-        ResultScreenAnmVm *vm = &this->vms[23];
+        ResultScreenAnmVm *vm = &this->photoVm;
         vm->spriteSize.x = vm->loadedSprite->uvEndX * 256.0f;
         vm->spriteSize.y = vm->loadedSprite->uvEndY * 256.0f;
 
-        g_ResultPhotoData->photoVms[bestShot].SetInterrupt(2);
+        g_PhotoStageState->capturedPhotoVms[bestShot].SetInterrupt(2);
         PrepareBestShotCursorSetPhase(&this->photoCursor, bestShot);
 
         if (bestShot < g_ResultPhotoController->GetPhotoCount())
@@ -848,11 +849,11 @@ void ResultScreen::PrepareBestShot()
             {
 #ifdef DIFFBUILD
                 reinterpret_cast<ResultAnmVmHandleView *>(
-                    g_ResultPhotoData->photoVms[i].GetVm())
+                    g_PhotoStageState->capturedPhotoVms[i].GetVm())
                     ->flagsWord |= 0x10000000;
 #else
                 reinterpret_cast<ResultAnmVmHandleView *>(
-                    g_ResultPhotoData->photoVms[i].GetVm())
+                    g_PhotoStageState->capturedPhotoVms[i].GetVm())
                     ->bypassPhotoGameSuppression = 1;
 #endif
             }
@@ -864,15 +865,15 @@ static __forceinline void ResultPhotoInterruptPreviousPhase(
     ResultScreen *resultScreen)
 {
     u8 compilerStorage[0x24];
-    g_ResultPhotoData
-        ->photoVms[resultScreen->photoCursor.GetPrevious()]
+    g_PhotoStageState
+        ->capturedPhotoVms[resultScreen->photoCursor.GetPrevious()]
         .SetInterrupt(3);
 }
 
 static __forceinline void ResultPhotoInterruptCurrentPhase(i32 photoIndex)
 {
     u8 compilerStorage[8];
-    g_ResultPhotoData->photoVms[photoIndex].SetInterrupt(2);
+    g_PhotoStageState->capturedPhotoVms[photoIndex].SetInterrupt(2);
 }
 
 void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
@@ -899,13 +900,13 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
         if (resultScreen->photoCursor.HasChanged())
         {
             i32 photoIndex = resultScreen->photoCursor.GetCurrent();
-            resultScreen->vms[24] = resultScreen->vms[23];
-            resultScreen->vms[24].SetInterrupt((direction <= 0) + 7);
-            g_ResultPhotoData->anm->InitializeVm(
-                &resultScreen->vms[23], photoIndex * 2 + 1);
-            resultScreen->vms[23].SetInterrupt((direction > 0) + 9);
+            resultScreen->photoTransitionVm = resultScreen->photoVm;
+            resultScreen->photoTransitionVm.SetInterrupt((direction <= 0) + 7);
+            g_PhotoStageState->anm->InitializeVm(
+                &resultScreen->photoVm, photoIndex * 2 + 1);
+            resultScreen->photoVm.SetInterrupt((direction > 0) + 9);
 
-            vm = &resultScreen->vms[23];
+            vm = &resultScreen->photoVm;
             vm->spriteSize.x = vm->loadedSprite->uvEndX * 256.0f;
             vm->spriteSize.y = vm->loadedSprite->uvEndY * 256.0f;
 
@@ -924,13 +925,13 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             g_ResultSaveData
                 ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
                 .metadata,
-            g_ResultPhotoData->slots[photoIndex].metadata,
+            &g_PhotoStageState->slots[photoIndex].scoreBreakdown,
             sizeof(g_ResultSaveData->bestShotImages[0].metadata));
 #else
         g_ResultSaveData
             ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
             .scoreBreakdown =
-            g_ResultPhotoData->slots[photoIndex].scoreBreakdown;
+            g_PhotoStageState->slots[photoIndex].scoreBreakdown;
 #endif
         g_ResultSaveData->UpdateBestShotRecord(
             g_ResultScreenGlobalState->bestShotIndex);
@@ -943,13 +944,13 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             .magic = 0x53545342;
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
-            .width = g_ResultPhotoData->slots[photoIndex].width;
+            .width = g_PhotoStageState->slots[photoIndex].width;
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
-            .height = g_ResultPhotoData->slots[photoIndex].height;
+            .height = g_PhotoStageState->slots[photoIndex].height;
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
-            .score = g_ResultPhotoData->slots[photoIndex].score;
+            .score = g_PhotoStageState->slots[photoIndex].score;
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .group = (u16)(g_SelectedScene->group + 1);
@@ -972,18 +973,18 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .componentCount =
-            (u8)((g_ResultPhotoData->anm->textures[photoIndex].format == 4) + 2);
+            (u8)((g_PhotoStageState->anm->textures[photoIndex].format == 4) + 2);
         g_ResultSaveData
             ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-            .bestShotSlowRate = g_ResultPhotoData->slots[photoIndex].slowRate;
+            .bestShotSlowRate = g_PhotoStageState->slots[photoIndex].slowRate;
         g_ResultSaveData
             ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-            .captureTime = g_ResultPhotoData->slots[photoIndex].captureTime;
+            .captureTime = g_PhotoStageState->slots[photoIndex].timestamp;
         strcpy(
             g_ResultSaveData
                 ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
                 .comment,
-            g_ResultPhotoData->slots[photoIndex].comment);
+            g_PhotoStageState->slots[photoIndex].comment);
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .photoIndex = photoIndex;
@@ -1092,7 +1093,7 @@ ChainCallbackResult ResultScreen::Update()
             this->replayCursor.Set(0);
             this->stateTimer.Reset();
             ResultUpdateInterruptFirstPhase(this);
-            this->vms[23].SetInterrupt(1);
+            this->photoVm.SetInterrupt(1);
             break;
         }
         else if (GetPressedButtons(0x1002) != 0)
@@ -1102,7 +1103,7 @@ ChainCallbackResult ResultScreen::Update()
             {
             case 0:
                 ResultUpdateInterruptFirstPhase(this);
-                this->vms[23].SetInterrupt(1);
+                this->photoVm.SetInterrupt(1);
                 g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                 break;
             case 1:
@@ -1159,7 +1160,7 @@ ChainCallbackResult ResultScreen::Update()
             this->replayCursor.Set(0);
             this->stateTimer.Reset();
             ResultUpdateInterruptFirstPhase(this);
-            this->vms[23].SetInterrupt(1);
+            this->photoVm.SetInterrupt(1);
             break;
         }
         else if (GetPressedButtons(0x1002) != 0)
@@ -1170,7 +1171,7 @@ ChainCallbackResult ResultScreen::Update()
             case 0:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                 ResultUpdateInterruptFirstPhase(this);
-                this->vms[23].SetInterrupt(1);
+                this->photoVm.SetInterrupt(1);
                 break;
             case 1:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
@@ -1281,7 +1282,7 @@ ChainCallbackResult ResultScreen::Update()
                 {
                     this->vms[i].SetInterrupt(1);
                 }
-                this->vms[23].SetInterrupt(1);
+                this->photoVm.SetInterrupt(1);
                 switch (this->replayCursor.GetCurrent())
                 {
                 default:
@@ -1579,7 +1580,7 @@ static __forceinline i32 ResultFindBestShotPhase()
     // best-shot frontend. 0/4/8/16-byte controls and moving the same 12
     // bytes to the total-score or ordinary-shot phases do not replay exact.
     u8 compilerStorage[12];
-    return g_ResultPhotoData->FindBestShot();
+    return g_PhotoStageState->FindBestShot();
 }
 
 static __forceinline void DrawResultBestShotLinePhase(
@@ -1591,7 +1592,7 @@ static __forceinline void DrawResultBestShotLinePhase(
     position->z = 0.0f;
     g_AsciiManager.AddFormatText(
         position, "  Best Shot   %.6d",
-        g_ResultPhotoData->slots[photoIndex].score);
+        g_PhotoStageState->slots[photoIndex].score);
 }
 
 static __forceinline void DrawResultShotLinePhase(
@@ -1603,7 +1604,7 @@ static __forceinline void DrawResultShotLinePhase(
     position->z = 0.0f;
     g_AsciiManager.AddFormatText(
         position, "       Shot   %.6d",
-        g_ResultPhotoData->slots[photoIndex].score);
+        g_PhotoStageState->slots[photoIndex].score);
 }
 
 // TH08's patched #pragma var_order is used only as a local-order oracle here.
@@ -1673,14 +1674,14 @@ ChainCallbackResult ResultScreen::Draw()
     {
         TH095_RESULT_VM_DRAW(&this->vms[i]);
     }
-    TH095_RESULT_VM_DRAW(&this->vms[23]);
-    TH095_RESULT_VM_DRAW(&this->vms[24]);
+    TH095_RESULT_VM_DRAW(&this->photoVm);
+    TH095_RESULT_VM_DRAW(&this->photoTransitionVm);
 
     switch (this->state)
     {
     case TH095_RESULT_STATE_REPLAY_RESULT_MENU:
-        TH095_RESULT_VM_DRAW(&this->vms[21]);
-        TH095_RESULT_VM_DRAW(&this->vms[22]);
+        TH095_RESULT_VM_DRAW(&this->auxiliaryVms[0]);
+        TH095_RESULT_VM_DRAW(&this->auxiliaryVms[1]);
         break;
 
     case TH095_RESULT_STATE_PHOTO_RESULT_MENU:

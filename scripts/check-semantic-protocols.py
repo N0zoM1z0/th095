@@ -694,7 +694,7 @@ def check_photo_bullet_owner() -> None:
         "?CountNearbyTargets@PhotoBulletManagerView@th095@@QAEHPAUPhotoBulletVector@2@M@Z",
         "?CapturePhotoTargets@PhotoBulletManagerView@th095@@QAEPAUPhotoBulletView@2@PAUPhotoBulletVector@2@0@Z",
         "?SpawnInto@PhotoAnmSpawnerView@th095@@QAEXPAUPhotoAnmVmId@2@HPAUFloat3@2@@Z",
-        "?CalculatePhotoScore@PhotoCameraState@th095@@QAEHPAUPhotoBulletView@2@PAHHH@Z",
+        "?CalculatePhotoScore@PhotoCameraState@th095@@QAEHPAUPhotoBulletView@2@PAUPhotoScoreBreakdownView@2@HH@Z",
     )
     for symbol in required_manifest:
         if symbol not in manifest:

@@ -2,6 +2,7 @@
 #define TH095_SCORE_DATA_HPP
 
 #include "Global.hpp"
+#include "PhotoScoreBreakdown.hpp"
 #include <time.h>
 
 namespace th095
@@ -66,18 +67,6 @@ enum PhotoScoreFlags
     PHOTO_SCORE_UNKNOWN_19 = 1 << 19,
 };
 #endif
-
-struct PhotoScoreBreakdownView
-{
-    i32 finalScore;
-    i32 baseScore;
-    i32 capturedBulletCount;
-    i32 nearbyTargetCount;
-    i32 nearbyTargetBonus;
-    f32 enemyDistanceMultiplier;
-    f32 bossRateMultiplier;
-    u32 scoringFlags;
-};
 
 struct ResultBestShotImageView
 {
@@ -287,15 +276,6 @@ typedef char ResultSaveSelectionAt1E[
 typedef char ResultBestShotImageMetadataAt18[
     (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
 #else
-typedef char PhotoScoreBreakdownSizeIs20[
-    (sizeof(PhotoScoreBreakdownView) == 0x20) ? 1 : -1];
-typedef char PhotoScoreBreakdownMultipliersAt14[
-    (offsetof(PhotoScoreBreakdownView, enemyDistanceMultiplier) == 0x14 &&
-     offsetof(PhotoScoreBreakdownView, bossRateMultiplier) == 0x18)
-        ? 1
-        : -1];
-typedef char PhotoScoreBreakdownFlagsAt1C[
-    (offsetof(PhotoScoreBreakdownView, scoringFlags) == 0x1c) ? 1 : -1];
 typedef char ResultBestShotImageScoreBreakdownAt18[
     (offsetof(ResultBestShotImageView, scoreBreakdown) == 0x18) ? 1 : -1];
 #endif

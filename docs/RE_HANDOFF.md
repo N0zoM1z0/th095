@@ -33,7 +33,9 @@ exact compilation. SEM-377 gives PhotoInf a typed display boundary.
 SEM-378 removes the photo task's padded normal view of the captured VM
 IDs. Its exact view still supplies the direct `AnmVmId` receiver.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
-canonical PhotoInf and slot declarations.
+canonical PhotoInf and slot declarations. SEM-380 shares the score
+breakdown between PhotoCamera, PhotoInf and ScoreData. Normal ResultScreen
+now uses the canonical slots while the exact result view remains.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below

@@ -17634,3 +17634,29 @@ the two normal global owners. A three-image fixture agrees in 192
 viewport, load gate, score and color cases, and the 540-case photo
 task fixture still passes. The local recipes are under
 `.analysis/pi/photo-overlay-owner/`.
+
+### SEM-380 — share the photo score packet and result records
+
+The camera fills the 0x20-byte score breakdown and passes it to SavePhoto.
+Build copies it into slot +0x2190. The result save path copies the same
+block from PhotoInf +0x21D4 plus the slot stride. The camera, capture
+record and persistent score data now use the same declaration. The
+packet's two multipliers are floats and its final word carries score
+flags.
+
+The normal result code reads the canonical PhotoInf records and captured
+VM handles. It uses the header-relative slot base and the record's full
+comment storage. The saved dimensions remain 16-bit fields, while
+PhotoInf stores each dimension as an i32. The exact result body retains
+its existing emission view. Both result profiles name the auxiliary
+VMs, photo VM and transition VM directly. The old expressions indexed
+those four objects past the end of the 21-element menu VM array.
+
+All 220 affected strict comparisons pass. The normal camera's score
+calculation, capture and cancellation code is byte-identical after
+rebinding the typed function symbols. Retail and both normal links
+agree in 144 save cases, five best-shot scans and twelve preview
+navigation and interrupt cases. The save fixture compares the full
+persistent buffer through the write call, including 16-bit dimension
+conversion and a sixty-byte comment. See
+`.analysis/pi/photo-score-packet/check-best-shot.py` for the local recipe.

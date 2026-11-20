@@ -318,7 +318,7 @@ enum PhotoStageScoreFlags
 
 void PhotoStageSlot::Build(
     i32 score, Float3 *photoPosition, Float3 *entryPosition,
-    const i32 *scoreData)
+    const PhotoScoreBreakdownView *scoreData)
 {
     Float3 displayPosition = *photoPosition;
     struct PhotoStageDigitPosition
@@ -331,12 +331,7 @@ void PhotoStageSlot::Build(
     this->score = score;
     if (scoreData != NULL)
     {
-        struct PhotoStageScoreDataBlock
-        {
-            i32 values[8];
-        };
-        *reinterpret_cast<PhotoStageScoreDataBlock *>(this->scoreData) =
-            *reinterpret_cast<const PhotoStageScoreDataBlock *>(scoreData);
+        this->scoreBreakdown = *scoreData;
     }
 
     if (entryPosition != NULL)
@@ -428,92 +423,92 @@ void PhotoStageSlot::Build(
         // while 0x100+4 gives the target this -> tv chronology exactly.
         u8 compilerStorage[0x100];
         u8 compilerStorage4[4];
-        if (((u32)scoreData[7] >> 5 & 1) != 0)
+        if (((u32)scoreData->scoringFlags >> 5 & 1) != 0)
         {
             ADD_PHOTO_STAGE_DISPLAY_VM(0x24);
             renderMode += 4;
             displayPosition.y += 12.0f;
         }
     }
-    if (((u32)scoreData[7] >> 6 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 6 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x25, 300);
     }
-    if (((u32)scoreData[7] >> 7 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 7 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x26, 300);
     }
-    if (((u32)scoreData[7] >> 8 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 8 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x27, 300);
     }
-    if (((u32)scoreData[7] >> 9 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 9 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x28, 300);
     }
-    if (((u32)scoreData[7] >> 10 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 10 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x29, 300);
     }
-    if (((u32)scoreData[7] >> 11 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 11 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2a, 300);
     }
-    if (((u32)scoreData[7] >> 12 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 12 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2b, 300);
     }
-    if (((u32)scoreData[7] >> 13 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 13 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2c, 900);
     }
-    if (((u32)scoreData[7] >> 14 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 14 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2d, 2100);
     }
-    if (((u32)scoreData[7] >> 15 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 15 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2e, 0);
     }
-    if (((u32)scoreData[7] >> 16 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 16 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2f, 100);
     }
-    if (((u32)scoreData[7] >> 17 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 17 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x30, 100);
     }
-    if (((u32)scoreData[7] >> 18 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 18 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x31, 0);
     }
-    if (((u32)scoreData[7] >> 19 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 19 & 1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x32, 0);
     }
-    if (((u32)scoreData[7] >> 4 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 4 & 1) != 0)
     {
-        ADD_PHOTO_STAGE_SCORE_ROW(0x23, scoreData[4]);
+        ADD_PHOTO_STAGE_SCORE_ROW(0x23, scoreData->nearbyTargetBonus);
     }
 
-    if ((scoreData[7] & PHOTO_STAGE_SCORE_ENEMY) != 0)
+    if ((scoreData->scoringFlags & PHOTO_STAGE_SCORE_ENEMY) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1f);
         displayPosition.x += 99.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(
-            (i32)(*reinterpret_cast<const f32 *>(&scoreData[5]) * 10.0f) /
+            (i32)(scoreData->enemyDistanceMultiplier * 10.0f) /
                 10 + 15);
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1a);
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(
-            (i32)(*reinterpret_cast<const f32 *>(&scoreData[5]) * 10.0f) %
+            (i32)(scoreData->enemyDistanceMultiplier * 10.0f) %
                 10 + 15);
         renderMode += 4;
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if (((u32)scoreData[7] >> 1 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 1 & 1) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x20);
         displayPosition.x += 99.0f;
@@ -526,7 +521,7 @@ void PhotoStageSlot::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if (((u32)scoreData[7] >> 2 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 2 & 1) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x21);
         displayPosition.x += 99.0f;
@@ -539,12 +534,12 @@ void PhotoStageSlot::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if (((u32)scoreData[7] >> 3 & 1) != 0)
+    if (((u32)scoreData->scoringFlags >> 3 & 1) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x22);
         displayPosition.x += 99.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(
-            (i32)(*reinterpret_cast<const f32 *>(&scoreData[6]) * 10.0f) /
+            (i32)(scoreData->bossRateMultiplier * 10.0f) /
                 10 + 15);
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1a);
@@ -552,7 +547,7 @@ void PhotoStageSlot::Build(
         InitializePhotoStageDisplayVm(
             &g_PhotoStageState->displayVms[displayVmCount++],
             &displayPosition,
-            (i32)(*reinterpret_cast<const f32 *>(&scoreData[6]) * 10.0f) %
+            (i32)(scoreData->bossRateMultiplier * 10.0f) %
                     10 +
                 15,
             renderMode);
@@ -582,7 +577,7 @@ static __forceinline void PhotoStagePublishCaptureRequestArgs(PhotoStageAnmManag
 
 static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView *state)
 {
-    if ((state->slots[state->capture.slot].scoreData[7] & 1) != 0)
+    if ((state->slots[state->capture.slot].scoreBreakdown.scoringFlags & 1) != 0)
     {
         PhotoStageGlobalStateView *globalState;
         i32 bgmFormatIndexLocal05 =
@@ -948,8 +943,7 @@ i32 PhotoStageStateView::Update()
                             &GetPhotoStageScoreEntry(
                                  g_PhotoStageGlobalState->scoreIndex)
                                  ->scoreBreakdown,
-                            this->slots[this->capture.slot]
-                                .scoreData,
+                            &this->slots[this->capture.slot].scoreBreakdown,
                             sizeof(PhotoScoreBreakdownView));
                         g_ResultSaveData->UpdateBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex);
@@ -1161,7 +1155,7 @@ i32 __fastcall UpdatePhotoStage(PhotoStageStateView *stage)
 
 i32 PhotoStageStateView::SavePhoto(
     i32 slotIndex, const Float3 *position, i32 width, i32 height,
-    i32 score, const i32 *scoreData)
+    i32 score, const PhotoScoreBreakdownView *scoreData)
 {
     PhotoStageSaveLocals locals;
 

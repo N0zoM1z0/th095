@@ -231,12 +231,6 @@ static inline ResultScoreEntryView *GetPhotoStageScoreEntry(i32 index)
     return &g_ResultSaveData->scoreEntries[index];
 }
 
-static inline PhotoScoreBreakdownView *GetPhotoStageDisplayScoreBreakdown(
-    PhotoStageSlot *display)
-{
-    return reinterpret_cast<PhotoScoreBreakdownView *>(display->scoreData);
-}
-
 static inline ResultBestShotRecordView *GetPhotoStageBestShotRecord(i32 index)
 {
     return &g_ResultSaveData->bestShotRecords[index];
@@ -363,10 +357,8 @@ enum PhotoStageScoreFlags
 
 void PhotoStageSlot::Build(
     i32 score, Float3 *photoPosition, Float3 *entryPosition,
-    const i32 *scoreData)
+    const PhotoScoreBreakdownView *scoreData)
 {
-    const PhotoScoreBreakdownView *scoreBreakdown =
-        reinterpret_cast<const PhotoScoreBreakdownView *>(scoreData);
     Float3 displayPosition = *photoPosition;
     struct PhotoStageDigitPosition
     {
@@ -378,7 +370,7 @@ void PhotoStageSlot::Build(
     this->score = score;
     if (scoreData != NULL)
     {
-        *GetPhotoStageDisplayScoreBreakdown(this) = *scoreBreakdown;
+        this->scoreBreakdown = *scoreData;
     }
 
     if (entryPosition != NULL)
@@ -470,92 +462,92 @@ void PhotoStageSlot::Build(
         // while 0x100+4 gives the target this -> tv chronology exactly.
         u8 compilerStorage[0x100];
         u8 compilerStorage4[4];
-        if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_UNKNOWN_5) != 0)
+        if ((scoreData->scoringFlags & PHOTO_SCORE_UNKNOWN_5) != 0)
         {
             ADD_PHOTO_STAGE_DISPLAY_VM(0x24);
             renderMode += 4;
             displayPosition.y += 12.0f;
         }
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_1) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x25, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_2) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_2) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x26, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_3) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_3) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x27, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_4) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_4) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x28, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_5) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_5) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x29, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_6) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_6) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2a, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_7) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_7) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2b, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLORFUL) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_COLORFUL) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2c, 900);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_RAINBOW) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_RAINBOW) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2d, 2100);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_EMPTY) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_EMPTY) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2e, 0);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_NO_BULLETS) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_NO_BULLETS) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2f, 100);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_UNKNOWN_17) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_UNKNOWN_17) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x30, 100);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_UNKNOWN_18) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_UNKNOWN_18) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x31, 0);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_UNKNOWN_19) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_UNKNOWN_19) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x32, 0);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_NEARBY) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_NEARBY) != 0)
     {
-        ADD_PHOTO_STAGE_SCORE_ROW(0x23, scoreBreakdown->nearbyTargetBonus);
+        ADD_PHOTO_STAGE_SCORE_ROW(0x23, scoreData->nearbyTargetBonus);
     }
 
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_ENEMY) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_ENEMY) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1f);
         displayPosition.x += 99.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(
-            (i32)(scoreBreakdown->enemyDistanceMultiplier * 10.0f) /
+            (i32)(scoreData->enemyDistanceMultiplier * 10.0f) /
                 10 + 15);
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1a);
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(
-            (i32)(scoreBreakdown->enemyDistanceMultiplier * 10.0f) %
+            (i32)(scoreData->enemyDistanceMultiplier * 10.0f) %
                 10 + 15);
         renderMode += 4;
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_SELF) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_SELF) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x20);
         displayPosition.x += 99.0f;
@@ -568,7 +560,7 @@ void PhotoStageSlot::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_TWO_SHOT) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_TWO_SHOT) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x21);
         displayPosition.x += 99.0f;
@@ -581,12 +573,12 @@ void PhotoStageSlot::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_BOSS_RATE) != 0)
+    if ((scoreData->scoringFlags & PHOTO_SCORE_BOSS_RATE) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x22);
         displayPosition.x += 99.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(
-            (i32)(scoreBreakdown->bossRateMultiplier * 10.0f) /
+            (i32)(scoreData->bossRateMultiplier * 10.0f) /
                 10 + 15);
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1a);
@@ -594,7 +586,7 @@ void PhotoStageSlot::Build(
         InitializePhotoStageDisplayVm(
             &g_PhotoStageState->displayVms[displayVmCount++],
             &displayPosition,
-            (i32)(scoreBreakdown->bossRateMultiplier * 10.0f) %
+            (i32)(scoreData->bossRateMultiplier * 10.0f) %
                     10 +
                 15,
             renderMode);
@@ -628,9 +620,7 @@ static __forceinline void PhotoStagePublishCaptureRequestArgs(PhotoStageAnmManag
 
 static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView *state)
 {
-    if ((GetPhotoStageDisplayScoreBreakdown(
-             &state->slots[state->capture.slot])
-             ->scoringFlags &
+    if ((state->slots[state->capture.slot].scoreBreakdown.scoringFlags &
          PHOTO_SCORE_ENEMY) != 0)
     {
         PhotoStageGlobalStateView *globalState;
@@ -1003,8 +993,7 @@ i32 PhotoStageStateView::Update()
                             &GetPhotoStageScoreEntry(
                                  g_PhotoStageGlobalState->scoreIndex)
                                  ->scoreBreakdown,
-                            GetPhotoStageDisplayScoreBreakdown(
-                                &this->slots[this->capture.slot]),
+                            &this->slots[this->capture.slot].scoreBreakdown,
                             sizeof(PhotoScoreBreakdownView));
                         g_ResultSaveData->UpdateBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex);
@@ -1237,7 +1226,7 @@ i32 __fastcall UpdatePhotoStage(PhotoStageStateView *stage)
 
 i32 PhotoStageStateView::SavePhoto(
     i32 slotIndex, const Float3 *position, i32 width, i32 height,
-    i32 score, const i32 *scoreData)
+    i32 score, const PhotoScoreBreakdownView *scoreData)
 {
     PhotoStageSaveLocals locals;
 

@@ -5,6 +5,7 @@
 #include "PhotoAnmCreateVmEmission.hpp"
 #include "PhotoCameraMode.hpp"
 #include "PhotoPlayerRuntime.hpp"
+#include "PhotoScoreBreakdown.hpp"
 
 namespace th095
 {
@@ -114,7 +115,7 @@ struct PhotoCameraState
     void UpdateViewfinder();
     u32 TakePhoto();
     i32 CalculatePhotoScore(PhotoBulletView *bulletTargets,
-                            i32 *scoreData, i32 runtimeTargets,
+                            PhotoScoreBreakdownView *scoreData, i32 runtimeTargets,
                             i32 stageTargets);
     void CancelCapture();
     i32 CountPhotoTargets(f32 *score, f32 *rate);

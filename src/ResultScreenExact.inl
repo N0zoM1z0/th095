@@ -520,16 +520,16 @@ static __forceinline void InitializeReplayExtraTailPhase(
 {
     u8 compilerStorage[0x58];
     resultScreen->replayCursor.count = 2;
-    g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->vms[21], 9);
-    g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->vms[22], 10);
-    resultScreen->vms[21].glyphWidth = 0x12;
-    resultScreen->vms[21].glyphHeight = 0x12;
-    resultScreen->vms[22].glyphWidth = 0x12;
-    resultScreen->vms[22].glyphHeight = 0x12;
+    g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->auxiliaryVms[0], 9);
+    g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->auxiliaryVms[1], 10);
+    resultScreen->auxiliaryVms[0].glyphWidth = 0x12;
+    resultScreen->auxiliaryVms[0].glyphHeight = 0x12;
+    resultScreen->auxiliaryVms[1].glyphWidth = 0x12;
+    resultScreen->auxiliaryVms[1].glyphHeight = 0x12;
     g_ResultAnmManager->DrawTextLeft(
-        &resultScreen->vms[21], 0xffe0c0, 0x300000, " ");
+        &resultScreen->auxiliaryVms[0], 0xffe0c0, 0x300000, " ");
     g_ResultAnmManager->DrawTextLeft(
-        &resultScreen->vms[22], 0xffe0c0, 0x300000, " ");
+        &resultScreen->auxiliaryVms[1], 0xffe0c0, 0x300000, " ");
 }
 
 void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
@@ -553,20 +553,20 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
         resultScreen->replayCursor.Set(0);
         resultScreen->replayCursor.count = 3;
 
-        g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->vms[21], 9);
-        g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->vms[22], 10);
-        resultScreen->vms[21].glyphWidth = 0x12;
-        resultScreen->vms[21].glyphHeight = 0x12;
-        resultScreen->vms[22].glyphWidth = 0x12;
-        resultScreen->vms[22].glyphHeight = 0x12;
+        g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->auxiliaryVms[0], 9);
+        g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->auxiliaryVms[1], 10);
+        resultScreen->auxiliaryVms[0].glyphWidth = 0x12;
+        resultScreen->auxiliaryVms[0].glyphHeight = 0x12;
+        resultScreen->auxiliaryVms[1].glyphWidth = 0x12;
+        resultScreen->auxiliaryVms[1].glyphHeight = 0x12;
 
         g_ResultAnmManager->DrawTextLeft(
-            &resultScreen->vms[21], 0xffe0c0, 0x300000,
+            &resultScreen->auxiliaryVms[0], 0xffe0c0, 0x300000,
             resultScreen->sceneLabels[resultScreen->selectedGroup]
                 [g_ResultSaveData->profile.nextSceneByGroup[
                     resultScreen->selectedGroup]].firstLine);
         g_ResultAnmManager->DrawTextLeft(
-            &resultScreen->vms[22], 0xffe0c0, 0x300000,
+            &resultScreen->auxiliaryVms[1], 0xffe0c0, 0x300000,
             resultScreen->sceneLabels[resultScreen->selectedGroup]
                 [g_ResultSaveData->profile.nextSceneByGroup[
                     resultScreen->selectedGroup]].secondLine);
@@ -681,9 +681,9 @@ void ResultScreen::PrepareBestShot()
     if (bestShot >= 0)
     {
         g_ResultPhotoData->anm->SetAndExecuteScript(
-            &this->vms[23], bestShot * 2 + 1);
+            &this->photoVm, bestShot * 2 + 1);
 
-        ResultScreenAnmVm *vm = &this->vms[23];
+        ResultScreenAnmVm *vm = &this->photoVm;
         vm->spriteSize.x = vm->loadedSprite->uvEndX * 256.0f;
         vm->spriteSize.y = vm->loadedSprite->uvEndY * 256.0f;
 
@@ -746,13 +746,13 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
         if (resultScreen->photoCursor.HasChanged())
         {
             i32 photoIndex = resultScreen->photoCursor.GetCurrent();
-            resultScreen->vms[24] = resultScreen->vms[23];
-            resultScreen->vms[24].SetInterrupt((direction <= 0) + 7);
+            resultScreen->photoTransitionVm = resultScreen->photoVm;
+            resultScreen->photoTransitionVm.SetInterrupt((direction <= 0) + 7);
             g_ResultPhotoData->anm->SetAndExecuteScript(
-                &resultScreen->vms[23], photoIndex * 2 + 1);
-            resultScreen->vms[23].SetInterrupt((direction > 0) + 9);
+                &resultScreen->photoVm, photoIndex * 2 + 1);
+            resultScreen->photoVm.SetInterrupt((direction > 0) + 9);
 
-            vm = &resultScreen->vms[23];
+            vm = &resultScreen->photoVm;
             vm->spriteSize.x = vm->loadedSprite->uvEndX * 256.0f;
             vm->spriteSize.y = vm->loadedSprite->uvEndY * 256.0f;
 
@@ -925,7 +925,7 @@ ChainCallbackResult ResultScreen::Update()
             this->replayCursor.Set(0);
             this->stateTimer.Reset();
             ResultUpdateInterruptFirstPhase(this);
-            this->vms[23].SetInterrupt(1);
+            this->photoVm.SetInterrupt(1);
             break;
         }
         else if (GetPressedButtons(0x1002) != 0)
@@ -935,7 +935,7 @@ ChainCallbackResult ResultScreen::Update()
             {
             case 0:
                 ResultUpdateInterruptFirstPhase(this);
-                this->vms[23].SetInterrupt(1);
+                this->photoVm.SetInterrupt(1);
                 g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                 break;
             case 1:
@@ -984,7 +984,7 @@ ChainCallbackResult ResultScreen::Update()
             this->replayCursor.Set(0);
             this->stateTimer.Reset();
             ResultUpdateInterruptFirstPhase(this);
-            this->vms[23].SetInterrupt(1);
+            this->photoVm.SetInterrupt(1);
             break;
         }
         else if (GetPressedButtons(0x1002) != 0)
@@ -995,7 +995,7 @@ ChainCallbackResult ResultScreen::Update()
             case 0:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                 ResultUpdateInterruptFirstPhase(this);
-                this->vms[23].SetInterrupt(1);
+                this->photoVm.SetInterrupt(1);
                 break;
             case 1:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
@@ -1098,7 +1098,7 @@ ChainCallbackResult ResultScreen::Update()
                 {
                     this->vms[i].SetInterrupt(1);
                 }
-                this->vms[23].SetInterrupt(1);
+                this->photoVm.SetInterrupt(1);
                 switch (this->replayCursor.GetCurrent())
                 {
                 default:
@@ -1481,14 +1481,14 @@ ChainCallbackResult ResultScreen::Draw()
     {
         reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[i])->Draw();
     }
-    reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[23])->Draw();
-    reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[24])->Draw();
+    reinterpret_cast<ResultAnmVmDrawView *>(&this->photoVm)->Draw();
+    reinterpret_cast<ResultAnmVmDrawView *>(&this->photoTransitionVm)->Draw();
 
     switch (this->state)
     {
     case 3:
-        reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[21])->Draw();
-        reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[22])->Draw();
+        reinterpret_cast<ResultAnmVmDrawView *>(&this->auxiliaryVms[0])->Draw();
+        reinterpret_cast<ResultAnmVmDrawView *>(&this->auxiliaryVms[1])->Draw();
         break;
 
     case 5:

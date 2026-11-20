@@ -209,7 +209,6 @@
 26	src/ResultScreen.cpp	#ifdef DIFFBUILD
 3	src/ResultScreen.cpp	#ifdef TH095_MATCH_EXACT
 6	src/ResultScreen.cpp	#ifndef DIFFBUILD
-2	src/ResultScreen.hpp	#ifdef DIFFBUILD
 3	src/ResultScreen.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ResultScreenExact.inl	#ifdef TH095_MATCH_EXACT
 1	src/Rng.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)

@@ -2,6 +2,7 @@
 #define TH095_PHOTO_STAGE_HPP
 
 #include "PhotoCamera.hpp"
+#include "PhotoScoreBreakdown.hpp"
 
 #include <stddef.h>
 
@@ -21,7 +22,7 @@ struct PhotoStageSlot
 {
     AnmVm primaryVms[6];
     AnmVm overlayVms[6];
-    i32 scoreData[8];
+    PhotoScoreBreakdownView scoreBreakdown;
     i32 score;
 
     i32 timestamp;
@@ -35,7 +36,7 @@ struct PhotoStageSlot
 
     void Build(
         i32 score, Float3 *photoPosition, Float3 *entryPosition,
-        const i32 *scoreData);
+        const PhotoScoreBreakdownView *scoreData);
 };
 
 typedef char PhotoStageCaptureSizeIs44[
@@ -54,8 +55,8 @@ typedef char PhotoStageSlotPrimaryVmsAt0[
     (offsetof(PhotoStageSlot, primaryVms) == 0) ? 1 : -1];
 typedef char PhotoStageSlotOverlayVmsAt10C8[
     (offsetof(PhotoStageSlot, overlayVms) == 0x10c8) ? 1 : -1];
-typedef char PhotoStageSlotScoreDataAt2190[
-    (offsetof(PhotoStageSlot, scoreData) == 0x2190) ? 1 : -1];
+typedef char PhotoStageSlotScoreBreakdownAt2190[
+    (offsetof(PhotoStageSlot, scoreBreakdown) == 0x2190) ? 1 : -1];
 typedef char PhotoStageSlotScoreAt21B0[
     (offsetof(PhotoStageSlot, score) == 0x21b0) ? 1 : -1];
 typedef char PhotoStageSlotTimestampAt21B4[
@@ -106,8 +107,9 @@ struct PhotoStageStateView
     i32 Update();
     i32 SavePhoto(
         i32 slot, const Float3 *position, i32 width, i32 height,
-        i32 score, const i32 *scoreData);
+        i32 score, const PhotoScoreBreakdownView *scoreData);
     i32 CapturePhotoPixels(i32 photoIndex);
+    i32 FindBestShot();
 
     Float3 *GetCapturePosition()
     {
