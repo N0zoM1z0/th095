@@ -105,7 +105,6 @@
 1	src/PhotoRuntime.cpp	struct	EnemyEclContext
 1	src/PhotoStage.cpp	struct	PhotoStageAlphaPhaseLocals
 1	src/PhotoStage.cpp	struct	PhotoStageAnmManagerView
-1	src/PhotoStage.cpp	struct	PhotoStageBestShotRecord
 1	src/PhotoStage.cpp	struct	PhotoStageBulletManagerView
 1	src/PhotoStage.cpp	struct	PhotoStageCaptureLocals
 1	src/PhotoStage.cpp	struct	PhotoStageDigitPosition

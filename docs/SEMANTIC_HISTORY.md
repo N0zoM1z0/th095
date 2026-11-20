@@ -17435,3 +17435,15 @@ Opcode 137 reads player X at 0x0040CBDD through the player owner loaded from
 0x004C4E70. It now uses the same typed player boundary as opcode 141, which
 updates the camera limit. The RunEcl exact unit passes with both owned switch
 tables and all 647 relocations.
+
+### SEM-367 — share the Best Shot record owner in PhotoStage
+
+Both PhotoStage bodies now use ResultSaveDataView::bestShotRecords for
+metadata and pixel storage. The exact comparison binds the same score-data
+pointer at 0x004C4E78 and the same UpdateBestShotRecord call at 0x004299F0
+through their canonical symbols. The 27 updated relocation identities
+retain their target destinations and addends.
+
+All six PhotoStage units pass exact. The six normal bodies retain their
+previous instruction bytes and relocation contracts, and both game link
+orders pass the section comparisons.

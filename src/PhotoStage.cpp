@@ -41,31 +41,6 @@ struct PhotoStageTextureEntry
 
 typedef AnmLoaded PhotoStageAnmLoadedView;
 
-struct PhotoStageBestShotRecord
-{
-    u32 magic;
-#ifdef DIFFBUILD
-    u8 type;
-#else
-    ResultBestShotPayloadFormat payloadFormat;
-#endif
-    u8 componentCount;
-    u16 group;
-    u16 scene;
-    u16 version;
-    u16 width;
-    u16 height;
-    i32 score;
-    f32 slowRate;
-    char comment[0x50];
-    u8 valid;
-    u8 componentsLoaded;
-    u8 unknown06a[2];
-    i32 photoIndex;
-    void *rawFileData;
-    u8 *pixelData;
-};
-
 struct PhotoStageAnmManagerView
 {
     u8 unknown000000[0x0c];
@@ -154,7 +129,7 @@ struct PhotoStageSaveLocals
 
 struct PhotoStageCaptureLocals
 {
-    PhotoStageBestShotRecord *record;
+    ResultBestShotRecordView *record;
     i32 allocationSize;
     u8 *destination;
     u8 *source;
@@ -166,8 +141,6 @@ struct PhotoStageCaptureLocals
 
 typedef char PhotoStageTextureEntrySizeIs10[
     (sizeof(PhotoStageTextureEntry) == 0x10) ? 1 : -1];
-typedef char PhotoStageBestShotRecordSizeIs78[
-    (sizeof(PhotoStageBestShotRecord) == 0x78) ? 1 : -1];
 typedef char PhotoStageScoreEntryTailSizeIs48[
     (sizeof(ResultScoreEntryView) - offsetof(ResultScoreEntryView, detailScore) ==
      0x48)
@@ -264,10 +237,9 @@ static inline PhotoScoreBreakdownView *GetPhotoStageDisplayScoreBreakdown(
     return reinterpret_cast<PhotoScoreBreakdownView *>(display->scoreData);
 }
 
-static inline PhotoStageBestShotRecord *GetPhotoStageBestShotRecord(i32 index)
+static inline ResultBestShotRecordView *GetPhotoStageBestShotRecord(i32 index)
 {
-    return reinterpret_cast<PhotoStageBestShotRecord *>(
-        &g_ResultSaveData->bestShotRecords[index]);
+    return &g_ResultSaveData->bestShotRecords[index];
 }
 
 static __forceinline void ClearPhotoStageGlobalCaptureActive(
@@ -1333,9 +1305,8 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
         (u32)g_ResultSaveData
             ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
             .componentCount;
-    locals.record = reinterpret_cast<PhotoStageBestShotRecord *>(
-        &g_ResultSaveData
-             ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]);
+    locals.record = &g_ResultSaveData
+        ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex];
     locals.record->pixelData =
         reinterpret_cast<u8 *>(malloc(locals.allocationSize));
 
