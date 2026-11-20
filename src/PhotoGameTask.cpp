@@ -19,6 +19,7 @@
 #endif
 #include "PhotoGameTask.hpp"
 #include "PhotoGamePlayer.hpp"
+#include "PhotoFront.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "ReplayManager.hpp"
@@ -34,12 +35,6 @@ namespace th095
 {
 
 PhotoGameTaskView *g_RuntimeGlobalStateOwner; // 0x004BDEC8
-
-struct PhotoFrontManagerView
-{
-    static PhotoFrontManagerView *Create();
-    void Destroy();
-};
 
 struct PhotoEnemyManagerTaskView
 {

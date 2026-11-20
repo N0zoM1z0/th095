@@ -2,6 +2,7 @@
 #include "SceneData.hpp"
 #include "AnmVmId.hpp"
 #include "ControllerInputSlot.hpp"
+#include "PhotoFront.hpp"
 #include "PhotoStage.hpp"
 #include "SoundPlayer.hpp"
 #include "ScoreData.hpp"
@@ -18,12 +19,6 @@ namespace th095
 struct PhotoBackgroundManagerView
 {
     static PhotoBackgroundManagerView *Create();
-    void Destroy();
-};
-
-struct PhotoFrontManagerView
-{
-    static PhotoFrontManagerView *Create();
     void Destroy();
 };
 

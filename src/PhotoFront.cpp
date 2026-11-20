@@ -4,6 +4,7 @@
 #include "AnmManager.hpp"
 #include "FileSystem.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoFront.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "Main.hpp"
@@ -15,30 +16,6 @@
 namespace th095
 {
 
-struct PhotoFrontManagerView
-{
-    AnmVm vms[6];               // +0x0000
-    AnmLoaded *frontAnm;              // +0x10c8
-    ChainElem *calcChain;              // +0x10cc
-    ChainElem *drawChain;              // +0x10d0
-
-    PhotoFrontManagerView();
-    ~PhotoFrontManagerView();
-
-    static PhotoFrontManagerView *Create();
-    void Destroy();
-    i32 Initialize();
-    i32 Update();
-    i32 Draw();
-    static i32 __fastcall OnUpdate(PhotoFrontManagerView *front);
-    static i32 __fastcall OnDraw(PhotoFrontManagerView *front);
-};
-
-typedef char PhotoFrontManagerSizeIs10D4[
-    (sizeof(PhotoFrontManagerView) == 0x10d4) ? 1 : -1];
-typedef char PhotoFrontManagerAnmAt10C8[
-    (offsetof(PhotoFrontManagerView, frontAnm) == 0x10c8) ? 1 : -1];
-
 struct PhotoFrontUpdateLocals
 {
     i32 nextSecond;
@@ -46,13 +23,6 @@ struct PhotoFrontUpdateLocals
     i32 displayedTime;
     i32 alpha;
 };
-
-extern PhotoFrontManagerView *g_PhotoFrontManager;
-
-#ifndef DIFFBUILD
-#define g_PhotoFrontManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoFrontManagerView, g_RuntimeBackgroundManagerOwner)
-#endif
 
 i32 LoadPhotoFrontAnm()
 {
@@ -89,8 +59,7 @@ PhotoFrontManagerView::~PhotoFrontManagerView()
     utils::DebugPrint("shitdown FrontInf\n");
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    g_AnmManager->MarkVmsForDeletion(
-        reinterpret_cast<AnmLoaded *>(this->frontAnm));
+    g_AnmManager->MarkVmsForDeletion(this->frontAnm);
     g_PhotoFrontManager = NULL;
 }
 
@@ -335,3 +304,8 @@ i32 __fastcall PhotoFrontManagerView::OnDraw(PhotoFrontManagerView *front)
 } // namespace th095
 
 #endif // TH095_MATCH_EXACT
+
+namespace th095
+{
+PhotoFrontManagerView *g_PhotoFrontManager; // Retail 0x004BDDC4
+}

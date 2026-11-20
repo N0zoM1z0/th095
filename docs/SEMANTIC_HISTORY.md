@@ -18435,3 +18435,27 @@ Supervisor scene transitions and 69 title handoff cases agree with retail,
 including creation failure, returning to the title, restarting from results
 and retrying. Recipes are in `.analysis/pi/retire-task-alias/` and
 `.analysis/pi/title-game-handoff/`.
+
+### SEM-412 — give the photo HUD its own slot
+
+The HUD constructor publishes `g_PhotoFrontManager @ 0x004BDDC4` and the
+destructor clears it after releasing the ANM VMs. PhotoStage reads the
+manager's `frontAnm @ +0x10C8` for the initial photo tally markers and
+for their frame-35 replacement after a capture. Both builds use the same
+HUD declaration and slot, and the game task uses its lifecycle methods
+directly. Main no longer defines the untyped BackgroundManager alias.
+
+The pinned compiler changes the exact initializer when the four-handle
+array invokes the canonical handle constructor. PhotoStage's canonical
+screen-position ANM call also moves the exact return temporaries. The
+exact bodies keep the narrow call declarations for those two sites and
+use the shared allocation layout. The HUD calls the canonical sprite and
+VM initialization methods in both profiles.
+
+All 372 affected exact units pass, with the same relocation operands.
+Both normal link orders resolve all five HUD references to the moved slot
+owned by PhotoFront. Six constructor/destructor cases and 108 PhotoStage
+update cases agree with retail, including the frame-35 marker scripts,
+their positions and the task flag published at the end of capture. The
+fixtures supply ANM and Chain boundaries and give the task's embedded HUD
+pointer a separate value. See `.analysis/pi/photo-front-owner/`.

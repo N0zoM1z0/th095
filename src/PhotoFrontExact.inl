@@ -1,5 +1,6 @@
 #include "AnmManager.hpp"
 #include "SceneData.hpp"
+#include "PhotoFront.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
@@ -10,6 +11,8 @@
 namespace th095
 {
 
+// VC7.1 adds default-construction code for a canonical handle array.
+// This method declaration preserves the target's four returned handle stores.
 struct PhotoFrontVmIdView
 {
     i32 value;
@@ -19,42 +22,8 @@ struct PhotoFrontVmIdView
 
 struct PhotoFrontAnmLoadedView
 {
-    i32 anmIdx;
-    void *rawData;
-    i32 totalEntries;
-    AnmLoadedSprite *sprites;
-    AnmRawInstr **scripts;
-    void *textures;
-    i32 numberEntriesToBeLoaded;
-
-    ZunResult SetSprite(AnmVm *vm, i32 spriteIndex);
-    void InitializeVm(AnmVm *vm, i32 scriptIndex);
     PhotoFrontVmIdView CreateVm(i32 scriptIndex, i32 renderMode);
 };
-
-struct PhotoFrontManagerView
-{
-    AnmVm vms[6];               // +0x0000
-    PhotoFrontAnmLoadedView *frontAnm; // +0x10c8
-    ChainElem *calcChain;              // +0x10cc
-    ChainElem *drawChain;              // +0x10d0
-
-    PhotoFrontManagerView();
-    ~PhotoFrontManagerView();
-
-    static PhotoFrontManagerView *Create();
-    void Destroy();
-    i32 Initialize();
-    i32 Update();
-    i32 Draw();
-    static i32 __fastcall OnUpdate(PhotoFrontManagerView *front);
-    static i32 __fastcall OnDraw(PhotoFrontManagerView *front);
-};
-
-typedef char PhotoFrontManagerSizeIs10D4[
-    (sizeof(PhotoFrontManagerView) == 0x10d4) ? 1 : -1];
-typedef char PhotoFrontManagerAnmAt10C8[
-    (offsetof(PhotoFrontManagerView, frontAnm) == 0x10c8) ? 1 : -1];
 
 struct PhotoFrontUpdateLocals
 {
@@ -64,7 +33,6 @@ struct PhotoFrontUpdateLocals
     i32 alpha;
 };
 
-extern PhotoFrontManagerView *g_PhotoFrontManager;
 extern u32 g_PhotoFrontControllerFlags;
 extern i32 g_PhotoFrontReplayUsesArchive;
 
@@ -103,8 +71,7 @@ PhotoFrontManagerView::~PhotoFrontManagerView()
     utils::DebugPrint("shitdown FrontInf\n");
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    g_AnmManager->MarkVmsForDeletion(
-        reinterpret_cast<AnmLoaded *>(this->frontAnm));
+    g_AnmManager->MarkVmsForDeletion(this->frontAnm);
     g_PhotoFrontManager = NULL;
 }
 
@@ -118,8 +85,7 @@ i32 PhotoFrontManagerView::Initialize()
 {
     PhotoFrontVmIdView vmIds[4];
 
-    this->frontAnm = reinterpret_cast<PhotoFrontAnmLoadedView *>(
-        g_AnmManager->PreloadAnm(5, "front.anm"));
+    this->frontAnm = g_AnmManager->PreloadAnm(5, "front.anm");
     if (this->frontAnm == NULL)
     {
         g_GameErrorContext.Log(
@@ -133,10 +99,14 @@ i32 PhotoFrontManagerView::Initialize()
         return ZUN_ERROR;
     }
 
-    vmIds[0] = this->frontAnm->CreateVm(0, 7);
-    vmIds[1] = this->frontAnm->CreateVm(1, 7);
-    vmIds[2] = this->frontAnm->CreateVm(2, 7);
-    vmIds[3] = this->frontAnm->CreateVm(3, 7);
+    vmIds[0] = reinterpret_cast<PhotoFrontAnmLoadedView *>(this->frontAnm)
+                       ->CreateVm(0, 7);
+    vmIds[1] = reinterpret_cast<PhotoFrontAnmLoadedView *>(this->frontAnm)
+                       ->CreateVm(1, 7);
+    vmIds[2] = reinterpret_cast<PhotoFrontAnmLoadedView *>(this->frontAnm)
+                       ->CreateVm(2, 7);
+    vmIds[3] = reinterpret_cast<PhotoFrontAnmLoadedView *>(this->frontAnm)
+                       ->CreateVm(3, 7);
 
     if (((g_PhotoFrontControllerFlags >> 9) & 1) != 0)
     {
@@ -147,13 +117,14 @@ i32 PhotoFrontManagerView::Initialize()
     }
     else
     {
-        this->frontAnm->CreateVm(
+        reinterpret_cast<PhotoFrontAnmLoadedView *>(this->frontAnm)->CreateVm(
             g_SelectedScene->frontScriptIndex + 0xd, 7);
     }
 
     if (g_PhotoFrontReplayUsesArchive != 0)
     {
-        this->frontAnm->CreateVm(0x12, 7);
+        reinterpret_cast<PhotoFrontAnmLoadedView *>(this->frontAnm)
+            ->CreateVm(0x12, 7);
     }
 
     PhotoFrontInitializeFirstVmPhase(this);

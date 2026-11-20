@@ -5,6 +5,7 @@
 #include "PhotoBulletManager.hpp"
 #include "PhotoCardInfo.hpp"
 #include "PhotoStage.hpp"
+#include "PhotoFront.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
 #include "Main.hpp"
@@ -32,12 +33,6 @@ enum PhotoStageFlags
 };
 
 typedef AnmLoaded PhotoStageAnmLoadedView;
-
-struct PhotoStageSupervisorView
-{
-    u8 unknown0000[0x10c8];
-    PhotoStageAnmLoadedView *photoAnm;
-};
 
 #ifdef DIFFBUILD
 extern PhotoCardInfoView *g_PhotoStageRuntime;
@@ -81,15 +76,12 @@ typedef char PhotoStageScoreEntryTailSizeIs48[
         ? 1
         : -1];
 
-extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
 #ifdef DIFFBUILD
 extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
 #endif
 
 #ifndef DIFFBUILD
 #define TH095_PHOTO_STAGE_CARD_INFO g_PhotoCardInfo
-#define g_PhotoStageSupervisor \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageSupervisorView, g_RuntimeBackgroundManagerOwner)
 #endif
 
 #ifdef DIFFBUILD
@@ -665,7 +657,7 @@ i32 PhotoStageStateView::Update()
             entryPosition.y = 400.0f - (f32)(k % 5) * 80.0f;
             entryPosition.z = 0.0f;
             this->capture.entryVms[k] =
-                g_PhotoStageSupervisor->photoAnm->CreateVmAtScreen(
+                g_PhotoFrontManager->frontAnm->CreateVmAtScreen(
                     12, &entryPosition);
         }
     }
@@ -986,10 +978,10 @@ i32 PhotoStageStateView::Update()
                 Rotate(&frame35Position, &frame35Position, frame35Vm->rotation.z);
                 frame35Position += frame35Vm->position;
                 this->capture.entryVms[entryIndex] =
-                    g_PhotoStageSupervisor->photoAnm->CreateVmAtScreen(
+                    g_PhotoFrontManager->frontAnm->CreateVmAtScreen(
                         10, &frame35Position);
                 frame35Position.y -= 6.0f;
-                g_PhotoStageSupervisor->photoAnm->CreateVmAtScreen(
+                g_PhotoFrontManager->frontAnm->CreateVmAtScreen(
                     11, &frame35Position);
             }
 

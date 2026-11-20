@@ -1,4 +1,5 @@
 #include "PhotoStage.hpp"
+#include "PhotoFront.hpp"
 #include "SceneData.hpp"
 #include "ScoreData.hpp"
 #include "PhotoGamePlayer.hpp"
@@ -55,12 +56,6 @@ struct PhotoStageAnmVmEmission
     void SetPosition(i32 id, Float3 *position);
 };
 
-struct PhotoStageSupervisorView
-{
-    u8 unknown0000[0x10c8];
-    PhotoStageAnmLoadedView *photoAnm;
-};
-
 struct PhotoStageRuntimeView
 {
     u8 unknown000[0x20];
@@ -100,7 +95,6 @@ struct PhotoStageCaptureLocals
 
 
 extern PhotoStageRuntimeView *g_PhotoStageRuntime;
-extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
 extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
 extern u8 g_PhotoCaptureCountdown;
@@ -657,7 +651,8 @@ i32 PhotoStageStateView::Update()
             entryPosition.y = 400.0f - (f32)(k % 5) * 80.0f;
             entryPosition.z = 0.0f;
             this->capture.entryVms[k] =
-                g_PhotoStageSupervisor->photoAnm->CreateVm(12, &entryPosition);
+                reinterpret_cast<PhotoStageAnmLoadedView *>(
+                    g_PhotoFrontManager->frontAnm)->CreateVm(12, &entryPosition);
         }
     }
 
@@ -967,9 +962,11 @@ i32 PhotoStageStateView::Update()
                 RotatePhotoStagePoint(&frame35Position, &frame35Position, frame35Vm->rotation.z);
                 frame35Position += frame35Vm->position;
                 this->capture.entryVms[entryIndex] =
-                    g_PhotoStageSupervisor->photoAnm->CreateVm(10, &frame35Position);
+                    reinterpret_cast<PhotoStageAnmLoadedView *>(
+                        g_PhotoFrontManager->frontAnm)->CreateVm(10, &frame35Position);
                 frame35Position.y -= 6.0f;
-                g_PhotoStageSupervisor->photoAnm->CreateVm(11, &frame35Position);
+                reinterpret_cast<PhotoStageAnmLoadedView *>(
+                    g_PhotoFrontManager->frontAnm)->CreateVm(11, &frame35Position);
             }
 
             ClearPhotoStageGlobalCapturedPhotoActive(

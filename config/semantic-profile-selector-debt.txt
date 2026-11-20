@@ -150,7 +150,6 @@
 1	src/PhotoEffectRuntime.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/PhotoEffectRuntime.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/PhotoFront.cpp	#ifdef TH095_MATCH_EXACT
-1	src/PhotoFront.cpp	#ifndef DIFFBUILD
 1	src/PhotoGame.cpp	#if defined(DIFFBUILD)
 4	src/PhotoGame.cpp	#ifdef DIFFBUILD
 1	src/PhotoGame.cpp	#ifdef TH095_MATCH_EXACT
