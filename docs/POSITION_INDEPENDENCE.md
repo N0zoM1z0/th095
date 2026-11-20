@@ -221,8 +221,18 @@ can differ by one tick. Relative to retail, both rebuilt links were one
 tick behind in demo0 and one tick ahead in demo1 after the opening frames.
 In demo2 the regular link agreed with retail and the reordered link was
 one tick ahead. The earlier demo0 runs matched both timers using the same
-mapped PE bytes. This leaves the timing of stage timer advancement
-relative to the replay index open.
+mapped PE bytes. In the full-cycle samples the difference starts with the
+first advancement of the stage timer.
 
 The sampler and traces are `.analysis/pi/demo-cycle-trace.py` and
 `build/position-independence/demo-cycle-{retail,regular,reordered}/trace.json`.
+
+A second demo0 sample compared startup after SEM-376. Retail, regular and
+reordered links first advance the stage timer at replay indices 27, 26 and
+28 respectively. Each advances on the index where the active menu clears,
+then advances once per index through the end of the sample at 100. The
+stage callback at retail 0x00418194 returns early while that menu remains
+active. The gameplay-loading bit was clear throughout the sampled window.
+The ten gameplay fields still agree at every index. The local recipe and
+traces are `.analysis/pi/demo-startup-menu.py` and
+`build/position-independence/demo-startup-menu-{retail,regular,reordered}/trace.json`.
