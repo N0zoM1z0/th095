@@ -1,7 +1,8 @@
-#include "PhotoCamera.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoBulletManager.hpp"
 #include "AnmVmId.hpp"
+#include "GameplayGlobals.hpp"
 
 namespace th095
 {
@@ -80,130 +81,10 @@ static inline PhotoGameSoundPlayerView *PhotoGameSoundPlayer()
     return reinterpret_cast<PhotoGameSoundPlayerView *>(&g_SoundPlayer);
 }
 
-struct PhotoPlayerMovementConfigView
-{
-    u16 unknown000;
-    u16 shotPowerLevelCount;
-    f32 hurtboxSize;
-    f32 grazeSize;
-    f32 unknown00c;
-    f32 photoTargetSize;
-    f32 normalAxisSpeed;
-    f32 focusedAxisSpeed;
-    f32 normalDiagonalSpeed;
-    f32 focusedDiagonalSpeed;
-    struct ShotPowerLevel
-    {
-        void *descriptors;
-        i32 unknown004;
-    } shotPowerLevels[1];
-};
-
-struct PhotoPlayerShotDescriptorView
-{
-    i16 fireInterval;
-    u8 unknown002[0x38 - 2];
-};
-
-typedef char PhotoPlayerShotDescriptorSizeIs38[
-    (sizeof(PhotoPlayerShotDescriptorView) == 0x38) ? 1 : -1];
-
-typedef char PhotoPlayerNormalAxisSpeedAt14[
-    (offsetof(PhotoPlayerMovementConfigView, normalAxisSpeed) == 0x14) ? 1 : -1];
-typedef char PhotoPlayerFocusedDiagonalSpeedAt20[
-    (offsetof(PhotoPlayerMovementConfigView, focusedDiagonalSpeed) == 0x20) ? 1 : -1];
-
 static inline u16 PhotoGameInputMask(u16 input, u16 mask)
 {
     return input & mask;
 }
-
-struct PhotoPlayerFrameStateView
-{
-    ZunTimer timer;
-    u8 unknown00c[0x34 - 0x0c];
-};
-
-typedef char PhotoPlayerFrameStateSizeIs34[
-    (sizeof(PhotoPlayerFrameStateView) == 0x34) ? 1 : -1];
-
-struct PhotoGameUpdateView
-{
-    i32 mode;
-    PhotoAnmLoadedView *effectAnm;
-    AnmVm effectVm;
-    i32 movementState;
-    i32 cameraTrackingMode;
-    Float3 previousPosition;
-    Float3 positionHistory[16];
-    Float3 hurtboxBoundsMin;
-    Float3 hurtboxBoundsMax;
-    Float3 grazeBoundsMin;
-    Float3 grazeBoundsMax;
-    Float3 hurtboxHalfSize;
-    Float3 grazeHalfSize;
-    Float3 photoTargetHalfSize;
-    Float3 velocity;
-    f32 currentHorizontalSpeed;
-    f32 currentVerticalSpeed;
-    PhotoPlayerMovementConfigView *movementConfig;
-    ZunTimer stateTimer;
-    ZunTimer completionTimer;
-    PhotoPlayerFrameStateView frameStates[128];
-    PhotoAnmVmId focusVm;
-    Float3 playerPosition;
-    PhotoCameraState camera;
-    f32 cameraUpdateScale;
-    ChainElem *calcChain;
-    ChainElem *drawPlayerChain;
-    ChainElem *drawCameraChain;
-    Float3 photoTargetBoundsMin;
-    Float3 photoTargetBoundsMax;
-
-    PhotoGameUpdateView();
-    ~PhotoGameUpdateView();
-    i32 Initialize();
-    i32 LoadSht(char *path);
-    f32 AngleFromPoint(Float3 *position);
-    i32 CheckBulletCollision(Float3 *position, Float3 *size);
-    u32 CalcLaserHitbox(Float3 *origin, f32 angle, f32 width, f32 length);
-    void Die();
-    i32 UpdateMainState();
-    i32 Update();
-    i32 DrawPlayer();
-    i32 DrawCamera();
-
-    static PhotoGameUpdateView *Create();
-    void Destroy();
-    static i32 __fastcall OnUpdate(PhotoGameUpdateView *player);
-    static i32 __fastcall OnDrawPlayer(PhotoGameUpdateView *player);
-    static i32 __fastcall OnDrawCamera(PhotoGameUpdateView *player);
-};
-
-extern PhotoGameUpdateView *g_PhotoGame;
-
-typedef char PhotoGameUpdateHistoryAt2E8[
-    (offsetof(PhotoGameUpdateView, positionHistory) == 0x02e8) ? 1 : -1];
-typedef char PhotoGameUpdateBoundsAt3A8[
-    (offsetof(PhotoGameUpdateView, hurtboxBoundsMin) == 0x03a8) ? 1 : -1];
-typedef char PhotoGameUpdateVelocityAt3FC[
-    (offsetof(PhotoGameUpdateView, velocity) == 0x03fc) ? 1 : -1];
-typedef char PhotoGameUpdateMovementConfigAt410[
-    (offsetof(PhotoGameUpdateView, movementConfig) == 0x0410) ? 1 : -1];
-typedef char PhotoGameUpdateStateTimerAt414[
-    (offsetof(PhotoGameUpdateView, stateTimer) == 0x0414) ? 1 : -1];
-typedef char PhotoGameUpdateFrameStatesAt42C[
-    (offsetof(PhotoGameUpdateView, frameStates) == 0x042c) ? 1 : -1];
-typedef char PhotoGameUpdateFocusVmAt1E2C[
-    (offsetof(PhotoGameUpdateView, focusVm) == 0x1e2c) ? 1 : -1];
-typedef char PhotoGameUpdateCameraAt1E3C[
-    (offsetof(PhotoGameUpdateView, camera) == 0x1e3c) ? 1 : -1];
-typedef char PhotoGameUpdateScaleAt2A18[
-    (offsetof(PhotoGameUpdateView, cameraUpdateScale) == 0x2a18) ? 1 : -1];
-typedef char PhotoGameUpdatePhotoBoundsAt2A28[
-    (offsetof(PhotoGameUpdateView, photoTargetBoundsMin) == 0x2a28) ? 1 : -1];
-typedef char PhotoGameUpdateSizeIs2A40[
-    (sizeof(PhotoGameUpdateView) == 0x2a40) ? 1 : -1];
 
 PhotoCameraState::PhotoCameraState()
 {
@@ -225,7 +106,7 @@ void PhotoCameraState::Initialize()
         g_PhotoStageState->anm, 0x16, 0);
     this->vmIds[1] = TH095_PHOTO_ANM_CREATE_VM(
         g_PhotoStageState->anm, 0x17, 0);
-    this->viewfinderPosition = g_PhotoGame->playerPosition;
+    this->viewfinderPosition = g_RuntimePlayerOwner->playerPosition;
     this->viewfinderPosition.x = 0.0f;
     this->viewfinderPosition.y = 400.0f;
     this->charge = 0.5f;
@@ -256,7 +137,7 @@ static __forceinline void PhotoGameConstructorBodyPhase(
     u8 compilerStorage[0x0c];
     utils::DebugPrint("initialize PlayerInf\n");
     memset(view, 0, sizeof(*view));
-    g_PhotoGame = view;
+    g_RuntimePlayerOwner = view;
 }
 
 PhotoGameUpdateView::PhotoGameUpdateView()
@@ -270,7 +151,7 @@ PhotoGameUpdateView::~PhotoGameUpdateView()
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawPlayerChain);
     g_Chain.Cut(this->drawCameraChain);
-    g_PhotoGame = NULL;
+    g_RuntimePlayerOwner = NULL;
     g_AnmManager->MarkVmsForDeletion(
         reinterpret_cast<AnmLoaded *>(this->effectAnm));
     if (this->movementConfig != NULL)
@@ -487,11 +368,11 @@ i32 PhotoGameUpdateView::CheckBulletCollision(Float3 *position, Float3 *size)
     {
         return 0;
     }
-    if (this->mode == 2)
+    if (this->mode == PHOTO_PLAYER_MODE_DEATH_TRANSITION)
     {
         return 0;
     }
-    if (this->mode == 3)
+    if (this->mode == PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION)
     {
         return 0;
     }
@@ -517,11 +398,11 @@ u32 PhotoGameUpdateView::CalcLaserHitbox(
     {
         return 0;
     }
-    if (this->mode == 2)
+    if (this->mode == PHOTO_PLAYER_MODE_DEATH_TRANSITION)
     {
         return 0;
     }
-    if (this->mode == 3)
+    if (this->mode == PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION)
     {
         return 0;
     }
@@ -533,7 +414,7 @@ void PhotoGameUpdateView::Die()
 {
     Float3 screenPosition;
 
-    this->mode = 2;
+    this->mode = PHOTO_PLAYER_MODE_DEATH_TRANSITION;
     PhotoToScreen(&screenPosition, &this->playerPosition);
     g_AnmManager->SetPosition(
         reinterpret_cast<PhotoGameAnmSpawnerView *>(
@@ -556,7 +437,7 @@ void PhotoGameUpdateView::Die()
 
 i32 PhotoGameUpdateView::DrawPlayer()
 {
-    if (this->mode == 2)
+    if (this->mode == PHOTO_PLAYER_MODE_DEATH_TRANSITION)
     {
         return 1;
     }
@@ -676,9 +557,10 @@ i32 PhotoGameUpdateView::UpdateMainState()
         this->movementState = PHOTO_PLAYER_DIRECTION_NONE;
     }
 
-    this->cameraTrackingMode = PhotoGameInputMask(g_PhotoInput, 1) != 0;
+    this->cameraTrackingMode = static_cast<PhotoPlayerCameraTrackingMode>(
+        PhotoGameInputMask(g_PhotoInput, 1) != 0);
 
-    if (this->cameraTrackingMode != 0)
+    if (this->cameraTrackingMode != PHOTO_PLAYER_CAMERA_TRACKING_FREE)
     {
         if (PhotoGameFocusVmIsZero(&this->focusVm))
         {
@@ -726,7 +608,7 @@ i32 PhotoGameUpdateView::UpdateMainState()
         {
             verticalSpeed *= 0.22f;
             horizontalSpeed *= 0.22f;
-            this->cameraTrackingMode = 2;
+            this->cameraTrackingMode = PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW;
         }
     }
     else
@@ -773,8 +655,8 @@ i32 PhotoGameUpdateView::UpdateMainState()
         }
     }
 
-    horizontalSpeed *= this->cameraUpdateScale;
-    verticalSpeed *= this->cameraUpdateScale;
+    horizontalSpeed *= this->movementScale;
+    verticalSpeed *= this->movementScale;
 
 #define SET_PHOTO_PLAYER_SCRIPT(idx)                                            \
     this->effectAnm->SetAndExecuteScriptIdx(&this->effectVm, (idx))
@@ -848,13 +730,13 @@ i32 PhotoGameUpdateView::Update()
 {
     switch (this->mode)
     {
-    case 0:
+    case PHOTO_PLAYER_MODE_ENTERING:
         this->playerPosition.y =
             -80.0f * static_cast<f32>(this->completionTimer) / 60.0f +
             480.0f;
         if (this->completionTimer >= 60)
         {
-            this->mode = 1;
+            this->mode = PHOTO_PLAYER_MODE_ACTIVE;
             this->completionTimer = 0;
         }
         else
@@ -862,12 +744,12 @@ i32 PhotoGameUpdateView::Update()
             break;
         }
 
-    case 1:
+    case PHOTO_PLAYER_MODE_ACTIVE:
         this->UpdateMainState();
         UpdatePhotoCamera(&this->camera);
         break;
 
-    case 2:
+    case PHOTO_PLAYER_MODE_DEATH_TRANSITION:
         if (this->completionTimer >= 30)
         {
             g_PhotoGameGlobalState->flags |= 0x20;
@@ -875,7 +757,7 @@ i32 PhotoGameUpdateView::Update()
         }
         break;
 
-    case 3:
+    case PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION:
         if (this->completionTimer == 4)
         {
             g_PhotoRuntimeResetTarget->ResetForPhotoTransition();
@@ -892,7 +774,7 @@ i32 PhotoGameUpdateView::Update()
         break;
     }
 
-    this->cameraUpdateScale = 1.0f;
+    this->movementScale = 1.0f;
     AnmManager::ExecuteScript(&this->effectVm);
     this->completionTimer.Tick();
     return 1;

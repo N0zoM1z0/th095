@@ -77,7 +77,7 @@ this table while exact builds retain their target-facing symbol spellings.
 | `0x004C4CC4` | Worker active word, worker `+0x0C` | `replayScanWorker.active` | shared field |
 | `0x004C4DF4` | Front-end task publication, Supervisor `+0x784` | `g_Supervisor.photoGameTask` | distinct embedded slot |
 | `0x004C4E6C` | Photo stage state | `g_PhotoStageState` | shared typed pointer |
-| `0x004C4E70` | Player/photo-game controller | `g_RuntimePlayerOwner` | shared |
+| `0x004C4E70` | PlayerInf | `g_RuntimePlayerOwner` | shared typed pointer |
 | `0x004C4E74` | Replay manager | real `g_ReplayManager` pointer | shared |
 | `0x004C4E78` | Persistent score/save data | `g_ResultSaveData` lifecycle | shared |
 | `0x004C4EE8` | Sound player object | real `g_SoundPlayer` | embedded fields shared |

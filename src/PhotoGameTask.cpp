@@ -18,11 +18,9 @@
 #include "PhotoEnemyManager.hpp"
 #endif
 #include "PhotoGameTask.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoEffectRuntime.hpp"
-#ifndef DIFFBUILD
-#include "PhotoPlayerRuntime.hpp"
-#endif
 #include "ReplayManager.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
@@ -38,12 +36,6 @@ namespace th095
 struct PhotoFrontManagerView
 {
     static PhotoFrontManagerView *Create();
-    void Destroy();
-};
-
-struct PhotoGameUpdateView
-{
-    static PhotoGameUpdateView *__fastcall Create();
     void Destroy();
 };
 
@@ -193,14 +185,11 @@ extern i32 g_ReplayUsesArchive;
     (g_PhotoGameRuntime->photoCounter.photoCapacity)
 #else
 #define TH095_PHOTO_TASK_PLAYER_Y \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
-         ->playerPosition.y)
+    (g_RuntimePlayerOwner->playerPosition.y)
 #define TH095_PHOTO_TASK_PHOTO_INDEX \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
-         ->camera.photoIndex)
+    (g_RuntimePlayerOwner->camera.photoIndex)
 #define TH095_PHOTO_TASK_PHOTO_LIMIT \
-    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
-         ->camera.photoLimit)
+    (g_RuntimePlayerOwner->camera.photoLimit)
 #endif
 
 PhotoGameTaskView::PhotoGameTaskView()

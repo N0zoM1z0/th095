@@ -17688,3 +17688,29 @@ canonical ANM and Supervisor declarations into the same translation unit as
 the duplicate declarations before emitting RunEcl. The exact raw field
 access remains until those header dependencies are reconciled. The normal
 dispatcher already uses the typed field.
+
+### SEM-382 — share the PlayerInf allocation and pointer
+
+The factory at 0x0042EFB0 allocates 0x2A40 bytes. The constructor clears
+that allocation and publishes it to 0x004C4E70 at 0x0042EB9C. The
+destructor cuts three chains, clears the same pointer at 0x0042EEFE and
+then schedules the loaded ANM VMs for deletion. Main owns the pointer cell
+and both build profiles now use its allocated type directly.
+
+`PhotoGamePlayer.hpp` shares the allocation with the laser collision
+callers and the normal photo task. This replaces duplicate definitions
+of `PhotoGameUpdateView` in the two PlayerInf bodies, two laser bodies
+and the normal photo task. The shared declaration includes the embedded
+camera. Both PlayerInf bodies use the same movement scale and the same
+player mode, direction and camera tracking types. ECL clients with the
+inherited ANM graph still access the checked offsets through the lighter
+`PhotoPlayerRuntimeView`.
+
+All 372 affected strict comparisons pass. Twelve PlayerInf relocation
+names now use the typed pointer, with the same offsets, types and target
+addresses. In the normal links, all 133 PlayerInf references follow the
+cell from 0x004D76DC to 0x004DCF2C. The four mapped sections are identical
+to each respective pre-change PE. The constructor and destructor fixture
+agrees with retail on publication, chain teardown and ANM cleanup order.
+The 540-case photo task fixture also agrees across the three images. See
+`.analysis/pi/player-owner/` for the local relocation and lifetime checks.

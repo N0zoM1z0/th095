@@ -35,7 +35,8 @@ DIFFABLE_EXTERN(void *, g_RuntimeEffectManagerOwner);
 // PhotoOverlay publishes the PhotoInf allocation and clears it at teardown.
 struct PhotoStageStateView;
 extern PhotoStageStateView *g_PhotoStageState;
-DIFFABLE_EXTERN(void *, g_RuntimePlayerOwner);
+struct PhotoGameUpdateView;
+extern PhotoGameUpdateView *g_RuntimePlayerOwner;
 
 // Canonical exact probes must preserve the historical target-facing extern
 // names without putting /DDIFFBUILD on the whole VC7.1 translation unit.

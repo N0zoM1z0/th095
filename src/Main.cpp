@@ -101,7 +101,7 @@ void *&g_RuntimeGameTaskOwner =
 void *g_RuntimeItemManagerOwner = 0;
 void *g_RuntimeEffectManagerOwner = 0;
 PhotoStageStateView *g_PhotoStageState = NULL;
-void *g_RuntimePlayerOwner = 0;
+PhotoGameUpdateView *g_RuntimePlayerOwner = NULL;
 #endif
 
 struct SupervisorGameTaskView

@@ -103,7 +103,7 @@ static __forceinline f32 &TargetMinimumDistanceSquared(Enemy *enemy)
 }
 static __forceinline const Float3 &TargetPlayerPosition()
 {
-    return static_cast<const PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)
+    return reinterpret_cast<const PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)
         ->playerPosition;
 }
 

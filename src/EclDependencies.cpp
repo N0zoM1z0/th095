@@ -98,7 +98,7 @@ void __fastcall BeginBoundaryAwareMove(
 {
     f32 angle;
 
-    if (static_cast<const PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)
+    if (reinterpret_cast<const PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)
             ->playerPosition.x < enemy->position.x)
     {
         angle = AddNormalizeAngle(

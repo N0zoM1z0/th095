@@ -3,6 +3,7 @@
 #else
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyManager.hpp"
 #include "PhotoEffectRuntime.hpp"
@@ -87,21 +88,7 @@ typedef char PhotoRotatingLaserBodyVmAt98[
 typedef char PhotoRotatingLaserTailVmAt364[
     (offsetof(PhotoRotatingLaserView, tailVm) == 0x364) ? 1 : -1];
 
-struct PhotoGameUpdateView
-{
-    u8 unknown0000[0x1e30];
-    Float3 playerPosition;
-
-    u32 CalcLaserHitbox(Float3 *origin, f32 angle, f32 width, f32 length);
-};
-
-extern PhotoGameUpdateView *g_PhotoGame;
 extern f32 g_AnmGameSpeed;
-
-#ifndef DIFFBUILD
-#define g_PhotoGame \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameUpdateView, g_RuntimePlayerOwner)
-#endif
 
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 #define g_PhotoEnemyManager \
@@ -253,7 +240,7 @@ i32 PhotoStraightLaserView::Update()
         collisionOrigin.FromAngleMagnitude(this->angle, 8.0f);
         collisionOrigin += *reinterpret_cast<Float3 *>(&this->position);
 
-        if (g_PhotoGame->CalcLaserHitbox(
+        if (g_RuntimePlayerOwner->CalcLaserHitbox(
                 &collisionOrigin,
                 this->angle,
                 this->width < 32.0f
@@ -263,7 +250,7 @@ i32 PhotoStraightLaserView::Update()
         {
             Float3 collisionSize(32.0f, 32.0f, 0.0f);
             this->CheckCollision(
-                &g_PhotoGame->playerPosition,
+                &g_RuntimePlayerOwner->playerPosition,
                 &collisionSize,
                 0);
         }
@@ -431,7 +418,7 @@ i32 PhotoRotatingLaserView::Update()
         collisionOrigin.FromAngleMagnitude(this->angle, 8.0f);
         collisionOrigin += *reinterpret_cast<Float3 *>(&this->position);
 
-        if (g_PhotoGame->CalcLaserHitbox(
+        if (g_RuntimePlayerOwner->CalcLaserHitbox(
                 &collisionOrigin,
                 this->angle,
                 this->width < 32.0f
@@ -441,7 +428,7 @@ i32 PhotoRotatingLaserView::Update()
         {
             Float3 collisionSize(32.0f, 32.0f, 0.0f);
             this->CheckCollision(
-                &g_PhotoGame->playerPosition,
+                &g_RuntimePlayerOwner->playerPosition,
                 &collisionSize,
                 0);
         }
@@ -870,7 +857,6 @@ finish:
 #undef hitCount
 #undef sampleCount
 #undef step
-
 
 i32 PhotoEffectBaseView::Initialize(void *args)
 {

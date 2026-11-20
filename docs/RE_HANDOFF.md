@@ -38,6 +38,9 @@ breakdown between PhotoCamera, PhotoInf and ScoreData. Normal ResultScreen
 now uses the canonical slots while the exact result view remains. SEM-381
 replaces the normal PhotoInf pointer projections with one typed singleton.
 Exact ResultScreen, PhotoGameTask and ECL still have recorded emission views.
+SEM-382 shares the PlayerInf allocation declaration and typed publication
+across PhotoGame and PhotoEffect. The normal photo task uses the same type.
+The legacy ECL headers still require the dependency-light Player view.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below
