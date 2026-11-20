@@ -2172,6 +2172,15 @@ call. Every variant emits 2,655 bytes and reserves 0x11C. The Win32
 adapter and the typedef preserve the baseline bytes and relocations.
 See `.analysis/controller-get-input/api-boundary/`.
 
+The slot and transition oracle tests seven further VC7.1 source forms.
+Taking the indexed slot address, binding a const pointer or reference, and
+negating the keyboard-availability bit all emit the baseline bytes. Changing
+the slot comparison or reordering the XOR/AND operands alters instructions
+within a 2,655-byte body. Computing the transition masks directly with AND
+and NOT emits 2,635 bytes. All variants reserve 0x11C. The current linked
+builds again agree with retail on all 1,312 input cases. See
+`.analysis/controller-get-input/slot-and-mask/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
