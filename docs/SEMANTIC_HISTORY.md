@@ -17599,3 +17599,19 @@ for photo completion. In the pinned exact probe, routing Update through
 PhotoStageStateView's PhotoAnmVmId wrapper adds a stack temporary to each
 of its two GetVm calls and increases 790 bytes to 802. DrawHud retains its
 617-byte extent with the canonical firstCaptureFrame field.
+
+### SEM-378 — use the PhotoInf owner in the normal photo task
+
+Normal PhotoGameTask now reads the captured VM IDs and first-capture frame
+bit through PhotoStageStateView. This retires the padded production view and
+its layout and bit-test selectors. Update still calls the same VM methods.
+The typed handle wrapper adds ten bytes to normal Update, while DrawHud
+retains its complete code and relocation list. In each normal link the
+only changed mapped bytes belong to Update and its trailing alignment.
+
+All ten exact PhotoGameTask comparisons pass with the existing exact
+receiver. An instruction-level comparison of retail and both normal PEs
+agrees in 540 cases covering photo completion, result, death, loading,
+menu closure and replay interrupt. It checks the VM slot and ID, call
+sequence, return code and affected state. The local recipe is
+`.analysis/pi/check-photo-task-stage-owner.py`.

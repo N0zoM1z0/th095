@@ -94,7 +94,6 @@
 1	src/PhotoGameTask.cpp	struct	PhotoGameUpdateView
 1	src/PhotoGameTask.cpp	struct	PhotoHelpMenuTaskView
 1	src/PhotoGameTask.cpp	struct	PhotoItemManagerView
-1	src/PhotoGameTask.cpp	struct	PhotoStageStateTaskView
 1	src/PhotoItemManager.cpp	struct	ItemGlobalStateView
 1	src/PhotoItemManager.cpp	struct	ItemPhotoGameView
 1	src/PhotoItemManager.cpp	struct	UpdateLocals

@@ -73,28 +73,6 @@ struct PhotoHelpMenuTaskView
     i32 closeRequested;
 };
 
-struct PhotoStageStateTaskView
-{
-    u8 unknown000[0x17720];
-    AnmVmId capturedPhotoVms[11];
-    u8 unknown1774c[0x25720 - 0x1774c];
-#ifdef DIFFBUILD
-    u32 flags;
-#else
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlag0 : 1;
-            u32 unknownFlag1 : 1;
-            u32 firstCaptureFrame : 1;
-            u32 unknownFlags3 : 29;
-        };
-    };
-#endif
-};
-
 #ifdef DIFFBUILD
 struct PhotoCapacityCounterTaskView
 {
@@ -179,9 +157,9 @@ extern char g_SelectedReplayPath[0x100];
 #define g_ReplayPath g_SelectedReplayPath
 #endif
 extern PhotoGameTaskView *g_PhotoGameTask;
-extern PhotoStageStateTaskView *g_PhotoStageState;
+extern PhotoStageStateView *g_PhotoStageState;
 #define g_PhotoStageState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateTaskView, g_RuntimeStageStateOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 #ifdef DIFFBUILD
 extern PhotoGameRuntimeTaskView *g_PhotoGameRuntime;
 #endif
@@ -354,11 +332,7 @@ i32 PhotoGameTaskView::DrawHud()
     {
         return 1;
     }
-#ifdef DIFFBUILD
-    if (((g_PhotoStageState->flags >> 2) & 1) == 0)
-#else
     if (g_PhotoStageState->firstCaptureFrame == 0)
-#endif
     {
         locals.alpha = 0xff;
         if (TH095_PHOTO_TASK_PLAYER_Y < 64.0f)
