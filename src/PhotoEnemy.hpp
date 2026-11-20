@@ -69,12 +69,6 @@ struct PhotoEnemyAnmVmIdStorage
     i32 value;
 };
 
-struct PhotoEnemyScheduledCall
-{
-    i16 subroutineId;
-    i16 unknown02;
-};
-
 // Canonical normal-source owner of the compact TH095 enemy element.  The
 // manager contains one template followed by 128 inline elements at stride
 // 0x4CC0.  Fields without independent producer/consumer evidence remain
@@ -200,8 +194,7 @@ struct PhotoEnemyView
     Float2 movementBoundsMax;              // +0x2c44
     f32 minimumPlayerDistanceSquared;      // +0x2c4c
     u8 unknown2c50[4];
-    i32 scheduledCallFrames[10];           // +0x2c54
-    PhotoEnemyScheduledCall scheduledCalls[10]; // +0x2c7c
+    PhotoEnemyEclSchedule eclSchedule;     // +0x2c54
     i32 pendingCallbackFrame;              // +0x2ca4
     u8 unknown2ca8[4];
     EnemyChildEclBlock *childEclBlocks[16]; // +0x2cac
@@ -347,9 +340,11 @@ typedef char PhotoEnemyPhotoTargetSlotAt2BE5[
 typedef char PhotoEnemyItemDropTypeAt2BD8[
     (offsetof(PhotoEnemyView, itemDropType) ==
         PHOTO_ENEMY_ECL_ITEM_DROP_TYPE_OFFSET) ? 1 : -1];
-typedef char PhotoEnemyScheduledFramesAt2C54[
-    (offsetof(PhotoEnemyView, scheduledCallFrames) ==
-        PHOTO_ENEMY_ECL_SCHEDULED_FRAMES_OFFSET) ? 1 : -1];
+typedef char PhotoEnemyEclScheduleAt2C54[
+    (offsetof(PhotoEnemyView, eclSchedule) ==
+         PHOTO_ENEMY_ECL_SCHEDULE_OFFSET &&
+     offsetof(PhotoEnemyEclSchedule, calls) == 0x28 &&
+     sizeof(PhotoEnemyEclSchedule) == 0x50) ? 1 : -1];
 typedef char PhotoEnemyUnknownAt2C50[
     (offsetof(PhotoEnemyView, unknown2c50) ==
         PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET) ? 1 : -1];
@@ -386,10 +381,8 @@ typedef char PhotoEnemyMovementBoundsAt2C3C[
          PHOTO_ENEMY_ECL_MOVEMENT_BOUNDS_OFFSET &&
      offsetof(PhotoEnemyView, minimumPlayerDistanceSquared) ==
          PHOTO_ENEMY_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED_OFFSET) ? 1 : -1];
-typedef char PhotoEnemyScheduledCallsAt2C7C[
-    (offsetof(PhotoEnemyView, scheduledCalls) ==
-         PHOTO_ENEMY_ECL_SCHEDULED_CALLS_OFFSET &&
-     offsetof(PhotoEnemyView, pendingCallbackFrame) ==
+typedef char PhotoEnemyPendingCallbackFrameAt2CA4[
+    (offsetof(PhotoEnemyView, pendingCallbackFrame) ==
          PHOTO_ENEMY_ECL_PENDING_CALLBACK_FRAME_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyTrailSamplesAt2CEC[
     (offsetof(PhotoEnemyView, trailSamples) == 0x2cec) ? 1 : -1];

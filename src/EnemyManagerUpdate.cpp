@@ -446,9 +446,9 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
     enemy->photoCaptureEclSubroutineId = -1;
     enemy->flags1 &= ~0x00020000;
     enemy->pendingEclSubroutineIndex = -1;
-    for (i = 0; i < 10; ++i)
+    for (i = 0; i < PHOTO_ENEMY_SCHEDULE_SLOT_COUNT; ++i)
     {
-        enemy->scheduledCallFrames[i] = -1;
+        enemy->eclSchedule.photoIndices[i] = PHOTO_ENEMY_SCHEDULE_INACTIVE;
     }
     enemy->pendingCallbackFrame = -1;
     reinterpret_cast<u8 *>(enemy)[0x2be6] = 0;
@@ -1209,9 +1209,9 @@ void PhotoEnemyView::Deactivate()
 i32 PhotoEnemyView::UpdateScheduledEclCalls()
 {
     i32 activeScheduleCount = 0;
-    for (i32 scheduleIndex = 0; scheduleIndex < 10; ++scheduleIndex)
+    for (i32 scheduleIndex = 0; scheduleIndex < PHOTO_ENEMY_SCHEDULE_SLOT_COUNT; ++scheduleIndex)
     {
-        if (this->scheduledCallFrames[scheduleIndex] < 0)
+        if (this->eclSchedule.photoIndices[scheduleIndex] < 0)
         {
             continue;
         }
@@ -1219,12 +1219,12 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
         activeScheduleCount++;
         i32 scheduledArgumentIndex;
         i32 scheduledCurrentPhoto = g_RuntimePlayerOwner->camera.photoIndex;
-        if (scheduledCurrentPhoto >= this->scheduledCallFrames[scheduleIndex])
+        if (scheduledCurrentPhoto >= this->eclSchedule.photoIndices[scheduleIndex])
         {
             TH095_PHOTO_ECL_INIT(g_PhotoEnemyManager->eclManager,
                 &this->mainEclContext,
-                this->scheduledCalls[scheduleIndex].subroutineId);
-            this->scheduledCallFrames[scheduleIndex] = -1;
+                this->eclSchedule.calls[scheduleIndex].subroutineId);
+            this->eclSchedule.photoIndices[scheduleIndex] = PHOTO_ENEMY_SCHEDULE_INACTIVE;
 
             for (scheduledArgumentIndex = 0; scheduledArgumentIndex < 16; ++scheduledArgumentIndex)
             {

@@ -155,10 +155,10 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2755: return (i32)enemy->lastFrameDisplacement.y;
     case 0x2756: return (i32)enemy->lastFrameDisplacement.z;
 
-    case 0x2757: return TH095_ECL_SCHEDULED_FRAME0(enemy);
-    case 0x2758: return TH095_ECL_SCHEDULED_FRAME1(enemy);
-    case 0x2759: return TH095_ECL_SCHEDULED_FRAME2(enemy);
-    case 0x275a: return TH095_ECL_SCHEDULED_FRAME3(enemy);
+    case 0x2757: return TH095_ECL_SCHEDULE(enemy).photoIndices[0];
+    case 0x2758: return TH095_ECL_SCHEDULE(enemy).photoIndices[1];
+    case 0x2759: return TH095_ECL_SCHEDULE(enemy).photoIndices[2];
+    case 0x275a: return TH095_ECL_SCHEDULE(enemy).photoIndices[3];
     case 0x2744: return (i32)enemy->movementAngle;
     case 0x2745: return (i32)enemy->angularVelocity;
     case 0x2746: return (i32)enemy->speed;
@@ -196,11 +196,6 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PLAYER_POSITION
 #undef TH095_ECL_PHOTO_TARGET_SLOT
 #undef TH095_PHOTO_ENEMY_U8
-#undef TH095_ECL_SCHEDULED_FRAME3
-#undef TH095_ECL_SCHEDULED_FRAME2
-#undef TH095_ECL_SCHEDULED_FRAME1
-#undef TH095_ECL_SCHEDULED_FRAME0
-#undef TH095_ECL_SCHEDULED_FRAME
 #undef TH095_ECL_ITEM_DROP_TYPE
 #undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT

@@ -17784,3 +17784,24 @@ references, both bullet collision references and both death references
 follow their methods in the reverse link. The 36 angle, 64 collision and
 death, and 14 scheduling cases agree across retail and both normal links.
 The local recipes are under `.analysis/pi/player-combat/`.
+
+### SEM-386 — type the ECL photo-index schedule
+
+EnemyInf owns a ten-slot schedule at +0x2C54. The first array contains signed
+photo-index thresholds. The second starts at +0x2C7C and contains ten call
+words. Opcode 115 writes both dwords and resolves the slot separately for
+each write. Dispatch uses the low signed 16-bit subroutine ID, and the upper
+half remains unknown. A negative threshold skips dispatch. Initialization
+and dispatch both write -1 to disable the slot.
+
+The integer and float resolvers expose slots 0 through 3 at selectors
+0x2757 through 0x275A. The integer lvalue resolver leaves these operands on
+their inline literal path. Both profiles use `PhotoEnemyEclSchedule` for
+all of these operations. The inherited `Enemy *` ABI reaches the schedule
+through one offset checked against the embedded object.
+
+All 166 affected strict comparisons pass. The four mapped sections of both
+normal PEs are identical to their respective pre-change builds. Retail and
+both normal links agree in 48 opcode writes, 20 resolver cases and 14
+dispatch cases with nonzero upper call words. The local recipes are under
+`.analysis/pi/enemy-schedule/`.

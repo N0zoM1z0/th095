@@ -165,10 +165,10 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x2755: return this->lastFrameDisplacement.y;
     case 0x2756: return this->lastFrameDisplacement.z;
 
-    case 0x2757: return (f32)TH095_ECL_SCHEDULED_FRAME0(this);
-    case 0x2758: return (f32)TH095_ECL_SCHEDULED_FRAME1(this);
-    case 0x2759: return (f32)TH095_ECL_SCHEDULED_FRAME2(this);
-    case 0x275a: return (f32)TH095_ECL_SCHEDULED_FRAME3(this);
+    case 0x2757: return (f32)TH095_ECL_SCHEDULE(this).photoIndices[0];
+    case 0x2758: return (f32)TH095_ECL_SCHEDULE(this).photoIndices[1];
+    case 0x2759: return (f32)TH095_ECL_SCHEDULE(this).photoIndices[2];
+    case 0x275a: return (f32)TH095_ECL_SCHEDULE(this).photoIndices[3];
     case 0x2730: return TH095_ECL_FLOAT_PLAYER_ANGLE(&this->worldPosition);
     case 0x2765:
     {
@@ -206,11 +206,6 @@ f32 Enemy::ResolveFloat(f32 operand)
 #undef TH095_ECL_FLOAT_PLAYER_POSITION
 #undef TH095_ECL_PHOTO_TARGET_SLOT
 #undef TH095_PHOTO_ENEMY_U8
-#undef TH095_ECL_SCHEDULED_FRAME3
-#undef TH095_ECL_SCHEDULED_FRAME2
-#undef TH095_ECL_SCHEDULED_FRAME1
-#undef TH095_ECL_SCHEDULED_FRAME0
-#undef TH095_ECL_SCHEDULED_FRAME
 #undef TH095_ECL_ITEM_DROP_TYPE
 #undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT

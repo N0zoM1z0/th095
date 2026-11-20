@@ -46,6 +46,8 @@ relocations. SEM-384 binds Camera and PhotoStage to the same PlayerInf type
 and places the forward angle method on that owner. SEM-385 shares its
 reverse angle and hit tests, and makes enemy scheduling use the camera
 photo index directly.
+SEM-386 gives opcode 115, the operand readers and enemy dispatch one typed
+schedule with separate photo-index thresholds and full call words.
 The legacy ECL headers still require the dependency-light Player view.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an

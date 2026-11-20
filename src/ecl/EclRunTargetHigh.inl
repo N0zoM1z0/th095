@@ -187,9 +187,9 @@ enter_subroutine:
     }
 
     case 115:
-        TH095_ECL_SCHEDULED_FRAME(enemy, TH08_ECL_READ_I(ctx, 0)) =
+        TH095_ECL_SCHEDULE(enemy).photoIndices[TH08_ECL_READ_I(ctx, 0)] =
             TH08_ECL_READ_I(ctx, 1);
-        TH095_ECL_SCHEDULED_CALL_RAW(enemy, TH08_ECL_READ_I(ctx, 0)) =
+        TH095_ECL_SCHEDULE(enemy).calls[TH08_ECL_READ_I(ctx, 0)].rawValue =
             TH08_ECL_READ_I(ctx, 2);
         break;
 

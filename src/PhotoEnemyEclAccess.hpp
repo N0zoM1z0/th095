@@ -6,6 +6,29 @@
 namespace th095
 {
 
+enum
+{
+    PHOTO_ENEMY_SCHEDULE_SLOT_COUNT = 10,
+    PHOTO_ENEMY_SCHEDULE_INACTIVE = -1,
+};
+
+// Opcode 115 writes the full word. Dispatch consumes its low signed half.
+union PhotoEnemyScheduledCall
+{
+    i32 rawValue;
+    struct
+    {
+        i16 subroutineId;
+        i16 unknown02;
+    };
+};
+
+struct PhotoEnemyEclSchedule
+{
+    i32 photoIndices[PHOTO_ENEMY_SCHEDULE_SLOT_COUNT];
+    PhotoEnemyScheduledCall calls[PHOTO_ENEMY_SCHEDULE_SLOT_COUNT];
+};
+
 // Dependency-light bridge for ECL symbols that still receive the legacy
 // Enemy* ABI spelling.  This is not a second object layout: every offset is
 // pinned back to the canonical PhotoEnemyView by assertions in PhotoEnemy.hpp,
@@ -57,8 +80,7 @@ enum PhotoEnemyEclOperandOffset
     PHOTO_ENEMY_ECL_MOVEMENT_BOUNDS_OFFSET = 0x2c3c,
     PHOTO_ENEMY_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED_OFFSET = 0x2c4c,
     PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET = 0x2c50,
-    PHOTO_ENEMY_ECL_SCHEDULED_FRAMES_OFFSET = 0x2c54,
-    PHOTO_ENEMY_ECL_SCHEDULED_CALLS_OFFSET = 0x2c7c,
+    PHOTO_ENEMY_ECL_SCHEDULE_OFFSET = 0x2c54,
     PHOTO_ENEMY_ECL_PENDING_CALLBACK_FRAME_OFFSET = 0x2ca4,
     PHOTO_ENEMY_ECL_PENDING_CALLBACK_SUBROUTINE_OFFSET = 0x2ca8,
     PHOTO_ENEMY_ECL_CHILD_BLOCKS_OFFSET = 0x2cac,
@@ -265,20 +287,10 @@ enum PhotoEnemyEclOperandRuntimeOffset
 #define TH095_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED(owner) \
     *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(owner) + \
                              th095::PHOTO_ENEMY_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED_OFFSET)
-#define TH095_ECL_SCHEDULED_FRAME(owner, index) \
-    TH095_PHOTO_ENEMY_I32( \
-        (owner), \
-        th095::PHOTO_ENEMY_ECL_SCHEDULED_FRAMES_OFFSET + \
-            sizeof(i32) * (index))
-#define TH095_ECL_SCHEDULED_FRAME0(owner) TH095_ECL_SCHEDULED_FRAME(owner, 0)
-#define TH095_ECL_SCHEDULED_FRAME1(owner) TH095_ECL_SCHEDULED_FRAME(owner, 1)
-#define TH095_ECL_SCHEDULED_FRAME2(owner) TH095_ECL_SCHEDULED_FRAME(owner, 2)
-#define TH095_ECL_SCHEDULED_FRAME3(owner) TH095_ECL_SCHEDULED_FRAME(owner, 3)
-#define TH095_ECL_SCHEDULED_CALL_RAW(owner, index) \
-    TH095_PHOTO_ENEMY_I32( \
-        (owner), \
-        th095::PHOTO_ENEMY_ECL_SCHEDULED_CALLS_OFFSET + \
-            sizeof(i32) * (index))
+#define TH095_ECL_SCHEDULE(owner) \
+    TH095_PHOTO_ENEMY_OBJECT( \
+        (owner), th095::PHOTO_ENEMY_ECL_SCHEDULE_OFFSET, \
+        th095::PhotoEnemyEclSchedule)
 #define TH095_ECL_PENDING_CALLBACK_FRAME(owner) \
     TH095_PHOTO_ENEMY_I32( \
         (owner), th095::PHOTO_ENEMY_ECL_PENDING_CALLBACK_FRAME_OFFSET)

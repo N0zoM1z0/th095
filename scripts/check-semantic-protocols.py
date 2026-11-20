@@ -3647,7 +3647,7 @@ def check_photo_enemy_owner() -> None:
         "PHOTO_ENEMY_ECL_ITEM_DROP_TYPE_OFFSET = 0x2bd8",
         "PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET = 0x2be5",
         "PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET = 0x2c50",
-        "PHOTO_ENEMY_ECL_SCHEDULED_FRAMES_OFFSET = 0x2c54",
+        "PHOTO_ENEMY_ECL_SCHEDULE_OFFSET = 0x2c54",
         "PHOTO_ENEMY_ECL_MANAGER_OFFSET = 0x4df4",
         "PHOTO_ENEMY_ECL_PHOTO_TARGETS_OFFSET = 0x26ae00",
         "PHOTO_ENEMY_ECL_CONTROL_OFFSET = 0x2bf4",
@@ -3723,6 +3723,8 @@ def check_photo_enemy_owner() -> None:
     restored = [name for name in retired_run_views if name in run_surfaces]
     if restored:
         fail(f"RunEcl restored compact-enemy projections: {', '.join(restored)}")
+    if ").calls[TH08_ECL_READ_I(ctx, 0)].rawValue =" not in run_surfaces:
+        fail("ECL opcode 115 must store the complete scheduled call word")
     for marker in (
         "TH095_ECL_RUNTIME_PHOTO_TARGET",
         "TH095_ECL_SHOOT_INTERVAL_FRAMES",
