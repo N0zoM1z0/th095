@@ -29,26 +29,6 @@ extern u16 g_PressedButtons;
 #define g_ResultMenuInput (RuntimeResultMenuInput())
 #define g_PressedButtons (RuntimePressedButtons())
 
-#ifndef DIFFBUILD
-static __forceinline OptionsGameConfigView &OptionsRuntimeGameConfig()
-{
-    return *reinterpret_cast<OptionsGameConfigView *>(&g_Supervisor.config);
-}
-
-static __forceinline OptionsControllerMappingView &OptionsRuntimeControllerMapping()
-{
-    return *reinterpret_cast<OptionsControllerMappingView *>(&g_Supervisor.config);
-}
-
-static __forceinline OptionsGameConfigView &OptionsPersistentControllerMapping()
-{
-    return *reinterpret_cast<OptionsGameConfigView *>(&g_ControllerMapping);
-}
-
-#define g_OptionsGameConfig (OptionsRuntimeGameConfig())
-#define g_OptionsControllerMapping (OptionsRuntimeControllerMapping())
-#endif
-
 inline u16 GetOptionsPressedButtons(u16 buttons)
 {
     return g_PressedButtons & buttons;
@@ -112,15 +92,15 @@ ChainCallbackResult OptionsMenuView::Update()
             OptionsCreateInitialVm(this, shallow.initialIndex + 0x6b);
         }
 
-        this->savedWindowed = g_OptionsGameConfig.windowed;
-        this->UpdateWindowModeSprites(g_OptionsGameConfig.windowed);
-        this->controllerBinding = g_OptionsGameConfig.controllerBinding;
+        this->savedWindowed = g_Supervisor.config.windowed;
+        this->UpdateWindowModeSprites(g_Supervisor.config.windowed);
+        this->controllerBinding = g_Supervisor.config.controllerMapping.bindings[0];
         this->UpdateButton00Sprites();
         this->UpdateButton02Sprites();
         this->UpdateButton06Sprites();
-        shallow.initialBgmVolume = g_OptionsGameConfig.bgmVolume;
+        shallow.initialBgmVolume = g_Supervisor.config.musicVolume;
         this->UpdateBgmVolumeSprites(shallow.initialBgmVolume);
-        shallow.initialSfxVolume = g_OptionsGameConfig.sfxVolume;
+        shallow.initialSfxVolume = g_Supervisor.config.sfxVolume;
         this->UpdateSfxVolumeSprites(shallow.initialSfxVolume);
         this->outerFlags &= ~8u;
 
@@ -156,34 +136,34 @@ ChainCallbackResult OptionsMenuView::Update()
             switch (this->cursor.GetCurrent())
             {
             case OPTIONS_MENU_ITEM_WINDOW_MODE:
-                g_OptionsGameConfig.windowed =
-                    1 - g_OptionsGameConfig.windowed;
-                this->UpdateWindowModeSprites(g_OptionsGameConfig.windowed);
+                g_Supervisor.config.windowed =
+                    1 - g_Supervisor.config.windowed;
+                this->UpdateWindowModeSprites(g_Supervisor.config.windowed);
                 break;
 
             case OPTIONS_MENU_ITEM_BGM_VOLUME:
-                if (g_OptionsGameConfig.bgmVolume > 0)
+                if (g_Supervisor.config.musicVolume > 0)
                 {
-                    g_OptionsGameConfig.bgmVolume -= 5;
-                    if (g_OptionsGameConfig.bgmVolume < 0)
+                    g_Supervisor.config.musicVolume -= 5;
+                    if (g_Supervisor.config.musicVolume < 0)
                     {
-                        g_OptionsGameConfig.bgmVolume = 0;
+                        g_Supervisor.config.musicVolume = 0;
                     }
                 }
-                shallow.leftBgmVolume = g_OptionsGameConfig.bgmVolume;
+                shallow.leftBgmVolume = g_Supervisor.config.musicVolume;
                 this->UpdateBgmVolumeSprites(shallow.leftBgmVolume);
                 break;
 
             case OPTIONS_MENU_ITEM_SFX_VOLUME:
-                if (g_OptionsGameConfig.sfxVolume > 0)
+                if (g_Supervisor.config.sfxVolume > 0)
                 {
-                    g_OptionsGameConfig.sfxVolume -= 5;
-                    if (g_OptionsGameConfig.sfxVolume < 0)
+                    g_Supervisor.config.sfxVolume -= 5;
+                    if (g_Supervisor.config.sfxVolume < 0)
                     {
-                        g_OptionsGameConfig.sfxVolume = 0;
+                        g_Supervisor.config.sfxVolume = 0;
                     }
                 }
-                shallow.leftSfxVolume = g_OptionsGameConfig.sfxVolume;
+                shallow.leftSfxVolume = g_Supervisor.config.sfxVolume;
                 this->UpdateSfxVolumeSprites(shallow.leftSfxVolume);
                 break;
             }
@@ -194,41 +174,41 @@ ChainCallbackResult OptionsMenuView::Update()
             switch (this->cursor.GetCurrent())
             {
             case OPTIONS_MENU_ITEM_WINDOW_MODE:
-                g_OptionsGameConfig.windowed =
-                    1 - g_OptionsGameConfig.windowed;
-                this->UpdateWindowModeSprites(g_OptionsGameConfig.windowed);
+                g_Supervisor.config.windowed =
+                    1 - g_Supervisor.config.windowed;
+                this->UpdateWindowModeSprites(g_Supervisor.config.windowed);
                 break;
 
             case OPTIONS_MENU_ITEM_BGM_VOLUME:
-                if (g_OptionsGameConfig.bgmVolume < 100)
+                if (g_Supervisor.config.musicVolume < 100)
                 {
-                    g_OptionsGameConfig.bgmVolume += 5;
-                    if (g_OptionsGameConfig.bgmVolume > 100)
+                    g_Supervisor.config.musicVolume += 5;
+                    if (g_Supervisor.config.musicVolume > 100)
                     {
-                        g_OptionsGameConfig.bgmVolume = 100;
+                        g_Supervisor.config.musicVolume = 100;
                     }
                 }
-                shallow.rightBgmVolume = g_OptionsGameConfig.bgmVolume;
+                shallow.rightBgmVolume = g_Supervisor.config.musicVolume;
                 this->UpdateBgmVolumeSprites(shallow.rightBgmVolume);
                 break;
 
             case OPTIONS_MENU_ITEM_SFX_VOLUME:
-                if (g_OptionsGameConfig.sfxVolume < 100)
+                if (g_Supervisor.config.sfxVolume < 100)
                 {
-                    g_OptionsGameConfig.sfxVolume += 5;
-                    if (g_OptionsGameConfig.sfxVolume > 100)
+                    g_Supervisor.config.sfxVolume += 5;
+                    if (g_Supervisor.config.sfxVolume > 100)
                     {
-                        g_OptionsGameConfig.sfxVolume = 100;
+                        g_Supervisor.config.sfxVolume = 100;
                     }
                 }
-                shallow.rightSfxVolume = g_OptionsGameConfig.sfxVolume;
+                shallow.rightSfxVolume = g_Supervisor.config.sfxVolume;
                 this->UpdateSfxVolumeSprites(shallow.rightSfxVolume);
                 break;
             }
         }
 
-        g_SoundPlayer.bgmVolume = g_OptionsGameConfig.bgmVolume;
-        g_SoundPlayer.sfxVolume = g_OptionsGameConfig.sfxVolume;
+        g_SoundPlayer.bgmVolume = g_Supervisor.config.musicVolume;
+        g_SoundPlayer.sfxVolume = g_Supervisor.config.sfxVolume;
         if (this->cursor.GetCurrent() == OPTIONS_MENU_ITEM_SFX_VOLUME && this->animationTimer.current % 40 == 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
@@ -251,47 +231,47 @@ ChainCallbackResult OptionsMenuView::Update()
             {
             case OPTIONS_MENU_ITEM_BUTTON02_BINDING:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                if (this->controllerBinding.button06 == shallow.joystickButton)
+                if (this->controllerBinding.menuButton == shallow.joystickButton)
                 {
-                    this->controllerBinding.button06 =
-                        this->controllerBinding.button02;
+                    this->controllerBinding.menuButton =
+                        this->controllerBinding.bombButton;
                 }
-                if (this->controllerBinding.button00 == shallow.joystickButton)
+                if (this->controllerBinding.shotButton == shallow.joystickButton)
                 {
-                    this->controllerBinding.button00 =
-                        this->controllerBinding.button02;
+                    this->controllerBinding.shotButton =
+                        this->controllerBinding.bombButton;
                 }
-                this->controllerBinding.button02 = shallow.joystickButton;
+                this->controllerBinding.bombButton = shallow.joystickButton;
                 break;
 
             case OPTIONS_MENU_ITEM_BUTTON00_BINDING:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                if (this->controllerBinding.button06 == shallow.joystickButton)
+                if (this->controllerBinding.menuButton == shallow.joystickButton)
                 {
-                    this->controllerBinding.button06 =
-                        this->controllerBinding.button00;
+                    this->controllerBinding.menuButton =
+                        this->controllerBinding.shotButton;
                 }
-                if (this->controllerBinding.button02 == shallow.joystickButton)
+                if (this->controllerBinding.bombButton == shallow.joystickButton)
                 {
-                    this->controllerBinding.button02 =
-                        this->controllerBinding.button00;
+                    this->controllerBinding.bombButton =
+                        this->controllerBinding.shotButton;
                 }
-                this->controllerBinding.button00 = shallow.joystickButton;
+                this->controllerBinding.shotButton = shallow.joystickButton;
                 break;
 
             case OPTIONS_MENU_ITEM_BUTTON06_BINDING:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                if (this->controllerBinding.button00 == shallow.joystickButton)
+                if (this->controllerBinding.shotButton == shallow.joystickButton)
                 {
-                    this->controllerBinding.button00 =
-                        this->controllerBinding.button06;
+                    this->controllerBinding.shotButton =
+                        this->controllerBinding.menuButton;
                 }
-                if (this->controllerBinding.button02 == shallow.joystickButton)
+                if (this->controllerBinding.bombButton == shallow.joystickButton)
                 {
-                    this->controllerBinding.button02 =
-                        this->controllerBinding.button06;
+                    this->controllerBinding.bombButton =
+                        this->controllerBinding.menuButton;
                 }
-                this->controllerBinding.button06 = shallow.joystickButton;
+                this->controllerBinding.menuButton = shallow.joystickButton;
                 break;
             }
             this->UpdateButton00Sprites();
@@ -324,16 +304,10 @@ options_finish:
                 this->vmIds.SetInterrupt(shallow.teardownIndex + 0x6b, 1);
             }
             this->vmIds.SetInterrupt(0x6a, 1);
-            g_OptionsControllerMapping.primaryBinding = this->controllerBinding;
-#ifndef DIFFBUILD
-            OptionsPersistentControllerMapping().controllerBinding =
-                g_OptionsControllerMapping.primaryBinding;
-#else
-            g_OptionsGameConfig.controllerBinding =
-                g_OptionsControllerMapping.primaryBinding;
-#endif
+            g_Supervisor.config.controllerMapping.bindings[0] = this->controllerBinding;
+            g_ControllerInputSlots[0].mappings[0] = g_Supervisor.config.controllerMapping.bindings[0];
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            if (this->savedWindowed != g_OptionsGameConfig.windowed)
+            if (this->savedWindowed != g_Supervisor.config.windowed)
             {
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR;
             }

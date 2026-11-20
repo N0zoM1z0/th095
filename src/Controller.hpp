@@ -3,6 +3,7 @@
 
 #define DIRECTINPUT_VERSION 0x0800
 
+#include "ControllerInputSlot.hpp"
 #include "Global.hpp"
 
 #include <dinput.h>
@@ -13,22 +14,6 @@ namespace th095
 DIFFABLE_EXTERN(i32, g_ControllerInputEnabled);
 DIFFABLE_EXTERN_ARRAY(u8, 128, g_ControllerButtons);
 DIFFABLE_EXTERN_ARRAY(JOYCAPSA, 2, g_JoystickCaps);
-
-struct ControllerInputSlotView
-{
-    ControllerInputSlotView();
-
-    u16 current;
-    u16 previous;
-    u16 repeat;
-    u16 pressed;
-    u16 released;
-    u16 heldFrames[16];
-    u8 unknown02a[0x2e];
-    ControllerButtonMapping mappings[3];
-};
-
-DIFFABLE_EXTERN_ARRAY(ControllerInputSlotView, 3, g_ControllerInputSlots);
 
 namespace Controller
 {

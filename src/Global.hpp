@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Chain.hpp"
+#include "ControllerButtonMapping.hpp"
 #include "GameErrorContext.hpp"
 #include "Rng.hpp"
 #include "ZunResult.hpp"
@@ -172,19 +173,6 @@ class ZunMemory
 
     RegistryInfo *registry[0x1000];
     BOOL bRegistryInUse;
-};
-
-struct ControllerButtonMapping
-{
-    i16 shotButton;
-    i16 bombButton;
-    i16 focusButton;
-    i16 menuButton;
-    i16 upButton;
-    i16 downButton;
-    i16 leftButton;
-    i16 rightButton;
-    i16 skipButton;
 };
 
 struct ZunGlobals

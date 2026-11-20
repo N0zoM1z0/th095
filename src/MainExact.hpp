@@ -113,7 +113,6 @@ extern AnmManager *g_AnmManager;
 extern u16 g_PressedButtons;
 extern char g_WindowTitle[];
 extern HANDLE g_ExclusiveMutex;
-extern ControllerMapping g_ControllerMapping;
 
 } // namespace th095
 

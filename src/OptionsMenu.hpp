@@ -4,6 +4,7 @@
 #ifndef TH095_OPTIONS_MENU_HPP
 #define TH095_OPTIONS_MENU_HPP
 
+#include "ControllerButtonMapping.hpp"
 #include "ReplayBrowser.hpp"
 
 namespace th095
@@ -35,32 +36,6 @@ enum OptionsMenuItemValue
 typedef char OptionsMenuItemSizeIs4[
     (sizeof(OptionsMenuItem) == sizeof(i32)) ? 1 : -1];
 
-struct OptionsControllerBinding
-{
-    i16 button00;
-    i16 button02;
-    i16 unknown04;
-    i16 button06;
-    u8 unknown08[0x0a];
-};
-
-struct OptionsGameConfigView
-{
-    OptionsControllerBinding controllerBinding;
-    u8 unknown012[0x9d];
-    u8 windowed;
-    u8 unknown0b0[5];
-    i8 bgmVolume;
-    i8 sfxVolume;
-};
-
-struct OptionsControllerMappingView
-{
-    OptionsControllerBinding primaryBinding;
-};
-
-extern OptionsGameConfigView g_OptionsGameConfig;
-extern OptionsControllerMappingView g_OptionsControllerMapping;
 extern i16 g_OptionsLastJoystickButton;
 
 struct OptionsMenuView
@@ -75,7 +50,7 @@ struct OptionsMenuView
     u8 unknown0e88[0x1c];
     u8 savedWindowed;
     u8 unknown0ea5[0x143];
-    OptionsControllerBinding controllerBinding;
+    ControllerButtonMapping controllerBinding;
     u8 unknown0ffa[0x5106];
     AnmVmId transitionVm;
     u8 unknown6104[8];
@@ -108,10 +83,10 @@ struct OptionsMenuView
             i32 onesSprite;
             i32 tensSprite;
         } digits;
-        digits.tensSprite = this->controllerBinding.button00 / 10 + 0x66;
+        digits.tensSprite = this->controllerBinding.shotButton / 10 + 0x66;
         this->sceneAnm->SetSprite(
             g_AnmManager->GetVm(this->vmIds[0x74]), digits.tensSprite);
-        digits.onesSprite = this->controllerBinding.button00 % 10 + 0x66;
+        digits.onesSprite = this->controllerBinding.shotButton % 10 + 0x66;
         this->sceneAnm->SetSprite(
             g_AnmManager->GetVm(this->vmIds[0x75]), digits.onesSprite);
     }
@@ -123,10 +98,10 @@ struct OptionsMenuView
             i32 onesSprite;
             i32 tensSprite;
         } digits;
-        digits.tensSprite = this->controllerBinding.button02 / 10 + 0x66;
+        digits.tensSprite = this->controllerBinding.bombButton / 10 + 0x66;
         this->sceneAnm->SetSprite(
             g_AnmManager->GetVm(this->vmIds[0x72]), digits.tensSprite);
-        digits.onesSprite = this->controllerBinding.button02 % 10 + 0x66;
+        digits.onesSprite = this->controllerBinding.bombButton % 10 + 0x66;
         this->sceneAnm->SetSprite(
             g_AnmManager->GetVm(this->vmIds[0x73]), digits.onesSprite);
     }
@@ -138,10 +113,10 @@ struct OptionsMenuView
             i32 onesSprite;
             i32 tensSprite;
         } digits;
-        digits.tensSprite = this->controllerBinding.button06 / 10 + 0x66;
+        digits.tensSprite = this->controllerBinding.menuButton / 10 + 0x66;
         this->sceneAnm->SetSprite(
             g_AnmManager->GetVm(this->vmIds[0x76]), digits.tensSprite);
-        digits.onesSprite = this->controllerBinding.button06 % 10 + 0x66;
+        digits.onesSprite = this->controllerBinding.menuButton % 10 + 0x66;
         this->sceneAnm->SetSprite(
             g_AnmManager->GetVm(this->vmIds[0x77]), digits.onesSprite);
     }
@@ -247,13 +222,6 @@ struct OptionsMenuView
     }
 };
 
-typedef char OptionsControllerBindingSizeIs12[
-    (sizeof(OptionsControllerBinding) == 0x12) ? 1 : -1];
-typedef char OptionsGameConfigWindowedAtAF[
-    (offsetof(OptionsGameConfigView, windowed) == 0xaf) ? 1 : -1];
-typedef char OptionsGameConfigVolumesAtB5[
-    (offsetof(OptionsGameConfigView, bgmVolume) == 0xb5 &&
-     offsetof(OptionsGameConfigView, sfxVolume) == 0xb6) ? 1 : -1];
 typedef char OptionsMenuAnimationTimerAt14[
     (offsetof(OptionsMenuView, animationTimer) == 0x14) ? 1 : -1];
 typedef char OptionsMenuCursorAt20[

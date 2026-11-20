@@ -212,6 +212,5 @@ typedef char SupervisorSecondaryReplayScanAt7A0[
     (offsetof(Supervisor, secondaryReplayScanWorker) == 0x7a0) ? 1 : -1];
 
 extern Supervisor g_Supervisor;
-extern ControllerMapping g_ControllerMapping;
 
 } // namespace th095

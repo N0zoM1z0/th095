@@ -1292,9 +1292,8 @@ def check_game_configuration_owner(overrides: dict[str, str] | None = None) -> N
         fail("raw configuration images must not acquire Supervisor construction policy")
     required_layout = (
         "struct GameConfigOptions",
-        "struct ControllerBinding",
         "struct SerializedControllerMapping",
-        "struct ControllerMapping",
+        "ControllerButtonMapping bindings[6];",
         "struct GameConfiguration",
         "u8 unknown06c[0x38];",
         "GameColorMode colorMode16bit;",
@@ -1303,9 +1302,7 @@ def check_game_configuration_owner(overrides: dict[str, str] | None = None) -> N
         "u8 unknown0b7[0x0d];",
         "GameConfigOptions options;",
         "(sizeof(GameConfigOptions) == 4)",
-        "(sizeof(ControllerBinding) == 0x12)",
         "(sizeof(SerializedControllerMapping) == 0x6c)",
-        "(sizeof(ControllerMapping) == 0xc4)",
         "(sizeof(GameConfiguration) == 0xc8)",
         "(offsetof(GameConfiguration, colorMode16bit) == 0xac)",
         "(offsetof(GameConfiguration, musicMode) == 0xad)",
@@ -1316,12 +1313,7 @@ def check_game_configuration_owner(overrides: dict[str, str] | None = None) -> N
         if fact not in owner:
             fail(f"GameConfiguration owner lost canonical layout: {fact}")
 
-    canonical_types = (
-        "GameConfigOptions",
-        "ControllerBinding",
-        "SerializedControllerMapping",
-        "ControllerMapping",
-    )
+    canonical_types = ("GameConfigOptions", "SerializedControllerMapping")
     declarations: dict[str, list[str]] = {name: [] for name in canonical_types}
     configuration_declarations: list[str] = []
     for path in sorted(SRC.rglob("*")):

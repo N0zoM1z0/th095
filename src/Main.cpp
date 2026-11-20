@@ -3,6 +3,7 @@
 #else
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
+#include "ControllerInputSlot.hpp"
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
 #ifndef DIFFBUILD
@@ -79,11 +80,6 @@ f64 g_LastFpsTimestamp;
 char g_WindowTitle[] =
     "\x93\x8c\x95\xfb\x95\xb6\x89\xd4\x92\x9f\x81\x40\x81\x60 "
     "Shoot the Bullet. ver 1.02a";
-
-// Target 0x004BE270 is a standalone process-lifetime ControllerMapping POD.
-// GameConfiguration::Initialize reads it, while Supervisor::LoadConfig and the
-// options menu write it back from the canonical Supervisor configuration.
-ControllerMapping g_ControllerMapping;
 
 // The retail image has one pointer slot for each gameplay subsystem.  Exact
 // units keep their target-facing per-TU symbol names; the runnable build routes
@@ -2020,12 +2016,12 @@ void GameConfiguration::Initialize()
     this->playSounds = 1;
     this->windowed = 0;
     this->frameskipConfig = 0;
-    this->controllerMapping.bindings[0] = g_ControllerMapping.primaryBindings[0];
-    this->controllerMapping.bindings[1] = g_ControllerMapping.primaryBindings[1];
-    this->controllerMapping.bindings[2] = g_ControllerMapping.primaryBindings[2];
-    this->controllerMapping.bindings[3] = g_ControllerMapping.secondaryBindings[0];
-    this->controllerMapping.bindings[4] = g_ControllerMapping.secondaryBindings[1];
-    this->controllerMapping.bindings[5] = g_ControllerMapping.secondaryBindings[2];
+    this->controllerMapping.bindings[0] = g_ControllerInputSlots[0].mappings[0];
+    this->controllerMapping.bindings[1] = g_ControllerInputSlots[0].mappings[1];
+    this->controllerMapping.bindings[2] = g_ControllerInputSlots[0].mappings[2];
+    this->controllerMapping.bindings[3] = g_ControllerInputSlots[1].mappings[0];
+    this->controllerMapping.bindings[4] = g_ControllerInputSlots[1].mappings[1];
+    this->controllerMapping.bindings[5] = g_ControllerInputSlots[1].mappings[2];
     this->effectQuality = 2;
     this->musicVolume = 100;
     this->sfxVolume = 80;
@@ -2090,12 +2086,12 @@ i32 Supervisor::LoadConfig(char *configFile)
                 "\x8a\xfa\x89\xbb\x82\xb5\x82\xdc\x82\xb5\x82\xbd\x0d\x0a");
             goto SET_DEFAULT;
         }
-        g_ControllerMapping.primaryBindings[0] = g_Supervisor.config.controllerMapping.bindings[0];
-        g_ControllerMapping.primaryBindings[1] = g_Supervisor.config.controllerMapping.bindings[1];
-        g_ControllerMapping.primaryBindings[2] = g_Supervisor.config.controllerMapping.bindings[2];
-        g_ControllerMapping.secondaryBindings[0] = g_Supervisor.config.controllerMapping.bindings[3];
-        g_ControllerMapping.secondaryBindings[1] = g_Supervisor.config.controllerMapping.bindings[4];
-        g_ControllerMapping.secondaryBindings[2] = g_Supervisor.config.controllerMapping.bindings[5];
+        g_ControllerInputSlots[0].mappings[0] = g_Supervisor.config.controllerMapping.bindings[0];
+        g_ControllerInputSlots[0].mappings[1] = g_Supervisor.config.controllerMapping.bindings[1];
+        g_ControllerInputSlots[0].mappings[2] = g_Supervisor.config.controllerMapping.bindings[2];
+        g_ControllerInputSlots[1].mappings[0] = g_Supervisor.config.controllerMapping.bindings[3];
+        g_ControllerInputSlots[1].mappings[1] = g_Supervisor.config.controllerMapping.bindings[4];
+        g_ControllerInputSlots[1].mappings[2] = g_Supervisor.config.controllerMapping.bindings[5];
     }
 
     this->disableVsync = 0;

@@ -1,6 +1,7 @@
 #include "MainExact.hpp"
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
+#include "ControllerInputSlot.hpp"
 
 #include <direct.h>
 #include <math.h>
@@ -1921,12 +1922,12 @@ void GameConfiguration::Initialize()
     this->playSounds = 1;
     this->windowed = 0;
     this->frameskipConfig = 0;
-    this->controllerMapping.bindings[0] = g_ControllerMapping.primaryBindings[0];
-    this->controllerMapping.bindings[1] = g_ControllerMapping.primaryBindings[1];
-    this->controllerMapping.bindings[2] = g_ControllerMapping.primaryBindings[2];
-    this->controllerMapping.bindings[3] = g_ControllerMapping.secondaryBindings[0];
-    this->controllerMapping.bindings[4] = g_ControllerMapping.secondaryBindings[1];
-    this->controllerMapping.bindings[5] = g_ControllerMapping.secondaryBindings[2];
+    this->controllerMapping.bindings[0] = g_ControllerInputSlots[0].mappings[0];
+    this->controllerMapping.bindings[1] = g_ControllerInputSlots[0].mappings[1];
+    this->controllerMapping.bindings[2] = g_ControllerInputSlots[0].mappings[2];
+    this->controllerMapping.bindings[3] = g_ControllerInputSlots[1].mappings[0];
+    this->controllerMapping.bindings[4] = g_ControllerInputSlots[1].mappings[1];
+    this->controllerMapping.bindings[5] = g_ControllerInputSlots[1].mappings[2];
     this->effectQuality = 2;
     this->musicVolume = 100;
     this->sfxVolume = 80;
@@ -1991,12 +1992,12 @@ i32 Supervisor::LoadConfig(char *configFile)
                 "\x8a\xfa\x89\xbb\x82\xb5\x82\xdc\x82\xb5\x82\xbd\x0d\x0a");
             goto SET_DEFAULT;
         }
-        g_ControllerMapping.primaryBindings[0] = g_Supervisor.config.controllerMapping.bindings[0];
-        g_ControllerMapping.primaryBindings[1] = g_Supervisor.config.controllerMapping.bindings[1];
-        g_ControllerMapping.primaryBindings[2] = g_Supervisor.config.controllerMapping.bindings[2];
-        g_ControllerMapping.secondaryBindings[0] = g_Supervisor.config.controllerMapping.bindings[3];
-        g_ControllerMapping.secondaryBindings[1] = g_Supervisor.config.controllerMapping.bindings[4];
-        g_ControllerMapping.secondaryBindings[2] = g_Supervisor.config.controllerMapping.bindings[5];
+        g_ControllerInputSlots[0].mappings[0] = g_Supervisor.config.controllerMapping.bindings[0];
+        g_ControllerInputSlots[0].mappings[1] = g_Supervisor.config.controllerMapping.bindings[1];
+        g_ControllerInputSlots[0].mappings[2] = g_Supervisor.config.controllerMapping.bindings[2];
+        g_ControllerInputSlots[1].mappings[0] = g_Supervisor.config.controllerMapping.bindings[3];
+        g_ControllerInputSlots[1].mappings[1] = g_Supervisor.config.controllerMapping.bindings[4];
+        g_ControllerInputSlots[1].mappings[2] = g_Supervisor.config.controllerMapping.bindings[5];
     }
 
     this->disableVsync = 0;

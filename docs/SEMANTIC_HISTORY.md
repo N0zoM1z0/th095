@@ -17917,3 +17917,32 @@ and initialize those bindings to zero. Retail configuration loading and
 Options write back to the live slots, so the fix must cover those writers
 as well. See `.analysis/controller-get-input/canonical-owner/` for the
 local recipes.
+
+### SEM-391 — bind configuration and Options to the live input slots
+
+Retail initializes three input slots at 0x004BE218 with stride 0x8E.
+The three 0x12-byte mappings in each slot start at +0x58. Configuration
+initialization reads six mappings from the first two slots, and valid
+configuration loads write them back. Options writes the edited joystick
+mapping to the first configuration entry and copies it to slot 0. The
+previous normal build put the three operations on a separate zero-filled
+object, so its saved bindings could change while live input kept using
+the constructor defaults.
+
+Both profiles now use the same `ControllerButtonMapping` for the six
+serialized records, the live slots and the Options edit buffer. The menu
+uses the named shot, bomb and menu fields, and reads the window and volume
+settings from the canonical configuration. `ControllerInputSlot.hpp`
+lets the exact configuration code consume the existing slot owner without
+importing Main's conflicting controller API declarations.
+
+All 655 affected strict comparisons pass. The 117 changed binding and
+configuration relocations retain their retail effective destinations.
+The 65 normal references from initialization, loading and the Options commit
+resolve to the same slot members after reversing the object order. The input
+array moves from 0x004D3358 to 0x004E12B0. The linked-code fixture verifies
+both constructor orders, valid and rejected files, missing-file defaults,
+six Options binding cases and 24 volume and window changes. It executes the
+actual controller reader after loading and remapping, with file, rendering
+and device calls supplied by the fixture. See
+`.analysis/controller-get-input/binding-owner/` for the local recipes.

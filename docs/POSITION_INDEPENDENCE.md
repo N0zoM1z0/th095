@@ -42,6 +42,16 @@ File reads, writes and replay file handles use `criticalSections[2]` at
 their exact comparisons now use the same Supervisor symbol and member
 addends. The lock and count changes keep their target instruction order.
 
+## Controller configuration bindings
+
+The two groups of three saved mappings belong to live controller slots 0 and
+1. SEM-391 removes the separate mapping allocation and routes configuration
+initialization, loading and the Options commit through those members. The
+array moves from 0x004D3358 to 0x004E12B0 in the reversed link. All 65 binding
+operands in the three normal functions follow the array and their member
+addends. Both layouts load and edit the same bindings as retail, and the
+controller reader uses the edited binding on its next call.
+
 ## Windows i386 link experiment
 
 `scripts/build-whole.py` links the regular PE and emits a map. The second

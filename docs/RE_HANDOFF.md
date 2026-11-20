@@ -21,9 +21,9 @@ scene timer differences at startup. SEM-358 and SEM-360 correct MIDI and
 DirectInput storage. SEM-376 makes the normal readers honor both controller
 indices. Publication of the second controller slot remains open. SEM-390
 shares the Controller storage declarations and corrects signed dead zones.
-The next input owner gap is in [configuration bindings](KNOWLEDGE_BASE.md).
-Retail reads and writes the two live slot binding arrays where the normal
-builds allocate a separate zero-initialized object.
+SEM-391 binds configuration initialization, loading and Options to the
+same live slot mappings. Both input-slot and configuration owners share the
+nine-button layout.
 SEM-368 binds stage loading to the BGM command queue. SEM-369 and SEM-370
 correct sixteen mismatched floating-point references and enforce literal
 data comparison in exact replay.
