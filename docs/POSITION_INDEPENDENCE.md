@@ -97,3 +97,11 @@ directory. The first launch placed the archives only in the working
 directory and the original executable also failed that setup. Local captures
 are under `build/position-independence/windowed-regular/` and
 `build/position-independence/windowed-reordered/`.
+
+The SEM-363 regular and reordered builds also exercised a complete capture in
+scene 1-1. The stage owner pointer moved from 0x004D76D8 to 0x004DCF28. Both
+captures reached slot 10, written as a 208-by-156 temporary photo. The capture
+header and saved slot agreed on dimensions, and both runs published a photo
+VM and timestamp. This exercises the empty-comment path. The local read-only
+probe and screenshots are under `.analysis/pi/photo-layout-runtime.py`
+and `build/position-independence/photo-{regular,reordered}/`.

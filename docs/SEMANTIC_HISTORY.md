@@ -17379,3 +17379,22 @@ copy and reset. UpdateShotAndAnm independently consumes the interval at
 +0x2BC8. Both profiles now use the declared descriptor and interval members.
 The exact replay passes all 22 units in EnemyManagerUpdate. The matching
 normal method compiles and the normal game links.
+
+### SEM-363 — photo capture header and record storage
+
+The constructor at 0x0042A8A0 constructs eleven 0x2214-byte records at
+stage +0x44. SavePhoto calls the display builder at that same record base.
+Update at 0x0042AD60 clears 80 bytes of comment at stage +0x2208 plus the
+selected record stride. The old declaration split those bytes between a
+12-byte member and the following record or tail.
+
+The exact and normal PhotoStage bodies now share one stage declaration with
+a 0x44-byte capture header and a full comment in every record. The final
+record ends at +0x17720 where the captured-photo VM IDs begin. The separate
+exact overlay lifetime adapter already uses the target's record boundary.
+
+All 40 affected exact units pass across six translation units. The normal
+objects compile and link, and SavePhoto, CapturePhotoPixels and the Update
+callback independently retain their target structure.
+The capture path ran in regular and reverse-order links.
+[Capture validation](POSITION_INDEPENDENCE.md#expanded-normal-link-coverage)

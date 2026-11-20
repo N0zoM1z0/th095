@@ -33,8 +33,13 @@ device slot at +0x18. Its publication remains open.
 
 SEM-359 moves ECL movement and shot helpers to the shared typed player
 position. Use the [semantic index](SEMANTIC_INDEX.md) for the remaining ECL
-offsets. SEM-361 moves the exact photo capture accessors to the same
-named first-slot members as the normal stage.
+offsets. SEM-362 restores the scheduled ECL bullet descriptor and shot
+interval through typed members.
+
+SEM-363 gives the capture state a single header in PhotoInf, followed by
+eleven photo records with a full 80-byte comment each. PhotoStage now shares
+the canonical stage declaration between its exact and normal bodies. Use
+the [source map](SOURCE_MAP.md) for the remaining exact lifetime adapter.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below

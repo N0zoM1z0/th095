@@ -173,43 +173,6 @@ typedef char PhotoStageScoreEntryTailSizeIs48[
      0x48)
         ? 1
         : -1];
-typedef char PhotoStageSlotSizeIs2214[
-    (sizeof(PhotoStageSlot) == 0x2214) ? 1 : -1];
-typedef char PhotoStageSlotPrimaryVmsAt44[
-    (offsetof(PhotoStageSlot, display.primaryVms) == 0x44) ? 1 : -1];
-typedef char PhotoStageSlotOverlayVmsAt110C[
-    (offsetof(PhotoStageSlot, display.overlayVms) == 0x110c) ? 1 : -1];
-typedef char PhotoStageSlotScoreDataAt21D4[
-    (offsetof(PhotoStageSlot, display.scoreData) == 0x21d4) ? 1 : -1];
-typedef char PhotoStageSlotFlagsAt21F0[
-    (offsetof(PhotoStageSlot, display.scoreData) + 7 * sizeof(i32) == 0x21f0)
-        ? 1 : -1];
-typedef char PhotoStageSlotScoreAt21F4[
-    (offsetof(PhotoStageSlot, display.score) == 0x21f4) ? 1 : -1];
-typedef char PhotoStageSlotTimestampAt21F8[
-    (offsetof(PhotoStageSlot, timestamp) == 0x21f8) ? 1 : -1];
-typedef char PhotoStageSlotSlowRateAt21FC[
-    (offsetof(PhotoStageSlot, slowRate) == 0x21fc) ? 1 : -1];
-typedef char PhotoStageSlotWidthAt2200[
-    (offsetof(PhotoStageSlot, width) == 0x2200) ? 1 : -1];
-typedef char PhotoStageSlotHeightAt2204[
-    (offsetof(PhotoStageSlot, height) == 0x2204) ? 1 : -1];
-typedef char PhotoStageDisplayOverlayVmsAt10C8[
-    (offsetof(PhotoStageDisplayView, overlayVms) == 0x10c8) ? 1 : -1];
-typedef char PhotoStageDisplayScoreDataAt2190[
-    (offsetof(PhotoStageDisplayView, scoreData) == 0x2190) ? 1 : -1];
-typedef char PhotoStageDisplayScoreAt21B0[
-    (offsetof(PhotoStageDisplayView, score) == 0x21b0) ? 1 : -1];
-typedef char PhotoStageCapturedVmsAt17720[
-    (offsetof(PhotoStageStateView, capturedPhotoVms) == 0x17720) ? 1 : -1];
-typedef char PhotoStageDisplayVmsAt1774C[
-    (offsetof(PhotoStageStateView, displayVms) == 0x1774c) ? 1 : -1];
-typedef char PhotoStageBoundaryXAt2570C[
-    (offsetof(PhotoStageStateView, boundaryX) == 0x2570c) ? 1 : -1];
-typedef char PhotoStageAnmAt2571C[
-    (offsetof(PhotoStageStateView, anm) == 0x2571c) ? 1 : -1];
-typedef char PhotoStageCaptureFrameAt25724[
-    (offsetof(PhotoStageStateView, captureFrame) == 0x25724) ? 1 : -1];
 
 extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
 extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
@@ -287,7 +250,7 @@ static __forceinline void PhotoStageInterruptCurrentEntryPhase(
     u8 compilerStorage[8];
     entryIndex = PhotoStagePlayer()->camera.photoIndex - 1;
     TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
-        state->slots[0].entryVms[entryIndex].value, 1);
+        state->capture.entryVms[entryIndex].value, 1);
 }
 
 static inline ResultScoreEntryView *GetPhotoStageScoreEntry(i32 index)
@@ -695,13 +658,13 @@ static __forceinline void PhotoStagePublishCaptureRequestArgs(PhotoStageAnmManag
 static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView *state)
 {
     if ((GetPhotoStageDisplayScoreBreakdown(
-             &state->slots[state->slots[0].captureSlot].display)
+             &state->slots[state->capture.slot].display)
              ->scoringFlags &
          PHOTO_SCORE_ENEMY) != 0)
     {
         PhotoStageGlobalStateView *globalState;
         i32 bgmFormatIndexLocal05 =
-            state->slots[state->slots[0].captureSlot].display.score;
+            state->slots[state->capture.slot].display.score;
         globalState = g_PhotoStageGlobalState;
         globalState->currentScore += bgmFormatIndexLocal05;
     }
@@ -709,7 +672,7 @@ static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView 
 
 static __forceinline void PhotoStagePublishSlowRate(PhotoStageStateView *state)
 {
-    state->slots[state->slots[0].captureSlot].slowRate =
+    state->slots[state->capture.slot].slowRate =
         GetPhotoStageBestShotRecord(g_PhotoStageGlobalState->scoreIndex)->slowRate =
             100.0f -
             (f32)(g_Supervisor.lagNumerator / g_Supervisor.lagDenominator) * 100.0f;
@@ -849,7 +812,7 @@ i32 PhotoStageStateView::Update()
         }
     }
 
-    if (PhotoStageEntryVmIsZero(this->slots[0].entryVms[0]) &&
+    if (PhotoStageEntryVmIsZero(this->capture.entryVms[0]) &&
         PhotoStagePlayer()->camera.photoLimit > 0)
     {
         for (k = 0; k < PhotoStagePlayer()->camera.photoLimit; k++)
@@ -857,7 +820,7 @@ i32 PhotoStageStateView::Update()
             entryPosition.x = PhotoStageEntryXValue(k);
             entryPosition.y = 400.0f - (f32)(k % 5) * 80.0f;
             entryPosition.z = 0.0f;
-            this->slots[0].entryVms[k] =
+            this->capture.entryVms[k] =
                 g_PhotoStageSupervisor->photoAnm->CreateVmAtScreen(
                     12, &entryPosition);
         }
@@ -867,14 +830,14 @@ i32 PhotoStageStateView::Update()
     {
         if (this->captureFrame == 1)
         {
-            PhotoToScreen(&resultDrawBacking012, &this->slots[0].capturePosition);
+            PhotoToScreen(&resultDrawBacking012, &this->capture.position);
 
-            if (this->slots[0].captureWidth > 0)
+            if (this->capture.width > 0)
             {
                 readByteCountLocal02 = (i32)resultDrawBacking012.x -
-                    (this->slots[0].captureWidth - 6) / 2;
+                    (this->capture.width - 6) / 2;
                 rawLeft = readByteCountLocal02;
-                right = readByteCountLocal02 - 6 + this->slots[0].captureWidth;
+                right = readByteCountLocal02 - 6 + this->capture.width;
 
                 if ((f32)readByteCountLocal02 < 128.0f)
                 {
@@ -886,9 +849,9 @@ i32 PhotoStageStateView::Update()
                 }
 
                 top = (i32)resultDrawBacking012.y -
-                    (this->slots[0].captureHeight - 6) / 2;
+                    (this->capture.height - 6) / 2;
                 rawTop = top;
-                bottom = top - 6 + this->slots[0].captureHeight;
+                bottom = top - 6 + this->capture.height;
 
                 if ((f32)top < 16.0f)
                 {
@@ -899,11 +862,11 @@ i32 PhotoStageStateView::Update()
                     bottom = 463;
                 }
 
-                this->slots[0].captureWidth = right - readByteCountLocal02 + 6;
-                this->slots[0].captureHeight = bottom - top + 6;
+                this->capture.width = right - readByteCountLocal02 + 6;
+                this->capture.height = bottom - top + 6;
 
                 PhotoStagePublishCaptureRequestArgs(
-                    GetPhotoStageAnmManager(), this->slots[0].captureSlot,
+                    GetPhotoStageAnmManager(), this->capture.slot,
                     readByteCountLocal02, right, top, bottom);
 
                 g_PhotoCaptureCountdown = 99;
@@ -916,27 +879,27 @@ i32 PhotoStageStateView::Update()
             }
             else
             {
-                this->slots[0].captureWidth = 64;
-                this->slots[0].captureHeight = 48;
+                this->capture.width = 64;
+                this->capture.height = 48;
                 this->flags |= PHOTO_STAGE_WAITING_FOR_TEXTURE;
             }
 
             resultDrawBacking063.surface = NULL;
             reinterpret_cast<PhotoStageTextureEntry *>(this->anm->textures)
-                [this->slots[0].captureSlot]
+                [this->capture.slot]
                 .texture->GetSurfaceLevel(0, &resultDrawBacking063.surface);
             resultDrawBacking063.surface->LockRect(&resultDrawBacking063.lockedRect, NULL, 0);
 
-            for (resultDrawBacking063.y = 0; resultDrawBacking063.y < this->slots[0].captureHeight; resultDrawBacking063.y++)
+            for (resultDrawBacking063.y = 0; resultDrawBacking063.y < this->capture.height; resultDrawBacking063.y++)
             {
                 resultDrawBacking063.row = reinterpret_cast<u8 *>(resultDrawBacking063.lockedRect.pBits) +
                     resultDrawBacking063.y * resultDrawBacking063.lockedRect.Pitch;
                 memset(
                     resultDrawBacking063.row,
                     0,
-                    this->slots[0].captureWidth *
+                    this->capture.width *
                         reinterpret_cast<PhotoStageTextureEntry *>(
-                            this->anm->textures)[this->slots[0].captureSlot]
+                            this->anm->textures)[this->capture.slot]
                             .bytesPerPixel);
             }
             for (resultDrawBacking063.y = 0; resultDrawBacking063.y < 3; resultDrawBacking063.y++)
@@ -946,13 +909,13 @@ i32 PhotoStageStateView::Update()
                 memset(
                     resultDrawBacking063.row,
                     0xff,
-                    this->slots[0].captureWidth *
+                    this->capture.width *
                         reinterpret_cast<PhotoStageTextureEntry *>(
-                            this->anm->textures)[this->slots[0].captureSlot]
+                            this->anm->textures)[this->capture.slot]
                             .bytesPerPixel);
             }
-            for (resultDrawBacking063.y = this->slots[0].captureHeight - 3;
-                 resultDrawBacking063.y < this->slots[0].captureHeight;
+            for (resultDrawBacking063.y = this->capture.height - 3;
+                 resultDrawBacking063.y < this->capture.height;
                  resultDrawBacking063.y++)
             {
                 resultDrawBacking063.row = reinterpret_cast<u8 *>(resultDrawBacking063.lockedRect.pBits) +
@@ -960,29 +923,29 @@ i32 PhotoStageStateView::Update()
                 memset(
                     resultDrawBacking063.row,
                     0xff,
-                    this->slots[0].captureWidth *
+                    this->capture.width *
                         reinterpret_cast<PhotoStageTextureEntry *>(
-                            this->anm->textures)[this->slots[0].captureSlot]
+                            this->anm->textures)[this->capture.slot]
                             .bytesPerPixel);
             }
-            for (resultDrawBacking063.y = 3; resultDrawBacking063.y < this->slots[0].captureHeight - 3; resultDrawBacking063.y++)
+            for (resultDrawBacking063.y = 3; resultDrawBacking063.y < this->capture.height - 3; resultDrawBacking063.y++)
             {
                 resultDrawBacking063.row = reinterpret_cast<u8 *>(resultDrawBacking063.lockedRect.pBits) +
                     resultDrawBacking063.y * resultDrawBacking063.lockedRect.Pitch;
                 memset(
                     resultDrawBacking063.row, 0xff,
                     reinterpret_cast<PhotoStageTextureEntry *>(
-                        this->anm->textures)[this->slots[0].captureSlot]
+                        this->anm->textures)[this->capture.slot]
                             .bytesPerPixel *
                         3);
                 memset(
-                    resultDrawBacking063.row + (this->slots[0].captureWidth - 3) *
+                    resultDrawBacking063.row + (this->capture.width - 3) *
                         reinterpret_cast<PhotoStageTextureEntry *>(
-                            this->anm->textures)[this->slots[0].captureSlot]
+                            this->anm->textures)[this->capture.slot]
                             .bytesPerPixel,
                     0xff,
                     reinterpret_cast<PhotoStageTextureEntry *>(
-                        this->anm->textures)[this->slots[0].captureSlot]
+                        this->anm->textures)[this->capture.slot]
                             .bytesPerPixel *
                         3);
             }
@@ -990,26 +953,26 @@ i32 PhotoStageStateView::Update()
             resultDrawBacking063.surface->UnlockRect();
             resultDrawBacking063.surface->Release();
 
-            if (this->capturedPhotoVms[this->slots[0].captureSlot] != 0)
+            if (this->capturedPhotoVms[this->capture.slot] != 0)
             {
                 TH095_PHOTO_STAGE_ANM_MARK_DELETE(
-                    this->capturedPhotoVms[this->slots[0].captureSlot].value);
+                    this->capturedPhotoVms[this->capture.slot].value);
             }
-            this->capturedPhotoVms[this->slots[0].captureSlot] =
+            this->capturedPhotoVms[this->capture.slot] =
                 reinterpret_cast<PhotoStageAnmLoadedView *>(this->anm)->CreateVm(
-                    this->slots[0].captureSlot * 2, 0);
+                    this->capture.slot * 2, 0);
 
             captureVm =
                 TH095_PHOTO_STAGE_ANM_GET_VM(
-                    this->capturedPhotoVms[this->slots[0].captureSlot].value);
+                    this->capturedPhotoVms[this->capture.slot].value);
             captureVm->loadedSprite->uvEnd.x =
-                (f32)this->slots[0].captureWidth / 256.0f;
+                (f32)this->capture.width / 256.0f;
             captureVm->loadedSprite->uvEnd.y =
-                (f32)this->slots[0].captureHeight / 256.0f;
-            captureVm->spriteSize.x = (f32)this->slots[0].captureWidth;
-            captureVm->spriteSize.y = (f32)this->slots[0].captureHeight;
+                (f32)this->capture.height / 256.0f;
+            captureVm->spriteSize.x = (f32)this->capture.width;
+            captureVm->spriteSize.y = (f32)this->capture.height;
             TH095_PHOTO_STAGE_ANM_SET_POSITION(
-                this->capturedPhotoVms[this->slots[0].captureSlot].value,
+                this->capturedPhotoVms[this->capture.slot].value,
                 &resultDrawBacking012);
 
             ClearPhotoStageGlobalCaptureActive(g_PhotoStageGlobalState);
@@ -1036,31 +999,31 @@ i32 PhotoStageStateView::Update()
                             ->attemptCount++;
                     }
 
-                    this->slots[this->slots[0].captureSlot].timestamp =
+                    this->slots[this->capture.slot].timestamp =
                         (i32)time(NULL);
 
                     PhotoStagePublishSlowRate(this);
-                    this->slots[this->slots[0].captureSlot].width =
-                        this->slots[0].captureWidth;
-                    this->slots[this->slots[0].captureSlot].height =
-                        this->slots[0].captureHeight;
+                    this->slots[this->capture.slot].width =
+                        this->capture.width;
+                    this->slots[this->capture.slot].height =
+                        this->capture.height;
                     if (TH095_PHOTO_STAGE_CARD_INFO != NULL)
                     {
                         strcpy(
-                            this->slots[this->slots[0].captureSlot].comment,
+                            this->slots[this->capture.slot].comment,
                             TH095_PHOTO_STAGE_CARD_INFO->text);
                     }
                     else
                     {
                         memset(
-                            this->slots[this->slots[0].captureSlot].comment,
-                            0, 0x50);
+                            this->slots[this->capture.slot].comment, 0,
+                            sizeof(this->slots[this->capture.slot].comment));
                     }
 
                     if (!GetPhotoStageScoreEntry(
                              g_PhotoStageGlobalState->scoreIndex)
                              ->bestShotLocked &&
-                        this->slots[this->slots[0].captureSlot].display.score >
+                        this->slots[this->capture.slot].display.score >
                             GetPhotoStageScoreEntry(
                                 g_PhotoStageGlobalState->scoreIndex)
                                 ->scoreBreakdown.finalScore)
@@ -1070,7 +1033,7 @@ i32 PhotoStageStateView::Update()
                                  g_PhotoStageGlobalState->scoreIndex)
                                  ->scoreBreakdown,
                             GetPhotoStageDisplayScoreBreakdown(
-                                &this->slots[this->slots[0].captureSlot].display),
+                                &this->slots[this->capture.slot].display),
                             sizeof(PhotoScoreBreakdownView));
                         g_ResultSaveData->UpdateBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex);
@@ -1082,13 +1045,13 @@ i32 PhotoStageStateView::Update()
                             0x53545342;
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->width =
-                            (u16)this->slots[0].captureWidth;
+                            (u16)this->capture.width;
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->height =
-                            (u16)this->slots[0].captureHeight;
+                            (u16)this->capture.height;
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->score =
-                                this->slots[this->slots[0].captureSlot]
+                                this->slots[this->capture.slot]
                                     .display.score;
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->group =
@@ -1112,15 +1075,15 @@ i32 PhotoStageStateView::Update()
                             ->componentCount =
                             (u8)((reinterpret_cast<PhotoStageTextureEntry *>(
                                       this->anm->textures)
-                                      [this->slots[0].captureSlot]
+                                      [this->capture.slot]
                                           .bytesPerPixel == 4) +
                                 2);
                         GetPhotoStageScoreEntry(
                             g_PhotoStageGlobalState->scoreIndex)->bestShotSlowRate =
-                            this->slots[this->slots[0].captureSlot].slowRate;
+                            this->slots[this->capture.slot].slowRate;
                         GetPhotoStageScoreEntry(
                             g_PhotoStageGlobalState->scoreIndex)->captureTime =
-                            this->slots[this->slots[0].captureSlot].timestamp;
+                            this->slots[this->capture.slot].timestamp;
                         if (TH095_PHOTO_STAGE_CARD_INFO != NULL)
                         {
                             strcpy(
@@ -1138,11 +1101,11 @@ i32 PhotoStageStateView::Update()
                                 0, 0x50);
                         }
 
-                        if (this->slots[0].captureSlot != 10)
+                        if (this->capture.slot != 10)
                         {
                             GetPhotoStageBestShotRecord(
                                 g_PhotoStageGlobalState->scoreIndex)
-                                ->photoIndex = this->slots[0].captureSlot;
+                                ->photoIndex = this->capture.slot;
                         }
                         else
                         {
@@ -1150,7 +1113,7 @@ i32 PhotoStageStateView::Update()
                                 g_PhotoStageGlobalState->scoreIndex)
                                 ->photoIndex = -1;
                             this->CapturePhotoPixels(
-                                this->slots[0].captureSlot);
+                                this->capture.slot);
                         }
                     }
                 }
@@ -1171,7 +1134,7 @@ i32 PhotoStageStateView::Update()
         else if (this->captureFrame == 10)
         {
             if (this->waitingForTexture == 0 &&
-                this->slots[0].captureSlot != 10)
+                this->capture.slot != 10)
             {
                 PhotoStageInterruptCurrentEntryPhase(
                     this, resultDrawFrameIndex000);
@@ -1180,22 +1143,22 @@ i32 PhotoStageStateView::Update()
         else if (this->captureFrame == 35)
         {
             if (this->waitingForTexture == 0 &&
-                this->slots[0].captureSlot != 10)
+                this->capture.slot != 10)
             {
                 entryIndex = PhotoStagePlayer()->camera.photoIndex - 1;
                 TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
-                    this->slots[0].entryVms[entryIndex].value, 1);
+                    this->capture.entryVms[entryIndex].value, 1);
 
                 frame35Vm =
                     TH095_PHOTO_STAGE_ANM_GET_VM(
-                        this->capturedPhotoVms[this->slots[0].captureSlot]
+                        this->capturedPhotoVms[this->capture.slot]
                             .value);
                 PhotoStageInitFrame35Position(
                     &frame35Position,
                     (-frame35Vm->spriteSize.y * 0.4f) / 2.0f);
                 Rotate(&frame35Position, &frame35Position, frame35Vm->rotation.z);
                 frame35Position += frame35Vm->position;
-                this->slots[0].entryVms[entryIndex] =
+                this->capture.entryVms[entryIndex] =
                     g_PhotoStageSupervisor->photoAnm->CreateVmAtScreen(
                         10, &frame35Position);
                 frame35Position.y -= 6.0f;
