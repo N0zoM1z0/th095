@@ -111,7 +111,6 @@
 1	src/ResultScreen.cpp	struct	ResultAsciiManagerView
 1	src/ResultScreen.cpp	struct	ResultScreenGlobalStateView
 1	src/ResultScreen.cpp	struct	ResultScreenInitializeLocals
-1	src/ResultScreen.hpp	struct	ResultPhotoControllerView
 1	src/ResultScreen.hpp	struct	ResultScreen
 1	src/ResultScreen.hpp	struct	ResultScreenSceneLabel
 1	src/ResultScreen.hpp	struct	ResultScreenTimer

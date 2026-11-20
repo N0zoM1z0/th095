@@ -112,7 +112,7 @@ th095::InitializeGameResultScreen
 th095::InitializeReplayResultScreen
 th095::InitializePhotoResultScreen
 th095::ResultScreen::OnUpdate
-th095::ResultPhotoDataView::FindBestShot
+th095::PhotoStageStateView::FindBestShot
 th095::AnmVmId::GetVm
 th095::AnmVmId::SetInterrupt
 th095::ResultScreen::OnDraw

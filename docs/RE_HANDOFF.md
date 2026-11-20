@@ -49,7 +49,8 @@ photo index directly.
 SEM-386 gives opcode 115, the operand readers and enemy dispatch one typed
 schedule with separate photo-index thresholds and full call words.
 SEM-387 uses the same ANM manager fields for capture publication and
-dispatch in both profiles.
+dispatch in both profiles. SEM-388 shares those fields with the result
+initializers and gives both result profiles the actual PlayerInf photo limit.
 The legacy ECL headers still require the dependency-light Player view.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an

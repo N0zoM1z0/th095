@@ -66,7 +66,6 @@ inline ResultScreenReplayCursor::ResultScreenReplayCursor(i32)
     this->count = 999;
 }
 
-
 struct ResultScreenAnmVm
 {
     u8 unknown000[0x14];
@@ -150,17 +149,7 @@ struct ResultPhotoDataView
     u8 unknown176dc[0x17720 - 0x176dc];
     AnmVmId photoVms[11];
     u8 unknown1774c[0x2571c - 0x1774c];
-    ResultScreenAnmLoadedView *anm;
 
-    i32 FindBestShot();
-};
-
-struct ResultPhotoControllerView
-{
-    u8 unknown000[0x29ec];
-    i32 photoCount;
-
-    i32 GetPhotoCount() { return this->photoCount; }
 };
 
 typedef char ResultPhotoSlotViewSizeIs2214[

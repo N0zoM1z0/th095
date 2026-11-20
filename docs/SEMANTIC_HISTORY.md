@@ -17832,3 +17832,27 @@ reversed link. The four mapped sections match each respective pre-change
 PE. Retail and both normal links agree in 45 publication cases, 24 dispatch
 cases and 30 texture-copy cases, including failure and release paths. See
 `.analysis/pi/anm-capture-owner/` for the local recipes.
+
+### SEM-388 — share result capture and photo-limit access
+
+The game, replay and photo result initializers all publish ANM slot 10,
+entry zero and the same rectangle. They leave an occupied request intact.
+Both profiles now use the same `AnmManager` helper. The exact result loader,
+release path and text calls also use the real manager and established text
+interface, removing the padded request view and the lifecycle replica.
+
+The result browser reads PlayerInf +0x29EC as its photo limit. Both profiles
+use the same typed reader. The best-shot scan now belongs to PhotoStage,
+and the exact result path also uses the real PhotoInf for photo scores,
+ANM initialization and the capture texture format. A trial that also
+replaced the save and VM handle view grew UpdatePhotoResultScreen from
+1,323 to 1,338 bytes and PrepareBestShot from 380 to 400. These two exact
+bodies retain the remaining save and handle view.
+
+All 141 affected strict comparisons pass. Each normal link preserves the
+four mapped sections of its pre-change build. Retail and both normal links
+agree in 15 capture, 144 save, five best-shot scan, 12 navigation and VM
+interrupt, and 32 photo-limit cases. Three raw slow-rate payloads also
+survive the save unchanged. The limit cases vary the number of photos taken
+independently of the limit. See `.analysis/pi/result-capture-owner/` for the
+local recipes.

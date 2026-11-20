@@ -113,7 +113,7 @@ th095::InitializeGameResultScreen,0x00428590,function
 th095::InitializeReplayResultScreen,0x004288B0,function
 th095::InitializePhotoResultScreen,0x00428E90,function
 th095::ResultScreen::OnUpdate,0x0042A6B0,function
-th095::ResultPhotoDataView::FindBestShot,0x00429450,function
+th095::PhotoStageStateView::FindBestShot,0x00429450,function
 th095::AnmVmId::GetVm,0x004452F0,function
 th095::AnmVmId::SetInterrupt,0x00445330,function
 th095::ResultScreen::OnDraw,0x0042A6E0,function

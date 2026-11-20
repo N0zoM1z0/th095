@@ -8,6 +8,7 @@
 #include "InputRuntime.hpp"
 #include "Main.hpp"
 #include "PhotoStage.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
 #include "SoundPlayer.hpp"
@@ -219,13 +220,6 @@ const char *g_ResultAlphabet =
 extern i32 g_ResultSceneLimits[];
 extern const char *g_ResultAlphabet;
 #endif
-extern ResultPhotoControllerView *g_ResultPhotoController;
-
-#ifndef DIFFBUILD
-#define g_ResultPhotoController \
-    TH095_RUNTIME_GLOBAL_PTR(ResultPhotoControllerView, g_RuntimePlayerOwner)
-#endif
-
 extern void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
@@ -551,26 +545,7 @@ void ResultSaveDataView::UpdateBestShotRecord(i32 index)
     this->bestShotRecords[index].valid = 0;
 }
 
-static __forceinline void InitializeResultCapturePhase()
-{
-    AnmManager *anmManager = g_AnmManager;
-    if (anmManager->captureAnmIdx >= 0)
-    {
-    }
-    else
-    {
-        anmManager->captureAnmIdx = 10;
-        anmManager->captureSourceX = 0x80;
-        anmManager->captureSourceY = 0x10;
-        anmManager->captureSourceWidth = 0x180;
-        anmManager->captureSourceHeight = 0x1c0;
-        anmManager->captureDestinationX = 0;
-        anmManager->captureDestinationY = 0;
-        anmManager->captureDestinationWidth = 0x80;
-        anmManager->captureDestinationHeight = 0x80;
-        anmManager->textureCaptureEntryIndex = 0;
-    }
-}
+#include "ResultScreenCapture.inl"
 
 static __forceinline void InitializeGameReplayCursorPhase(
     ResultScreenReplayCursor *cursor)
@@ -831,13 +806,13 @@ void ResultScreen::PrepareBestShot()
         g_PhotoStageState->capturedPhotoVms[bestShot].SetInterrupt(2);
         PrepareBestShotCursorSetPhase(&this->photoCursor, bestShot);
 
-        if (bestShot < g_ResultPhotoController->GetPhotoCount())
+        if (bestShot < ReadResultPhotoLimit(&g_RuntimePlayerOwner->camera))
         {
             this->photoCursor.count =
-                g_ResultPhotoController->GetPhotoCount();
+                ReadResultPhotoLimit(&g_RuntimePlayerOwner->camera);
             this->photoCursor.wraps = 1;
             for (i32 i = 0;
-                 i < g_ResultPhotoController->GetPhotoCount();
+                 i < ReadResultPhotoLimit(&g_RuntimePlayerOwner->camera);
                  i++)
             {
 #ifdef DIFFBUILD
@@ -876,7 +851,7 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
 
     direction = 0;
     if (resultScreen->photoCursor.GetCurrent() <
-        g_ResultPhotoController->GetPhotoCount())
+        ReadResultPhotoLimit(&g_RuntimePlayerOwner->camera))
     {
         resultScreen->photoCursor.SaveCurrent();
         if (IsResultMenuInputPressed(0x40))

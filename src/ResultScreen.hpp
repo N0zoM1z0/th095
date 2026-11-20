@@ -68,14 +68,6 @@ typedef AnmLoaded ResultScreenAnmLoadedView;
 typedef AnmTextureEntryView ResultScreenTextureEntryView;
 typedef AnmLoadedSprite ResultScreenLoadedSpriteView;
 
-struct ResultPhotoControllerView
-{
-    u8 unknown000[0x29ec];
-    i32 photoCount;
-
-    i32 GetPhotoCount() { return this->photoCount; }
-};
-
 struct ResultScreenSceneLabel
 {
     char firstLine[0x2c];
