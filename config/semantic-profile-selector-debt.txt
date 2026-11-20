@@ -48,9 +48,6 @@
 3	src/BulletManager.cpp	#ifndef DIFFBUILD
 1	src/BulletManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/BulletManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/Controller.cpp	#ifdef TH095_MATCH_EXACT
-1	src/Controller.cpp	#ifndef TH095_MATCH_EXACT
-2	src/Controller.hpp	#ifdef TH095_MATCH_EXACT
 1	src/diffbuild.hpp	#ifdef DIFFBUILD
 3	src/diffbuild.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ecl/AnmManagerEclView.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)

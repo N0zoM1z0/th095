@@ -2155,6 +2155,13 @@ bytes. The no-debug object records the full extent in its function
 COMDAT section. The local compile results are under
 `build/controller-get-input/debug-profiles/`.
 
+SEM-390 types the Controller globals and keeps all 22 GetInput relocation
+destinations. Six additional pinned probes compare explicit keyboard array
+addresses, an explicit discard of the Win32 call result, and reversed or
+unsigned key masks. All six emit the same 2,655-byte GetInput code and
+relocations as the current source. The 0x11C frame and register schedule
+remain unchanged. See `.analysis/controller-get-input/canonical-owner/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now

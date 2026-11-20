@@ -48,8 +48,8 @@ struct GameConfiguration
     SerializedControllerMapping controllerMapping;  // +0x00
     u8 unknown06c[0x38];
     u32 version;                         // +0xa4
-    u16 padXAxis;                        // +0xa8
-    u16 padYAxis;                        // +0xaa
+    i16 padXAxis;                        // +0xa8
+    i16 padYAxis;                        // +0xaa
     GameColorMode colorMode16bit;        // +0xac
     GameMusicMode musicMode;             // +0xad
     u8 playSounds;                       // +0xae
@@ -75,6 +75,9 @@ typedef char ControllerMappingSizeIsC4[
     (sizeof(ControllerMapping) == 0xc4) ? 1 : -1];
 typedef char GameConfigurationSizeIsC8[
     (sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
+typedef char GameConfigurationPadAxesAtA8[
+    (offsetof(GameConfiguration, padXAxis) == 0xa8 &&
+     offsetof(GameConfiguration, padYAxis) == 0xaa) ? 1 : -1];
 typedef char GameConfigurationColorModeAtAC[
     (offsetof(GameConfiguration, colorMode16bit) == 0xac) ? 1 : -1];
 typedef char GameConfigurationMusicModeAtAD[

@@ -17883,3 +17883,37 @@ links agree in 32 preview-preparation cases as well as the prior save and
 navigation checks. A patterned score-entry fixture verifies that manual
 overwrite preserves every unrelated byte. See
 `.analysis/pi/result-photo-owner/` for the local recipes.
+
+### SEM-390 — share Controller storage and restore signed dead zones
+
+Controller now uses the same three input slots, WinMM capability array,
+button buffer, and Supervisor members in both profiles. The retail
+initializer at 0x00493F70 constructs three 0x8E-byte slots at 0x004BE218.
+Controller code addresses them as an array, and the exact comparison binds
+the keyboard, availability flags and controller assignment reads to the
+Supervisor fields used by the normal link.
+
+`GetControllerInput` sign-extends both halves of the dead-zone pair in
+the retail executable. The old normal source zero-extended them because
+the shared fields were unsigned. `GameConfiguration` now declares the
+fields as signed 16-bit values at +0xA8 and +0xAA. The serialized extent
+and the default value of 600 are preserved. Each normal link differs
+from its own pre-change mapped image at exactly four sign-extension
+opcodes. All 1,568 signed axis cases and 1,312 GetInput cases agree with
+retail in both link orders. The axis fixture reproduces 826 differences
+with the pre-fix builds.
+
+The 611 affected strict comparisons pass. The 29 Controller relocation
+changes preserve both position and effective target address. Across the
+two normal links, the 62 Controller global and member references all
+follow their relocated owners. GetInput remains 2,655 bytes and preserves
+its 22 relocation destinations. The keyboard-expression probes cover the
+existing body and six alternate address and mask forms.
+
+The configuration fixture also exposed a separate ownership error.
+Retail initializes the configuration from the six live bindings in slots
+0 and 1. Both normal links read a separately allocated `g_ControllerMapping`
+and initialize those bindings to zero. Retail configuration loading and
+Options write back to the live slots, so the fix must cover those writers
+as well. See `.analysis/controller-get-input/canonical-owner/` for the
+local recipes.

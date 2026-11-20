@@ -1511,8 +1511,8 @@ def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
 
     consumer_facts = (
         (main_body, "g_Supervisor.flags.resultRestartActive = 1;"),
-        (controller, "g_Supervisor.flags.keyboardAvailable != 0"),
-        (controller, "g_Supervisor.flags.controllerAvailable != 0"),
+        (controller, "g_Supervisor.flags.keyboardAvailable"),
+        (controller, "g_Supervisor.flags.controllerAvailable"),
         (front_end, "TH095_FRONT_SUPERVISOR_FLAGS.receivedCloseMsg != 0"),
         (photo_front, "g_Supervisor.flags.resultRestartActive != 0"),
         (photo_task, "g_Supervisor.flags.restartPhotoGame == 0"),
