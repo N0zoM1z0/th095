@@ -229,7 +229,7 @@ th095::EclOperands::ResolveFloatLValue
 th095::PhotoStageStateView::Update
 th095::UpdatePhotoStage
 th095::PhotoStageStateView::SavePhoto
-th095::PhotoStageDisplayView::Build
+th095::PhotoStageSlot::Build
 th095::InitializePhotoStageDisplayVm
 th095::PhotoStageStateView::CapturePhotoPixels
 th095::PhotoGameUpdateView::PhotoGameUpdateView
@@ -605,13 +605,13 @@ th095::ReplayFile::Read
 th095::FileSystem::CloseWriteFile
 th095::GameErrorContext::Log
 th095::GameErrorContext::Fatal
-th095::PhotoStageSlotLifetimeView::PhotoStageSlotLifetimeView
-th095::PhotoStageSlotLifetimeView::~PhotoStageSlotLifetimeView
-th095::PhotoOverlayManagerView::PhotoOverlayManagerView
-th095::PhotoOverlayManagerView::Initialize
-th095::PhotoOverlayManagerView::~PhotoOverlayManagerView
-th095::PhotoOverlayManagerView::Create
-th095::PhotoOverlayManagerView::Destroy
+th095::PhotoStageSlot::PhotoStageSlot
+th095::PhotoStageSlot::~PhotoStageSlot
+th095::PhotoStageStateView::PhotoStageStateView
+th095::PhotoStageStateView::Initialize
+th095::PhotoStageStateView::~PhotoStageStateView
+th095::PhotoStageStateView::Create
+th095::PhotoStageStateView::Destroy
 th095::DrawPhotoStage
 th095::LoadPhotoAnm
 th095::ReadResultHelpLine
@@ -654,7 +654,7 @@ th095::MidiOutput::ProcessMsg
 th095::MidiOutput::FadeOutSetVolume
 th095::Supervisor::Supervisor
 th095::Supervisor::~Supervisor
-th095::PhotoOverlayManagerView::Draw
+th095::PhotoStageStateView::Draw
 th095::CPbgFile::ReadWholeFile
 th095::PbgArchiveEntry::PbgArchiveEntry
 th095::Lzss::AddString
@@ -682,7 +682,7 @@ th095::CSoundManager::CreateStreamingFromMemory
 th095::CSound::CSound
 th095::CSound::Play
 th095::CPbgFile::Open
-th095::ReleaseResultAnm
+th095::ReleasePhotoAnm
 th095::utils::DebugPrint
 th095::PbgArchive::AllocEntries
 th095::CompressData

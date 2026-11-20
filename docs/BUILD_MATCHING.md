@@ -590,15 +590,15 @@ When every target stack slot is live but identifier hashing permutes locals, use
 
 ### PhotoInf lifetime and replay-input source-shape oracles
 
-The exact PhotoInf lane adds three reusable VC7.1 rules. First, the semantic
-object view and the compiler lifetime view do not have to be the same C++ type.
-The target constructs each `0x2214` photograph slot from offset `+0x44` as two
-six-`AnmVm` arrays; a bounded `PhotoStageSlotLifetimeView` truthfully models
-that constructor/destructor surface without changing the higher-level logical
-slot layout used by the stage state machine.
+The target constructs each `0x2214` photograph slot from offset `+0x44` as
+two six-`AnmVm` arrays. The former nested display object introduced a
+separate constructor and destructor call in the normal build. Since
+[SEM-379](SEMANTIC_HISTORY.md#sem-379--share-the-photoinf-lifecycle-and-draw-body),
+the shared `PhotoStageSlot` declares its two arrays directly and owns the
+recorded constructor, destructor and Build.
 
 Second, logically equivalent cleanup control flow is codegen-visible under the
-pinned `/Od /Ob1` profile. `PhotoOverlayManagerView::Create @ 0x0042ABC0` needs
+pinned `/Od /Ob1` profile. `PhotoStageStateView::Create @ 0x0042ABC0` needs
 `if (Initialize() != 0) goto create_error;`: VC7.1 then keeps the target
 conditional jump followed by the two-byte jump to shared cleanup. A structured
 success-only `if` is two bytes short. The factory's `{manager, chain}` aggregate
@@ -613,7 +613,7 @@ Do not replace that alignment with explicit padding. Likewise, the exact result
 help parser must keep CR/LF tests as signed `i8` comparisons and Shift-JIS
 lead-byte range tests as unsigned `u8` comparisons.
 
-`PhotoOverlayManagerView::Draw @ 0x0042C220` is now a positive no-hoist oracle. The target keeps six scalar locals and repeatedly materializes the full slot/VM indexed address independently in each color branch and once more for `Draw()`. Hoisting an `AnmVm*` creates a seventh local and shrinks the exact 434-byte target shape to 370 bytes. Keep the repeated indexed expressions. `PhotoRuntimeView::CountPhotoTargets @ 0x004168D0` is now the positive vector-lifetime companion: a gapless 0x3C aggregate owns `{i, enemy, captureMaximum, enemyMaximum, enemyMinimum, captureMinimum, count}` from deep to shallow; the TH08 `Float3::operator/` body is force-inlined at all three half-size sites; and the final capture maximum must be written as `captureMaximum = captureMaximum + *position`, not `+=`. The non-compound form preserves two anonymous 12-byte Float3 return/copy objects, expanding the all-live frame from 0xEC to the target 0x104 without padding.
+`PhotoStageStateView::Draw @ 0x0042C220` is now a positive no-hoist oracle. The target keeps six scalar locals and repeatedly materializes the full slot/VM indexed address independently in each color branch and once more for `Draw()`. Hoisting an `AnmVm*` creates a seventh local and shrinks the exact 434-byte target shape to 370 bytes. Keep the repeated indexed expressions. `PhotoRuntimeView::CountPhotoTargets @ 0x004168D0` is now the positive vector-lifetime companion: a gapless 0x3C aggregate owns `{i, enemy, captureMaximum, enemyMaximum, enemyMinimum, captureMinimum, count}` from deep to shallow; the TH08 `Float3::operator/` body is force-inlined at all three half-size sites; and the final capture maximum must be written as `captureMaximum = captureMaximum + *position`, not `+=`. The non-compound form preserves two anonymous 12-byte Float3 return/copy objects, expanding the all-live frame from 0xEC to the target 0x104 without padding.
 
 ### Options initial-VM temporary chronology
 

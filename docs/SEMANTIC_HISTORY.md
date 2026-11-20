@@ -17615,3 +17615,22 @@ agrees in 540 cases covering photo completion, result, death, loading,
 menu closure and replay interrupt. It checks the VM slot and ID, call
 sequence, return code and affected state. The local recipe is
 `.analysis/pi/check-photo-task-stage-owner.py`.
+
+### SEM-379 — share the PhotoInf lifecycle and draw body
+
+The slot constructor at 0x0042A940 and destructor at 0x0042A9C0 handle
+the two six-VM arrays directly. SavePhoto computes the slot address
+from the PhotoInf base, 0x44 header and 0x2214 stride, then calls Build
+on that address. PhotoStageSlot now owns both arrays and Build.
+This removes the nested display lifetime and the exact PhotoOverlay
+manager and slot declarations. PhotoOverlay shares its entire
+lifecycle, draw and resource-release body. Draw reads the save and
+gameplay state through the existing typed owners.
+
+All 88 affected strict comparisons pass. The seven PhotoOverlay
+parent-to-unwind-action comparisons also pass. The normal object
+independently reproduces all eleven retail extents after binding
+the two normal global owners. A three-image fixture agrees in 192
+viewport, load gate, score and color cases, and the 540-case photo
+task fixture still passes. The local recipes are under
+`.analysis/pi/photo-overlay-owner/`.

@@ -168,7 +168,7 @@ void InitializeScoreData();
 void ReleaseScoreData();
 HANDLE StartSoundLoadThread();
 i32 ReleasePhotoBulletAnm();
-i32 ReleaseResultAnm();
+i32 ReleasePhotoAnm();
 i32 ReleaseReplayAnm();
 i32 ReleasePhotoFrontAnm();
 void ReleaseSceneSelectAnms();
@@ -1686,7 +1686,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
 
     ((Supervisor *)arg)->ReleaseGameManagers();
     ReleasePhotoBulletAnm();
-    ReleaseResultAnm();
+    ReleasePhotoAnm();
     ReleaseReplayAnm();
     ReleasePhotoFrontAnm();
     ReleaseSceneSelectAnms();

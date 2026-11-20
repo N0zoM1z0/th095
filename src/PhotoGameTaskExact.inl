@@ -1,5 +1,6 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "PhotoStage.hpp"
 #include "SoundPlayer.hpp"
 
 #include <stdio.h>
@@ -23,12 +24,6 @@ struct PhotoFrontManagerView
 struct PhotoBulletManagerTaskView
 {
     static PhotoBulletManagerTaskView *Create();
-    void Destroy();
-};
-
-struct PhotoOverlayManagerView
-{
-    static PhotoOverlayManagerView *Create();
     void Destroy();
 };
 
@@ -221,7 +216,7 @@ struct PhotoGameTaskView
     PhotoPlayerManagerView *player;          // +0x00c
     ReplayManagerTaskView *replay;           // +0x010
     PhotoEnemyManagerTaskView *enemies;      // +0x014
-    PhotoOverlayManagerView *photoOverlay;   // +0x018
+    PhotoStageStateView *photoOverlay;       // +0x018
     PhotoItemManagerTaskView *items;         // +0x01c
     ResultScreen *pause;                     // +0x020
     PhotoLaserManagerTaskView *lasers;       // +0x024
@@ -635,7 +630,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->photoOverlay = PhotoOverlayManagerView::Create();
+    this->photoOverlay = PhotoStageStateView::Create();
     if (this->photoOverlay == NULL)
     {
         return ZUN_ERROR;

@@ -1,16 +1,14 @@
-#ifdef TH095_MATCH_EXACT
-#include "PhotoOverlayExact.inl"
-#else
 #include "Chain.hpp"
 #include "GameErrorContext.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #include "PhotoStage.hpp"
 #include "ScoreData.hpp"
 #include "SupervisorViewportSlot.hpp"
 #include "inttypes.hpp"
 #include <windows.h>
-#include <stddef.h>
 #include <string.h>
+
 namespace th095
 {
 
@@ -19,40 +17,28 @@ namespace utils
 void DebugPrint(char *format, ...);
 }
 
-
-struct PhotoStageGlobalStateView
-{
-    u8 unknown000[0xfc];
-#ifdef DIFFBUILD
-    u32 flags;
-#else
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlags0_1 : 2;
-            u32 gameplayLoadActive : 1;
-            u32 unknownFlags3_31 : 29;
-        };
-    };
-#endif
-    i32 bestShotIndex;
-};
-typedef char PhotoOverlayBestShotIndexAt100[
-    (offsetof(PhotoStageGlobalStateView, bestShotIndex) == 0x100) ? 1 : -1];
-extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
+extern PhotoGameTaskView *g_PhotoGameTask;
+extern PhotoStageStateView *g_PhotoStageState;
 
 #ifndef DIFFBUILD
-#define g_PhotoStageGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGlobalStateOwner)
+#define g_PhotoGameTask \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
+#define g_PhotoStageState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 #endif
 
 i32 __fastcall UpdatePhotoStage(PhotoStageStateView *stage);
 
-extern PhotoStageStateView *g_PhotoStageState;
-#define g_PhotoStageState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
+// The two embedded AnmVm arrays supply the slot's construction and unwind work.
+// FUNCTION: TH095 0x0042A940.
+PhotoStageSlot::PhotoStageSlot()
+{
+}
+
+// FUNCTION: TH095 0x0042A9C0.
+PhotoStageSlot::~PhotoStageSlot()
+{
+}
 
 // FUNCTION: TH095 0x0042A8A0.
 PhotoStageStateView::PhotoStageStateView()
@@ -104,10 +90,10 @@ i32 PhotoStageStateView::Draw()
          ++locals.scoreScanIndex)
     {
         if (locals.bestScore <
-            this->slots[locals.scoreScanIndex].display.score)
+            this->slots[locals.scoreScanIndex].score)
         {
             locals.bestScore =
-                this->slots[locals.scoreScanIndex].display.score;
+                this->slots[locals.scoreScanIndex].score;
             locals.bestSlot = locals.scoreScanIndex;
         }
     }
@@ -122,23 +108,23 @@ i32 PhotoStageStateView::Draw()
         {
             if (locals.bestSlot != locals.slotIndex)
                 this->slots[locals.slotIndex]
-                    .display.overlayVms[locals.vmIndex].color1.color =
+                    .overlayVms[locals.vmIndex].color1.color =
                     0xffffffff;
-            else if (this->slots[locals.slotIndex].display.score >=
+            else if (this->slots[locals.slotIndex].score >=
                      g_ResultSaveData->scoreEntries[
-                         g_PhotoStageGlobalState->bestShotIndex].detailScore)
+                         g_PhotoGameTask->bestShotIndex].detailScore)
                 this->slots[locals.slotIndex]
-                    .display.overlayVms[locals.vmIndex].color1.color =
+                    .overlayVms[locals.vmIndex].color1.color =
                     0xffffff00;
             else
                 this->slots[locals.slotIndex]
-                    .display.overlayVms[locals.vmIndex].color1.color =
+                    .overlayVms[locals.vmIndex].color1.color =
                     0xffffe080;
 
             // Target source keeps the repeated indexed expression. Hoisting a
             // VM pointer shortens the body and creates a seventh local.
             this->slots[locals.slotIndex]
-                .display.overlayVms[locals.vmIndex].Draw();
+                .overlayVms[locals.vmIndex].Draw();
         }
     }
     return 1;
@@ -148,11 +134,7 @@ i32 PhotoStageStateView::Draw()
 i32 __fastcall DrawPhotoStage(PhotoStageStateView *manager)
 {
     g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
-#ifdef DIFFBUILD
-    if (((g_PhotoStageGlobalState->flags >> 2) & 1) != 0)
-#else
-    if (g_PhotoStageGlobalState->gameplayLoadActive != 0)
-#endif
+    if (g_PhotoGameTask->gameplayLoadActive != 0)
     {
         return 1;
     }
@@ -224,5 +206,3 @@ i32 ReleasePhotoAnm()
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

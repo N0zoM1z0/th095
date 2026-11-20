@@ -17,26 +17,25 @@ struct PhotoStageCapture
     i32 slot;
 };
 
-struct PhotoStageDisplayView
+struct PhotoStageSlot
 {
     AnmVm primaryVms[6];
     AnmVm overlayVms[6];
     i32 scoreData[8];
     i32 score;
 
-    void Build(
-        i32 score, Float3 *photoPosition, Float3 *entryPosition,
-        const i32 *scoreData);
-};
-
-struct PhotoStageSlot
-{
-    PhotoStageDisplayView display;
     i32 timestamp;
     f32 slowRate;
     i32 width;
     i32 height;
     char comment[0x50];
+
+    PhotoStageSlot();
+    ~PhotoStageSlot();
+
+    void Build(
+        i32 score, Float3 *photoPosition, Float3 *entryPosition,
+        const i32 *scoreData);
 };
 
 typedef char PhotoStageCaptureSizeIs44[
@@ -52,13 +51,13 @@ typedef char PhotoStageCaptureSlotAt40[
 typedef char PhotoStageSlotSizeIs2214[
     (sizeof(PhotoStageSlot) == 0x2214) ? 1 : -1];
 typedef char PhotoStageSlotPrimaryVmsAt0[
-    (offsetof(PhotoStageSlot, display.primaryVms) == 0) ? 1 : -1];
-typedef char PhotoStageDisplayOverlayVmsAt10C8[
-    (offsetof(PhotoStageDisplayView, overlayVms) == 0x10c8) ? 1 : -1];
-typedef char PhotoStageDisplayScoreDataAt2190[
-    (offsetof(PhotoStageDisplayView, scoreData) == 0x2190) ? 1 : -1];
-typedef char PhotoStageDisplayScoreAt21B0[
-    (offsetof(PhotoStageDisplayView, score) == 0x21b0) ? 1 : -1];
+    (offsetof(PhotoStageSlot, primaryVms) == 0) ? 1 : -1];
+typedef char PhotoStageSlotOverlayVmsAt10C8[
+    (offsetof(PhotoStageSlot, overlayVms) == 0x10c8) ? 1 : -1];
+typedef char PhotoStageSlotScoreDataAt2190[
+    (offsetof(PhotoStageSlot, scoreData) == 0x2190) ? 1 : -1];
+typedef char PhotoStageSlotScoreAt21B0[
+    (offsetof(PhotoStageSlot, score) == 0x21b0) ? 1 : -1];
 typedef char PhotoStageSlotTimestampAt21B4[
     (offsetof(PhotoStageSlot, timestamp) == 0x21b4) ? 1 : -1];
 typedef char PhotoStageSlotSlowRateAt21B8[

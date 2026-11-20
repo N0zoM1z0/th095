@@ -232,7 +232,7 @@ static inline ResultScoreEntryView *GetPhotoStageScoreEntry(i32 index)
 }
 
 static inline PhotoScoreBreakdownView *GetPhotoStageDisplayScoreBreakdown(
-    PhotoStageDisplayView *display)
+    PhotoStageSlot *display)
 {
     return reinterpret_cast<PhotoScoreBreakdownView *>(display->scoreData);
 }
@@ -361,7 +361,7 @@ enum PhotoStageScoreFlags
 #define digitPosition resultDrawBacking000
 #define displayVmCount resultDrawBacking022
 
-void PhotoStageDisplayView::Build(
+void PhotoStageSlot::Build(
     i32 score, Float3 *photoPosition, Float3 *entryPosition,
     const i32 *scoreData)
 {
@@ -629,13 +629,13 @@ static __forceinline void PhotoStagePublishCaptureRequestArgs(PhotoStageAnmManag
 static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView *state)
 {
     if ((GetPhotoStageDisplayScoreBreakdown(
-             &state->slots[state->capture.slot].display)
+             &state->slots[state->capture.slot])
              ->scoringFlags &
          PHOTO_SCORE_ENEMY) != 0)
     {
         PhotoStageGlobalStateView *globalState;
         i32 bgmFormatIndexLocal05 =
-            state->slots[state->capture.slot].display.score;
+            state->slots[state->capture.slot].score;
         globalState = g_PhotoStageGlobalState;
         globalState->currentScore += bgmFormatIndexLocal05;
     }
@@ -994,7 +994,7 @@ i32 PhotoStageStateView::Update()
                     if (!GetPhotoStageScoreEntry(
                              g_PhotoStageGlobalState->scoreIndex)
                              ->bestShotLocked &&
-                        this->slots[this->capture.slot].display.score >
+                        this->slots[this->capture.slot].score >
                             GetPhotoStageScoreEntry(
                                 g_PhotoStageGlobalState->scoreIndex)
                                 ->scoreBreakdown.finalScore)
@@ -1004,7 +1004,7 @@ i32 PhotoStageStateView::Update()
                                  g_PhotoStageGlobalState->scoreIndex)
                                  ->scoreBreakdown,
                             GetPhotoStageDisplayScoreBreakdown(
-                                &this->slots[this->capture.slot].display),
+                                &this->slots[this->capture.slot]),
                             sizeof(PhotoScoreBreakdownView));
                         g_ResultSaveData->UpdateBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex);
@@ -1023,7 +1023,7 @@ i32 PhotoStageStateView::Update()
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->score =
                                 this->slots[this->capture.slot]
-                                    .display.score;
+                                    .score;
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->group =
                                 (u16)(g_SelectedScene->group + 1);
@@ -1281,7 +1281,7 @@ i32 PhotoStageStateView::SavePhoto(
         440.0f - (f32)(slotIndex % 5) * 80.0f;
     locals.entryPosition.z = 0.0f;
 
-    this->slots[slotIndex].display.Build(
+    this->slots[slotIndex].Build(
         score, &locals.photoPosition,
         slotIndex == 10 ? NULL : &locals.entryPosition,
         scoreData);

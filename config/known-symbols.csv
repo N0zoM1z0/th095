@@ -112,7 +112,7 @@ address,name,module,confidence,evidence
 0x0042AD60,th095::PhotoStageStateView::Update,PhotoStage,high,Complete TH095 capture and stage-display state machine
 0x0042C3E0,th095::UpdatePhotoStage,PhotoStage,exact,Canonical photo-stage update-chain wrapper
 0x0042C450,th095::PhotoStageStateView::SavePhoto,PhotoStage,exact,Canonical capture-state initializer and display dispatch
-0x0042C5C0,th095::PhotoStageDisplayView::Build,PhotoStage,high,Complete TH095 flag-driven photograph HUD builder
+0x0042C5C0,th095::PhotoStageSlot::Build,PhotoStage,high,Complete TH095 flag-driven photograph HUD builder
 0x0042E730,th095::InitializePhotoStageDisplayVm,PhotoStage,exact,Canonical photo-HUD VM initializer
 0x0042E7B0,th095::PhotoStageStateView::CapturePhotoPixels,PhotoStage,exact,Canonical best-shot texture pixel copy
 0x00405850,th095::PhotoBulletView::Deactivate,BulletManager,exact,Canonical relocation-free 107-byte inactive transition
@@ -284,13 +284,13 @@ address,name,module,confidence,evidence
 0x0041B090,th095::FileSystem::CloseWriteFile,FileSystem,exact,Exact shared handle close releasing critical section 2 and decrementing its active-count byte
 0x0041B0F0,th095::GameErrorContext::Log,Main,exact,Exact variadic 8 KiB buffered logger under critical section 3 with VC7 intrinsic strlen/strcpy expansion
 0x0041B280,th095::GameErrorContext::Fatal,Main,exact,Exact 512-byte variadic fatal logger; appends to shared 8 KiB context and sets showMessageBox
-0x0042A940,th095::PhotoStageSlotLifetimeView::PhotoStageSlotLifetimeView,PhotoOverlay,exact,Exact compiler vector construction of the two six-AnmVm groups at slot offsets +0x0000/+0x10C8
-0x0042A9C0,th095::PhotoStageSlotLifetimeView::~PhotoStageSlotLifetimeView,PhotoOverlay,exact,Exact reverse compiler vector destruction of the two six-AnmVm groups in one 0x2214 slot lifetime view
-0x0042A8A0,th095::PhotoOverlayManagerView::PhotoOverlayManagerView,PhotoOverlay,exact,Exact PhotoInf construction: eleven slot lifetime views and eighty display VMs precede the 0x25730 clear and stage singleton publication
-0x0042AA30,th095::PhotoOverlayManagerView::Initialize,PhotoOverlay,exact,Exact photo.anm preload into +0x2571C with Japanese corruption diagnostic and scoreMultiplier=1.0
-0x0042AAF0,th095::PhotoOverlayManagerView::~PhotoOverlayManagerView,PhotoOverlay,exact,"Exact PhotoInf teardown: cut calc/draw Chains, mark owned ANM VMs, clear singleton, destroy eighty VMs and eleven slot views"
-0x0042ABC0,th095::PhotoOverlayManagerView::Create,PhotoOverlay,exact,"Exact 0x25730 factory with calc priority 8, draw priority 0x1A, live manager/chain aggregate, and explicit failure cleanup"
-0x0042AD00,th095::PhotoOverlayManagerView::Destroy,PhotoOverlay,exact,Exact safe-delete wrapper using the target-visible manager pointer home and nulling source shape
+0x0042A940,th095::PhotoStageSlot::PhotoStageSlot,PhotoOverlay,exact,Exact compiler vector construction of the two six-AnmVm groups at slot offsets +0x0000/+0x10C8
+0x0042A9C0,th095::PhotoStageSlot::~PhotoStageSlot,PhotoOverlay,exact,Exact reverse compiler vector destruction of the two six-AnmVm groups in one 0x2214 slot lifetime view
+0x0042A8A0,th095::PhotoStageStateView::PhotoStageStateView,PhotoOverlay,exact,Exact PhotoInf construction: eleven slot lifetime views and eighty display VMs precede the 0x25730 clear and stage singleton publication
+0x0042AA30,th095::PhotoStageStateView::Initialize,PhotoOverlay,exact,Exact photo.anm preload into +0x2571C with Japanese corruption diagnostic and scoreMultiplier=1.0
+0x0042AAF0,th095::PhotoStageStateView::~PhotoStageStateView,PhotoOverlay,exact,"Exact PhotoInf teardown: cut calc/draw Chains, mark owned ANM VMs, clear singleton, destroy eighty VMs and eleven slot views"
+0x0042ABC0,th095::PhotoStageStateView::Create,PhotoOverlay,exact,"Exact 0x25730 factory with calc priority 8, draw priority 0x1A, live manager/chain aggregate, and explicit failure cleanup"
+0x0042AD00,th095::PhotoStageStateView::Destroy,PhotoOverlay,exact,Exact safe-delete wrapper using the target-visible manager pointer home and nulling source shape
 0x0042C410,th095::DrawPhotoStage,PhotoOverlay,exact,"Exact draw-chain shell: gameplay viewport 1, photography suppression bit 2 gate, then PhotoInf Draw"
 0x0042AA90,th095::LoadPhotoAnm,PhotoOverlay,exact,Exact slot-9 photo.anm preload helper with target Japanese corruption diagnostic
 0x0041B920,th095::ReadResultHelpLine,ResultScreen,exact,Exact CR/LF-skipping Shift-JIS line reader with lead-byte ranges 0x81..0x9F and 0xE0..0xFC
@@ -336,7 +336,7 @@ address,name,module,confidence,evidence
 0x00426350,th095::Supervisor::Supervisor,Supervisor,exact,Exact global Supervisor 0x7BC-prefix member lifecycle and reset
 0x00426450,th095::Supervisor::~Supervisor,Supervisor,exact,Exact reverse destruction of the two Supervisor worker members
 0x00402330,th095::Background::~Background,Background,exact,Exact BackgroundInf teardown with three ownership-call homes and automatic 3+8 AnmVm vector destruction
-0x0042C220,th095::PhotoOverlayManagerView::Draw,PhotoOverlay,exact,Exact 80 display-VM plus 11x6 score-colored overlay draw; target repeats indexed VM expressions instead of hoisting a pointer
+0x0042C220,th095::PhotoStageStateView::Draw,PhotoOverlay,exact,Exact 80 display-VM plus 11x6 score-colored overlay draw; target repeats indexed VM expressions instead of hoisting a pointer
 0x00455BF0,th095::CPbgFile::ReadWholeFile,PbgFile,exact,Exact whole-file read with TH095 malloc/free path and fully live 12-byte read-state aggregate
 0x00452E50,th095::PbgArchiveEntry::PbgArchiveEntry,PbgArchive,exact,Exact archive-entry filename-null constructor used by AllocEntries vector construction
 0x0041CE60,th095::PhotoItemManagerView::Update,PhotoItem,exact,"Exact 150-slot PhotoItem update with semantic bounds/vector state, shared tick path, and source-local vector/charge helpers"
@@ -382,7 +382,7 @@ address,name,module,confidence,evidence
 0x00455920,th095::CPbgFile::Open,PbgFile,exact,Canonical 330-byte VC7.1 file-open unit with all four relocations replayed
 0x00455890,th095::CPbgFile::scalar deleting destructor,PbgFile,exact,IDA target wrapper calls CPbgFile destructor and conditionally operator delete from flag bit 0
 0x00455DE0,th095::IPbgFile::scalar deleting destructor,PbgFile,exact,IDA target wrapper publishes IPbgFile vtable and conditionally operator delete from flag bit 0
-0x0042AAD0,th095::ReleaseResultAnm,PhotoOverlay,exact,Canonical 20-byte slot-nine ANM release helper; unique Supervisor::DeletedCallback relocation
+0x0042AAD0,th095::ReleasePhotoAnm,PhotoOverlay,exact,Canonical 20-byte slot-nine ANM release helper; unique Supervisor::DeletedCallback relocation
 0x00455080,th095::PbgArchiveEntry::vector deleting destructor,PbgArchive,exact,IDA target compiler wrapper performs vector/scalar PbgArchiveEntry destruction and conditional delete
 0x00412180,th095::utils::DebugPrint,Utils,exact,Canonical 5-byte empty release-build body plus 119 exact caller relocations and TH08 non-DEBUG source ancestry
 0x00455580,th095::PbgArchive::AllocEntries,PbgArchive,exact,Canonical 524-byte entry-array decoder with ten relocations; TH08 SeekPastString/DeleteArray source ancestry
