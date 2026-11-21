@@ -31,14 +31,11 @@ enum FrontEndMainMenuStateValue
     FRONT_END_MAIN_MENU_STATE_ACTIVE = 1,
 };
 
-typedef i32 ReplayBrowserState;
 enum ReplayBrowserStateValue
 {
     REPLAY_BROWSER_STATE_INITIALIZE = 0,
     REPLAY_BROWSER_STATE_BROWSE = 1,
 };
-typedef char ReplayBrowserStateSizeIs4[
-    (sizeof(ReplayBrowserState) == sizeof(i32)) ? 1 : -1];
 
 typedef i32 OptionsMenuState;
 enum OptionsMenuStateValue

@@ -1209,7 +1209,6 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
     if re.sub(r"\s+", "", request_body) != "WriteWorkerSignal(this->exitSignal,1);":
         fail("worker request changed more than the exit handshake")
     for name, receiver in (("ReplayBrowser.cpp", "g_Supervisor"),
-                           ("ReplayBrowserExact.inl", "g_SceneSupervisor"),
                            ("SceneSelectUpdate.cpp", "g_Supervisor"),
                            ("SceneSelectUpdateExact.inl", "g_SceneSupervisor")):
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
@@ -2580,17 +2579,10 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
             ),
         ),
         (
-            "ReplayBrowserExact.inl",
-            (
-                "this->transitionVm.SetInterrupt(3);",
-                "this->transitionVm.SetInterrupt(2);",
-            ),
-        ),
-        (
             "ReplayBrowser.cpp",
             (
-                "this->transitionVm.SetInterrupt(3);",
-                "this->transitionVm.SetInterrupt(2);",
+                "sceneMenu->transitionVm.SetInterrupt(3);",
+                "sceneMenu->transitionVm.SetInterrupt(2);",
             ),
         ),
     ):
@@ -3312,7 +3304,7 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
     completion = "WriteWorkerSignal(g_Supervisor.replayScanWorker.active,0);WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal,1);"
     for name, count in (
         ("HelpMenu.cpp", 1),
-        ("ReplayBrowser.cpp", 1), ("ReplayBrowserExact.inl", 1),
+        ("ReplayBrowser.cpp", 1),
         ("PhotoGameTask.cpp", 2), ("PhotoGameTaskExact.inl", 2),
         ("FrontEndLifecycle.cpp", 2),
         ("SceneSelectAssets.cpp", 1),
@@ -3340,7 +3332,7 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
     write = re.compile(r"WriteWorkerSignal\(\s*" + word + r"\s*,\s*[01]\s*\)")
     for name in ("ReplayScanWorkerBehavior.inl", "Main.cpp", "MainExact.inl",
                  "AnmPreload.cpp", "SceneSelectAssets.cpp",
-                 "ReplayBrowser.cpp", "ReplayBrowserExact.inl", "HelpMenu.cpp",
+                 "ReplayBrowser.cpp", "HelpMenu.cpp",
                  "PhotoGameTask.cpp", "PhotoGameTaskExact.inl", "FrontEndController.cpp", "FrontEndLifecycle.cpp"):
         rest = write.sub("", read.sub("", source(name)))
         if re.search(word, rest):

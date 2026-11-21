@@ -3,7 +3,6 @@
 #include "AnmManager.hpp"
 #include "AnmVmInterpolation.hpp"
 
-#include "ReplayBrowser.hpp"
 #include "ResultScreen.hpp"
 #include "SoundPlayer.hpp"
 

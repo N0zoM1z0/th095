@@ -5,7 +5,7 @@
 #define TH095_OPTIONS_MENU_HPP
 
 #include "ControllerButtonMapping.hpp"
-#include "ReplayBrowser.hpp"
+#include "SceneSelect.hpp"
 
 namespace th095
 {

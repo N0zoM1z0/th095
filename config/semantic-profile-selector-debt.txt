@@ -64,10 +64,7 @@
 2	src/PhotoStage.cpp	#ifdef DIFFBUILD
 1	src/PhotoStage.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoStage.cpp	#ifndef DIFFBUILD
-1	src/ReplayBrowser.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayBrowser.cpp	#ifndef DIFFBUILD
-2	src/ReplayBrowser.hpp	#ifdef DIFFBUILD
-1	src/ReplayBrowser.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayInputSource.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/ReplayManager.cpp	#ifdef DIFFBUILD
 2	src/ReplayManager.cpp	#ifdef TH095_MATCH_EXACT

@@ -93,6 +93,8 @@ struct FrontEndControllerView
     ChainCallbackResult UpdateMainMenu();
     i32 UpdateHelpMenu();
     i32 UpdateMusicRoom();
+    ChainCallbackResult UpdateReplayBrowser();
+    ZunResult LoadReplaySlot(i32 slot, char *path);
     void RefreshSceneSelection(i32 selectedScoreEntryIndex);
     void BuildScenePreviewText();
     i32 GetSelectedGroup()

@@ -20012,3 +20012,27 @@ order. The original and both normal links agree on 14 Music Room
 cases, including parsing, timed text reveal, cursor movement, playback,
 file-open failure, normal exit and destructor cleanup. See
 `.analysis/pi/music-room-owner/`.
+
+### SEM-486 — run Replay Browser on the allocated front-end controller
+
+Replay Browser, the scanner, drawing, and cleanup now access the actual
+controller's replay array. The update shares its two cursors and timer.
+The initialization store formerly named `selectedReplayIndex` clears
+`selectedScoreEntryIndex` at `+0xBF0`. The persistent replay selection
+is held separately in `g_ReplayBrowserSelection`. The shared Scene Select
+view still supplies browser animation handles.
+
+Both builds share the update, scan callback, and slot loader. The
+scanner snapshots the active controller on entry. Slot replacement
+uses Supervisor lane 4 to retire the old record and publish the new
+one, with file loading between the two lock acquisitions.
+
+All 102 affected strict comparisons pass across 15 translation units.
+The normal scan and slot loader also match their original extents and
+all 23 and 19 relocation targets, respectively. The normal update
+moves from `0x0043A8A0` to `0x0041F5F0` when linked in reverse order.
+The original and both normal layouts agree on 20 browser cases,
+including selection, slot replacement, the eighty-record limit, and
+scan cancellation. The directory fixture also confirms that the scan
+still attempts `_chdir("../")` when entry into the replay directory
+fails. See `.analysis/pi/replay-browser-owner/`.

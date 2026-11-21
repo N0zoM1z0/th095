@@ -216,6 +216,9 @@ Help still uses the shared Scene Select animation handle view.
 SEM-485 moves Music Room and its track tables onto the allocated
 controller and identifies the Music Room comment buffer freed by
 the controller destructor.
+SEM-486 moves Replay Browser and its scanner onto the allocated controller.
+The update shares the replay array and cursors with drawing and cleanup.
+The animation handles still use the Scene Select view.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

@@ -149,9 +149,9 @@ th095::SceneSelectControllerView::SetDetailDigitSprite
 th095::SceneSelectControllerView::ShowDetailDigit
 th095::SceneSelectControllerView::HideDetailDigit
 th095::ReplayScanWorker::RequestExit
-th095::ReplayBrowserView::Update
+th095::FrontEndControllerView::UpdateReplayBrowser
 th095::LoadReplayBrowserEntries
-th095::ReplayBrowserView::LoadReplaySlot
+th095::FrontEndControllerView::LoadReplaySlot
 th095::ReplayScanWorker::~ReplayScanWorker
 th095::ReplayScanWorker::Stop
 th095::ReplayScanWorker::Start

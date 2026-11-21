@@ -261,7 +261,7 @@ ChainCallbackResult FrontEndControllerView::Update()
         break;
 
     case FRONT_END_REQUESTED_STATE_REPLAY_BROWSER:
-        reinterpret_cast<ReplayBrowserView *>(this)->Update();
+        this->UpdateReplayBrowser();
         break;
 
     case FRONT_END_REQUESTED_STATE_OPTIONS:
