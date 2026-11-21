@@ -45,10 +45,8 @@
 1	src/ecl/AnmManagerEclView.hpp	#ifdef TH095_MATCH_EXACT
 3	src/ecl/AnmManagerEclView.hpp	#ifndef TH095_MATCH_EXACT
 1	src/ecl/EclOperands.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/ecl/EclRun.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/ecl/EclRun.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-5	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
-2	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
+1	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
+1	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
 1	src/EclExtended.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 9	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)

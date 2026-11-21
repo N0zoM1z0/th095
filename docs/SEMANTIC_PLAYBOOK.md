@@ -218,13 +218,11 @@ blob, state/draw projections, photo method stubs, ECL handle view, and normal
 method-only ECL interface were retired. Normal behavior, lifecycle, photo,
 ANM draw, `EclExtended`, and `EclRun` now consume `Background.hpp`.
 
-The one surviving 0x6600 declaration is
-`ecl/BackgroundEclEmission.hpp`. It is selected only for exact/DIFF EclRun
-emission after a canonical-include experiment changed VC7 private-label
-ordering. It is not a runtime layout and cannot validate the normal body.
+RunEcl switched to the canonical declaration in both profiles once its
+legacy ANM, Player and dispatcher includes were removed. The shared
+16-bit pending-interrupt write preserves the target's VC7.1 argument
+temporary. See [SEM-438](SEMANTIC_HISTORY.md#sem-438--use-the-shared-background-player-and-anm-declarations-in-runecl).
 
-The reusable lesson is to correct upstream include/type ownership before
-adding another local view. A compiler-sensitive legacy declaration may remain
-only behind a named, narrow emission boundary with independent normal-build
-validation. This pilot does not authorize copying any TH08 layout or extending
-the repository's narrow assembly exception.
+Correct the upstream include and type ownership before introducing a
+local view. Use the target's operand width and a small VC7.1 experiment
+to isolate code-generation discrepancies.

@@ -3,11 +3,8 @@
 #ifndef TH095_ECL_RUN_LOW_DECLARATIONS
 #define TH095_ECL_RUN_LOW_DECLARATIONS
 
-#include "AnmManagerEclView.hpp"
-#include "EclManager.hpp"
 #include "EclOperands.hpp"
 #include "../PhotoEnemyLayout.hpp"
-#include "Player.hpp"
 #include "SoundPlayer.hpp"
 
 #include <math.h>
@@ -27,8 +24,6 @@ void __fastcall ConfigureRelativeMotion(
 
 namespace EclRunLow
 {
-
-extern Player *g_Th095Player;
 
 void __fastcall ApplyInterpolationOperation(
     PhotoEnemyView *enemy, EclRawInstruction *instruction);
@@ -401,7 +396,7 @@ EclRawInstruction *__fastcall CompareOperands(
         enemy->movementAngle =
             AddNormalizeAngle(
                 ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0))),
-                TH095_ECL_PLAYER_ANGLE(
+                g_RuntimePlayerOwner->AngleFromPoint(
                     &enemy->position));
         enemy->speed = ((instruction->operandFlags & (1U << 1)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
         break;
@@ -411,7 +406,7 @@ EclRawInstruction *__fastcall CompareOperands(
             enemy->movementAngle =
                 AddNormalizeAngle(
                     ((instruction->operandFlags & (1U << 2)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 2))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 2))),
-                    TH095_ECL_PLAYER_ANGLE(
+                    g_RuntimePlayerOwner->AngleFromPoint(
                         &enemy->position));
             enemy->speed = ((instruction->operandFlags & (1U << 3)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
             enemy->flags1 =

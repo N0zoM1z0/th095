@@ -25,7 +25,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.speed, 2);
         args.angle = AddNormalizeAngle(
             ECL_READ_FLOAT_BITS(3),
-            TH095_ECL_PHOTO_ANGLE(&args.position));
+            g_RuntimePlayerOwner->AngleFromPoint(&args.position));
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 4);
         TH095_ECL_ASSIGN_FLOAT(args.width, 5);
         args.initialLength = 0;
@@ -67,7 +67,7 @@
         args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
             ECL_READ_FLOAT_BITS(2),
-            TH095_ECL_PHOTO_ANGLE(&args.position));
+            g_RuntimePlayerOwner->AngleFromPoint(&args.position));
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         args.initialLength = args.maximumLength;
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
@@ -116,7 +116,7 @@
         args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
             ECL_READ_FLOAT_BITS(2),
-            TH095_ECL_PHOTO_ANGLE(&args.position));
+            g_RuntimePlayerOwner->AngleFromPoint(&args.position));
         args.initialLength = 0.0f;
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
@@ -195,7 +195,7 @@
         args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
             ECL_READ_FLOAT_BITS(2),
-            TH095_ECL_PHOTO_ANGLE(&args.position));
+            g_RuntimePlayerOwner->AngleFromPoint(&args.position));
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         args.initialLength = args.maximumLength;
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
@@ -240,7 +240,7 @@
         AnmVm *vm = TH095_ECL_ANM_GET_VM(
             enemy->anmHandles[ECL_READ_INT(0)].value);
         if (vm)
-            vm->SetInterrupt((i16)ECL_READ_INT(1));
+            SetVmInterrupt(vm, static_cast<i16>(ECL_READ_INT(1)));
         break;
     }
 

@@ -120,6 +120,10 @@ callbacks the compact receiver and emits their shared table in both profiles.
 SEM-436 retires the dormant TH08 dispatcher and uses the named comparison
 case labels in both profiles. SEM-437 routes both builds of ECL 104 and 105
 through the canonical CardInf session handle and lifecycle methods.
+SEM-438 uses the full Background, PlayerInf and ANM declarations in
+RunEcl. All six aiming calls pass the PlayerInf root, and opcode 141
+writes the canonical camera limit. The ANM spawn, lookup and deletion
+call adapters remain.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

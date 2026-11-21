@@ -1,18 +1,9 @@
-// Establish the TH095 Supervisor declarations before the legacy ECL headers.
 #include "../PhotoGameTask.hpp"
 #include "../ZunBool.hpp"
-#include "EclManager.hpp"
-#include "EclOperands.hpp"
-#include "BulletManager.hpp"
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#include "BackgroundEclEmission.hpp"
-#include "PhotoCameraEclEmission.hpp"
-#else
-#include "Background.hpp"
-#endif
-#include "Player.hpp"
+#include "../Background.hpp"
+#include "../Global.hpp"
 #include "../PhotoBulletManagerLayout.hpp"
-#include "../PhotoPlayerRuntime.hpp"
+#include "EclOperands.hpp"
 
 #include <string.h>
 #include <stdlib.h>
@@ -29,52 +20,16 @@
 #include "../PhotoEnemyEclManager.hpp"
 #include "../PhotoEnemyManagerLayout.hpp"
 #include "../PhotoStageLayout.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "../PhotoGamePlayer.hpp"
-#endif
-
-#ifndef DIFFBUILD
-#define TH095_ECL_PHOTO_PLAYER_OWNER \
-    ::th095::g_RuntimePlayerOwner
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_ECL_PHOTO_PLAYER_OWNER \
-    reinterpret_cast<::th095::PhotoPlayerRuntimeView *>(g_Th095PhotoCamera)
-#define TH095_ECL_PLAYER_ANGLE(point) g_Th095Player->AngleToPoint(point)
-#define TH095_ECL_PHOTO_ANGLE(point) g_Th095PhotoCamera->GetAngle(point)
-#else
-#define TH095_ECL_PLAYER_ANGLE(point) \
-    ::th095::g_RuntimePlayerOwner->AngleFromPoint(point)
-#define TH095_ECL_PHOTO_ANGLE(point) \
-    ::th095::g_RuntimePlayerOwner->AngleFromPoint(point)
-#endif
 
 #define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
     reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(g_PhotoEnemyManager->enemyAnm)
-
-#ifdef DIFFBUILD
-#define TH095_ECL_PHOTO_MODE EclRunHigh::g_Th095PhotoMode
-#define TH095_ECL_PHOTO_MODE_BEGIN() TH095_ECL_PHOTO_MODE->Begin()
-#define TH095_ECL_PHOTO_MODE_END() TH095_ECL_PHOTO_MODE->End()
-#else
-#define TH095_ECL_PHOTO_MODE \
-    (reinterpret_cast<EclRunHigh::PhotoModeController *>(::th095::g_Background))
-#define TH095_ECL_PHOTO_MODE_BEGIN() ::th095::g_Background->StartSpellBackground()
-#define TH095_ECL_PHOTO_MODE_END() ::th095::g_Background->StopSpellBackground()
-#endif
 
 #define TH095_ECL_BULLET_ANM_SPAWNER \
     reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(g_PhotoBulletManager->bulletAnm)
 
 #ifdef DIFFBUILD
 #define TH095_ECL_ANM_MANAGER EclRunHigh::g_Th095AnmManager
-#else
-#define TH095_ECL_ANM_MANAGER \
-    (reinterpret_cast<EclRunHigh::AnmManagerLookup *>(::th095::g_AnmManager))
-#endif
-
-#ifdef DIFFBUILD
 #define TH095_ECL_ANM_GET_VM(id) TH095_ECL_ANM_MANAGER->FindVm(id)
 #define TH095_ECL_ANM_MARK_DELETE(id) TH095_ECL_ANM_MANAGER->RemoveVm(id)
 #define TH095_ECL_ANM_SPAWN_WORLD(spawner, script, position) \
@@ -91,15 +46,6 @@
 #define TH095_ECL_RESOLVE_FLOAT(enemy, operand) \
     (enemy)->ResolveFloat((operand).asFloat)
 
-#ifdef DIFFBUILD
-#define TH095_ECL_CONFIGURE_PHOTO_ANM(vm, work, value) \
-    TH095_ECL_ANM_MANAGER->ConfigureEnemyPhotoAnm((vm), (work), (value))
-#else
-#define TH095_ECL_CONFIGURE_PHOTO_ANM(vm, work, value) \
-    ::th095::g_AnmManager->InitializeHorizontalTextureStrip( \
-        (vm), reinterpret_cast<::th095::AnmVertex *>(work), (value))
-#endif
-
 // RunEcl and CallEclSub return the target's global ::ZunResult enum in both
 // production and exact builds. The numeric values match th095::ZunResult, but
 // the enum identity is part of the VC7.1 decorated symbol.
@@ -110,8 +56,6 @@ namespace th095
 {
 
 #ifndef DIFFBUILD
-struct AnmVertex;
-extern AnmManager *g_AnmManager;
 static __forceinline AnmVmId Th095EclAnmId(i32 value)
 {
     AnmVmId id;
@@ -206,8 +150,7 @@ low_advance_instruction:
         break;
     }
 
-    // Target 0x0041E7F8..0x0041ECBD is part of RunEcl itself.  Keep the
-    // complete frame tail lexical so VC7 can share RunEcl's locals and emit
+    // Keep the complete frame tail lexical so VC7 can share RunEcl's locals and emit
     // the observed in-function easing switch and child-context back edge.
     if (enemy->life > 0)
     {

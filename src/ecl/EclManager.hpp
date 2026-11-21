@@ -149,25 +149,6 @@ DIFFABLE_EXTERN(ChainElem, g_EffectManagerCalcChain);
 DIFFABLE_EXTERN(ChainElem, g_EffectManagerDrawChain);
 
 DIFFABLE_EXTERN(u32, g_EclGameTimeScaleFlags);
-namespace EclRunLow
-{
-enum EclComparisonOpcode
-{
-    ECL_COMPARE_INT_EQUAL = 40,
-    ECL_COMPARE_FLOAT_EQUAL = 41,
-    ECL_COMPARE_INT_NOT_EQUAL = 42,
-    ECL_COMPARE_FLOAT_NOT_EQUAL = 43,
-    ECL_COMPARE_INT_LESS = 44,
-    ECL_COMPARE_FLOAT_LESS = 45,
-    ECL_COMPARE_INT_LESS_EQUAL = 46,
-    ECL_COMPARE_FLOAT_LESS_EQUAL = 47,
-    ECL_COMPARE_INT_GREATER = 48,
-    ECL_COMPARE_FLOAT_GREATER = 49,
-    ECL_COMPARE_INT_GREATER_EQUAL = 50,
-    ECL_COMPARE_FLOAT_GREATER_EQUAL = 51,
-};
-} // namespace EclRunLow
-
 // Only the target-observed fixed header is named here. Both pointer tables are
 // stored as file-relative offsets and are rebased in place by Load.
 struct EclRawHeader

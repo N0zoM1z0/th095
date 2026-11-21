@@ -382,19 +382,11 @@ def check_background_owner() -> None:
         fail("normal EclExtended must read spell VM handles from canonical Background")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
-    if '#include "BackgroundEclEmission.hpp"' not in ecl_run:
-        fail("EclRun must name its isolated Background emission adapter")
-    if '#include "Background.hpp"' not in ecl_run:
-        fail("normal EclRun must consume the canonical Background owner")
-    if (SRC / "BackgroundEclInterface.hpp").exists():
-        fail("retired BackgroundEclInterface.hpp must not be restored")
-    emission = (SRC / "ecl" / "BackgroundEclEmission.hpp").read_text(
-        encoding="utf-8"
-    )
-    if "VC7 emission adapter for EclRun only" not in emission:
-        fail("Background ECL emission adapter must state its narrow ownership")
-    if "TH095_MATCH_EXACT" in emission or "DIFFBUILD" in emission:
-        fail("Background ECL emission adapter must not contain a second profile split")
+    if '#include "../Background.hpp"' not in ecl_run:
+        fail("EclRun must consume the canonical Background owner")
+    for name in ("BackgroundEclInterface.hpp", "ecl/BackgroundEclEmission.hpp"):
+        if (SRC / name).exists():
+            fail(f"retired {name} must not be restored")
 
 
 def check_ecl_type_boundaries() -> None:
@@ -4161,74 +4153,27 @@ def check_ecl_photo_player_owner() -> None:
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if '#include "../PhotoGamePlayer.hpp"' not in ecl_run:
-        fail("normal EclRun must consume the canonical PlayerInf declaration")
-    if '#include "PhotoCameraEclEmission.hpp"' not in ecl_run:
-        fail("EclRun must name its isolated photo-angle emission adapter")
-    if "TH095_ECL_PHOTO_PLAYER_OWNER" not in ecl_run:
-        fail("EclRun lost the explicit PlayerInf owner boundary")
-    if "->AngleFromPoint(point)" not in ecl_run:
-        fail("normal EclRun photo angles must use the canonical PlayerInf method")
+        fail("EclRun must consume the canonical PlayerInf declaration")
+    if (SRC / "ecl" / "PhotoCameraEclEmission.hpp").exists():
+        fail("retired PhotoCameraEclEmission.hpp must not be restored")
 
     high = (SRC / "ecl" / "EclRunHigh.inl").read_text(encoding="utf-8")
-    retired_tokens = (
-        "struct PhotoCameraOpcodeState",
-        "opcode141Value",
-        "GetOpcodeState",
-        "AssignPhotoCameraOpcode141",
-    )
-    for token in retired_tokens:
-        if token in high:
-            fail(f"EclRun restored retired camera projection: {token}")
-    if re.search(r"\bstruct\s+PhotoCamera\s*\{", high):
-        fail("EclRunHigh.inl must not restore the padded PhotoCamera owner")
     if "camera->photoLimit = value;" not in high:
         fail("RunEcl camera-limit assignment lost the canonical photoLimit field")
-    if "g_Th095PhotoCamera->GetAngle" in high:
-        fail("RunEcl handler source must route photo angles through the named boundary")
 
     target = (SRC / "ecl" / "EclRunTargetHigh.inl").read_text(encoding="utf-8")
-    if "AssignPhotoCameraLimit(" not in target:
-        fail("RunEcl opcode 141 lost its canonical camera-limit assignment")
-    if not re.search(r"\bTH095_ECL_PHOTO_PLAYER_OWNER\s*\)?\s*->\s*camera\b", target):
+    if not re.search(r"AssignPhotoCameraLimit\(\s*&g_RuntimePlayerOwner->camera,", target):
         fail("RunEcl opcode 141 must derive the camera subobject from PlayerInf")
-    for token in retired_tokens:
-        if token in target:
-            fail(f"RunEcl target handler restored retired camera projection: {token}")
 
-    photo_handlers = (SRC / "ecl" / "EclRunTargetPhoto.inl").read_text(
-        encoding="utf-8"
-    )
-    if photo_handlers.count("TH095_ECL_PHOTO_ANGLE(") != 4:
-        fail("RunEcl must route all four photo-handler angle calls through one boundary")
-    if "g_Th095PhotoCamera" in photo_handlers:
-        fail("normal photo handlers must not name the exact-emission receiver")
-
-    emission = (SRC / "ecl" / "PhotoCameraEclEmission.hpp").read_text(
-        encoding="utf-8"
-    )
-    if "Compiler-emission adapter only" not in emission:
-        fail("photo-angle emission adapter must state its narrow ownership")
-    if "TH095_MATCH_EXACT" in emission or "DIFFBUILD" in emission:
-        fail("photo-angle emission adapter must not contain a second profile split")
-    if len(re.findall(r"\bstruct\s+PhotoCamera\s*\{", emission)) != 1:
-        fail("photo-angle emission adapter must keep one method-only receiver")
-    if "f32 GetAngle(Float3 *position);" not in emission:
-        fail("photo-angle emission adapter lost the historical method decoration")
-    forbidden_emission_storage = (
-        "PhotoCameraOpcodeState",
-        "photoLimit",
-        "targetPadding",
-        "offsetof(",
-        "sizeof(",
-    )
-    for token in forbidden_emission_storage:
-        if token in emission:
-            fail(f"photo-angle emission adapter gained runtime storage: {token}")
+    for name, count in (("EclRunLow.inl", 2), ("EclRunTargetPhoto.inl", 4)):
+        handlers = (SRC / "ecl" / name).read_text(encoding="utf-8")
+        if handlers.count("g_RuntimePlayerOwner->AngleFromPoint(") != count:
+            fail(f"{name} must call the canonical PlayerInf angle method")
 
 
 def check_ecl_comparison_dispatch() -> None:
     names = explicit_enum(
-        SRC / "ecl" / "EclManager.hpp",
+        SRC / "EclInstruction.hpp",
         "EclComparisonOpcode",
         "ECL_COMPARE_",
         list(range(40, 52)),

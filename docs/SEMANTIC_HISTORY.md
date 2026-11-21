@@ -18947,3 +18947,33 @@ The original executable and both link orders agree on the eight
 combinations of replacing an existing card, creation success, and
 immediate finish. Both normal images retain the mapped sections used by
 the verified demo replay. See `.analysis/pi/ecl-card-owner/`.
+
+### SEM-438 — use the shared Background, Player and ANM declarations in RunEcl
+
+RunEcl imports the canonical ANM, BulletInf and PlayerInf declarations.
+The comparison opcode enum lives with the instruction format and serves
+both the dispatcher and comparison helper. RunEcl uses the 0x201C Background and the full
+PlayerInf declarations in both profiles. Opcode 137 reads the PlayerInf
+position, opcode 141 writes the camera's photo limit, and all six aiming
+calls use `AngleFromPoint` on PlayerInf. The horizontal trail call passes
+the enemy's typed ANM vertex array to the canonical manager.
+
+Opcode 152 resolves an integer operand and queues its low signed 16
+bits in the VM. The canonical VM's inline i32 interrupt method moved
+the interpreter operand temporary from EBP−0x564 to a deep stack slot
+and made the frame four bytes larger. A direct narrow field store still
+used a deep slot. Passing the value through a signed 16-bit inline
+parameter restored the target's full stack layout and instructions.
+The direct spawn, lookup and deletion experiment with the nontrivial
+`AnmVmId` conversion changed RunEcl's extent. Those adapters remain.
+
+All 167 affected strict exact comparisons pass. RunEcl's 20 renamed
+relocations retain their original destinations, and 23 references to
+the corresponding symbols follow the moved destinations in both normal
+link orders. The retail executable and both linked images agree on 72
+steering and laser cases, 10 camera-limit cases and the photo-card and
+ANM visual fixtures. Both Wine links reach the end of `demo/demo0.rpy` with
+52,930 points and six photos. Their ten gameplay fields agree with retail
+at all 2,712 input indices. The sampled stage timer differs by at most
+one tick from retail. The probe and checks are under
+`.analysis/pi/ecl-core-owners/`.

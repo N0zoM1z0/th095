@@ -30,6 +30,13 @@ inline void AssignPhotoCameraLimit(Camera *camera, i32 value)
     camera->photoLimit = value;
 }
 
+// Opcode 152 queues a signed 16-bit interrupt. VC7 allocates the operand
+// temporary differently when the inline receiver takes an i32 parameter.
+inline void SetVmInterrupt(AnmVm *vm, i16 interrupt)
+{
+    vm->pendingInterrupt = interrupt;
+}
+
 struct PhotoAnmSpawner
 {
     PhotoEnemyAnmVmIdStorage Spawn(i32 script, Float3 *position);
@@ -39,15 +46,7 @@ struct AnmManagerLookup
 {
     AnmVm *FindVm(i32 handle);
     void RemoveVm(i32 handle);
-    void ConfigureEnemyPhotoAnm(AnmVm *vm, void *work, i32 value);
 };
-
-struct PhotoModeController
-{
-    void Begin();
-    void End();
-};
-
 
 // The target's inlined allocation wrapper keeps its size parameter addressable,
 // so VC7.1 materializes it in RunEcl's shared temporary region before malloc.
@@ -62,7 +61,6 @@ inline i32 Th095PreserveI32(i32 value)
 }
 
 extern AnmManagerLookup *g_Th095AnmManager;
-extern PhotoModeController *g_Th095PhotoMode;
 
 inline void AddTimerValue(ZunTimer *timer, i32 value)
 {

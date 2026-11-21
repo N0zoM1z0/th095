@@ -327,7 +327,7 @@ enter_subroutine:
         if ((enemy->trailConfig.flags &
              PHOTO_ENEMY_TRAIL_INITIALIZE_STRIP) != 0)
         {
-            TH095_ECL_CONFIGURE_PHOTO_ANM(
+            g_AnmManager->InitializeHorizontalTextureStrip(
                 &enemy->vm,
                 enemy->trailVertices,
                 (enemy->trailConfig.length /
@@ -360,7 +360,7 @@ enter_subroutine:
         break;
 
     case 137:
-        if (((TH095_ECL_PHOTO_PLAYER_OWNER->playerPosition.x <
+        if (((g_RuntimePlayerOwner->playerPosition.x <
               enemy->position.x) &&
              (enemy->position.x > 96.0f)) ||
             (enemy->position.x > 288.0f))
@@ -401,7 +401,7 @@ enter_subroutine:
 
     case 141:
         AssignPhotoCameraLimit(
-            &TH095_ECL_PHOTO_PLAYER_OWNER->camera,
+            &g_RuntimePlayerOwner->camera,
             ECL_READ_INT(0));
         break;
 
@@ -431,7 +431,7 @@ enter_subroutine:
             reinterpret_cast<char *>(instruction->operands));
         if (!g_PhotoEnemyManager->eclPhotoCardSession)
             return ZUN_ERROR;
-        TH095_ECL_PHOTO_MODE_BEGIN();
+        g_Background->StartSpellBackground();
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0xe), 0);
 
         enemy->attachedVmId =
@@ -450,7 +450,7 @@ enter_subroutine:
         {
             g_PhotoEnemyManager->eclPhotoCardSession->Show();
             g_PhotoEnemyManager->eclPhotoCardSession = 0;
-            TH095_ECL_PHOTO_MODE_END();
+            g_Background->StopSpellBackground();
             TH095_ECL_ANM_MARK_DELETE(
                 enemy->attachedVmId.value);
             enemy->attachedVmId.value =
