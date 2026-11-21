@@ -24,8 +24,6 @@
 namespace th095
 {
 
-extern u32 g_PhotoScreenFadeColor;
-
 #define IS_PRESSED(key) (g_CurFrameInput & (key))
 #define WAS_PRESSED(key) (((g_CurFrameInput & (key)) != 0) && (g_CurFrameInput & (key)) != (g_LastFrameInput & (key)))
 #define WAS_PRESSED_SCROLLING(key)                                                                                     \
@@ -256,10 +254,3 @@ DIFFABLE_EXTERN(ZunMemory, g_ZunMemory);
 
 i32 IsResourceReloadEnabled();
 }; // namespace th095
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_DEFINE_BACKBUFFER_CLEAR_COLOR_STORAGE() \
-    DIFFABLE_STATIC(u32, g_PhotoScreenFadeColor)
-#else
-#define TH095_DEFINE_BACKBUFFER_CLEAR_COLOR_STORAGE() \
-    unsigned long &g_BackbufferClearColor = g_Supervisor.backbufferClearColor
-#endif

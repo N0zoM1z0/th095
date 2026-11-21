@@ -35,7 +35,6 @@ DIFFABLE_STATIC(u16, g_LastFrameInput);
 #endif
 DIFFABLE_STATIC(u16, g_NumOfFramesInputsWereHeld);
 DIFFABLE_STATIC(u16, g_IsEighthFrameOfHeldInput);
-TH095_DEFINE_BACKBUFFER_CLEAR_COLOR_STORAGE();
 
 ChainElem::ChainElem()
 {

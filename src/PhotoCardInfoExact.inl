@@ -63,7 +63,6 @@ typedef char PhotoCardInfoChainsAt60[
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoCardAnmLoadedView *g_PhotoCardBackgroundAnm;
 extern PhotoCardAnmLoadedView *g_PhotoCardUiAnm;
-extern u32 g_PhotoScreenFadeColor;
 
 static __forceinline void CreatePhotoCardBackgroundVm(
     PhotoCardInfoView *cardInfo)
@@ -112,7 +111,7 @@ i32 PhotoCardInfoView::Initialize(char *encodedText)
                 g_AnmManager->GetVm(
                     *reinterpret_cast<AnmVmId *>(&this->textVmId))),
             0xffffff, 0, this->text);
-    this->savedScreenFadeColor = g_PhotoScreenFadeColor;
+    this->savedScreenFadeColor = g_Supervisor.backbufferClearColor;
     return 0;
 }
 
@@ -138,7 +137,7 @@ i32 PhotoCardInfoView::Show()
         *reinterpret_cast<AnmVmId *>(&this->textVmId), 1);
     this->state = 1;
     this->timer = 0;
-    g_PhotoScreenFadeColor = this->savedScreenFadeColor;
+    g_Supervisor.backbufferClearColor = this->savedScreenFadeColor;
     return 0;
 }
 
@@ -202,11 +201,11 @@ i32 PhotoCardInfoView::Update()
 
     if (this->state != 1 && this->timer >= 0x3c)
     {
-        if (g_PhotoScreenFadeColor != 0)
+        if (g_Supervisor.backbufferClearColor != 0)
         {
-            this->savedScreenFadeColor = g_PhotoScreenFadeColor;
+            this->savedScreenFadeColor = g_Supervisor.backbufferClearColor;
         }
-        g_PhotoScreenFadeColor = 0;
+        g_Supervisor.backbufferClearColor = 0;
     }
 
     i32 alpha = 0xff;

@@ -152,7 +152,6 @@ typedef char MainMidiTimerSizeIs10[(sizeof(MidiTimer) == 0x10) ? 1 : -1];
 typedef char MainDummyMidiTimerSizeIs14[(sizeof(DummyMidiTimer) == 0x14) ? 1 : -1];
 
 extern PbgArchive g_PbgArchive;
-extern u32 g_PhotoScreenFadeColor;
 
 // WinMain's target has one four-byte compiler allocation class between the
 // operator-new temporaries and the lifecycle merge-result family.  Keep that
@@ -1428,7 +1427,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
         return -1;
     }
 
-    TH095_BACKBUFFER_CLEAR_COLOR = 0xff000000;
+    g_Supervisor.backbufferClearColor = 0xff000000;
     InitializeScoreData();
     g_AnmManager->LoadSurface(SUPERVISOR_STARTUP_BACKGROUND_SURFACE, "title/th08logo.jpg");
     g_Supervisor.suppressFpsDisplay = 1;

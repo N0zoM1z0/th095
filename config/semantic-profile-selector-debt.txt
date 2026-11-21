@@ -7,9 +7,8 @@
 1	src/AnmPreload.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/AnmText.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AsciiManager.cpp	#ifdef TH095_MATCH_EXACT
-1	src/Background.cpp	#elif defined(DIFFBUILD)
 6	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-8	src/Background.cpp	#ifdef TH095_MATCH_EXACT
+2	src/Background.cpp	#ifdef TH095_MATCH_EXACT
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/BulletManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -38,11 +37,9 @@
 6	src/FrontEndLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FrontEndLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameErrorContext.cpp	#ifdef TH095_MATCH_EXACT
-1	src/GameplayGlobals.hpp	#if defined(DIFFBUILD)
 1	src/GameplayGlobals.hpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/Global.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/Global.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/Global.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/Global.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Global.hpp	#ifndef TH095_MATCH_EXACT
 1	src/HelpMenu.cpp	#ifdef DIFFBUILD

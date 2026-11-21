@@ -19447,3 +19447,32 @@ coverage includes signed zero, NaN payloads, reflected velocity and the
 spawn cursor crossing its sentinel. Both demo0 links match ten gameplay
 fields at all 2,712 input indices. The scene timer advances one frame
 later in the reordered link. See `.analysis/pi/bullet-shared-motion/`.
+
+### SEM-460 — use the Supervisor backbuffer clear color
+
+Both profiles access `Supervisor::backbufferClearColor` directly.
+Background opcodes 8, 9 and 13 publish the stage color. PhotoCardInfo
+can save and clear it at frame 60, then restore it on Show.
+PhotoGameTask teardown and Supervisor startup write through the same
+field. OnDraw2 passes its nonzero value to D3D Clear with
+`D3DCLEAR_TARGET`. The two extended ECL callbacks already use the field.
+
+The eleven rebased retail operands still resolve to 0x004C4E28.
+Global.cpp no longer emits the separate comparison symbol or registers
+the normal reference initializer. All 547 exact comparisons across the
+60 affected translation units pass. The normal COFF operands and
+both linked PEs agree on all fifteen color references, including the
+two OnDraw2 reads. The field moves from 0x004DB208 to 0x004D58B0
+when the game objects are linked in reverse order.
+
+Retail and both links agree on the immediate and interpolated colors,
+the photo-card transition across frames 59–61 and the restored color.
+The destructor tail selects transparent black for a result restart and
+opaque black for a normal exit. A stub D3D device receives the expected
+clear arguments and no call while the color is zero. The extended ECL
+fixture also passes its 89 callback cases with the reference initializer
+removed. In both demo0 runs all ten gameplay fields match retail across
+2,712 input indices. The timer starts one frame earlier in the regular
+link and two frames later in the reversed link. The library audit matches
+7,748 code references and 1,007 initialized-data references in both
+layouts. See `.analysis/pi/supervisor-clear-color/`.

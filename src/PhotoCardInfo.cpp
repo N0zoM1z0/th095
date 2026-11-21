@@ -22,7 +22,6 @@ PhotoCardInfoView *g_PhotoCardInfo = NULL;
 #endif
 extern AnmLoaded *g_PhotoCardBackgroundAnm;
 extern AnmLoaded *g_PhotoCardUiAnm;
-extern u32 g_PhotoScreenFadeColor;
 
 #ifndef DIFFBUILD
 // The canonical exact unit and target Initialize instructions identify these
@@ -79,7 +78,7 @@ i32 PhotoCardInfoView::Initialize(char *encodedText)
             reinterpret_cast<AnmTextVmView *>(
                 g_AnmManager->GetVm(this->textVmId)),
             0xffffff, 0, this->text);
-    this->savedScreenFadeColor = TH095_BACKBUFFER_CLEAR_COLOR;
+    this->savedScreenFadeColor = g_Supervisor.backbufferClearColor;
     return 0;
 }
 
@@ -101,7 +100,7 @@ i32 PhotoCardInfoView::Show()
     g_AnmManager->SetInterrupt(this->textVmId, 1);
     this->state = PHOTO_CARD_INFO_STATE_FINISHING;
     this->timer = 0;
-    TH095_BACKBUFFER_CLEAR_COLOR = this->savedScreenFadeColor;
+    g_Supervisor.backbufferClearColor = this->savedScreenFadeColor;
     return 0;
 }
 
@@ -166,11 +165,11 @@ i32 PhotoCardInfoView::Update()
     if (this->state != PHOTO_CARD_INFO_STATE_FINISHING &&
         this->timer >= 0x3c)
     {
-        if (TH095_BACKBUFFER_CLEAR_COLOR != 0)
+        if (g_Supervisor.backbufferClearColor != 0)
         {
-            this->savedScreenFadeColor = TH095_BACKBUFFER_CLEAR_COLOR;
+            this->savedScreenFadeColor = g_Supervisor.backbufferClearColor;
         }
-        TH095_BACKBUFFER_CLEAR_COLOR = 0;
+        g_Supervisor.backbufferClearColor = 0;
     }
 
     i32 alpha = 0xff;

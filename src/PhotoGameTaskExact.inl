@@ -160,7 +160,6 @@ extern u32 g_PhotoAsciiTextColor;
 extern i32 g_ReplayUsesArchive;
 extern double g_PhotoGameClock;
 extern double g_PhotoGameClock2;
-extern u32 g_PhotoScreenFadeColor;
 
 PhotoGameTaskView::PhotoGameTaskView()
 {
@@ -586,11 +585,11 @@ PhotoGameTaskView::~PhotoGameTaskView()
     }
     if (g_Supervisor.flags.resultRestartActive != 0)
     {
-        g_PhotoScreenFadeColor = 0;
+        g_Supervisor.backbufferClearColor = 0;
     }
     else
     {
-        g_PhotoScreenFadeColor = 0xff000000;
+        g_Supervisor.backbufferClearColor = 0xff000000;
     }
 }
 

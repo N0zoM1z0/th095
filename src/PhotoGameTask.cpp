@@ -539,11 +539,11 @@ PhotoGameTaskView::~PhotoGameTaskView()
     }
     if (g_Supervisor.flags.resultRestartActive != 0)
     {
-        TH095_BACKBUFFER_CLEAR_COLOR = 0;
+        g_Supervisor.backbufferClearColor = 0;
     }
     else
     {
-        TH095_BACKBUFFER_CLEAR_COLOR = 0xff000000;
+        g_Supervisor.backbufferClearColor = 0xff000000;
     }
 }
 

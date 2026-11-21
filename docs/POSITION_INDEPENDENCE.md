@@ -42,6 +42,14 @@ File reads, writes and replay file handles use `criticalSections[2]` at
 their exact comparisons now use the same Supervisor symbol and member
 addends. The lock and count changes keep their target instruction order.
 
+SEM-460 routes every backbuffer clear-color client through
+`Supervisor::backbufferClearColor` at +0x7B8. The fifteen operands
+follow the field from 0x004DB208 to 0x004D58B0, and the normal link
+no longer registers a reference initializer for it. Both layouts
+match retail's script publication, card save/clear/restore and the
+D3D clear arguments. See
+[SEM-460](SEMANTIC_HISTORY.md#sem-460--use-the-supervisor-backbuffer-clear-color).
+
 ## Controller configuration bindings
 
 The two groups of three saved mappings belong to live controller slots 0 and
@@ -139,16 +147,18 @@ The two initialization tables register the same sixteen game initializers
 and the CRT security-cookie initializer. See
 `.analysis/pi/ecl-movement-operands/whole-game-link.log`.
 
-A retail comparison checks 641 normal functions whose complete decoded
-instruction layout matches an accepted target extent. In that set, 2,804
-paired writable operands map consistently between the retail addresses and
-normal storage. There are no splits or collisions in those mappings.
-2,140 call operands agree with the accepted addresses of their named
-callees, and 556 floating-point references carry the retail literal bytes.
-The audit uses the normal objects and link map at each paired operand.
-See `.analysis/pi/ecl-resolver-owner/normal-coff-leads.py` for the recipe
-and `.analysis/pi/bullet-shared-motion/normal-coff-leads.log` for the
-SEM-459 results.
+The SEM-460 links register fifteen game initializers and the CRT security
+cookie initializer after removal of the clear-color reference. Both links
+agree at all 11,444 code references and 639 initialized-data references in
+the game-object section audit.
+
+A retail comparison checks 645 normal functions whose complete decoded
+instruction layout matches an accepted target extent. In that set, 2,849
+writable operands map consistently between retail and normal storage.
+The 2,171 checked calls reach their named callees, and 559 floating-point
+references carry the retail literal bytes. See
+`.analysis/pi/ecl-resolver-owner/normal-coff-leads.py` for the recipe
+and `.analysis/pi/supervisor-clear-color/` for the results.
 
 ## Scene loading and capture against the original
 

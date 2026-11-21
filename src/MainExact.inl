@@ -116,7 +116,6 @@ struct PbgArchiveView
 
 extern ReplayScanWorker g_SupervisorInputWorker;
 extern PbgArchiveView g_PbgArchive;
-extern u32 g_PhotoScreenFadeColor;
 
 // WinMain's target has one four-byte compiler allocation class between the
 // operator-new temporaries and the lifecycle merge-result family.  Keep that
@@ -1380,7 +1379,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
         return -1;
     }
 
-    g_PhotoScreenFadeColor = 0xff000000;
+    g_Supervisor.backbufferClearColor = 0xff000000;
     InitializeScoreData();
     g_AnmManager->LoadSurface(8, "title/th08logo.jpg");
     g_Supervisor.suppressFpsDisplay = 1;

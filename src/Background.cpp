@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#define g_PhotoScreenFadeColor th095_BackgroundSharedPhotoScreenFadeColorDeclaration
-#endif
 #define TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
 #include "SupervisorRuntime.hpp"
 #include "AnmManager.hpp"
@@ -12,9 +9,6 @@
 #include "PhotoEnemyManager.hpp"
 #include "SceneData.hpp"
 #include "SupervisorViewportConfiguration.hpp"
-#ifdef TH095_MATCH_EXACT
-#undef g_PhotoScreenFadeColor
-#endif
 namespace th095
 {
 
@@ -242,12 +236,6 @@ typedef char BackgroundStageObjectInstructionPositionAt8[
     (offsetof(BackgroundStageObjectInstruction, position) == 8) ? 1 : -1];
 typedef char BackgroundStageObjectInstanceSizeIs10[
     (sizeof(BackgroundStageObjectInstance) == 0x10) ? 1 : -1];
-
-#ifdef TH095_MATCH_EXACT
-extern ZunColor g_PhotoScreenFadeColor;
-#elif defined(DIFFBUILD)
-extern u32 g_PhotoScreenFadeColor;
-#endif
 
 DIFFABLE_STATIC(Background *, g_Background);
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -1079,11 +1067,7 @@ read_instruction:
             background->photoBlendCurrent.farDistance =
                 *reinterpret_cast<f32 *>(&instruction->args[2]);
             background->photoBlendFinal = background->photoBlendCurrent;
-#ifdef TH095_MATCH_EXACT
-            TH095_BACKBUFFER_CLEAR_COLOR = background->photoBlendCurrent.color;
-#else
-            TH095_BACKBUFFER_CLEAR_COLOR = background->photoBlendCurrent.color.color;
-#endif
+            g_Supervisor.backbufferClearColor = background->photoBlendCurrent.color.color;
             break;
 
         case TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_PHOTO_BLEND:
@@ -1156,11 +1140,7 @@ read_instruction:
             break;
 
         case TH095_BACKGROUND_STAGE_OPCODE_SET_BACKBUFFER_CLEAR_COLOR:
-#ifdef TH095_MATCH_EXACT
-            TH095_BACKBUFFER_CLEAR_COLOR.color = instruction->args[0];
-#else
-            TH095_BACKBUFFER_CLEAR_COLOR = instruction->args[0];
-#endif
+            g_Supervisor.backbufferClearColor = instruction->args[0];
             break;
 
         case TH095_BACKGROUND_STAGE_OPCODE_CONFIGURE_STAGE_VM:
@@ -1282,13 +1262,8 @@ interpolate:
                          background->photoBlendInitial.farDistance) *
                             interpolationTime +
                         background->photoBlendInitial.farDistance;
-#ifdef TH095_MATCH_EXACT
-                    TH095_BACKBUFFER_CLEAR_COLOR =
-                        background->photoBlendCurrent.color;
-#else
-                    TH095_BACKBUFFER_CLEAR_COLOR =
+                    g_Supervisor.backbufferClearColor =
                         background->photoBlendCurrent.color.color;
-#endif
                     break;
                 }
             }
