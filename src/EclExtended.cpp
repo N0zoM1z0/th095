@@ -15,10 +15,6 @@
 #include "ecl/EclAnmHandleEmission.inl"
 #include <string.h>
 
-// Both vector receivers have the same three-float layout. Link the bullet
-// polar update to the shared implementation, which writes x and y.
-#pragma comment(linker, "/alternatename:?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z=?FromAngleMagnitude@Float3@th095@@QAEXMM@Z")
-
 namespace th095
 {
 

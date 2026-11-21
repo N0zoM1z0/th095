@@ -1005,6 +1005,9 @@ AnmManager::~AnmManager()
     }
 }
 
+// PhotoBulletVector has the same three-float layout and shares this x/y writer.
+#pragma comment(linker, "/alternatename:?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z=?FromAngleMagnitude@Float3@th095@@QAEXMM@Z")
+
 // This pinned x86 reconstruction deliberately uses the target's single x87
 // FSINCOS sequence.  Equivalent C/C++ calls make VC7.1 emit separate CRT
 // sin/cos paths and change both intermediate precision and instruction order.

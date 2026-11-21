@@ -139,16 +139,16 @@ The two initialization tables register the same sixteen game initializers
 and the CRT security-cookie initializer. See
 `.analysis/pi/ecl-movement-operands/whole-game-link.log`.
 
-A retail comparison checks 629 normal functions whose complete decoded
-instruction layout matches an accepted target extent. In that set, 2,768
+A retail comparison checks 641 normal functions whose complete decoded
+instruction layout matches an accepted target extent. In that set, 2,804
 paired writable operands map consistently between the retail addresses and
 normal storage. There are no splits or collisions in those mappings.
-2,118 call operands agree with the accepted addresses of their named
-callees, and 534 floating-point references carry the retail literal bytes.
+2,140 call operands agree with the accepted addresses of their named
+callees, and 556 floating-point references carry the retail literal bytes.
 The audit uses the normal objects and link map at each paired operand.
 See `.analysis/pi/ecl-resolver-owner/normal-coff-leads.py` for the recipe
-and `.analysis/pi/ecl-shared-handle-call/normal-coff-leads.log` for the
-SEM-456 results.
+and `.analysis/pi/bullet-shared-motion/normal-coff-leads.log` for the
+SEM-459 results.
 
 ## Scene loading and capture against the original
 
@@ -407,6 +407,14 @@ Both layouts execute the same writes and retain the same color storage
 as the other clients that use the initialized reference. The normal
 callback object matches all 22 target extents and 181 relocations.
 See [SEM-458](SEMANTIC_HISTORY.md#sem-458--share-all-22-extended-ecl-callback-bodies).
+
+SEM-459 gives both builds the same six BulletInf tables. The script-base
+table moves from 0x004B7088 to 0x004B8710, and every table matches its
+retail bytes in both link orders. Spawn, transform and capture calls use
+the canonical ANM and player destinations. The 35 normal BulletManager
+units match their target extents and all 268 relocation fields. See
+[SEM-459](SEMANTIC_HISTORY.md#sem-459--share-the-bulletmanager-lifecycle-and-motion-code)
+and `.analysis/pi/bullet-shared-motion/`.
 
 ## ANM VM lifetime and handles
 

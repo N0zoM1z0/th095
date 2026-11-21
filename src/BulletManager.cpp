@@ -5,59 +5,15 @@
 #include "SoundPlayer.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
-#ifndef DIFFBUILD
 #include "PhotoGamePlayer.hpp"
-#endif
 
 #include <string.h>
 
 namespace th095
 {
 
-#ifdef DIFFBUILD
-#include "PhotoBulletManagerEmission.inl"
-#define TH095_PHOTO_BULLET_FROM_ANGLE(vector, angle, magnitude) \
-    vector.FromAngleMagnitude(angle, magnitude)
-#else
-#define TH095_PHOTO_BULLET_ANM(manager) ((manager)->bulletAnm)
-#define TH095_PHOTO_BULLET_FROM_ANGLE(vector, angle, magnitude) \
-    reinterpret_cast<Float3 *>(&(vector))->FromAngleMagnitude((angle), (magnitude))
-#endif
-
-
-struct PhotoBulletPlayerView
-{
-    f32 AngleFromPoint(PhotoBulletVector *position);
-    i32 CheckBulletCollision(
-        PhotoBulletVector *position, PhotoBulletVector *size);
-};
-
-#ifdef DIFFBUILD
-#define TH095_PHOTO_BULLET_PLAYER_ANGLE(position) \
-    g_PhotoBulletPlayer->AngleFromPoint(position)
-#define TH095_PHOTO_BULLET_PLAYER_COLLISION(position, size) \
-    g_PhotoBulletPlayer->CheckBulletCollision((position), (size))
-#else
-static __forceinline f32 PhotoBulletPlayerAngle(PhotoBulletVector *position)
-{
-    return g_RuntimePlayerOwner->AngleFromPoint(reinterpret_cast<Float3 *>(position));
-}
-static __forceinline i32 PhotoBulletPlayerCollision(
-    PhotoBulletVector *position, PhotoBulletVector *size)
-{
-    return g_RuntimePlayerOwner->CheckBulletCollision(
-            reinterpret_cast<Float3 *>(position),
-            reinterpret_cast<Float3 *>(size));
-}
-#define TH095_PHOTO_BULLET_PLAYER_ANGLE(position) PhotoBulletPlayerAngle(position)
-#define TH095_PHOTO_BULLET_PLAYER_COLLISION(position, size) \
-    PhotoBulletPlayerCollision((position), (size))
-#endif
-
-extern PhotoBulletPlayerView *g_PhotoBulletPlayer;
 PhotoBulletManagerView *g_PhotoBulletManager; // Retail 0x004BDD98
 
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 // Target .data 0x004A40C0..0x004A424F contains six adjacent, relocation-
 // bounded bullet metadata tables.  Keep the observed item counts explicit:
 // 24 bullet kinds followed by the 16/8/4-color capture palettes.
@@ -89,14 +45,6 @@ u32 g_PhotoBulletColors8[8] = {
 u32 g_PhotoBulletColors4[4] = {
     0xffff1010, 0xff1010ff, 0xff10ff10, 0xff808010,
 };
-#else
-extern i32 g_PhotoBulletScriptBases[];
-extern f32 g_PhotoBulletCollisionSizes[];
-extern i32 g_PhotoBulletDrawBucketIndices[];
-extern u32 g_PhotoBulletColors16[];
-extern u32 g_PhotoBulletColors8[];
-extern u32 g_PhotoBulletColors4[];
-#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -141,11 +89,7 @@ i32 PhotoBulletManagerView::Initialize()
         return ZUN_ERROR;
     }
     this->bulletCursor = &this->bullets[0];
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    this->bullets[0x640].state = 5;
-#else
     this->bullets[0x640].state = PHOTO_BULLET_STATE_CURSOR_SENTINEL;
-#endif
     return ZUN_SUCCESS;
 }
 
@@ -246,7 +190,7 @@ static __forceinline void PhotoBulletSpawnVmSetupPhase(
     PhotoBulletSpawnDescriptor *descriptor)
 {
     u8 compilerStorage[0x2c];
-    TH095_PHOTO_BULLET_ANM(manager)->InitializeVm(
+    manager->bulletAnm->InitializeVm(
         &bullet->vm,
         g_PhotoBulletScriptBases[descriptor->bulletType] + descriptor->color);
 }
@@ -270,18 +214,10 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     locals.bullet = this->bulletCursor;
     for (locals.i = 0; locals.i < 0x640; ++locals.i)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (locals.bullet->state == 0)
-#else
         if (locals.bullet->state == PHOTO_BULLET_STATE_INACTIVE)
-#endif
             break;
         ++locals.bullet;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (locals.bullet->state == 5)
-#else
         if (locals.bullet->state == PHOTO_BULLET_STATE_CURSOR_SENTINEL)
-#endif
             locals.bullet = &this->bullets[0];
     }
     if (locals.i >= 0x640)
@@ -351,11 +287,7 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
         break;
     }
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    locals.bullet->state = 1;
-#else
     locals.bullet->state = PHOTO_BULLET_STATE_ACTIVE;
-#endif
     locals.bullet->flags |= 1;
     locals.bullet->stateTimer = 0;
     locals.bullet->activeTimer = 0;
@@ -363,19 +295,15 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     locals.bullet->angle = AddNormalizeAngle(locals.angle, 0.0f);
     locals.bullet->position = descriptor->position;
     locals.bullet->position.z = 0.1f;
-    TH095_PHOTO_BULLET_FROM_ANGLE(locals.bullet->velocity, locals.angle, locals.speed);
+    locals.bullet->velocity.FromAngleMagnitude(locals.angle, locals.speed);
     locals.bullet->activeTransformFlags = descriptor->transformFlags;
     locals.bullet->color = descriptor->color;
     locals.bullet->bulletType = descriptor->bulletType;
     locals.bullet->field360 = 0;
     locals.bullet->flags &= ~0x00000008;
     locals.bullet->flags &= ~0x00000004;
-    locals.bullet->flags |= 0x00000002;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    locals.bullet->flags &= ~0x00000010;
-#else
+    locals.bullet->collidable = 1;
     locals.bullet->captureDisabled = 0;
-#endif
 
     PhotoBulletSpawnVmSetupPhase(this, locals.bullet, descriptor);
     locals.bullet->drawBucketIndex =
@@ -390,33 +318,21 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     if ((descriptor->transformFlags & PHOTO_BULLET_TRANSFORM_SPAWN_FAST) != 0)
     {
         locals.bullet->vm.pendingInterrupt = 7;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        locals.bullet->state = 2;
-#else
         locals.bullet->state = PHOTO_BULLET_STATE_SPAWN_TRANSITION;
-#endif
         locals.bullet->position -= locals.bullet->velocity * 4.0f;
     }
     else if ((descriptor->transformFlags &
               PHOTO_BULLET_TRANSFORM_SPAWN_NORMAL) != 0)
     {
         locals.bullet->vm.pendingInterrupt = 8;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        locals.bullet->state = 2;
-#else
         locals.bullet->state = PHOTO_BULLET_STATE_SPAWN_TRANSITION;
-#endif
         locals.bullet->position -= locals.bullet->velocity * 4.0f;
     }
     else if ((descriptor->transformFlags &
               PHOTO_BULLET_TRANSFORM_SPAWN_SLOW) != 0)
     {
         locals.bullet->vm.pendingInterrupt = 9;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        locals.bullet->state = 2;
-#else
         locals.bullet->state = PHOTO_BULLET_STATE_SPAWN_TRANSITION;
-#endif
         locals.bullet->position -= locals.bullet->velocity * 4.0f;
     }
     else
@@ -433,11 +349,7 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     AnmManager::ExecuteScript(&locals.bullet->vm);
 
     ++locals.bullet;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    if (locals.bullet->state == 5)
-#else
     if (locals.bullet->state == PHOTO_BULLET_STATE_CURSOR_SENTINEL)
-#endif
         this->bulletCursor = &this->bullets[0];
     else
         this->bulletCursor = locals.bullet;
@@ -478,7 +390,7 @@ nextRecord:
     case PHOTO_BULLET_TRANSFORM_DECELERATE:
         this->activeTransformFlags |= PHOTO_BULLET_TRANSFORM_DECELERATE;
         this->exStates[0].timer = 0;
-        *reinterpret_cast<i32 *>(&this->exStates[0].vector.z) = 0;
+        this->exStates[0].vector.z = 0.0f;
         break;
 
     case PHOTO_BULLET_TRANSFORM_ACCELERATE_VECTOR:
@@ -491,8 +403,7 @@ nextRecord:
                 : this->angle;
         this->exStates[1].timer = 0;
         this->exStates[1].durationFrames = record->payload.durationFrames;
-        TH095_PHOTO_BULLET_FROM_ANGLE(
-            this->exStates[1].vector,
+        this->exStates[1].vector.FromAngleMagnitude(
             this->exStates[1].accelerationAngle,
             this->exStates[1].accelerationMagnitude);
         if (this->transformIndex != 0 && this->transformSound >= 0)
@@ -561,7 +472,7 @@ nextRecord:
         goto nextRecord;
 
     case PHOTO_BULLET_TRANSFORM_SET_SPRITE:
-        TH095_PHOTO_BULLET_ANM(g_PhotoBulletManager)->InitializeVm(
+        g_PhotoBulletManager->bulletAnm->InitializeVm(
             &this->vm,
             g_PhotoBulletScriptBases[record->payload.int0] +
                 record->payload.int1);
@@ -569,11 +480,7 @@ nextRecord:
         goto nextRecord;
 
     case PHOTO_BULLET_TRANSFORM_DESPAWN:
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        this->state = 3;
-#else
         this->state = PHOTO_BULLET_STATE_DESPAWN_TRANSITION;
-#endif
         break;
 
     case PHOTO_BULLET_TRANSFORM_PLAY_SOUND:
@@ -647,7 +554,8 @@ i32 PhotoBulletManagerView::SpawnBulletPattern(
     i32 index1;
     f32 angleToPlayer;
 
-    angleToPlayer = TH095_PHOTO_BULLET_PLAYER_ANGLE(&descriptor->position);
+    angleToPlayer = g_RuntimePlayerOwner->AngleFromPoint(
+        reinterpret_cast<Float3 *>(&descriptor->position));
     for (index2 = 0; index2 < descriptor->count2; ++index2)
     {
         for (index1 = 0; index1 < descriptor->count1; ++index1)
@@ -672,18 +580,10 @@ doneSpawning:
 // FUNCTION: TH095 0x004077A0.
 i32 PhotoBulletView::BeginDespawn()
 {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    if (this->state == 2 || this->state == 1)
-#else
     if (this->state == PHOTO_BULLET_STATE_SPAWN_TRANSITION ||
         this->state == PHOTO_BULLET_STATE_ACTIVE)
-#endif
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        this->state = 3;
-#else
         this->state = PHOTO_BULLET_STATE_DESPAWN_TRANSITION;
-#endif
         this->vm.pendingInterrupt = 1;
         this->stateTimer = 0;
         return 1;
@@ -694,11 +594,7 @@ i32 PhotoBulletView::BeginDespawn()
 // FUNCTION: TH095 0x00405850.
 void PhotoBulletView::Deactivate()
 {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    this->state = 0;
-#else
     this->state = PHOTO_BULLET_STATE_INACTIVE;
-#endif
     this->stateTimer = 0;
     this->activeTimer = 0;
 }
@@ -730,8 +626,8 @@ void PhotoBulletView::UpdateDeceleration()
     {
         magnitude =
             5.0f - (5.0f * (f32)this->exStates[0].timer) / 16.0f;
-        TH095_PHOTO_BULLET_FROM_ANGLE(
-            this->velocity, this->angle, magnitude + this->speed);
+        this->velocity.FromAngleMagnitude(
+            this->angle, magnitude + this->speed);
     }
     else
     {
@@ -780,7 +676,7 @@ void PhotoBulletView::UpdatePolarAcceleration()
         this->angle = AddNormalizeAngle(
             this->angle, g_AnmGameSpeed * this->exStates[2].angleDelta);
         this->speed += g_AnmGameSpeed * this->exStates[2].speedDelta;
-        TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, this->speed);
+        this->velocity.FromAngleMagnitude(this->angle, this->speed);
     }
 
     this->exStates[2].timer++;
@@ -806,8 +702,7 @@ void PhotoBulletView::UpdateRelativeDirectionChange()
                 ~PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_RELATIVE;
         }
         this->angle += this->exStates[3].directionChangeAngle;
-        *reinterpret_cast<i32 *>(&this->speed) =
-            *reinterpret_cast<i32 *>(&this->exStates[3].directionChangeSpeed);
+        memcpy(&this->speed, &this->exStates[3].directionChangeSpeed, sizeof(this->speed));
         magnitude = this->speed;
         this->exStates[3].timer = 0;
     }
@@ -819,7 +714,7 @@ void PhotoBulletView::UpdateRelativeDirectionChange()
                 this->exStates[3].directionChangeIntervalFrames;
     }
 
-    TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, magnitude);
+    this->velocity.FromAngleMagnitude(this->angle, magnitude);
     this->exStates[3].timer++;
 }
 
@@ -842,10 +737,8 @@ void PhotoBulletView::UpdateAbsoluteDirectionChange()
             this->activeTransformFlags &=
                 ~PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_ABSOLUTE;
         }
-        *reinterpret_cast<i32 *>(&this->angle) =
-            *reinterpret_cast<i32 *>(&this->exStates[3].directionChangeAngle);
-        *reinterpret_cast<i32 *>(&this->speed) =
-            *reinterpret_cast<i32 *>(&this->exStates[3].directionChangeSpeed);
+        memcpy(&this->angle, &this->exStates[3].directionChangeAngle, sizeof(this->angle));
+        memcpy(&this->speed, &this->exStates[3].directionChangeSpeed, sizeof(this->speed));
         magnitude = this->speed;
         this->exStates[3].timer = 0;
     }
@@ -857,7 +750,7 @@ void PhotoBulletView::UpdateAbsoluteDirectionChange()
                 this->exStates[3].directionChangeIntervalFrames;
     }
 
-    TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, magnitude);
+    this->velocity.FromAngleMagnitude(this->angle, magnitude);
     this->exStates[3].timer++;
 }
 
@@ -881,10 +774,10 @@ void PhotoBulletView::UpdateAimedDirectionChange()
                 ~PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_AIMED;
         }
         this->angle = AddNormalizeAngle(
-            TH095_PHOTO_BULLET_PLAYER_ANGLE(&this->position),
+            g_RuntimePlayerOwner->AngleFromPoint(
+                reinterpret_cast<Float3 *>(&this->position)),
             this->exStates[3].directionChangeAngle);
-        *reinterpret_cast<i32 *>(&this->speed) =
-            *reinterpret_cast<i32 *>(&this->exStates[3].directionChangeSpeed);
+        memcpy(&this->speed, &this->exStates[3].directionChangeSpeed, sizeof(this->speed));
         magnitude = this->speed;
         this->exStates[3].timer = 0;
     }
@@ -896,7 +789,7 @@ void PhotoBulletView::UpdateAimedDirectionChange()
                 this->exStates[3].directionChangeIntervalFrames;
     }
 
-    TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, magnitude);
+    this->velocity.FromAngleMagnitude(this->angle, magnitude);
     this->exStates[3].timer++;
 }
 
@@ -933,10 +826,10 @@ void PhotoBulletView::UpdateBoundaryBounce()
             this->angle = -this->angle;
         }
 
-        publication.bounceSpeedBits =
-            *reinterpret_cast<i32 *>(&this->exStates[4].bounceSpeed);
+        memcpy(&publication.bounceSpeedBits, &this->exStates[4].bounceSpeed,
+               sizeof(publication.bounceSpeedBits));
         publication.magnitudeBits = publication.bounceSpeedBits;
-        TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, publication.magnitude);
+        this->velocity.FromAngleMagnitude(this->angle, publication.magnitude);
         this->exStates[4].bouncesCompleted += 1;
         if (this->exStates[4].bouncesCompleted >=
             this->exStates[4].bounceLimit)
@@ -1007,12 +900,8 @@ PhotoBulletView *PhotoBulletManagerView::CapturePhotoTargets(
 
     for (captureIndex = 0; captureIndex < 0x640; ++captureIndex, ++captureBullet)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (captureBullet->state == 0 || captureBullet->state == 3)
-#else
         if (captureBullet->state == PHOTO_BULLET_STATE_INACTIVE ||
             captureBullet->state == PHOTO_BULLET_STATE_DESPAWN_TRANSITION)
-#endif
             continue;
         if (captureBullet->captureDisabled != 0)
             continue;
@@ -1082,12 +971,8 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
 
     for (index = 0; index < 0x640; ++index, ++bullet)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (bullet->state == 0 || bullet->state == 3)
-#else
         if (bullet->state == PHOTO_BULLET_STATE_INACTIVE ||
             bullet->state == PHOTO_BULLET_STATE_DESPAWN_TRANSITION)
-#endif
             continue;
         if (bullet->captureDisabled != 0)
             continue;
@@ -1105,13 +990,8 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
 
         PhotoBulletCapturedDeactivatePhase(bullet);
         captureVm = g_AnmManager->GetVm(
-#ifdef DIFFBUILD
-            TH095_PHOTO_BULLET_ANM(this)->CreateVm(
-                0x126, &bullet->position));
-#else
             this->bulletAnm->CreateVmAtWorld(
                 0x126, reinterpret_cast<Float3 *>(&bullet->position)));
-#endif
         if (bullet->vm.loadedSprite != NULL)
         {
             if (bullet->vm.loadedSprite->widthPx <= 16.0f)
@@ -1146,12 +1026,8 @@ void PhotoBulletManagerView::DespawnAllBullets()
     PhotoBulletView *bullet = &this->bullets[0];
     for (i32 index = 0; index < 0x640; ++index, ++bullet)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (bullet->state == 0 || bullet->state == 3)
-#else
         if (bullet->state == PHOTO_BULLET_STATE_INACTIVE ||
             bullet->state == PHOTO_BULLET_STATE_DESPAWN_TRANSITION)
-#endif
             continue;
         bullet->BeginDespawn();
     }
@@ -1180,12 +1056,8 @@ i32 PhotoBulletManagerView::CountNearbyTargets(
 
     for (nearbyIndex = 0; nearbyIndex < 0x640; ++nearbyIndex, ++nearbyBullet)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (nearbyBullet->state == 0 || nearbyBullet->state == 3)
-#else
         if (nearbyBullet->state == PHOTO_BULLET_STATE_INACTIVE ||
             nearbyBullet->state == PHOTO_BULLET_STATE_DESPAWN_TRANSITION)
-#endif
             continue;
         {
             nearbyUpperInner =
@@ -1322,11 +1194,7 @@ i32 PhotoBulletManagerView::Update()
          bulletIndex < 0x640;
          ++bulletIndex, ++bullet)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (bullet->state == 0)
-#else
         if (bullet->state == PHOTO_BULLET_STATE_INACTIVE)
-#endif
         {
             continue;
         }
@@ -1342,53 +1210,43 @@ i32 PhotoBulletManagerView::Update()
 
         switch (bullet->state)
         {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        case 2:
-#else
         case PHOTO_BULLET_STATE_SPAWN_TRANSITION:
-#endif
             bullet->position +=
                 bullet->velocity * g_AnmGameSpeed / 2.0f;
             if (bullet->vm.intVar0 == 0)
             {
                 break;
             }
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            bullet->state = 1;
-#else
             bullet->state = PHOTO_BULLET_STATE_ACTIVE;
-#endif
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        case 1:
-#else
         case PHOTO_BULLET_STATE_ACTIVE:
-#endif
             bullet->AdvanceTransformProgram();
             if (bullet->activeTransformFlags != 0)
             {
-                if ((bullet->activeTransformFlags & 0x000001) != 0)
+                if ((bullet->activeTransformFlags & PHOTO_BULLET_TRANSFORM_DECELERATE) != 0)
                     bullet->UpdateDeceleration();
-                if ((bullet->activeTransformFlags & 0x000010) != 0)
+                if ((bullet->activeTransformFlags & PHOTO_BULLET_TRANSFORM_ACCELERATE_VECTOR) != 0)
                     bullet->UpdateVectorAcceleration();
-                if ((bullet->activeTransformFlags & 0x000020) != 0)
+                if ((bullet->activeTransformFlags & PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR) != 0)
                     bullet->UpdatePolarAcceleration();
-                if ((bullet->activeTransformFlags & 0x000040) != 0)
+                if ((bullet->activeTransformFlags & PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_RELATIVE) != 0)
                     bullet->UpdateRelativeDirectionChange();
-                if ((bullet->activeTransformFlags & 0x000100) != 0)
+                if ((bullet->activeTransformFlags & PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_ABSOLUTE) != 0)
                     bullet->UpdateAbsoluteDirectionChange();
-                if ((bullet->activeTransformFlags & 0x000080) != 0)
+                if ((bullet->activeTransformFlags & PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_AIMED) != 0)
                     bullet->UpdateAimedDirectionChange();
-                if ((bullet->activeTransformFlags & 0x000c00) != 0)
+                if ((bullet->activeTransformFlags &
+                     (PHOTO_BULLET_TRANSFORM_BOUNCE_ALL_EDGES |
+                      PHOTO_BULLET_TRANSFORM_BOUNCE_EXCEPT_BOTTOM)) != 0)
                     bullet->UpdateBoundaryBounce();
-                if ((bullet->activeTransformFlags & 0x100000) != 0)
+                if ((bullet->activeTransformFlags & PHOTO_BULLET_TRANSFORM_WRAP_X) != 0)
                     bullet->UpdateHorizontalWrap();
-                if ((bullet->activeTransformFlags & 0x200000) != 0)
+                if ((bullet->activeTransformFlags & PHOTO_BULLET_TRANSFORM_WRAP_Y) != 0)
                     bullet->UpdateVerticalWrap();
-                if ((bullet->activeTransformFlags & 0x008000) != 0)
+                if ((bullet->activeTransformFlags & PHOTO_BULLET_TRANSFORM_WAIT) != 0)
                 {
                     if (bullet->exStates[5].timer <= 0)
-                        bullet->activeTransformFlags ^= 0x008000;
+                        bullet->activeTransformFlags ^= PHOTO_BULLET_TRANSFORM_WAIT;
                     else
                         bullet->exStates[5].timer--;
                 }
@@ -1397,25 +1255,18 @@ i32 PhotoBulletManagerView::Update()
             bullet->position += bullet->velocity * g_AnmGameSpeed;
             if (bullet->collidable != 0)
             {
-                if (TH095_PHOTO_BULLET_PLAYER_COLLISION(
-                        &bullet->position, &bullet->collisionSize) != 0)
+                if (g_RuntimePlayerOwner->CheckBulletCollision(
+                        reinterpret_cast<Float3 *>(&bullet->position),
+                        reinterpret_cast<Float3 *>(&bullet->collisionSize)) != 0)
                 {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-                    bullet->state = 3;
-#else
                     bullet->state = PHOTO_BULLET_STATE_DESPAWN_TRANSITION;
-#endif
                     bullet->vm.pendingInterrupt = 1;
                     break;
                 }
             }
             break;
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        case 3:
-#else
         case PHOTO_BULLET_STATE_DESPAWN_TRANSITION:
-#endif
             bullet->position +=
                 bullet->velocity * g_AnmGameSpeed / 2.0f;
             break;

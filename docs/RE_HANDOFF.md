@@ -164,6 +164,9 @@ SEM-457 gives all low-opcode float reads the same typed operand
 expression.
 SEM-458 removes the remaining profile selectors from EclExtended.
 The normal callbacks match all 22 target extents and 181 relocations.
+SEM-459 removes the profile selectors from BulletManager, including
+the six metadata tables and the player and ANM calls. Its 35 normal
+units match the retail extents and relocations.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

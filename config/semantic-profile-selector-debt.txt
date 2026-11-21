@@ -11,11 +11,6 @@
 6	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 8	src/Background.cpp	#ifdef TH095_MATCH_EXACT
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/BulletManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-22	src/BulletManager.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/BulletManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-3	src/BulletManager.cpp	#ifdef DIFFBUILD
-1	src/BulletManager.cpp	#ifndef DIFFBUILD
 1	src/BulletManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/BulletManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/diffbuild.hpp	#ifdef DIFFBUILD

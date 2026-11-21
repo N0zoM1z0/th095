@@ -19421,3 +19421,29 @@ shake cases. Both demo0 traces match all ten gameplay fields at all
 2,712 indices. The reverse link's timer advances one frame earlier.
 The game and library relocation checks pass in both layouts. See
 `.analysis/pi/ecl-extended-canonical-calls/`.
+
+### SEM-459 — share the BulletManager lifecycle and motion code
+
+Both builds of BulletManager use the named lifecycle states and transform
+flags, the same six metadata tables, and the canonical player and ANM
+receivers. This removes 28 profile selectors and retires the duplicate
+player and loaded-ANM declarations. Aiming passes the position directly
+at the call site. The inline-wrapper probe adds four bytes to the
+351-byte aimed-direction function.
+
+The eight polar calls use PhotoBulletVector's declaration and share the
+Float3 implementation. The linker alias now lives with that implementation
+in AnmManager.cpp. Five speed and angle publications use copies through
+`memcpy` to preserve the stored bits. The boundary bounce changes the
+velocity without writing the scalar speed, as observed at 0x00407440.
+
+All 71 affected exact comparisons pass. The normal BulletManager object
+independently matches 35 target extents and 268 relocation fields.
+The six metadata arrays cover 400 matching bytes in both objects and
+both linked PEs. The 25 checked table, player, ANM and polar references
+follow their destinations in both layouts. Retail and both links agree
+on 108 motion and spawn cases and six captured-bullet drop cases. Motion
+coverage includes signed zero, NaN payloads, reflected velocity and the
+spawn cursor crossing its sentinel. Both demo0 links match ten gameplay
+fields at all 2,712 input indices. The scene timer advances one frame
+later in the reordered link. See `.analysis/pi/bullet-shared-motion/`.

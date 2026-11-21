@@ -643,14 +643,6 @@ def check_photo_bullet_owner() -> None:
     if "#define TH095_PHOTO_BULLET_SPAWN_WORLD" not in camera_emission:
         fail("PhotoCamera bullet spawn escaped its named emission boundary")
 
-    bullet_emission = (SRC / "PhotoBulletManagerEmission.inl").read_text(
-        encoding="utf-8"
-    )
-    if "Exact/DIFF-only receiver facade" not in bullet_emission:
-        fail("BulletInf emission adapter must state its narrow receiver role")
-    if "TH095_MATCH_EXACT" in bullet_emission or "DIFFBUILD" in bullet_emission:
-        fail("BulletInf emission adapter must not contain a second profile split")
-
     camera_source = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
     for include in (
         '#include "PhotoCameraBulletEmission.inl"',
