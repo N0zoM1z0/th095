@@ -42,17 +42,6 @@ struct AnmManagerLookup
     void ConfigureEnemyPhotoAnm(AnmVm *vm, void *work, i32 value);
 };
 
-struct PhotoSession
-{
-    void ReplaceActive();
-    void Finish();
-};
-
-struct PhotoSessionDescriptor
-{
-    PhotoSession *Create();
-};
-
 struct PhotoModeController
 {
     void Begin();

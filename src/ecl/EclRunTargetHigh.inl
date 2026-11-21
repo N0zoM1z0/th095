@@ -425,12 +425,11 @@ enter_subroutine:
 
     case 104:
     {
-        if (TH095_ECL_PHOTO_CARD_SESSION)
-            TH095_ECL_SESSION_REPLACE(TH095_ECL_PHOTO_CARD_SESSION);
-        TH095_ECL_PHOTO_CARD_SESSION =
-            TH095_ECL_SESSION_CREATE(reinterpret_cast<PhotoSessionDescriptor *>(
-                instruction->operands));
-        if (!TH095_ECL_PHOTO_CARD_SESSION)
+        if (g_PhotoEnemyManager->eclPhotoCardSession)
+            g_PhotoEnemyManager->eclPhotoCardSession->Destroy();
+        g_PhotoEnemyManager->eclPhotoCardSession = PhotoCardInfoView::Create(
+            reinterpret_cast<char *>(instruction->operands));
+        if (!g_PhotoEnemyManager->eclPhotoCardSession)
             return ZUN_ERROR;
         TH095_ECL_PHOTO_MODE_BEGIN();
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0xe), 0);
@@ -447,10 +446,10 @@ enter_subroutine:
 
     case 105:
     {
-        if (TH095_ECL_PHOTO_CARD_SESSION)
+        if (g_PhotoEnemyManager->eclPhotoCardSession)
         {
-            TH095_ECL_SESSION_FINISH(TH095_ECL_PHOTO_CARD_SESSION);
-            TH095_ECL_PHOTO_CARD_SESSION = 0;
+            g_PhotoEnemyManager->eclPhotoCardSession->Show();
+            g_PhotoEnemyManager->eclPhotoCardSession = 0;
             TH095_ECL_PHOTO_MODE_END();
             TH095_ECL_ANM_MARK_DELETE(
                 enemy->attachedVmId.value);

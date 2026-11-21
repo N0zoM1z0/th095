@@ -18930,3 +18930,20 @@ The normal links match the corresponding SEM-432 replay images in all
 four mapped sections. The 288 comparison cases, 90 extension dispatch
 cases, and 48 ECL-to-camera score cases agree with retail. See
 `.analysis/pi/ecl-live-dispatch/`.
+
+### SEM-437 — share ECL's CardInf session calls
+
+Opcode 104 destroys an existing card before creating the new one from
+the ECL text payload. A null result clears the EnemyInf session slot and
+exits before enabling the spell background, playing the sound, or
+creating the attached VM. Opcode 105 shows the card and clears the
+session slot before disabling the background and releasing the VM.
+RunEcl now uses the canonical CardInf type and methods in both builds.
+The slot remains at EnemyInf +0x26AE28.
+
+The 27,747-byte RunEcl extent and all 647 relocations pass strict exact
+comparison. The three canonical calls retain their original destinations.
+The original executable and both link orders agree on the eight
+combinations of replacing an existing card, creation success, and
+immediate finish. Both normal images retain the mapped sections used by
+the verified demo replay. See `.analysis/pi/ecl-card-owner/`.

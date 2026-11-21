@@ -24,12 +24,12 @@
 #undef TH095_ECL_RUN_DECLARATIONS_ONLY
 
 #include "../GameplayGlobals.hpp"
+#include "../PhotoCardInfo.hpp"
 #include "../PhotoEffectRuntime.hpp"
 #include "../PhotoEnemyEclManager.hpp"
 #include "../PhotoEnemyManagerLayout.hpp"
 #include "../PhotoStageLayout.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "../PhotoCardInfo.hpp"
 #include "../PhotoGamePlayer.hpp"
 #endif
 
@@ -57,28 +57,11 @@
 #define TH095_ECL_PHOTO_MODE EclRunHigh::g_Th095PhotoMode
 #define TH095_ECL_PHOTO_MODE_BEGIN() TH095_ECL_PHOTO_MODE->Begin()
 #define TH095_ECL_PHOTO_MODE_END() TH095_ECL_PHOTO_MODE->End()
-#define TH095_ECL_SESSION_REPLACE(session) (session)->ReplaceActive()
-#define TH095_ECL_SESSION_FINISH(session) (session)->Finish()
-#define TH095_ECL_SESSION_CREATE(descriptor) (descriptor)->Create()
 #else
 #define TH095_ECL_PHOTO_MODE \
     (reinterpret_cast<EclRunHigh::PhotoModeController *>(::th095::g_Background))
 #define TH095_ECL_PHOTO_MODE_BEGIN() ::th095::g_Background->StartSpellBackground()
 #define TH095_ECL_PHOTO_MODE_END() ::th095::g_Background->StopSpellBackground()
-#define TH095_ECL_SESSION_REPLACE(session) \
-    (session)->Destroy()
-#define TH095_ECL_SESSION_FINISH(session) \
-    (session)->Show()
-#define TH095_ECL_SESSION_CREATE(descriptor) \
-    ::th095::PhotoCardInfoView::Create(reinterpret_cast<char *>(descriptor))
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_ECL_PHOTO_CARD_SESSION \
-    reinterpret_cast<PhotoSession *&>(g_PhotoEnemyManager->eclPhotoCardSession)
-#else
-#define TH095_ECL_PHOTO_CARD_SESSION \
-    (g_PhotoEnemyManager->eclPhotoCardSession)
 #endif
 
 #define TH095_ECL_BULLET_ANM_SPAWNER \

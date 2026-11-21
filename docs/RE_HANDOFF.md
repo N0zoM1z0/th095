@@ -118,7 +118,8 @@ SEM-434 uses the compact enemy in the context, movement, and shot helpers
 and in both interpolation callbacks. SEM-435 also gives the 22 extended
 callbacks the compact receiver and emits their shared table in both profiles.
 SEM-436 retires the dormant TH08 dispatcher and uses the named comparison
-case labels in both profiles.
+case labels in both profiles. SEM-437 routes both builds of ECL 104 and 105
+through the canonical CardInf session handle and lifecycle methods.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
