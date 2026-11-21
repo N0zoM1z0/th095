@@ -19025,3 +19025,25 @@ with stubbed ANM services. Both links also finish `demo/demo0.rpy` with
 original at all 2,712 input indices. The regular link's sampled stage
 timer matches the original, and the reordered link remains within one
 tick. See `.analysis/pi/rotating-laser-owner/`.
+
+### SEM-441 — share the straight laser object and fragments
+
+The 0x610 straight laser owns its spawn parameters at +0x50, body VM
+at +0x78 and tail VM at +0x344. The target constructor zeros all 40
+parameter bytes. The previous normal constructor left that region
+untouched, which a fixture with prefilled storage reproduced. Both
+builds now run the same initialization.
+
+The laser initializer loads the initial length as a float, and both
+collision paths put floating-point lengths into their surviving
+fragments. The shared packet removes the exact profile's integer
+alias for the length. Both initializers copy the position value
+without accessing it through a differently typed pointer.
+
+All 34 affected exact comparisons pass. The retail executable and both
+normal links agree on fractional-length initialization and 16 collision
+cases, including full capture, no hit, clipping at the start and a
+surviving fragment. The fixture checks each published fragment field.
+Both link orders replay all 2,712 input indices of `demo/demo0.rpy`
+with matching gameplay fields and a stage timer within one tick of
+retail. See `.analysis/pi/straight-laser-owner/`.

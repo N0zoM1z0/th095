@@ -28,7 +28,6 @@
 3	src/OptionsMenu.hpp	struct	ButtonDigitLocals
 1	src/OptionsMenu.hpp	struct	OptionsMenuView
 2	src/PhotoEffect.cpp	struct	GapScanState
-1	src/PhotoEffect.cpp	struct	PhotoStraightLaserView
 1	src/PhotoFront.cpp	struct	PhotoFrontUpdateLocals
 1	src/PhotoGameTask.cpp	struct	PhotoAsciiManagerTaskView
 1	src/PhotoGameTask.cpp	struct	PhotoGameTaskDrawHudLocals

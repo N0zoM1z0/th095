@@ -126,7 +126,8 @@ writes the canonical camera limit. The ANM spawn, lookup and deletion
 call adapters remain. SEM-439 uses the full Background and PlayerInf
 owners in EclExtended, including the embedded camera count call. SEM-440
 shares the rotating-laser object with PhotoEffect and identifies the
-extension callbacks' tail draw flag.
+extension callbacks' tail draw flag. SEM-441 shares the straight laser
+object and corrects the normal constructor's parameter initialization.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

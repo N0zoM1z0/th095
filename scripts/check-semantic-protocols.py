@@ -4207,10 +4207,13 @@ def check_photo_straight_laser_packet() -> None:
         encoding="utf-8"
     )
     photo_effect = (SRC / "PhotoEffect.cpp").read_text(encoding="utf-8")
+    exact_effect = (SRC / "PhotoEffectExact.inl").read_text(encoding="utf-8")
+    owner = (SRC / "PhotoStraightLaser.hpp").read_text(encoding="utf-8")
     for path, text in (
         ("ecl/EclRunHigh.inl", high),
         ("ecl/EclRunTargetPhoto.inl", target_photo),
         ("PhotoEffect.cpp", photo_effect),
+        ("PhotoEffectExact.inl", exact_effect),
     ):
         if "PhotoEffectArgsSmall" in text:
             fail(f"{path} restored the retired straight-laser packet projection")
@@ -4225,16 +4228,26 @@ def check_photo_straight_laser_packet() -> None:
         if f"args.{member}" not in target_photo:
             fail(f"RunEcl photo handlers lost canonical packet member: {member}")
 
-    if '#include "PhotoStraightLaserArgs.hpp"' not in photo_effect:
-        fail("normal PhotoEffect must consume the canonical straight-laser packet")
+    if '#include "PhotoStraightLaserArgs.hpp"' not in owner:
+        fail("PhotoStraightLaser.hpp must consume the canonical straight-laser packet")
+    if any(profile in owner for profile in PROFILE_NAMES):
+        fail("PhotoStraightLaser.hpp must declare one profile-independent owner")
     for fact in (
-        "PhotoStraightLaserSpawnArgs spawn;",
-        "static_cast<PhotoStraightLaserSpawnArgs *>(args)",
+        "sizeof(PhotoStraightLaserView) == 0x610",
+        "offsetof(PhotoStraightLaserView, spawn) == 0x50",
+        "offsetof(PhotoStraightLaserView, bodyVm) == 0x78",
+        "offsetof(PhotoStraightLaserView, tailVm) == 0x344",
+    ):
+        if fact not in owner:
+            fail(f"PhotoStraightLaser.hpp lost canonical layout: {fact}")
+    for fact in (
+        '#include "PhotoStraightLaser.hpp"',
+        "static_cast<const PhotoStraightLaserSpawnArgs *>(args)",
         "this->length = this->spawn.initialLength",
         "args.terminalDistance",
     ):
-        if fact not in photo_effect:
-            fail(f"normal PhotoEffect lost canonical packet consumer/producer: {fact}")
+        if fact not in photo_effect or fact not in exact_effect:
+            fail(f"PhotoEffect lost canonical packet consumer/producer: {fact}")
 
     rotating_header = (SRC / "PhotoRotatingLaserArgs.hpp").read_text(
         encoding="utf-8"
@@ -4362,7 +4375,7 @@ def check_photo_rotating_laser_packet() -> None:
             fail(f"EclExtended lost canonical rotating packet producer/owner: {fact}")
 
     for fact in (
-        "static_cast<PhotoRotatingLaserSpawnArgs *>(args)",
+        "static_cast<const PhotoRotatingLaserSpawnArgs *>(args)",
         "this->spawn.angularVelocity",
         "this->spawn.followPhotoTarget",
         "this->spawn.velocity",
