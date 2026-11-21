@@ -3882,7 +3882,7 @@ target = 0x0041B0F0
 [[units.main-load-config.relocations]]
 offset = 0x369
 type = "DIR32"
-symbol = "??_C@_0BO@FGENLLDJ@?$ICa?$ICf?$ICl?$IC?p?$ID?$IB?$ID?$IC?$ID?$IK?$IC?I?$JD?G?$NN?$IN?$JO?$IC?$NN?$IC?$NM?$IC?$LH?$AN?6?$AA@"
+symbol = "??_C@_0BP@MHHJENPA@?$ICa?$ICf?$ICl?$IC?p?$ID?$IB?$ID?$IC?$ID?$IK?$IC?I?$JD?G?$IC?$NN?$IN?$JO?$IC?$NN?$IC?$NM?$IC?$LH?$AN?6?$AA@"
 target = 0x004961EC
 
 [[units.main-load-config.relocations]]
@@ -5742,7 +5742,7 @@ relocations = [
   { offset = 0x12E, type = "DIR32", symbol = "_GUID_NULL", target = 0x0049BA60 },
   { offset = 0x137, type = "DIR32", symbol = "_GUID_NULL", target = 0x0049BA60 },
   { offset = 0x15B, type = "REL32", symbol = "?CreateStreaming@CSoundManager@th095@@QAEJPAPAVCStreamingSound@2@PADKU_GUID@@KKPAXPAUThBgmFormat@2@@Z", target = 0x00453050 },
-  { offset = 0x169, type = "DIR32", symbol = "??_C@_0CI@JJLBPNNA@error?5?3?5create?5streaming?5sound?5b@", target = 0x00496C48 },
+  { offset = 0x169, type = "DIR32", symbol = "??_C@_0EB@PFFMMMND@error?5?3?5?$IDX?$IDg?$ID?$IK?$IB?$FL?$ID?$HO?$ID?$JD?$IDO?$JHp?$IDT?$IDE?$ID?$JD?$IDh@", target = 0x00496C48 },
   { offset = 0x16E, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
 ]
 
@@ -5811,7 +5811,7 @@ relocations = [
   { offset = 0x144, type = "DIR32", symbol = "_GUID_NULL", target = 0x0049BA60 },
   { offset = 0x14D, type = "DIR32", symbol = "_GUID_NULL", target = 0x0049BA60 },
   { offset = 0x196, type = "REL32", symbol = "?CreateStreamingFromMemory@CSoundManager@th095@@QAEJPAPAVCStreamingSound@2@PAEKPAUThBgmFormat@2@KU_GUID@@KKPAX@Z", target = 0x004533B0 },
-  { offset = 0x1A4, type = "DIR32", symbol = "??_C@_0CI@JJLBPNNA@error?5?3?5create?5streaming?5sound?5b@", target = 0x00496C48 },
+  { offset = 0x1A4, type = "DIR32", symbol = "??_C@_0EB@PFFMMMND@error?5?3?5?$IDX?$IDg?$ID?$IK?$IB?$FL?$ID?$HO?$ID?$JD?$IDO?$JHp?$IDT?$IDE?$ID?$JD?$IDh@", target = 0x00496C48 },
   { offset = 0x1A9, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
   { offset = 0x1B6, type = "DIR32", symbol = "??_C@_0M@BHNECEBJ@load?5comp?$AN?6?$AA@", target = 0x00496D00 },
   { offset = 0x1BB, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
@@ -7483,7 +7483,7 @@ symbol = "??0ReplayManager@th095@@QAE@XZ"
 target_address = 0x00434270
 size = 0x29
 relocations = [
-  { offset = 0x9, type = "DIR32", symbol = "??_C@_0BI@JMJCNFPH@HDinitialize?5ReplayInf?6?$AA@", target = 0x00496740 },
+  { offset = 0x9, type = "DIR32", symbol = "??_C@_0BG@GGDNNAJP@initialize?5ReplayInf?6?$AA@", target = 0x00496740 },
   { offset = 0xE, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
 ]
 
@@ -11787,7 +11787,7 @@ target_address = 0x004179D0
 size = 0x94
 relocations = [
   { offset = 0x3D, type = "REL32", symbol = "?Initialize@GameConfiguration@th095@@QAEXXZ", target = 0x00418720 },
-  { offset = 0x74, type = "DIR32", symbol = "??_C@_0BK@FDCOKIOF@pBinitialize?5GameTaskInf?6?$AA@", target = 0x00495638 },
+  { offset = 0x74, type = "DIR32", symbol = "??_C@_0BI@JFBFONLJ@initialize?5GameTaskInf?6?$AA@", target = 0x00495638 },
   { offset = 0x79, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
 ]
 
@@ -12098,7 +12098,7 @@ relocations = [
   { offset = 0x10, type = "DIR32", symbol = "??_C@_09DDFJDAFG@front?4anm?$AA@", target = 0x00495610 },
   { offset = 0x18, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x1D, type = "REL32", symbol = "?PreloadAnm@AnmManager@th095@@QAEPAUAnmLoaded@2@HPBD@Z", target = 0x004432E0 },
-  { offset = 0x3D, type = "DIR32", symbol = "??_C@_0DI@FAAHJNB@?$IJ?f?$JG?J?$IN?2?$JA?$KM?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB@", target = 0x004955D8 },
+  { offset = 0x3D, type = "DIR32", symbol = "??_C@_0DH@LGCMOPFP@?$IJ?f?$JG?J?$IN?2?$JA?$KM?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB@", target = 0x004955D8 },
   { offset = 0x42, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
   { offset = 0x47, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
   { offset = 0x6B, type = "REL32", symbol = "?CreateVm@PhotoFrontAnmLoadedView@th095@@QAE?AUPhotoFrontVmIdView@2@HH@Z", target = 0x00444EF0 },
@@ -12509,7 +12509,7 @@ symbol = "??0PhotoCardInfoView@th095@@QAE@XZ"
 target_address = 0x00408610
 size = 0x5A
 relocations = [
-  { offset = 0x31, type = "DIR32", symbol = "??_C@_0BF@EOIMCJDP@Ainitialize?5CardInf?6?$AA@", target = 0x0049545C },
+  { offset = 0x31, type = "DIR32", symbol = "??_C@_0BE@GLGGLJFG@initialize?5CardInf?6?$AA@", target = 0x0049545C },
   { offset = 0x36, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
   { offset = 0x4E, type = "DIR32", symbol = "?g_PhotoCardInfo@th095@@3PAUPhotoCardInfoView@1@A", target = 0x004BDD9C },
 ]
@@ -12706,7 +12706,7 @@ relocations = [
   { offset = 0x1E, type = "DIR32", symbol = "??1PhotoBulletView@th095@@QAE@XZ", target = 0x00404DC0 },
   { offset = 0x23, type = "DIR32", symbol = "??0PhotoBulletView@th095@@QAE@XZ", target = 0x00404D00 },
   { offset = 0x39, type = "REL32", symbol = "??_L@YGXPAXIHP6EX0@Z1@Z", target = 0x004855ED },
-  { offset = 0x45, type = "DIR32", symbol = "??_C@_0BI@MFLOILFB@?$EA?$EAinitialize?5BulletInf?6?$AA@", target = 0x004953A0 },
+  { offset = 0x45, type = "DIR32", symbol = "??_C@_0BG@ONEABDBE@initialize?5BulletInf?6?$AA@", target = 0x004953A0 },
   { offset = 0x4A, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
   { offset = 0x62, type = "DIR32", symbol = "?g_PhotoBulletManager@th095@@3PAUPhotoBulletManagerView@1@A", target = 0x004BDD98 },
   { offset = 0x76, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
@@ -14242,18 +14242,18 @@ relocations = [
   { offset = 0xA, type = "DIR32", symbol = "??_C@_09EAFDFAEF@title?4anm?$AA@", target = 0x004977E4 },
   { offset = 0x12, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x17, type = "REL32", symbol = "?PreloadAnm@AnmManager@th095@@QAEPAUAnmLoaded@2@HPBD@Z", target = 0x004432E0 },
-  { offset = 0x29, type = "DIR32", symbol = "??_C@_0BI@CODEDHOK@title?5data?5is?5corrupt?$AN?6?$AA@", target = 0x004977AC },
+  { offset = 0x29, type = "DIR32", symbol = "??_C@_0DH@FPFPIDOG@?$ID?$FO?$IDC?$IDg?$ID?$IL?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB@", target = 0x004977AC },
   { offset = 0x2E, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
   { offset = 0x33, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
   { offset = 0x43, type = "DIR32", symbol = "??_C@_0M@DCJGFHGK@title_v?4anm?$AA@", target = 0x004977A0 },
   { offset = 0x4B, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x50, type = "REL32", symbol = "?PreloadAnm@AnmManager@th095@@QAEPAUAnmLoaded@2@HPBD@Z", target = 0x004432E0 },
-  { offset = 0x64, type = "DIR32", symbol = "??_C@_0BI@CODEDHOK@title?5data?5is?5corrupt?$AN?6?$AA@", target = 0x004977AC },
+  { offset = 0x64, type = "DIR32", symbol = "??_C@_0DH@FPFPIDOG@?$ID?$FO?$IDC?$IDg?$ID?$IL?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB@", target = 0x004977AC },
   { offset = 0x69, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
   { offset = 0x6E, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
   { offset = 0x83, type = "DIR32", symbol = "??_C@_0BB@BFGJJJLL@sprt?1mission?4msg?$AA@", target = 0x0049778C },
   { offset = 0x88, type = "REL32", symbol = "?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z", target = 0x0041A960 },
-  { offset = 0xA2, type = "DIR32", symbol = "??_C@_0BO@IAPCEAGB@mission?4msg?5data?5is?5corrupt?$AN?6?$AA@", target = 0x0049775C },
+  { offset = 0xA2, type = "DIR32", symbol = "??_C@_0CP@OGEHNBIB@?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB?$IDf?$IB?$FL?$ID?$FO?$IC?$KK@", target = 0x0049775C },
   { offset = 0xA7, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
   { offset = 0xAC, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
   { offset = 0x12B, type = "DIR32", symbol = "?g_SceneGroups@th095@@3PAPAUSceneDefinitionView@1@A", target = 0x004A5800 },
@@ -18319,7 +18319,7 @@ target_address = 0x00422300
 size = 0x223
 relocations = [
   { offset = 0xF, type = "REL32", symbol = "?ClearTracks@MidiOutput@th095@@QAEXXZ", target = 0x00422270 },
-  { offset = 0x30, type = "DIR32", symbol = "??_C@_0BG@OMFJPDL@Midi?5File?5not?5loaded?6?$AA@", target = 0x00495DB8 },
+  { offset = 0x30, type = "DIR32", symbol = "??_C@_0DP@GMEBINDG@error?5?3?5?$IC?$NM?$IC?$LOMIDI?$IC?$KK?$JD?G?$IC?$NN?$IN?$JO?$IC?$NM?$IC?j?$IC?D?$IC?$KC@", target = 0x00495DB8 },
   { offset = 0x35, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
   { offset = 0x8F, type = "REL32", symbol = "?Ntohs@MidiOutput@th095@@SIGG@Z", target = 0x004220A0 },
   { offset = 0xA7, type = "REL32", symbol = "?Ntohs@MidiOutput@th095@@SIGG@Z", target = 0x004220A0 },

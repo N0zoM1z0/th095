@@ -20183,3 +20183,25 @@ interrupts before gameplay or replay, Help's last-slot write, preservation
 of all eleven neighboring fields, and the affected title, menu, scene
 and worker paths. A native x86-64 component check verifies the trivial
 handle layout and final-slot write. See `.analysis/pi/front-end-vm-storage/`.
+
+### SEM-493 — verify and repair pooled diagnostic strings
+
+Twelve DIR32 references across ten functions reached the correct retail
+addresses when replayed, while their compiled strings differed from the
+target payloads. The affected paths include title, mission and photo-front
+resource errors, streaming-buffer and MIDI failures, the BGM preload setting,
+and four constructor logs. Both source profiles now preserve the original
+diagnostic bytes and the Japanese encoding.
+
+Strict comparison reads VC7.1's narrow pooled string contribution and
+compares the bytes reached by the relocated pointer. The current 377
+references cover 133 units. A real interior pointer to a terminator still
+passes, and changing a single byte in a scratch COFF copy fails even with
+the same code and literal symbol.
+
+All 189 affected comparisons pass after recompiling nine sources.
+All 698 configured units pass with the updated verifier. The twelve
+repaired operands resolve to moving literals in both normal link orders.
+Executing four resource-failure paths and two streaming-buffer failures
+in the original and both linked executables also produces the same
+diagnostic bytes. See `.analysis/pi/literal-payload/`.

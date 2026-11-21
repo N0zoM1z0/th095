@@ -67,7 +67,7 @@ PhotoBulletView::~PhotoBulletView()
 // FUNCTION: TH095 0x00404C80.
 PhotoBulletManagerView::PhotoBulletManagerView()
 {
-    utils::DebugPrint("@@initialize BulletInf\n");
+    utils::DebugPrint("initialize BulletInf\n");
     memset(this, 0, sizeof(PhotoBulletManagerView));
     g_PhotoBulletManager = this;
 }

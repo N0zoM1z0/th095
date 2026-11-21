@@ -108,7 +108,7 @@ struct ReplayWriteLocals
 
 ReplayManager::ReplayManager()
 {
-    utils::DebugPrint("HDinitialize ReplayInf\n");
+    utils::DebugPrint("initialize ReplayInf\n");
     memset(this, 0, sizeof(ReplayManager));
 }
 

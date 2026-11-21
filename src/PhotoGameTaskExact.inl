@@ -163,7 +163,7 @@ extern double g_PhotoGameClock2;
 
 PhotoGameTaskView::PhotoGameTaskView()
 {
-    utils::DebugPrint("pBinitialize GameTaskInf\n");
+    utils::DebugPrint("initialize GameTaskInf\n");
     memset(this, 0, sizeof(PhotoGameTaskView));
 }
 

@@ -544,7 +544,11 @@ SoundPlayerResult SoundPlayer::StartBGM(char *path)
                                          notifySize, this->bgmUpdateEvent, fmtData);
     if (FAILED(res))
     {
-        utils::DebugPrint("error : create streaming sound buffer\r\n");
+        utils::DebugPrint(
+            "\x65\x72\x72\x6f\x72\x20\x3a\x20\x83\x58\x83\x67\x83\x8a\x81\x5b"
+            "\x83\x7e\x83\x93\x83\x4f\x97\x70\x83\x54\x83\x45\x83\x93\x83\x68"
+            "\x83\x6f\x83\x62\x83\x74\x83\x40\x82\xf0\x8d\xec\x90\xac\x8f\x6f"
+            "\x97\x88\x82\xdc\x82\xb9\x82\xf1\x82\xc5\x82\xb5\x82\xbd\x0d\x0a");
         return ZUN_ERROR;
     }
     return ZUN_SUCCESS;
@@ -673,7 +677,11 @@ SoundPlayerResult SoundPlayer::LoadBGM(i32 idx)
         DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLPOSITIONNOTIFY, GUID_NULL, 16, notifySize, this->bgmUpdateEvent);
     if (FAILED(hr))
     {
-        utils::DebugPrint("error : create streaming sound buffer\r\n");
+        utils::DebugPrint(
+            "\x65\x72\x72\x6f\x72\x20\x3a\x20\x83\x58\x83\x67\x83\x8a\x81\x5b"
+            "\x83\x7e\x83\x93\x83\x4f\x97\x70\x83\x54\x83\x45\x83\x93\x83\x68"
+            "\x83\x6f\x83\x62\x83\x74\x83\x40\x82\xf0\x8d\xec\x90\xac\x8f\x6f"
+            "\x97\x88\x82\xdc\x82\xb9\x82\xf1\x82\xc5\x82\xb5\x82\xbd\x0d\x0a");
         return ZUN_ERROR;
     }
 

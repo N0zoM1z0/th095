@@ -139,23 +139,36 @@ def object_function(
             "addend": struct.unpack_from("<I", code, local_offset)[0],
         }
         literal = COFF_FLOAT_LITERAL.fullmatch(symbol_name)
-        if literal and type_id == 0x0006:
-            literal_size = len(literal[1]) // 2
+        pooled_string = symbol_name.startswith("??_C@_0")
+        if type_id == 0x0006 and (literal or pooled_string):
+            kind = "float" if literal else "string"
             section_number = int(target_symbol["section"])
             value = int(target_symbol["value"])
             if not 1 <= section_number <= len(sections):
-                raise ValueError(f"floating literal {symbol_name} has no data section")
+                raise ValueError(f"{kind} literal {symbol_name} has no data section")
             literal_section = sections[section_number - 1]
             literal_offset = int(literal_section["raw_offset"])
+            section_size = int(literal_section["size"])
+            if pooled_string and (
+                not literal_section["name_raw"].startswith(b".rdata")
+                or not (int(literal_section["flags"]) & 0x1000)
+                or literal_section["reloc_count"] != 0
+                or value != 0
+            ):
+                raise ValueError(f"unexpected pooled string section for {symbol_name}")
+            literal_size = len(literal[1]) // 2 if literal else section_size
             literal_start = literal_offset + value
             literal_end = literal_start + literal_size
             if (
                 not literal_offset
-                or value + literal_size > int(literal_section["size"])
+                or value + literal_size > section_size
                 or literal_end > len(data)
             ):
-                raise ValueError(f"truncated floating literal {symbol_name}")
-            relocation["float_data"] = data[literal_start:literal_end].hex()
+                raise ValueError(f"truncated {kind} literal {symbol_name}")
+            payload = data[literal_start:literal_end]
+            if pooled_string and not payload.endswith(b"\0"):
+                raise ValueError(f"unterminated pooled string {symbol_name}")
+            relocation[f"{kind}_data"] = payload.hex()
         relocations.append(relocation)
     return code, relocations
 
@@ -313,21 +326,30 @@ def compare_unit(name: str) -> dict[str, object]:
     if actual_key != expected_key:
         raise ValueError(f"COFF relocations differ from manifest: actual={actual_key!r} expected={expected_key!r}")
 
-    literals = {int(row["offset"]): row["float_data"] for row in actual if "float_data" in row}
+    actual_by_offset = {int(row["offset"]): row for row in actual}
     replay = []
     for relocation in normalized_expected:
         offset = int(relocation["offset"])
-        if offset in literals:
-            literal_bytes = bytes.fromhex(str(literals[offset]))
-            retail_bytes = pe_bytes_at(
-                target_image, int(relocation["target"]), len(literal_bytes)
-            )
+        addend = struct.unpack_from("<I", code, offset)[0]
+        row = actual_by_offset[offset]
+        if "float_data" in row or "string_data" in row:
+            literal_address = int(relocation["target"])
+            if "string_data" in row:
+                kind = "string"
+                literal_bytes = bytes.fromhex(str(row["string_data"]))
+                if addend >= len(literal_bytes):
+                    raise ValueError(f"string addend at {address + offset:#010x} extends past the literal")
+                literal_bytes = literal_bytes[addend:]
+                literal_address += addend
+            else:
+                kind = "floating"
+                literal_bytes = bytes.fromhex(str(row["float_data"]))
+            retail_bytes = pe_bytes_at(target_image, literal_address, len(literal_bytes))
             if literal_bytes != retail_bytes:
                 raise ValueError(
-                    f"floating literal at {address + offset:#010x} ({relocation['symbol']}) "
+                    f"{kind} literal at {address + offset:#010x} ({relocation['symbol']}) "
                     f"contains {literal_bytes.hex()} in COFF and {retail_bytes.hex()} at the target"
                 )
-        addend = struct.unpack_from("<I", code, offset)[0]
         if relocation["type_id"] == 0x0006:
             value = int(relocation["target"]) + addend
         else:

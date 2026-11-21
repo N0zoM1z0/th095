@@ -68,7 +68,11 @@ i32 FrontEndControllerView::Initialize()
         g_AnmManager->PreloadAnm(TITLE_ANM_SLOT, "title.anm");
     if (this->sceneAnm == NULL)
     {
-        g_GameErrorContext.Log("title data is corrupt\r\n");
+        g_GameErrorContext.Log(
+            "\x83\x5e\x83\x43\x83\x67\x83\x8b\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x8c\xa9\x82\xc2\x82\xa9\x82\xe8\x82\xdc\x82\xb9\x82\xf1\x81\x42"
+            "\x83\x66\x81\x5b\x83\x5e\x82\xaa\x89\xf3\x82\xea\x82\xc4\x82\xa2"
+            "\x82\xdc\x82\xb7\x0d\x0a");
         return -1;
     }
 
@@ -76,7 +80,11 @@ i32 FrontEndControllerView::Initialize()
         g_AnmManager->PreloadAnm(TITLE_TRANSITION_ANM_SLOT, "title_v.anm");
     if (this->transitionAnm == NULL)
     {
-        g_GameErrorContext.Log("title data is corrupt\r\n");
+        g_GameErrorContext.Log(
+            "\x83\x5e\x83\x43\x83\x67\x83\x8b\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x8c\xa9\x82\xc2\x82\xa9\x82\xe8\x82\xdc\x82\xb9\x82\xf1\x81\x42"
+            "\x83\x66\x81\x5b\x83\x5e\x82\xaa\x89\xf3\x82\xea\x82\xc4\x82\xa2"
+            "\x82\xdc\x82\xb7\x0d\x0a");
         return -1;
     }
 
@@ -84,7 +92,10 @@ i32 FrontEndControllerView::Initialize()
         FileSystem::OpenFile("sprt/mission.msg", &locals.missionSize, FALSE);
     if (this->ownedMissionMessageData == NULL)
     {
-        g_GameErrorContext.Log("mission.msg data is corrupt\r\n");
+        g_GameErrorContext.Log(
+            "\x83\x66\x81\x5b\x83\x5e\x82\xaa\x8c\xa9\x82\xc2\x82\xa9\x82\xe8"
+            "\x82\xdc\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x89\xf3\x82\xea\x82\xc4\x82\xa2\x82\xdc\x82\xb7\x0d\x0a");
         return -1;
     }
 

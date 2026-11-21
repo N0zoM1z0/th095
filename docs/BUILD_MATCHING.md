@@ -137,6 +137,12 @@ python3 scripts/compare-coff-function.py \
   build/probes/Main.obj SYMBOL 0x00420770 420 --json
 ```
 
+Canonical replay also compares the payload of floating-point constants and
+VC7.1 pooled narrow strings referenced by DIR32 relocations. A string
+reference may point inside its pooled object. The comparator uses the COFF
+addend to compare the suffix reached by the instruction, including its
+terminator. See [SEM-493](SEMANTIC_HISTORY.md#sem-493--verify-and-repair-pooled-diagnostic-strings).
+
 A diagnostic `structural-exact` result is compiler-oracle evidence only. It is
 not eligible for `config/matches.csv` until every relocation and a replayable
 unit are committed.

@@ -230,6 +230,9 @@ between both builds. The photo camera and player read the history fields.
 SEM-492 gives the controller all 154 menu handles and the preview and
 transition handles. The menu handle table ends at the mission allocation
 pointer. SceneSelectEmission.hpp holds the remaining comparison call ABI.
+SEM-493 verifies pooled narrow string bytes during strict replay and
+repairs twelve diagnostic references across the startup, audio, and
+photo paths.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

@@ -1351,7 +1351,7 @@ i32 Supervisor::LoadConfig(char *configFile)
     if (this->config.options.preloadMusic)
         g_GameErrorContext.Log(
             "\x82\x61\x82\x66\x82\x6c\x82\xf0\x83\x81\x83\x82\x83\x8a\x82\xc9\x93\xc7"
-            "\xdd\x8d\x9e\x82\xdd\x82\xdc\x82\xb7\x0d\x0a");
+            "\x82\xdd\x8d\x9e\x82\xdd\x82\xdc\x82\xb7\x0d\x0a");
     if (this->config.options.disableVsync)
     {
         g_GameErrorContext.Log(

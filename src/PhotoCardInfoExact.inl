@@ -89,7 +89,7 @@ static __forceinline void CreatePhotoCardTextVm(
 // FUNCTION: TH095 0x00408610.
 PhotoCardInfoView::PhotoCardInfoView()
 {
-    utils::DebugPrint("Ainitialize CardInf\n");
+    utils::DebugPrint("initialize CardInf\n");
     memset(this, 0, sizeof(PhotoCardInfoView));
     g_PhotoCardInfo = this;
 }

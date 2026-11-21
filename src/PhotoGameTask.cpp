@@ -112,7 +112,7 @@ extern i32 g_ReplayUsesArchive;
 PhotoGameTaskView::PhotoGameTaskView()
 {
     this->runtimeConfig.Initialize();
-    utils::DebugPrint("pBinitialize GameTaskInf\n");
+    utils::DebugPrint("initialize GameTaskInf\n");
     memset(this, 0, sizeof(PhotoGameTaskView));
 }
 
