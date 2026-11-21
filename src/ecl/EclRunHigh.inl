@@ -60,8 +60,6 @@ inline i32 Th095PreserveI32(i32 value)
     return *reinterpret_cast<volatile i32 *>(&value);
 }
 
-extern AnmManagerLookup *g_Th095AnmManager;
-
 inline void AddTimerValue(ZunTimer *timer, i32 value)
 {
     timer->Add(static_cast<f32>(value));

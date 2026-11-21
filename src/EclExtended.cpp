@@ -47,7 +47,8 @@ typedef Float3 ExtendedVector;
 #endif
 
 #ifdef DIFFBUILD
-#define TH095_EXT_ANM_GET_VM(handle) g_AnmManager->GetVm(handle)
+#define TH095_EXT_ANM_GET_VM(handle) \
+    reinterpret_cast<AnmManagerLookupView *>(::th095::g_AnmManager)->GetVm(handle)
 #else
 static __forceinline AnmVmId ExtendedCanonicalAnmId(i32 value)
 {
@@ -70,9 +71,6 @@ static __forceinline AnmVmId ExtendedCanonicalAnmId(i32 value)
 #include "ecl/EclExtendedBulletEmission.inl"
 #endif
 
-#ifdef DIFFBUILD
-extern AnmManagerLookupView *g_AnmManager;
-#endif
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 __forceinline void ExtendedBulletView::ReinitializeDirect()
 {

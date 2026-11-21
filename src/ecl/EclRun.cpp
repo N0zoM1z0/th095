@@ -29,7 +29,8 @@
     reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(g_PhotoBulletManager->bulletAnm)
 
 #ifdef DIFFBUILD
-#define TH095_ECL_ANM_MANAGER EclRunHigh::g_Th095AnmManager
+#define TH095_ECL_ANM_MANAGER \
+    reinterpret_cast<EclRunHigh::AnmManagerLookup *>(::th095::g_AnmManager)
 #define TH095_ECL_ANM_GET_VM(id) TH095_ECL_ANM_MANAGER->FindVm(id)
 #define TH095_ECL_ANM_MARK_DELETE(id) TH095_ECL_ANM_MANAGER->RemoveVm(id)
 #define TH095_ECL_ANM_SPAWN_WORLD(spawner, script, position) \

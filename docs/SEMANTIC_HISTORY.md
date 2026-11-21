@@ -19317,3 +19317,18 @@ units pass. Both normal links retain their SEM-451 loaded section
 addresses and bytes. The original and both links agree on 128 narrow
 operand cases covering signed boundaries, nonzero upper bytes and both
 operand flag settings. See `.analysis/pi/ecl-narrow-operands/`.
+
+### SEM-454 — bind ECL lookups to the shared ANM manager slot
+
+RunEcl and the extended callbacks read the canonical
+`th095::g_AnmManager` in both profiles. The exact calls still use the
+four-byte argument views where VC7.1 changes the caller when given
+`AnmVmId`. Removing the two exact-only slot declarations binds all 24
+previously aliased relocations directly to the shared global.
+
+All 23 exact comparisons pass. In the two normal links, the 25 ANM
+manager references in the affected functions follow the slot from
+0x004BCFE0 to 0x004F3260. Both loaded images retain their SEM-451
+section addresses and bytes. The 414 interpreter and visual cases
+and 90 extension dispatch cases agree with retail in both links.
+See `.analysis/pi/ecl-anm-manager-slot/`.
