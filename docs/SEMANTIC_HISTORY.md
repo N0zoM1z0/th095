@@ -19286,3 +19286,20 @@ frames. The global timer first advances two frames later in the
 regular layout and one frame earlier in the reordered layout.
 The paired library sections pass 7,748 code and 1,007 initialized
 data relocation checks. See `.analysis/pi/ecl-wire-operands/`.
+
+### SEM-452 — use named control fields throughout RunEcl
+
+Opcodes 79–81 share names for the six script operand bits and write the
+two compact enemy control words through their bitfields. Opcode 79
+assigns all six fields. Opcodes 80 and 81 update only the selected fields
+and use opposite values. Three script bits keep their numeric positions
+because the corresponding control fields have no established purpose.
+The animation bank, movement clamp, deferred shot, photo target and
+subroutine paths also use their existing control fields directly.
+
+The full RunEcl extent and all 647 relocations pass. The regular and
+reordered PEs have the same loaded section addresses and bytes as their
+respective SEM-451 builds. The retail executable and both normal links
+agree on 988 focused cases, including all 64 operand combinations for
+each of opcodes 79–81 with both initial flag states and both operand
+modes. See `.analysis/pi/ecl-control-expressions/`.

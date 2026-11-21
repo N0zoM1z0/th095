@@ -11,8 +11,7 @@
     case 94:
         if (enemy->life <= 0)
             break;
-        if (((enemy->flags1
-              >> PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_SHIFT) & 1U) != 0)
+        if (enemy->control.deferShotInstruction)
         {
             memcpy(&enemy->pendingShotInstruction,
                    instruction, sizeof(EclShotInstruction));
@@ -56,12 +55,10 @@
         break;
 
     case 97:
-        enemy->flags1 |=
-            PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_MASK;
+        enemy->control.deferShotInstruction = 1;
         break;
     case 98:
-        enemy->flags1 &=
-            ~PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_MASK;
+        enemy->control.deferShotInstruction = 0;
         break;
 
     case 99:
@@ -88,14 +85,14 @@
         {
             g_PhotoEnemyManager->photoTargets[ECL_READ_INT(0)] =
                 enemy;
-            enemy->flags1 |= PHOTO_ENEMY_PHOTO_TARGET_MASK;
+            enemy->control.photoTarget = 1;
             enemy->photoTargetSlot =
                 static_cast<u8>(ECL_READ_INT(0));
         }
         else
         {
             g_PhotoEnemyManager->photoTargets[enemy->photoTargetSlot] = 0;
-            enemy->flags1 &= ~PHOTO_ENEMY_PHOTO_TARGET_MASK;
+            enemy->control.photoTarget = 0;
         }
         break;
 
@@ -129,8 +126,7 @@ enter_subroutine:
         enemy->activeEclContext->currentInstr =
             reinterpret_cast<EclRawInstruction *>(
                 reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
-        if (((enemy->flags1
-              >> 24) & 1U) == 0)
+        if (!enemy->control.suppressEclCallStack)
         {
             memcpy(enemy->activeEclCallStack + enemy->activeEclCallStackDepth,
                    &enemy->mainEclContext,

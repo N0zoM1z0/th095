@@ -16,10 +16,11 @@ and [source ownership](SOURCE_MAP.md). Live totals come from the ledgers and
 
 The [PI evidence](POSITION_INDEPENDENCE.md) covers the two normal link
 orders, initialized data, library and import references, and the three built-in
-replays. The full cycle agrees on the gameplay samples, with one-tick
-scene timer differences at startup. SEM-358 and SEM-360 correct MIDI and
-DirectInput storage. SEM-376 makes the normal readers honor both controller
-indices. SEM-404 confirms the retail frame callback polls slot zero and
+replays. The full cycle agrees on the gameplay samples. The latest focused
+demo0 repeat saw scene timer differences of up to two ticks at startup.
+SEM-358 and SEM-360 correct MIDI and DirectInput storage. SEM-376 makes the
+normal readers honor both controller indices. SEM-404 confirms the retail
+frame callback polls slot zero and
 shares the Controller API between profiles. SEM-390 shares Controller
 storage declarations and corrects signed dead zones.
 SEM-391 binds configuration initialization, loading and Options to the
@@ -151,7 +152,9 @@ directly from the factory return. Manager lookup retains its exact
 four-byte argument adapter. SEM-451 uses the canonical world and
 movement fields in RunEcl. Opcode 150 calls the ANM factory directly.
 The three opcodes that store a returned handle retain their existing
-return-copy route.
+return-copy route. SEM-452 uses the compact enemy control bitfields
+throughout the interpreter and names the six script operand bits shared
+by opcodes 79–81.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

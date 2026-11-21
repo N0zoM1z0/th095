@@ -25,6 +25,17 @@ void __fastcall ConfigureRelativeMotion(
 namespace EclRunLow
 {
 
+// Opcodes 79-81 use these bits in their first operand.
+enum EclEnemyControlOperand
+{
+    ECL_ENEMY_CONTROL_BIT_0 = 1,
+    ECL_ENEMY_CONTROL_DISABLE_COLLISION = 2,
+    ECL_ENEMY_CONTROL_BIT_2 = 4,
+    ECL_ENEMY_CONTROL_HIDE_DRAW_GROUP = 8,
+    ECL_ENEMY_CONTROL_SKIP_OFFSCREEN_CHECK = 0x10,
+    ECL_ENEMY_CONTROL_BIT_5 = 0x20,
+};
+
 void __fastcall ApplyInterpolationOperation(
     PhotoEnemyView *enemy, EclRawInstruction *instruction);
 void __fastcall InstallInterpolationSlot(
@@ -287,16 +298,14 @@ EclRawInstruction *__fastcall CompareOperands(
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
-        enemy->flags1 &=
-            ~PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
+        enemy->control.alternateAnmBank = 0;
         break;
     case 55:
         lhsInt = ReadInt(enemy, instruction, 0);
         SetPrimaryAnmScripts(enemy, instruction, lhsInt, lhsInt + 1,
                              lhsInt + 2, lhsInt + 3, lhsInt + 4,
                              lhsInt + 5);
-        enemy->flags1 &=
-            ~PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
+        enemy->control.alternateAnmBank = 0;
         break;
     case 56:
         SetPrimaryAnmScripts(enemy, instruction,
@@ -306,23 +315,20 @@ EclRawInstruction *__fastcall CompareOperands(
                              ReadInt(enemy, instruction, 3),
                              ReadInt(enemy, instruction, 4),
                              ReadInt(enemy, instruction, 5));
-        enemy->flags1 &=
-            ~PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
+        enemy->control.alternateAnmBank = 0;
         break;
     case 58:
         g_PhotoEnemyManager->unknown4dfc
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
-        enemy->flags1 |=
-            PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
+        enemy->control.alternateAnmBank = 1;
         break;
     case 59:
         lhsInt = ReadInt(enemy, instruction, 0);
         SetPrimaryAnmScripts(enemy, instruction, lhsInt, lhsInt + 1, lhsInt + 2,
                              lhsInt + 3, lhsInt + 4, lhsInt + 5);
-        enemy->flags1 |=
-            PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
+        enemy->control.alternateAnmBank = 1;
         break;
     case 60:
         SetPrimaryAnmScripts(enemy, instruction,
@@ -332,12 +338,10 @@ EclRawInstruction *__fastcall CompareOperands(
                              ReadInt(enemy, instruction, 3),
                              ReadInt(enemy, instruction, 4),
                              ReadInt(enemy, instruction, 5));
-        enemy->flags1 |=
-            PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
+        enemy->control.alternateAnmBank = 1;
         break;
     case 62:
-        if (((enemy->flags1 >>
-              PHOTO_ENEMY_ALTERNATE_ANM_BANK_SHIFT) & 1U) == 0)
+        if (!enemy->control.alternateAnmBank)
         {
             g_PhotoEnemyManager->enemyAnm
                 ->SetAndExecuteScriptIdx(
@@ -480,12 +484,10 @@ EclRawInstruction *__fastcall CompareOperands(
             (instruction->operandFlags & (1U << 3))
                 ? enemy->ResolveFloat(instruction->operands[3].asFloat)
                 : instruction->operands[3].asFloat;
-        enemy->flags1 |=
-            PHOTO_ENEMY_CLAMP_TO_MOVEMENT_BOUNDS_MASK;
+        enemy->control.clampToMovementBounds = 1;
         break;
     case 76:
-        enemy->flags1 &=
-            ~PHOTO_ENEMY_CLAMP_TO_MOVEMENT_BOUNDS_MASK;
+        enemy->control.clampToMovementBounds = 0;
         break;
     case 77:
         enemy->collisionSize.x = ((instruction->operandFlags & (1U << 0))
@@ -506,33 +508,48 @@ EclRawInstruction *__fastcall CompareOperands(
 
     case 79:
         lhsInt = ReadInt(enemy, instruction, 0);
-        enemy->control.unknown006 = (lhsInt & 1) == 0;
-        enemy->control.collidable = (lhsInt & 2) == 0;
-        enemy->control.unknown003 = (lhsInt & 4) == 0;
-        enemy->control.hiddenFromDrawGroups = (lhsInt & 8) != 0;
-        enemy->control.skipOffscreenCheck = (lhsInt & 0x10) != 0;
+        enemy->control.unknown006 = (lhsInt & ECL_ENEMY_CONTROL_BIT_0) == 0;
+        enemy->control.collidable =
+            (lhsInt & ECL_ENEMY_CONTROL_DISABLE_COLLISION) == 0;
+        enemy->control.unknown003 = (lhsInt & ECL_ENEMY_CONTROL_BIT_2) == 0;
+        enemy->control.hiddenFromDrawGroups =
+            (lhsInt & ECL_ENEMY_CONTROL_HIDE_DRAW_GROUP) != 0;
+        enemy->control.skipOffscreenCheck =
+            (lhsInt & ECL_ENEMY_CONTROL_SKIP_OFFSCREEN_CHECK) != 0;
         enemy->secondaryControl.unknown003 =
-            (lhsInt & 0x20) != 0;
+            (lhsInt & ECL_ENEMY_CONTROL_BIT_5) != 0;
         break;
 
     case 80:
         lhsInt = ReadInt(enemy, instruction, 0);
-        if (lhsInt & 1) enemy->flags1 &= ~0x40U;
-        if (lhsInt & 2) enemy->flags1 &= ~4U;
-        if (lhsInt & 4) enemy->flags1 &= ~8U;
-        if (lhsInt & 8) enemy->flags1 |= 0x10U;
-        if (lhsInt & 0x10) enemy->flags1 |= 0x4000000U;
-        if (lhsInt & 0x20) enemy->flags2 |= 8U;
+        if (lhsInt & ECL_ENEMY_CONTROL_BIT_0)
+            enemy->control.unknown006 = 0;
+        if (lhsInt & ECL_ENEMY_CONTROL_DISABLE_COLLISION)
+            enemy->control.collidable = 0;
+        if (lhsInt & ECL_ENEMY_CONTROL_BIT_2)
+            enemy->control.unknown003 = 0;
+        if (lhsInt & ECL_ENEMY_CONTROL_HIDE_DRAW_GROUP)
+            enemy->control.hiddenFromDrawGroups = 1;
+        if (lhsInt & ECL_ENEMY_CONTROL_SKIP_OFFSCREEN_CHECK)
+            enemy->control.skipOffscreenCheck = 1;
+        if (lhsInt & ECL_ENEMY_CONTROL_BIT_5)
+            enemy->secondaryControl.unknown003 = 1;
         break;
 
     case 81:
         lhsInt = ReadInt(enemy, instruction, 0);
-        if (lhsInt & 1) enemy->flags1 |= 0x40U;
-        if (lhsInt & 2) enemy->flags1 |= 4U;
-        if (lhsInt & 4) enemy->flags1 |= 8U;
-        if (lhsInt & 8) enemy->flags1 &= ~0x10U;
-        if (lhsInt & 0x10) enemy->flags1 &= ~0x4000000U;
-        if (lhsInt & 0x20) enemy->flags2 &= ~8U;
+        if (lhsInt & ECL_ENEMY_CONTROL_BIT_0)
+            enemy->control.unknown006 = 1;
+        if (lhsInt & ECL_ENEMY_CONTROL_DISABLE_COLLISION)
+            enemy->control.collidable = 1;
+        if (lhsInt & ECL_ENEMY_CONTROL_BIT_2)
+            enemy->control.unknown003 = 1;
+        if (lhsInt & ECL_ENEMY_CONTROL_HIDE_DRAW_GROUP)
+            enemy->control.hiddenFromDrawGroups = 0;
+        if (lhsInt & ECL_ENEMY_CONTROL_SKIP_OFFSCREEN_CHECK)
+            enemy->control.skipOffscreenCheck = 0;
+        if (lhsInt & ECL_ENEMY_CONTROL_BIT_5)
+            enemy->secondaryControl.unknown003 = 0;
         break;
 
 
