@@ -18,12 +18,6 @@
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_BACKGROUND_DIRECT_3D_DRAW_MODE 8
-#else
-#define TH095_BACKGROUND_DIRECT_3D_DRAW_MODE ANM_VM_DRAW_MODE_DIRECT_3D
-#endif
-
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define TH095_BACKGROUND_STAGE_OPCODE_HALT 0
 #define TH095_BACKGROUND_STAGE_OPCODE_JUMP 1
@@ -727,7 +721,7 @@ i32 Background::RenderObjects(i32 mode)
                     }
                 }
 
-                if (curQuadVm->renderModeBits == TH095_BACKGROUND_DIRECT_3D_DRAW_MODE)
+                if (curQuadVm->renderModeBits == ANM_VM_DRAW_MODE_DIRECT_3D)
                     g_Supervisor.EnableFog();
                 else
                     g_Supervisor.DisableFog();

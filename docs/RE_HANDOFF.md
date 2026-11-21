@@ -129,7 +129,9 @@ shares the rotating-laser object with PhotoEffect and identifies the
 extension callbacks' tail draw flag. SEM-441 shares the straight laser
 object and corrects the normal constructor's parameter initialization.
 SEM-442 shares the PhotoEffect implementation and restores the two
-query methods folded across both laser vtables.
+query methods folded across both laser vtables. SEM-443 shares the ANM
+VM draw-mode enum across the interpreter, drawing, Background and
+PhotoEffect.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

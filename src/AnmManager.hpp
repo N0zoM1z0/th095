@@ -43,7 +43,6 @@ enum AnmInterpMode
     ANM_INTERP_EASE_OUT_QUARTIC = 6
 };
 
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 enum AnmVmDrawMode
 {
     ANM_VM_DRAW_MODE_AXIS_ALIGNED_ROUNDED = 0,
@@ -58,7 +57,6 @@ enum AnmVmDrawMode
     ANM_VM_DRAW_MODE_GENERATED_VERTEX_STRIP = 9,
     ANM_VM_DRAW_MODE_PULSING_RADIAL_TRAIL = 10
 };
-#endif
 
 enum AnmOpcode
 {

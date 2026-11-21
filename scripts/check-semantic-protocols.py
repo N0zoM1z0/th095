@@ -319,6 +319,28 @@ def check_anm_opcode_protocol() -> None:
         fail(f"ANM dispatch references unknown opcodes: {', '.join(unknown)}")
 
 
+def check_anm_vm_draw_modes() -> None:
+    header = SRC / "AnmManager.hpp"
+    explicit_enum(header, "AnmVmDrawMode", "ANM_VM_DRAW_MODE_", list(range(11)))
+    modes = {
+        value: name
+        for name, value in enum_entries(header, "AnmVmDrawMode", "ANM_VM_DRAW_MODE_")
+    }
+    draw = function_body(SRC / "AnmManager.cpp", "ZunResult AnmManager::Draw(AnmVm *vm)")
+    cases = re.findall(r"\bcase\s+(ANM_VM_DRAW_MODE_\w+)\s*:", draw)
+    if sorted(cases) != sorted(modes[value] for value in range(10)):
+        fail("ANM draw dispatch must name modes 0 through 9 exactly once")
+
+    for name, required in (
+        ("AnmManager.cpp", "vm->renderModeBits = ANM_VM_DRAW_MODE_GENERATED_VERTEX_STRIP;"),
+        ("PhotoEffect.cpp", "renderModeBits = ANM_VM_DRAW_MODE_2D;"),
+        ("Background.cpp", "renderModeBits == ANM_VM_DRAW_MODE_DIRECT_3D"),
+    ):
+        text = (SRC / name).read_text(encoding="utf-8")
+        if required not in text:
+            fail(f"{name} must use the shared VM draw modes")
+
+
 def check_background_protocol() -> None:
     names = explicit_enum(
         SRC / "Background.cpp",
@@ -4763,6 +4785,7 @@ def main() -> int:
         print("closed profile selector/declaration debt OK")
         return 0
     check_anm_opcode_protocol()
+    check_anm_vm_draw_modes()
     check_background_protocol()
     check_background_owner()
     check_screen_effect_quad_wire()

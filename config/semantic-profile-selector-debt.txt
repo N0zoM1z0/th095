@@ -5,9 +5,8 @@
 # retired; never add or increase an entry to admit a new selector directive.
 2	src/AnmManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 3	src/AnmManager.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-2	src/AnmManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+1	src/AnmManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AnmManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/AnmManager.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 5	src/AnmManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 4	src/AnmManager.hpp	#if defined(TH095_MATCH_EXACT)
 3	src/AnmManager.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -27,7 +26,6 @@
 1	src/AsciiManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/Background.cpp	#elif defined(DIFFBUILD)
 6	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/Background.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 8	src/Background.cpp	#ifdef TH095_MATCH_EXACT
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
@@ -110,7 +108,6 @@
 2	src/PhotoCamera.cpp	#ifndef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD
-1	src/PhotoEffect.cpp	#ifdef DIFFBUILD
 1	src/PhotoFront.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoGame.cpp	#if defined(DIFFBUILD)
 1	src/PhotoGame.cpp	#ifdef TH095_MATCH_EXACT

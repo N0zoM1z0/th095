@@ -19070,3 +19070,21 @@ link's stage timer agrees with retail, and the reordered link stays
 within one tick. The remaining PhotoEffect selector chooses the
 spelling of 2D render mode 1. See
 `.analysis/pi/photo-effect-shared/`.
+
+### SEM-443 — share the ANM VM draw-mode domain
+
+Both profiles use the same `AnmVmDrawMode` values for the script
+interpreter, renderer, Background fog and PhotoEffect initializers.
+The mode remains in VM flags bits 22–25. Opcode 67 stores the low four
+bits of its literal operand. Mode 10 installs the radial trail callback,
+which takes precedence over ordinary dispatch. Opcode 84 sets mode 9
+and allocates twice the requested count of 28-byte vertices. Modes 11–15
+remain accepted by the field and reach the default draw path when no
+callback is present.
+
+All 515 affected strict exact comparisons pass across 61 translation
+units, including both ANM jump tables. The retail executable and both
+normal links agree on 256 dispatch and draw-gate cases and 42 script
+mode and allocation cases. Both normal builds retain all four mapped
+sections of their SEM-442 replay images.
+See `.analysis/pi/anm-draw-mode-owner/`.

@@ -12,12 +12,6 @@
 namespace th095
 {
 
-#ifdef DIFFBUILD
-#define TH095_EFFECT_DRAW_MODE_2D 1
-#else
-#define TH095_EFFECT_DRAW_MODE_2D ANM_VM_DRAW_MODE_2D
-#endif
-
 extern f32 g_AnmGameSpeed;
 
 
@@ -150,7 +144,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     this->bodyVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->bodyVm);
     PhotoEffectSetAdditivePhase(&this->bodyVm);
-    this->bodyVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
+    this->bodyVm.renderModeBits = ANM_VM_DRAW_MODE_2D;
     this->bodyVm.alignmentX = ANM_ALIGNMENT_CENTER;
     this->bodyVm.alignmentY = ANM_ALIGNMENT_END;
 
@@ -159,7 +153,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
     PhotoEffectSetAdditivePhase(&this->tailVm);
-    this->tailVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
+    this->tailVm.renderModeBits = ANM_VM_DRAW_MODE_2D;
 
     memcpy(&this->position, &this->spawn.position, sizeof(this->position));
     this->length = this->spawn.initialLength;
@@ -320,7 +314,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     this->bodyVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->bodyVm);
     PhotoEffectSetAdditivePhase(&this->bodyVm);
-    this->bodyVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
+    this->bodyVm.renderModeBits = ANM_VM_DRAW_MODE_2D;
     this->bodyVm.alignmentX = ANM_ALIGNMENT_CENTER;
     this->bodyVm.alignmentY = ANM_ALIGNMENT_END;
 
@@ -329,7 +323,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
     PhotoEffectSetAdditivePhase(&this->tailVm);
-    this->tailVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
+    this->tailVm.renderModeBits = ANM_VM_DRAW_MODE_2D;
 
     memcpy(&this->position, &this->spawn.position, sizeof(this->position));
     this->length = this->spawn.initialLength;
