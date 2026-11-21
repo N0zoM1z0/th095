@@ -98,7 +98,9 @@ and shares the typed squared-distance gate with the shot dispatcher.
 SEM-424 uses the compact enemy fields for life, score, drops, the ECL
 timer and the callback staging writes. SEM-425 routes photo-target
 registration and the photo-index schedule through the same typed enemy
-and manager fields used by the readers and scheduled calls.
+and manager fields used by the readers and scheduled calls. SEM-426
+shares the movement bounds between the two ECL opcodes, edge-aware
+steering and the movement clamp.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

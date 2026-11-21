@@ -6,6 +6,7 @@
 // PhotoEnemyManager.hpp; keep this header only where inherited Enemy/ECL
 // method declarations are still required.
 #include "Global.hpp"
+#include "EnemyMovementBounds.hpp"
 #include "ecl/AnmManagerEclView.hpp"
 #include "BulletManager.hpp"
 #include "ecl/EclManager.hpp"
@@ -193,13 +194,6 @@ struct EnemyAnmScripts
     i16 special;
 };
 C_ASSERT(sizeof(EnemyAnmScripts) == 0xc);
-
-struct EnemyMovementBounds
-{
-    Float2 lower;
-    Float2 upper;
-};
-C_ASSERT(sizeof(EnemyMovementBounds) == 0x10);
 
 void __fastcall PrepareSpellcardForTimerCallback(Spellcard *spellcard);
 

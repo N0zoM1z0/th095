@@ -32,6 +32,11 @@ enum PhotoEnemyMovementControlMask
     PHOTO_ENEMY_MOVEMENT_MODE_MASK = 0x00000c00,
 };
 
+enum PhotoEnemyMovementBoundsControl
+{
+    PHOTO_ENEMY_CLAMP_TO_MOVEMENT_BOUNDS_MASK = 1U << 17,
+};
+
 enum PhotoEnemyPhotoTargetControl
 {
     PHOTO_ENEMY_PHOTO_TARGET_MASK = 1U << 1,

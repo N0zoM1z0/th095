@@ -218,7 +218,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
     enemy->flags1 |= 0x04000000;
     enemy->flags1 &= ~0x001c0000;
     enemy->photoCaptureEclSubroutineId = -1;
-    enemy->flags1 &= ~0x00020000;
+    enemy->flags1 &= ~PHOTO_ENEMY_CLAMP_TO_MOVEMENT_BOUNDS_MASK;
     enemy->pendingEclSubroutineIndex = -1;
     for (i = 0; i < PHOTO_ENEMY_SCHEDULE_SLOT_COUNT; ++i)
     {
@@ -853,22 +853,22 @@ void PhotoEnemyView::ClampPosition()
 {
     if (this->clampToMovementBounds != 0)
     {
-        if (this->position.x < this->movementBoundsMin.x)
+        if (this->position.x < this->movementBounds.lower.x)
         {
-            this->position.x = this->movementBoundsMin.x;
+            this->position.x = this->movementBounds.lower.x;
         }
-        else if (this->position.x > this->movementBoundsMax.x)
+        else if (this->position.x > this->movementBounds.upper.x)
         {
-            this->position.x = this->movementBoundsMax.x;
+            this->position.x = this->movementBounds.upper.x;
         }
 
-        if (this->position.y < this->movementBoundsMin.y)
+        if (this->position.y < this->movementBounds.lower.y)
         {
-            this->position.y = this->movementBoundsMin.y;
+            this->position.y = this->movementBounds.lower.y;
         }
-        else if (this->position.y > this->movementBoundsMax.y)
+        else if (this->position.y > this->movementBounds.upper.y)
         {
-            this->position.y = this->movementBoundsMax.y;
+            this->position.y = this->movementBounds.upper.y;
         }
     }
 }

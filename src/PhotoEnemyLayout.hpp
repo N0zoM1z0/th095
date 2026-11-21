@@ -3,6 +3,7 @@
 #include "AnmVertex.hpp"
 #include "EclInstruction.hpp"
 #include "EnemyEclContext.hpp"
+#include "EnemyMovementBounds.hpp"
 #include "PhotoBulletSpawnDescriptor.hpp"
 #include "PhotoEnemyControl.hpp"
 #include "PhotoEnemyEclAccess.hpp"
@@ -176,8 +177,7 @@ struct PhotoEnemyView
     PhotoEnemyAnmVmIdStorage photoMarkerVmId; // +0x2c20
     ZunTimer photoPulseTimer;              // +0x2c24
     ZunTimer photoPulseDurationTimer;      // +0x2c30
-    Float2 movementBoundsMin;              // +0x2c3c
-    Float2 movementBoundsMax;              // +0x2c44
+    EnemyMovementBounds movementBounds;    // +0x2c3c
     f32 minimumPlayerDistanceSquared;      // +0x2c4c
     i32 unknown2c50;                       // +0x2c50
     PhotoEnemyEclSchedule eclSchedule;     // +0x2c54
@@ -312,8 +312,7 @@ typedef char PhotoEnemyPhotoPulseAt2C1C[
      offsetof(PhotoEnemyView, photoPulseDurationTimer) ==
          PHOTO_ENEMY_ECL_PHOTO_PULSE_DURATION_TIMER_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyMovementBoundsAt2C3C[
-    (offsetof(PhotoEnemyView, movementBoundsMin) ==
-         PHOTO_ENEMY_ECL_MOVEMENT_BOUNDS_OFFSET &&
+    (offsetof(PhotoEnemyView, movementBounds) == 0x2c3c &&
      offsetof(PhotoEnemyView, minimumPlayerDistanceSquared) == 0x2c4c) ? 1 : -1];
 typedef char PhotoEnemyPendingCallbackFrameAt2CA4[
     (offsetof(PhotoEnemyView, pendingCallbackFrame) == 0x2ca4 &&

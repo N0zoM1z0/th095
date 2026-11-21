@@ -18713,3 +18713,18 @@ cases agree with retail, as do 48 schedule writes, 20 schedule operand
 cases and 14 dispatch traces. The schedule fixtures include separate
 resolved indices for the two stores and nonzero upper call words.
 See `.analysis/pi/ecl-photo-schedule/`.
+
+### SEM-426 — share enemy movement bounds
+
+Opcode 75 writes the four coordinates of the compact enemy's
+`EnemyMovementBounds` and enables clamping. Opcode 76 clears the enable
+bit. The edge-aware steering helper reads the same bounds independently of
+that bit. `ClampPosition` applies the lower test before the upper test
+on each axis and preserves Z.
+
+Both movement helpers take a compact enemy pointer while retaining the
+established operand resolver ABI. All 167 affected exact units pass. Both
+normal links move the two helpers and their calls follow them. The 378
+focused retail comparisons cover 56 new cases for literal and indirect
+bound operands, reversed limits, clamp toggles and edge steering with and
+without timed displacement. See `.analysis/pi/ecl-movement-bounds/`.

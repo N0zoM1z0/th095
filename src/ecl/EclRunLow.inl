@@ -43,6 +43,8 @@ void __fastcall ConfigureRelativeMotion(
     Enemy *enemy, EclRawInstruction *instruction);
 }
 
+struct PhotoEnemyView;
+
 namespace EclRunLow
 {
 
@@ -87,7 +89,7 @@ void __fastcall SetExtraAnmScript(Enemy *enemy,
 // Target behavior at 0x00422020 establishes Enemy in ECX and the current ECL
 // instruction in EDX for this boundary-aware movement helper.
 void __fastcall BeginBoundaryAwareMove(
-    Enemy *enemy, EclRawInstruction *instruction);
+    PhotoEnemyView *enemy, EclRawInstruction *instruction);
 
 inline i32 &RawInt(EclRawInstruction *instruction, i32 index)
 {
@@ -542,7 +544,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         else EclHelpers::ConfigurePolarMotion(enemy, instruction);
         break;
     case 67:
-        BeginBoundaryAwareMove(enemy, instruction);
+        BeginBoundaryAwareMove(reinterpret_cast<PhotoEnemyView *>(enemy), instruction);
         break;
     case 68:
         enemy->movementAngle =
@@ -635,29 +637,30 @@ static EclRawInstruction *__fastcall CompareOperands(
         TH095_RUN_ECL_CONTROL_WORD(enemy) |=
             0xc00U;
         break;
-#define TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy) \
-    TH095_ECL_MOVEMENT_BOUNDS((enemy), EnemyMovementBounds)
-#define TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS 0x20000U
     case 75:
-        TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).lower.x = ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0)));
-        TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).lower.y = ((instruction->operandFlags & (1U << 1))
-                ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1)))
-                : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
-        TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).upper.x = ((instruction->operandFlags & (1U << 2))
-                ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 2)))
-                : *reinterpret_cast<f32 *>(&RawInt(instruction, 2)));
-        TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).upper.y = ((instruction->operandFlags & (1U << 3))
-                ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3)))
-                : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
-        TH095_RUN_ECL_CONTROL_WORD(enemy) |=
-            TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS;
+        reinterpret_cast<PhotoEnemyView *>(enemy)->movementBounds.lower.x =
+            (instruction->operandFlags & (1U << 0))
+                ? enemy->ResolveFloat(instruction->operands[0].asFloat)
+                : instruction->operands[0].asFloat;
+        reinterpret_cast<PhotoEnemyView *>(enemy)->movementBounds.lower.y =
+            (instruction->operandFlags & (1U << 1))
+                ? enemy->ResolveFloat(instruction->operands[1].asFloat)
+                : instruction->operands[1].asFloat;
+        reinterpret_cast<PhotoEnemyView *>(enemy)->movementBounds.upper.x =
+            (instruction->operandFlags & (1U << 2))
+                ? enemy->ResolveFloat(instruction->operands[2].asFloat)
+                : instruction->operands[2].asFloat;
+        reinterpret_cast<PhotoEnemyView *>(enemy)->movementBounds.upper.y =
+            (instruction->operandFlags & (1U << 3))
+                ? enemy->ResolveFloat(instruction->operands[3].asFloat)
+                : instruction->operands[3].asFloat;
+        reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 |=
+            PHOTO_ENEMY_CLAMP_TO_MOVEMENT_BOUNDS_MASK;
         break;
     case 76:
-        TH095_RUN_ECL_CONTROL_WORD(enemy) &=
-            ~TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS;
+        reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 &=
+            ~PHOTO_ENEMY_CLAMP_TO_MOVEMENT_BOUNDS_MASK;
         break;
-#undef TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS
-#undef TH095_ECL_ENEMY_MOVEMENT_BOUNDS
     case 77:
         enemy->hitboxDimensions.x = ((instruction->operandFlags & (1U << 0))
             ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0)))

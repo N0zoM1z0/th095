@@ -26,35 +26,28 @@ extern EnemyEclInterpolatorCallback g_EclInterpolatorCallbacks[];
 
 #pragma var_order(end, start)
 
-// TH095 keeps movement control and bounds in the compact enemy runtime block
-// used by RunEcl. These fields predate the later shared Enemy view fields.
-#define DEP_MOVEMENT_FLAGS(enemy) (*reinterpret_cast<PhotoEnemyView *>(enemy))
-#define DEP_MOVEMENT_LOWER(enemy) \
-    (reinterpret_cast<PhotoEnemyView *>(enemy)->movementBoundsMin)
-#define DEP_MOVEMENT_UPPER(enemy) \
-    (reinterpret_cast<PhotoEnemyView *>(enemy)->movementBoundsMax)
-
 // FUNCTION: TH095 0x00412490; TH08 0x004222B0 is the source-shape oracle.
 void __fastcall StartTimedPolarDisplacement(
-    Enemy *enemy, EclRawInstruction *instruction, f32 angle)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction, f32 angle)
 {
     enemy->movementInterpolationDelta.x =
-        cosf(angle) * DEP_READ_FLOAT(enemy, instruction, 2) *
-        DEP_READ_INT(enemy, instruction, 0);
+        cosf(angle) * DEP_READ_FLOAT(reinterpret_cast<Enemy *>(enemy), instruction, 2) *
+        DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 0);
     enemy->movementInterpolationDelta.y =
-        sinf(angle) * DEP_READ_FLOAT(enemy, instruction, 2) *
-        DEP_READ_INT(enemy, instruction, 0);
+        sinf(angle) * DEP_READ_FLOAT(reinterpret_cast<Enemy *>(enemy), instruction, 2) *
+        DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 0);
     enemy->movementInterpolationDelta.z = 0.0f;
     enemy->movementInterpolationOrigin = enemy->worldPosition;
     enemy->movementTimer =
-        (enemy->movementDuration = DEP_READ_INT(enemy, instruction, 0));
-    DEP_MOVEMENT_FLAGS(enemy).movementEasing = DEP_READ_INT(enemy, instruction, 1);
-    DEP_MOVEMENT_FLAGS(enemy).movementMode = 2;
+        (enemy->movementDuration =
+             DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 0));
+    enemy->movementEasing = DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 1);
+    enemy->movementMode = PHOTO_ENEMY_MOVEMENT_INTERPOLATED;
 }
 
 // FUNCTION: TH095 0x00412200; TH08 0x00422020 is the source-shape oracle.
 void __fastcall BeginBoundaryAwareMove(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     f32 angle;
 
@@ -69,7 +62,7 @@ void __fastcall BeginBoundaryAwareMove(
         angle = g_Rng.GetRandomF32InRange(1.5707964f) - 0.78539819f;
     }
 
-    if (enemy->position.x < DEP_MOVEMENT_LOWER(enemy).x + 96.0f)
+    if (enemy->position.x < enemy->movementBounds.lower.x + 96.0f)
     {
         if (angle > 1.5707964f)
             angle = 3.1415927f - angle;
@@ -77,7 +70,7 @@ void __fastcall BeginBoundaryAwareMove(
             angle = -3.1415927f - angle;
     }
 
-    if (enemy->position.x > DEP_MOVEMENT_UPPER(enemy).x - 96.0f)
+    if (enemy->position.x > enemy->movementBounds.upper.x - 96.0f)
     {
         if (angle < 1.5707964f && angle >= 0.0f)
             angle = 3.1415927f - enemy->movementAngle;
@@ -85,22 +78,22 @@ void __fastcall BeginBoundaryAwareMove(
             angle = -3.1415927f - angle;
     }
 
-    if (enemy->position.y < DEP_MOVEMENT_LOWER(enemy).y + 48.0f &&
+    if (enemy->position.y < enemy->movementBounds.lower.y + 48.0f &&
         angle < 0.0f)
     {
         angle = -angle;
     }
-    if (enemy->position.y > DEP_MOVEMENT_UPPER(enemy).y - 48.0f &&
+    if (enemy->position.y > enemy->movementBounds.upper.y - 48.0f &&
         angle > 0.0f)
     {
         angle = -angle;
     }
 
-    if (DEP_READ_INT(enemy, instruction, 0) <= 0)
+    if (DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 0) <= 0)
     {
         enemy->movementAngle = angle;
-        enemy->speed = DEP_READ_FLOAT(enemy, instruction, 2);
-        DEP_MOVEMENT_FLAGS(enemy).movementMode = 1;
+        enemy->speed = DEP_READ_FLOAT(reinterpret_cast<Enemy *>(enemy), instruction, 2);
+        enemy->movementMode = PHOTO_ENEMY_MOVEMENT_POLAR;
         enemy->movementDuration = 0;
         enemy->movementTimer = 0;
     }
@@ -319,9 +312,6 @@ void __fastcall SetPrimaryAnmScripts(
 }
 
 #undef DEP_ANM_DIRECTION
-#undef DEP_MOVEMENT_UPPER
-#undef DEP_MOVEMENT_LOWER
-#undef DEP_MOVEMENT_FLAGS
 #undef DEP_READ_FLOAT
 #undef DEP_READ_INT
 }
