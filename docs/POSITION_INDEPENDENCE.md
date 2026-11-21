@@ -380,6 +380,15 @@ timer matches or is one tick behind retail throughout. See
 `.analysis/pi/ecl-resolver-owner/` for the checks and
 `build/position-independence/ecl-resolver-demo0/` for the traces.
 
+SEM-455 links all four ECL world-spawn calls to the same
+`AnmLoaded::CreateVmAtWorld`. The factory moves from 0x0040C1E0 to
+0x0044F240. The paired game sections resolve 11,446 code relocations
+and 639 initialized-data relocations. The library comparison resolves
+7,748 code and 1,007 initialized-data relocations. Both layouts agree
+with retail on the stored-handle cases and the complete demo0 gameplay
+trace. See [SEM-455](SEMANTIC_HISTORY.md#sem-455--share-the-ecl-world-spawn-return-path)
+and `.analysis/pi/ecl-spawn-result/`.
+
 ## ANM VM lifetime and handles
 
 SEM-445 uses AnmManager for insertion, lookup and unlinking, and

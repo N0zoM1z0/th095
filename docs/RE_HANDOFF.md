@@ -151,12 +151,13 @@ sprite methods from ECL. The enemy marker initializes its handle
 directly from the factory return. Manager lookup retains its exact
 four-byte argument adapter. SEM-451 uses the canonical world and
 movement fields in RunEcl. Opcode 150 calls the ANM factory directly.
-The three opcodes that store a returned handle retain their existing
-return-copy route. SEM-452 uses the compact enemy control bitfields
+SEM-452 uses the compact enemy control bitfields
 throughout the interpreter and names the six script operand bits shared
 by opcodes 79–81.
 SEM-453 uses the instruction union for the four narrow immediates.
 SEM-454 binds both ECL profiles to the canonical ANM manager slot.
+SEM-455 shares the POD return adapter for all three stored world-spawn
+results. The linker binds them to the same ANM factory as opcode 150.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

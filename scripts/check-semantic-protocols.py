@@ -3649,8 +3649,6 @@ def check_photo_enemy_owner() -> None:
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if "PhotoEnemyEclManagerView::RunEcl(PhotoEnemyView *enemy)" not in ecl_run:
         fail("RunEcl must dispatch on the compact enemy")
-    if "g_PhotoEnemyManager->enemyAnm" not in ecl_run:
-        fail("normal EclRun must consume canonical EnemyInf::enemyAnm")
     if "EclEnemyAnmRuntimeView" in ecl_run:
         fail("EclRun restored the retired normal +0x4DF8 projection")
     if "EclPhotoCardSessionRuntimeView" in ecl_run:
@@ -3666,6 +3664,8 @@ def check_photo_enemy_owner() -> None:
             "EclRunTargetPhoto.inl",
         )
     )
+    if "g_PhotoEnemyManager->enemyAnm" not in run_surfaces:
+        fail("RunEcl must consume canonical EnemyInf::enemyAnm")
     retired_run_views = (
         "EclPhotoCaptureEnemyView",
         "EclPhotoEnemyTimerView",

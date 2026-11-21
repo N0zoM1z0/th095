@@ -431,7 +431,7 @@ enter_subroutine:
 
         enemy->attachedVmId =
             TH095_ECL_ANM_SPAWN_WORLD(
-                TH095_ECL_BULLET_ANM_SPAWNER, 0xd2,
+                g_PhotoBulletManager->bulletAnm, 0xd2,
                 &enemy->position);
         TH095_ECL_ANM_GET_VM(
             enemy->attachedVmId.value)
@@ -462,7 +462,7 @@ enter_subroutine:
             ECL_READ_INT(0);
         enemy->photoPulseVmId =
             TH095_ECL_ANM_SPAWN_WORLD(
-                TH095_ECL_BULLET_ANM_SPAWNER, 0x125,
+                g_PhotoBulletManager->bulletAnm, 0x125,
                 &enemy->position);
         g_SoundPlayer.PlaySoundByIdx(SOUND_PHOTO_PULSE, 0);
         break;

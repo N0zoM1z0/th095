@@ -21,27 +21,30 @@
 #include "../PhotoEnemyManagerLayout.hpp"
 #include "../PhotoStageLayout.hpp"
 #include "../PhotoGamePlayer.hpp"
-
-#define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
-    reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(g_PhotoEnemyManager->enemyAnm)
-
-#define TH095_ECL_BULLET_ANM_SPAWNER \
-    reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(g_PhotoBulletManager->bulletAnm)
+#include "EclWorldVmSpawnEmission.inl"
 
 #ifdef DIFFBUILD
 #define TH095_ECL_ANM_MANAGER \
     reinterpret_cast<EclRunHigh::AnmManagerLookup *>(::th095::g_AnmManager)
 #define TH095_ECL_ANM_GET_VM(id) TH095_ECL_ANM_MANAGER->FindVm(id)
 #define TH095_ECL_ANM_MARK_DELETE(id) TH095_ECL_ANM_MANAGER->RemoveVm(id)
-#define TH095_ECL_ANM_SPAWN_WORLD(spawner, script, position) \
-    (spawner)->Spawn((script), (position))
 #else
+namespace th095
+{
+
+static __forceinline AnmVmId Th095EclAnmId(i32 value)
+{
+    AnmVmId id;
+    id.value = value;
+    return id;
+}
+
+} // namespace th095
+
 #define TH095_ECL_ANM_GET_VM(id) \
     ::th095::g_AnmManager->GetVm(::th095::Th095EclAnmId(id))
 #define TH095_ECL_ANM_MARK_DELETE(id) \
     ::th095::g_AnmManager->MarkVmForDeletion(::th095::Th095EclAnmId(id))
-#define TH095_ECL_ANM_SPAWN_WORLD(spawner, script, position) \
-    ::th095::Th095EclSpawnWorld((spawner), (script), (position))
 #endif
 
 #define TH095_ECL_RESOLVE_FLOAT(enemy, operand) \
@@ -55,24 +58,6 @@
 
 namespace th095
 {
-
-#ifndef DIFFBUILD
-static __forceinline AnmVmId Th095EclAnmId(i32 value)
-{
-    AnmVmId id;
-    id.value = value;
-    return id;
-}
-static __forceinline PhotoEnemyAnmVmIdStorage Th095EclSpawnWorld(
-    EclRunHigh::PhotoAnmSpawner *spawner, i32 script, Float3 *position)
-{
-    AnmVmId id = reinterpret_cast<AnmLoaded *>(spawner)
-        ->CreateVmAtWorld(script, position);
-    PhotoEnemyAnmVmIdStorage result;
-    result.value = id.value;
-    return result;
-}
-#endif
 
 // The low/high opcode bodies are included lexically below so VC7 can reproduce
 // RunEcl's target handler order, shared labels, locals, and stack frame.

@@ -230,7 +230,7 @@
         Float3 position = enemy->worldPosition + enemy->shootOffset;
         enemy->anmHandles[ECL_READ_INT(0)] =
             TH095_ECL_ANM_SPAWN_WORLD(
-                TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, ECL_READ_INT(1), &position);
+                g_PhotoEnemyManager->enemyAnm, ECL_READ_INT(1), &position);
         break;
     }
 

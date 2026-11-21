@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../PhotoEnemyAnmVmIdStorage.hpp"
 #include "../PhotoStraightLaserArgs.hpp"
 #include "../PhotoRotatingLaserArgs.hpp"
 
@@ -36,11 +35,6 @@ inline void SetVmInterrupt(AnmVm *vm, i16 interrupt)
 {
     vm->pendingInterrupt = interrupt;
 }
-
-struct PhotoAnmSpawner
-{
-    PhotoEnemyAnmVmIdStorage Spawn(i32 script, Float3 *position);
-};
 
 struct AnmManagerLookup
 {

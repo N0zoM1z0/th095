@@ -19332,3 +19332,24 @@ manager references in the affected functions follow the slot from
 section addresses and bytes. The 414 interpreter and visual cases
 and 90 extension dispatch cases agree with retail in both links.
 See `.analysis/pi/ecl-anm-manager-slot/`.
+
+### SEM-455 — share the ECL world-spawn return path
+
+Opcodes 104, 144 and 151 now use the same stored-handle expression in both
+builds. The factory at 0x00445060 takes a hidden result pointer followed
+by the script index and position. It returns the same pointer in EAX.
+RunEcl loads the POD handle through EAX before writing the destination.
+Five direct `AnmVmId` conversion and copy forms changed the 27,747-byte
+interpreter extent. The shared fieldless declaration preserves the
+observed convention and the linker maps it to `AnmLoaded::CreateVmAtWorld`.
+Opcode 150 still calls that factory directly.
+
+The full interpreter passes with all 647 relocations. All four calls
+reach the factory at 0x0040C1E0 in the regular link and 0x0044F240 in the
+reverse link. The retail executable and both links agree on argument
+evaluation and handle publication in 37 focused cases. The visual and
+card fixture and the real ANM creator, lookup and deletion paths pass
+in both layouts. Both demo0 replays match all ten gameplay fields at
+all 2,712 input indices. The scene timer first advances one frame
+earlier in the regular link and at the retail index in the reverse
+link. See `.analysis/pi/ecl-spawn-result/`.
