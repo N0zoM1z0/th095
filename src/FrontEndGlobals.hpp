@@ -37,14 +37,11 @@ enum ReplayBrowserStateValue
     REPLAY_BROWSER_STATE_BROWSE = 1,
 };
 
-typedef i32 OptionsMenuState;
 enum OptionsMenuStateValue
 {
     OPTIONS_MENU_STATE_INITIALIZE = 0,
     OPTIONS_MENU_STATE_ACTIVE = 1,
 };
-typedef char OptionsMenuStateSizeIs4[
-    (sizeof(OptionsMenuState) == sizeof(i32)) ? 1 : -1];
 
 enum MusicRoomStateValue
 {

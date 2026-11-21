@@ -2,6 +2,7 @@
 
 #include "AnmVmId.hpp"
 #include "Chain.hpp"
+#include "ControllerButtonMapping.hpp"
 #include "FrontEndGlobals.hpp"
 #include "FrontEndPendingTextureData.hpp"
 #include "ResultScreenReplayCursor.hpp"
@@ -48,9 +49,11 @@ struct FrontEndControllerView
     i8 currentDisplayState;
     u8 unknown0e93[0x0d];
     i32 previewTimer;
-    u8 unknown0ea4[4];
+    u8 optionsSavedWindowed;
+    u8 unknown0ea5[3];
     ReplayManager *replays[80];
-    u8 unknown0fe8[0x14];
+    ControllerButtonMapping optionsButtonMapping;
+    u8 unknown0ffa[2];
     char *musicCommentFile;
     char musicTrackTitles[32][64];
     char musicTrackPaths[32][64];
@@ -94,6 +97,7 @@ struct FrontEndControllerView
     i32 UpdateHelpMenu();
     i32 UpdateMusicRoom();
     ChainCallbackResult UpdateReplayBrowser();
+    ChainCallbackResult UpdateOptionsMenu();
     ZunResult LoadReplaySlot(i32 slot, char *path);
     void RefreshSceneSelection(i32 selectedScoreEntryIndex);
     void BuildScenePreviewText();
@@ -105,6 +109,16 @@ struct FrontEndControllerView
     static ChainCallbackResult __fastcall OnUpdate(void *controller);
     ChainCallbackResult Draw();
     static ChainCallbackResult __fastcall OnDraw(void *controller);
+
+private:
+    __forceinline void SetOptionDigitSprite(i32 vmIndex, i32 digit);
+    __forceinline void UpdateButton00Sprites();
+    __forceinline void UpdateButton02Sprites();
+    __forceinline void UpdateButton06Sprites();
+    __forceinline void UpdateBgmVolumeSprites(i32 value);
+    __forceinline void UpdateSfxVolumeSprites(i32 value);
+    __forceinline void UpdateWindowModeSprites();
+    __forceinline void UpdateOptionsSelectionSprites();
 };
 
 
@@ -130,6 +144,9 @@ typedef char FrontEndControllerSceneDisplayAtE88[
      offsetof(FrontEndControllerView, previewTimer) == 0xea0) ? 1 : -1];
 typedef char FrontEndLifecycleReplaysAtEA8[
     (offsetof(FrontEndControllerView, replays) == 0xea8) ? 1 : -1];
+typedef char FrontEndControllerOptionsLayout[
+    (offsetof(FrontEndControllerView, optionsSavedWindowed) == 0xea4 &&
+     offsetof(FrontEndControllerView, optionsButtonMapping) == 0xfe8) ? 1 : -1];
 typedef char FrontEndControllerMusicRoomLayout[
     (offsetof(FrontEndControllerView, musicCommentFile) == 0xffc &&
      offsetof(FrontEndControllerView, musicTrackTitles) == 0x1000 &&

@@ -617,7 +617,7 @@ lead-byte range tests as unsigned `u8` comparisons.
 
 ### Options initial-VM temporary chronology
 
-`OptionsMenuView::Update @ 0x0044E4B0` is a large positive oracle for call-site
+`FrontEndControllerView::UpdateOptionsMenu @ 0x0044E4B0` is a large positive oracle for call-site
 temporary allocation under `/Od /Ob1`. The exact source puts the complete
 `sceneAnm->CreateVm(scriptIndex, 7)` producer in a translation-unit-local
 `__forceinline` helper and calls it at both the fixed initial-VM sites and the

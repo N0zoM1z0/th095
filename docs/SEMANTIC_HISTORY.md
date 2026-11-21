@@ -20036,3 +20036,25 @@ including selection, slot replacement, the eighty-record limit, and
 scan cancellation. The directory fixture also confirms that the scan
 still attempts `_chdir("../")` when entry into the replay directory
 fails. See `.analysis/pi/replay-browser-owner/`.
+
+### SEM-487 — run Options on the allocated front-end controller
+
+The Options page uses the actual controller's cursor, timers, state,
+window-mode snapshot at `+0xEA4`, and draft controller mapping at `+0xFE8`.
+It publishes the mapping to both persistent configuration and live input
+on exit. The initialization write formerly expressed as clearing mask
+`0x08` now clears the controller's `showRates` member.
+
+Both builds share the page, sprite-update logic, timer reset, and typed
+input reads. A small comparison adapter retains the existing POD handle
+lookup and VM visibility accesses through Scene Select. Substituting
+canonical ANM lookup and sprite calls expands the pinned body's comparison
+extent from `0x2777` to `0x2C91`.
+
+All 102 affected strict comparisons pass across 15 translation units.
+Options moves from `0x00428640` to `0x0042F9A0` with reversed object order.
+The original and both normal layouts agree on 27 options cases covering
+entry, gated input, volume limits and digits, binding collisions and held
+buttons, sound cadence, and both mapping writes. The dispatcher returns
+the expected exit code after a window-mode change. See
+`.analysis/pi/options-menu-owner/`.

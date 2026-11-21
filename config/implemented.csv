@@ -157,7 +157,7 @@ th095::ReplayScanWorker::Stop
 th095::ReplayScanWorker::Start
 th095::SceneSupervisorView::StartReplayScan
 th095::SceneSupervisorView::StopReplayScan
-th095::OptionsMenuView::Update
+th095::FrontEndControllerView::UpdateOptionsMenu
 th095::Controller::GetJoystickCaps
 th095::Controller::GetControllerInput
 th095::Controller::SetButtonFromDirectInputJoystate

@@ -2595,14 +2595,13 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
         ) != 3:
             fail("FrontEnd coordinator lost one of three transition-VM creations")
     for name in (
-        "OptionsMenu.cpp", "OptionsMenuExact.inl",
+        "OptionsMenu.cpp",
         "MusicRoom.cpp",
         "HelpMenu.cpp",
     ):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        receiver = "sceneMenu" if name in ("HelpMenu.cpp", "MusicRoom.cpp") else "this"
         for interrupt in (3, 2):
-            if f"{receiver}->transitionVm.SetInterrupt({interrupt});" not in body:
+            if f"sceneMenu->transitionVm.SetInterrupt({interrupt});" not in body:
                 fail(f"{name} lost transition-VM interrupt {interrupt}")
 
 

@@ -39,9 +39,7 @@
 2	src/Main.cpp	#ifdef DIFFBUILD
 1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
 2	src/Main.cpp	#ifndef DIFFBUILD
-1	src/OptionsMenu.cpp	#ifdef TH095_MATCH_EXACT
 1	src/OptionsMenu.cpp	#ifndef DIFFBUILD
-2	src/OptionsMenu.hpp	#ifdef DIFFBUILD
 1	src/OptionsMenu.hpp	#ifdef TH095_MATCH_EXACT
 1	src/pbg/Lzss.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/pbg/Lzss.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)

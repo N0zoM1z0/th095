@@ -3,7 +3,6 @@
 #include "SceneSelect.hpp"
 #include "FrontEndGlobals.hpp"
 #include "ReplayBrowser.hpp"
-#include "OptionsMenu.hpp"
 #include "SoundPlayer.hpp"
 #include "ZunMath.hpp"
 #include "GameplayGlobals.hpp"
@@ -265,7 +264,7 @@ ChainCallbackResult FrontEndControllerView::Update()
         break;
 
     case FRONT_END_REQUESTED_STATE_OPTIONS:
-        if (reinterpret_cast<OptionsMenuView *>(this)->Update() ==
+        if (this->UpdateOptionsMenu() ==
             CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR)
         {
             return CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR;
