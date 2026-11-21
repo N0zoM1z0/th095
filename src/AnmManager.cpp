@@ -1,7 +1,5 @@
 #include "AnmManager.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "AnmVmLifecycle.hpp"
-#endif
 #include "diffbuild.hpp"
 
 namespace th095
@@ -630,14 +628,10 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             *GET_FLOAT_VAR_PTR(0) = AddNormalizeAngle(GET_FLOAT_VAR(0), 0.0f);
             break;
         case ANM_OP_FLAG28:
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            vm->flag28 = currentInstr->byteArgs[0];
-#else
             vm->bypassPhotoGameSuppression = currentInstr->byteArgs[0];
-#endif
             break;
-        case ANM_OP_RENDER_BYTE:
-            vm->renderMode = currentInstr->byteArgs[0];
+        case ANM_OP_DRAW_LAYER:
+            vm->drawLayer = currentInstr->byteArgs[0];
             break;
         case ANM_OP_USE_SECONDARY_COLOR:
             vm->useSecondaryColor = currentInstr->byteArgs[0];
@@ -1008,24 +1002,15 @@ AnmManager::AnmManager()
 
 AnmManager::~AnmManager()
 {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    AnmVmListNode *next;
-    AnmVmListNode *node;
-#else
     AnmVm *next;
     AnmVm *node;
-#endif
 
     node = this->vmListHead;
     while (node != NULL)
     {
         next = node->next;
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
         reinterpret_cast<AnmManagerVmLifecycleView *>(this)->RemoveVm(
             reinterpret_cast<AnmVmDeleteView *>(node));
-#else
-        this->RemoveVmListNode(node);
-#endif
         node = next;
     }
 }

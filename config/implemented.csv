@@ -470,7 +470,7 @@ th095::AnmManager::CopySurfaceToBackbuffer
 th095::AnmManager::TakeScreenshots
 th095::AnmManager::CaptureToTexture
 th095::AnmManager::CaptureToSurface
-th095::AnmManagerDrawLayerView::DrawLayer
+th095::AnmManager::DrawLayer
 th095::AnmManagerVmLifecycleView::AddVm
 th095::AnmManagerVmLifecycleView::RemoveVm
 th095::AnmLoaded::CreateVm
@@ -486,7 +486,7 @@ th095::AnmManager::DrawLayer5
 th095::AnmManager::DrawLayer6
 th095::AnmManager::DrawLayer7
 th095::AnmManager::DrawLayer8
-th095::AnmManagerUpdateView::UpdateVms
+th095::AnmManager::UpdateVms
 th095::FrontEndLifecycleView::FrontEndLifecycleView
 th095::FrontEndLifecycleView::Initialize
 th095::FrontEndLifecycleView::LoadThread

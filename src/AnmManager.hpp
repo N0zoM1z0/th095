@@ -58,6 +58,8 @@ enum AnmVmDrawMode
     ANM_VM_DRAW_MODE_PULSING_RADIAL_TRAIL = 10
 };
 
+enum { ANM_VM_DRAW_LAYER_COUNT = 9 };
+
 enum AnmOpcode
 {
     ANM_OP_END = -1,
@@ -129,7 +131,7 @@ enum AnmOpcode
     ANM_OP_ALIGNMENT = 65,
     ANM_OP_BLEND_MODE = 66,
     ANM_OP_RENDER_MODE = 67,
-    ANM_OP_RENDER_BYTE = 68,
+    ANM_OP_DRAW_LAYER = 68,
     ANM_OP_STOP_HIDE = 69,
     ANM_OP_U_SCROLL = 70,
     ANM_OP_V_SCROLL = 71,
@@ -218,7 +220,7 @@ struct AnmLoaded
 
     void LoadSprite(i32 spriteIdx, AnmLoadedSprite *loadedSprite);
     ZunResult SetSprite(struct AnmVm *vm, i32 spriteIdx);
-    AnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
+    AnmVmId CreateVm(i32 scriptIndex, i32 drawLayer);
     void InitializeVm(struct AnmVm *vm, i32 scriptIndex);
     AnmVmId CreateVmAtScreen(i32 scriptIndex, Float3 *position);
     AnmVmId CreateVmAtWorld(i32 scriptIndex, Float3 *position);
@@ -257,19 +259,11 @@ struct AnmVmBase
         this->blendMode = ANM_BLEND_ADDITIVE;
     }
 
-#if defined(TH095_MATCH_EXACT)
-    u8 unknown000[0x0c];
-#else
     AnmVm *next;                    // +0x000
     AnmVm *nextInDrawLayer;         // +0x004
     AnmVm *previous;                // +0x008
-#endif
-    u32 renderMode;                 // +0x00c
-#if defined(TH095_MATCH_EXACT)
-    u8 unknown010[4];
-#else
+    u32 drawLayer;                  // +0x00c
     i32 id;                         // +0x010
-#endif
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     void *generatedVertices;        // +0x014
 #else
@@ -337,21 +331,13 @@ struct AnmVmBase
             u32 alignmentX : 2; // AnmAlignment, physical bits 18..19.
             u32 alignmentY : 2; // AnmAlignment, physical bits 20..21.
             u32 renderModeBits : 4;
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag26 : 1;
-#else
             u32 pendingDeletion : 1;
-#endif
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             u32 flag27 : 1;
 #else
             u32 rotateWithBulletAngle : 1;
 #endif
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            u32 flag28 : 1;
-#else
             u32 bypassPhotoGameSuppression : 1;
-#endif
             u32 useUnitSpeed : 1;
             u32 useAlternateRng : 1;
             u32 unknownFlag31 : 1;
@@ -458,14 +444,12 @@ typedef char AnmVmAnmFileAt230[(offsetof(AnmVm, anmFile) == 0x230) ? 1 : -1];
 typedef char AnmVmCurrentInstructionAt240[(offsetof(AnmVm, currentInstruction) == 0x240) ? 1 : -1];
 typedef char AnmVmLoadedSpriteAt244[(offsetof(AnmVm, loadedSprite) == 0x244) ? 1 : -1];
 typedef char AnmVmSizeIs2CC[(sizeof(AnmVm) == 0x2cc) ? 1 : -1];
-#ifndef TH095_MATCH_EXACT
 typedef char AnmVmNextAt0[(offsetof(AnmVm, next) == 0x0) ? 1 : -1];
 typedef char AnmVmNextInDrawLayerAt4[
     (offsetof(AnmVm, nextInDrawLayer) == 0x4) ? 1 : -1];
 typedef char AnmVmPreviousAt8[(offsetof(AnmVm, previous) == 0x8) ? 1 : -1];
-typedef char AnmVmRenderModeAtC[(offsetof(AnmVm, renderMode) == 0xc) ? 1 : -1];
+typedef char AnmVmDrawLayerAtC[(offsetof(AnmVm, drawLayer) == 0xc) ? 1 : -1];
 typedef char AnmVmIdAt10[(offsetof(AnmVm, id) == 0x10) ? 1 : -1];
-#endif
 
 inline void AnmLoaded::SetAndExecuteScriptIdx(
     AnmVm *vm, i32 scriptIndex)
@@ -486,29 +470,6 @@ struct VertexTex1Xyzrhw
     f32 w;
     f32 u;
     f32 v;
-};
-
-// Historical exact-facing type name for the 0x18-byte prefix of an AnmVm.
-// The target does not allocate a separate list node: these fields overlay the
-// VM itself and participate in its lifecycle and per-frame draw-layer chains.
-struct AnmVmListNode
-{
-    AnmVmListNode *next;
-#if defined(TH095_MATCH_EXACT)
-    AnmVm *vm;
-    AnmVmListNode *previous;
-    u8 unknown00c[8];
-#else
-    AnmVmListNode *nextInDrawLayer;  // +0x04
-    AnmVmListNode *previous;         // +0x08
-    u32 renderMode;                  // +0x0c
-    i32 id;                          // +0x10
-#endif
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    void *generatedVertices;
-#else
-    void *ownedRenderData;
-#endif
 };
 
 struct AnmRawEntryView;
@@ -571,7 +532,7 @@ struct AnmManager
     i32 renderStateChangesThisFrame;        // +0x000018
     i32 flushesThisFrame;                   // +0x00001c
     Float2 screenShakeOffset; // +0x20: applied viewport shake, consumed by DrawInner.
-    u8 unknown028[4];
+    i32 vmsProcessedThisFrame;      // +0x28
     AnmPreloadSlot slots[13];                // +0x00002c
     D3DXMATRIX cachedWorldMatrix;             // +0x000ecc
     AnmVm primaryVm;                         // +0x000f0c
@@ -616,15 +577,9 @@ struct AnmManager
     i32 surfaceCaptureDestinationY;
     i32 surfaceCaptureDestinationWidth;
     i32 surfaceCaptureDestinationHeight;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    AnmVmListNode *vmListHead;               // +0x381814
-    AnmVmListNode *vmListTail;               // +0x381818
-    AnmVm preallocatedVms[9];                // +0x38181c
-#else
     AnmVm *vmListHead;                       // +0x381814
     AnmVm *vmListTail;                       // +0x381818
-    AnmVm drawLayerHeads[9];                 // +0x38181c
-#endif
+    AnmVm drawLayerHeads[ANM_VM_DRAW_LAYER_COUNT];                 // +0x38181c
 #ifdef TH095_MATCH_EXACT
     u32 unknown383148;
 #else
@@ -672,7 +627,6 @@ struct AnmManager
                           i32 srcW, i32 srcH, i32 dstX, i32 dstY, i32 dstW, i32 dstH);
     void CaptureToSurface(i32 surfaceIndex, i32 srcX, i32 srcY, i32 srcW,
                           i32 srcH, i32 dstX, i32 dstY, i32 dstW, i32 dstH);
-    i32 RemoveVmListNode(AnmVmListNode *node);
     AnmVm *GetVm(AnmVmId id);
     void SetInterrupt(AnmVmId id, i32 interrupt);
     void MarkVmForDeletion(AnmVmId id);
@@ -698,6 +652,8 @@ struct AnmManager
     ZunResult DrawVertices(AnmVm *vm, AnmVertex *vertices, i32 vertexCount);
     ZunResult DrawTriangleFan(AnmVm *vm, AnmVertex *vertices, i32 vertexCount);
 
+    i32 UpdateVms();
+    i32 DrawLayer(i32 layer);
     static void __fastcall OnUpdate(void *arg);
     static void __fastcall DrawLayer0(void *arg);
     static void __fastcall DrawLayer1(void *arg);
@@ -765,13 +721,10 @@ typedef char AnmManagerSurfaceCaptureSourceAt3817F4[
 typedef char AnmManagerSurfaceCaptureDestinationHeightAt381810[
     (offsetof(AnmManager, surfaceCaptureDestinationHeight) == 0x381810) ? 1 : -1];
 typedef char AnmManagerVmListAt381814[(offsetof(AnmManager, vmListHead) == 0x381814) ? 1 : -1];
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-typedef char AnmManagerPreallocatedAt38181C[
-    (offsetof(AnmManager, preallocatedVms) == 0x38181c) ? 1 : -1];
-#else
 typedef char AnmManagerDrawLayerHeadsAt38181C[
     (offsetof(AnmManager, drawLayerHeads) == 0x38181c) ? 1 : -1];
-#endif
+typedef char AnmManagerVmsProcessedAt28[
+    (offsetof(AnmManager, vmsProcessedThisFrame) == 0x28) ? 1 : -1];
 #ifndef TH095_MATCH_EXACT
 typedef char AnmManagerNextVmIdAt383148[
     (offsetof(AnmManager, nextVmId) == 0x383148) ? 1 : -1];

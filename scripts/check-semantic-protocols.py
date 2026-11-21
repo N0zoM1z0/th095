@@ -341,6 +341,29 @@ def check_anm_vm_draw_modes() -> None:
             fail(f"{name} must use the shared VM draw modes")
 
 
+def check_anm_vm_draw_layers() -> None:
+    header = (SRC / "AnmManager.hpp").read_text(encoding="utf-8")
+    for fact in (
+        "ANM_OP_DRAW_LAYER = 68",
+        "ANM_VM_DRAW_LAYER_COUNT = 9",
+        "offsetof(AnmVm, nextInDrawLayer) == 0x4",
+        "offsetof(AnmVm, drawLayer) == 0xc",
+        "offsetof(AnmManager, drawLayerHeads) == 0x38181c",
+    ):
+        if fact not in header:
+            fail(f"ANM draw layers lost their canonical declaration: {fact}")
+    anm = (SRC / "AnmManager.cpp").read_text(encoding="utf-8")
+    if not re.search(r"case ANM_OP_DRAW_LAYER:\s*vm->drawLayer = currentInstr->byteArgs\[0\];", anm):
+        fail("ANM opcode 68 must write the literal draw layer")
+    lifecycle = SRC / "AnmVmLifecycle.cpp"
+    update = function_body(lifecycle, "i32 AnmManager::UpdateVms()")
+    draw = function_body(lifecycle, "i32 AnmManager::DrawLayer(i32 layer)")
+    if "layerTails[vm->drawLayer]->nextInDrawLayer = vm;" not in update:
+        fail("ANM update must rebuild each layer through the VM's draw link")
+    if "vm = this->drawLayerHeads[layer].nextInDrawLayer;" not in draw:
+        fail("ANM draw must traverse the canonical layer heads")
+
+
 def check_background_protocol() -> None:
     names = explicit_enum(
         SRC / "Background.cpp",
@@ -4786,6 +4809,7 @@ def main() -> int:
         return 0
     check_anm_opcode_protocol()
     check_anm_vm_draw_modes()
+    check_anm_vm_draw_layers()
     check_background_protocol()
     check_background_owner()
     check_screen_effect_quad_wire()

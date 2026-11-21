@@ -157,7 +157,7 @@ address,name,module,confidence,evidence
 0x00421D00,th095::AnmManager::TakeScreenshots,AnmManager,exact,Canonical 249-byte capture-request dispatcher with two relocations
 0x00444620,th095::AnmManager::CaptureToTexture,AnmManager,exact,Canonical 319-byte indexed texture-entry capture with four relocations
 0x00444760,th095::AnmManager::CaptureToSurface,AnmManager,exact,Canonical 537-byte primary/secondary surface capture with 15 relocations
-0x00444C80,th095::AnmManagerDrawLayerView::DrawLayer,AnmManager,exact,Exact nine-layer ANM draw traversal with target nested PhotoGameTask gate
+0x00444C80,th095::AnmManager::DrawLayer,AnmManager,exact,Exact nine-layer ANM draw traversal with target nested PhotoGameTask gate
 0x00444D10,th095::AnmManagerVmLifecycleView::AddVm,AnmManager,high,Complete intrusive VM tail insertion and nonzero id allocation; exact-sized compiler-local residual only
 0x00444E00,th095::AnmManagerVmLifecycleView::RemoveVm,AnmManager,exact,Canonical 226-byte intrusive unlink and inline VM destruction with two relocations
 0x00444EF0,th095::AnmLoaded::CreateVm,AnmManager,high,Complete render-mode VM creation with all nine target relocations
@@ -173,7 +173,7 @@ address,name,module,confidence,evidence
 0x00444A60,th095::AnmManager::DrawLayer6,AnmManager,exact,Canonical 66-byte counter-reset layer callback with five relocations
 0x00444AB0,th095::AnmManager::DrawLayer7,AnmManager,exact,Canonical 33-byte viewport-selecting layer callback with three relocations
 0x00444AE0,th095::AnmManager::DrawLayer8,AnmManager,exact,Canonical 33-byte viewport-selecting layer callback with three relocations
-0x00444B10,th095::AnmManagerUpdateView::UpdateVms,AnmManager,exact,Exact 358-byte nine-layer VM execution deletion and draw-list rebuild; target OR accumulator reproduced by bounded inline helper
+0x00444B10,th095::AnmManager::UpdateVms,AnmManager,exact,Exact 358-byte nine-layer VM execution deletion and draw-list rebuild; target OR accumulator reproduced by bounded inline helper
 0x00445440,th095::FrontEndLifecycleView::FrontEndLifecycleView,FrontEndController,exact,Canonical full-size construction of timers cursors queues and singleton state
 0x004456F0,th095::FrontEndLifecycleView::Initialize,FrontEndController,exact,Canonical title ANM mission-message sound and photo-resource initialization
 0x00445980,th095::FrontEndLifecycleView::LoadThread,FrontEndController,exact,Canonical capture-aware asynchronous front-end loader

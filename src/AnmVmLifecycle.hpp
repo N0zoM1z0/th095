@@ -18,7 +18,7 @@ struct AnmVmLifecycleView
     AnmVmLifecycleView *nextInDrawLayer;
 #endif
     AnmVmLifecycleView *previous;
-    u32 renderMode;
+    u32 drawLayer;
     struct Id
     {
         i32 value;

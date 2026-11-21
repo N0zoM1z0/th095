@@ -19088,3 +19088,25 @@ normal links agree on 256 dispatch and draw-gate cases and 42 script
 mode and allocation cases. Both normal builds retain all four mapped
 sections of their SEM-442 replay images.
 See `.analysis/pi/anm-draw-mode-owner/`.
+
+### SEM-444 — use the canonical VM draw-layer links
+
+Opcode 68 writes the literal draw-layer index to the VM dword at
++0x0C. The interpreter retains opcode 67 for the four-bit draw mode
+at +0x228. UpdateVms rebuilds nine draw chains at manager +0x38181C
+using each VM's +0x04 link. DrawLayer follows those links. Both
+methods now use the full AnmManager and AnmVm declarations.
+
+The lifecycle list uses VM +0x00 and +0x08. The manager destructor
+walks that same list and calls the established RemoveVm routine.
+The old exact list node and partial update/draw declarations are
+retired. The AddVm and RemoveVm receiver projections remain in
+AnmVmLifecycle.hpp.
+
+All 515 affected strict exact comparisons pass. Both normal links
+resolve the manager update, nine layer callbacks and destructor call
+to the moved methods. The retail executable and both links agree on
+53 update and draw cases with real unlinking, three destruction cases
+and five opcode cases that preserve the draw-mode bits. Their four
+mapped sections still match the respective SEM-442 replay images.
+See `.analysis/pi/anm-draw-layer-owner/`.
