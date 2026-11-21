@@ -471,11 +471,11 @@ th095::AnmManager::TakeScreenshots
 th095::AnmManager::CaptureToTexture
 th095::AnmManager::CaptureToSurface
 th095::AnmManager::DrawLayer
-th095::AnmManagerVmLifecycleView::AddVm
-th095::AnmManagerVmLifecycleView::RemoveVm
+th095::AnmManager::AddVm
+th095::AnmManager::RemoveVm
 th095::AnmLoaded::CreateVm
-th095::AnmLoadedPositionView::CreateVmAtScreen
-th095::AnmLoadedPositionView::CreateVmAtWorld
+th095::AnmLoaded::CreateVmAtScreen
+th095::AnmLoaded::CreateVmAtWorld
 th095::AnmManager::OnUpdate
 th095::AnmManager::DrawLayer0
 th095::AnmManager::DrawLayer1

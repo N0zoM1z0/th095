@@ -19110,3 +19110,32 @@ to the moved methods. The retail executable and both links agree on
 and five opcode cases that preserve the draw-mode bits. Their four
 mapped sections still match the respective SEM-442 replay images.
 See `.analysis/pi/anm-draw-layer-owner/`.
+
+### SEM-445 — share the ANM VM lifecycle
+
+AddVm and RemoveVm use the canonical AnmManager and AnmVm, and the
+three creators use AnmLoaded. The manager counter at +0x383148 and
+the VM handle at +0x10 use the same constructor-free dword
+representation. An unsigned increment wraps through zero and skips
+it. GetVm rejects zero, and the deletion methods mark the named
+bit without unlinking early. RemoveVm unlinks the node before the
+VM destructor releases its render data and operator delete releases
+the VM. The partial lifecycle, lookup and positional creator
+declarations are retired.
+
+CreateVm writes its requested layer before initialization. The
+initialization clears that write in retail, so the layer is zero
+unless the script changes it. The positional creators then apply
+the screen position directly or call PhotoToScreen. AddVm still
+copies the four-byte handle representation into the x86 return
+slot. The value-taking constructor probe adds a local copy and
+shifts the retail stack homes.
+
+All 515 affected strict exact comparisons pass across 61 translation
+units. In both normal links, all 14 checked lifecycle references reach
+their relocated symbols. The two links and retail agree on seven
+four-insertion sequences, all three creator paths, 53 update cases and
+three manager destruction cases. Both links replay all 2,712 demo0
+indices with identical gameplay fields. The stage timer first advances
+at index 30 in both links and index 28 in the retail reference.
+See `.analysis/pi/anm-vm-list-owner/`.

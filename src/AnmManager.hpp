@@ -263,7 +263,7 @@ struct AnmVmBase
     AnmVm *nextInDrawLayer;         // +0x004
     AnmVm *previous;                // +0x008
     u32 drawLayer;                  // +0x00c
-    i32 id;                         // +0x010
+    AnmVmIdStorage id;              // +0x010
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     void *generatedVertices;        // +0x014
 #else
@@ -580,11 +580,7 @@ struct AnmManager
     AnmVm *vmListHead;                       // +0x381814
     AnmVm *vmListTail;                       // +0x381818
     AnmVm drawLayerHeads[ANM_VM_DRAW_LAYER_COUNT];                 // +0x38181c
-#ifdef TH095_MATCH_EXACT
-    u32 unknown383148;
-#else
-    i32 nextVmId;                            // +0x383148
-#endif
+    AnmVmIdStorage nextVmId;                 // +0x383148
 
     AnmManager();
     ~AnmManager();
@@ -627,6 +623,8 @@ struct AnmManager
                           i32 srcW, i32 srcH, i32 dstX, i32 dstY, i32 dstW, i32 dstH);
     void CaptureToSurface(i32 surfaceIndex, i32 srcX, i32 srcY, i32 srcW,
                           i32 srcH, i32 dstX, i32 dstY, i32 dstW, i32 dstH);
+    AnmVmId AddVm(AnmVm *vm);
+    i32 RemoveVm(AnmVm *vm);
     AnmVm *GetVm(AnmVmId id);
     void SetInterrupt(AnmVmId id, i32 interrupt);
     void MarkVmForDeletion(AnmVmId id);
@@ -725,10 +723,8 @@ typedef char AnmManagerDrawLayerHeadsAt38181C[
     (offsetof(AnmManager, drawLayerHeads) == 0x38181c) ? 1 : -1];
 typedef char AnmManagerVmsProcessedAt28[
     (offsetof(AnmManager, vmsProcessedThisFrame) == 0x28) ? 1 : -1];
-#ifndef TH095_MATCH_EXACT
 typedef char AnmManagerNextVmIdAt383148[
     (offsetof(AnmManager, nextVmId) == 0x383148) ? 1 : -1];
-#endif
 typedef char AnmManagerSizeIs38314C[(sizeof(AnmManager) == 0x38314c) ? 1 : -1];
 
 extern AnmVertex g_AnmTexturedVertices[4];

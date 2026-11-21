@@ -379,3 +379,13 @@ at index 28 in retail and 29 in both normal links. The integer stage
 timer matches or is one tick behind retail throughout. See
 `.analysis/pi/ecl-resolver-owner/` for the checks and
 `build/position-independence/ecl-resolver-demo0/` for the traces.
+
+## ANM VM lifetime and handles
+
+SEM-445 uses AnmManager for insertion, lookup and unlinking, and
+AnmLoaded for all three VM creators. In each normal layout, 14
+checked references from those paths reach the moved manager slot
+and methods. The regular and reversed objects agree with retail on
+creation, handle allocation across wraparound, deferred deletion
+and unlinking. See [SEM-445](SEMANTIC_HISTORY.md#sem-445--share-the-anm-vm-lifecycle)
+and `.analysis/pi/anm-vm-list-owner/`.

@@ -4,27 +4,6 @@
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT)
-// Preserve the historical exact-facing local view. Production uses the
-// canonical AnmVm owner, whose lifecycle prefix is target-proven.
-struct AnmVmIdNodeView
-{
-    AnmVmIdNodeView *next;
-    u8 unknown004[0x0c];
-    AnmVmId id;
-    u8 unknown014[0x214];
-    union
-    {
-        u32 flagsWord;
-    };
-    i16 type;
-    i16 pendingInterrupt;
-    AnmLoaded *anmFile;
-};
-#else
-typedef AnmVm AnmVmIdNodeView;
-#endif
-
 AnmVm *AnmManager::GetVm(AnmVmId id)
 {
     AnmVmId nullId;
@@ -34,17 +13,13 @@ AnmVm *AnmManager::GetVm(AnmVmId id)
         return NULL;
     }
 
-    AnmVmIdNodeView *vm;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    vm = reinterpret_cast<AnmVmIdNodeView *>(this->vmListHead);
-#else
+    AnmVm *vm;
     vm = this->vmListHead;
-#endif
     while (vm != NULL)
     {
         if (vm->id == id)
         {
-            return reinterpret_cast<AnmVm *>(vm);
+            return vm;
         }
         vm = vm->next;
     }
@@ -65,11 +40,7 @@ void AnmManager::MarkVmForDeletion(AnmVmId id)
     AnmVm *vm = this->GetVm(id);
     if (vm != NULL)
     {
-#if defined(TH095_MATCH_EXACT)
-        vm->flagsWord |= 0x04000000;
-#else
         vm->pendingDeletion = true;
-#endif
     }
 }
 
@@ -90,24 +61,16 @@ Float3 *AnmManager::GetPosition(AnmVmId id)
 
 void AnmManager::MarkVmsForDeletion(AnmLoaded *anmFile)
 {
-    AnmVmIdNodeView *next;
-    AnmVmIdNodeView *vm;
+    AnmVm *next;
+    AnmVm *vm;
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    vm = reinterpret_cast<AnmVmIdNodeView *>(this->vmListHead);
-#else
     vm = this->vmListHead;
-#endif
     while (vm != NULL)
     {
         next = vm->next;
         if (vm->anmFile == anmFile)
         {
-#if defined(TH095_MATCH_EXACT)
-            vm->flagsWord |= 0x04000000;
-#else
             vm->pendingDeletion = true;
-#endif
         }
         vm = next;
     }

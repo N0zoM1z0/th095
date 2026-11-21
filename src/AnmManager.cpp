@@ -1,5 +1,4 @@
 #include "AnmManager.hpp"
-#include "AnmVmLifecycle.hpp"
 #include "diffbuild.hpp"
 
 namespace th095
@@ -1009,8 +1008,7 @@ AnmManager::~AnmManager()
     while (node != NULL)
     {
         next = node->next;
-        reinterpret_cast<AnmManagerVmLifecycleView *>(this)->RemoveVm(
-            reinterpret_cast<AnmVmDeleteView *>(node));
+        this->RemoveVm(node);
         node = next;
     }
 }

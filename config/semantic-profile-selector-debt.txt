@@ -8,19 +8,11 @@
 1	src/AnmManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/AnmManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 2	src/AnmManager.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/AnmManager.hpp	#ifdef TH095_MATCH_EXACT
-1	src/AnmManager.hpp	#ifndef TH095_MATCH_EXACT
 1	src/AnmManagerTrail.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 7	src/AnmPreload.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/AnmPreload.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/AnmSurface.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/AnmText.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-2	src/AnmVmId.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-3	src/AnmVmId.cpp	#if defined(TH095_MATCH_EXACT)
-1	src/AnmVmLifecycle.cpp	#ifdef TH095_MATCH_EXACT
-1	src/AnmVmLifecycle.cpp	#ifndef TH095_MATCH_EXACT
-1	src/AnmVmLifecycle.hpp	#if defined(TH095_MATCH_EXACT)
-2	src/AnmVmLifecycle.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AsciiManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/Background.cpp	#elif defined(DIFFBUILD)
 6	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)

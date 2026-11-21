@@ -132,7 +132,10 @@ SEM-442 shares the PhotoEffect implementation and restores the two
 query methods folded across both laser vtables. SEM-443 shares the ANM
 VM draw-mode enum across the interpreter, drawing, Background and
 PhotoEffect. SEM-444 types the VM links, layer index and sentinel array
-used by the manager update and draw callbacks.
+used by the manager update and draw callbacks. SEM-445 puts VM allocation,
+lookup, marking and unlinking on those same owners. The generation counter
+wraps as an unsigned dword and skips the null handle. The four-byte return
+copy still uses the pinned x86 handle representation.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

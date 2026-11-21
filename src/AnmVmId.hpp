@@ -43,6 +43,23 @@ struct AnmVmId
     void SetSprite(i32 spriteIndex);
 };
 
+// The manager and its VMs store handle values without running a constructor.
+struct AnmVmIdStorage
+{
+    u32 value;
+
+    i32 operator==(AnmVmId other) const
+    {
+        return this->value == static_cast<u32>(other.value);
+    }
+
+    u32 operator++(int)
+    {
+        return this->value++;
+    }
+};
+
+typedef char AnmVmIdStorageSizeIs4[(sizeof(AnmVmIdStorage) == 4) ? 1 : -1];
 typedef char AnmVmIdSizeIs4[(sizeof(AnmVmId) == 4) ? 1 : -1];
 
 } // namespace th095

@@ -1658,19 +1658,25 @@ existing conversion temporary without introducing another lexical/helper temp.
 
 ### AddVm: promote only the real increment receiver (2026-09-06)
 
-`AnmManagerVmLifecycleView::AddVm @ 0x00444D10` is exact for all 236 bytes.
+`AnmManager::AddVm @ 0x00444D10` is exact for all 236 bytes.
 The old source had the correct 71-mnemonic topology but VC7 placed the first
-postfix-increment receiver at `EBP-0x08` and the following zero-valued `Id()`
+postfix-increment receiver at `EBP-0x08` and the following zero-valued `AnmVmId()`
 equality temporary at `-0x04`; target uses the opposite physical order.  Do not
 rewrite the equality or materialize both values: a live two-field aggregate
 shrinks the direct compare to 231 bytes, while a separate bool helper grows it
 to 241.  Instead name only the real first receiver:
-`AnmVmLifecycleView::Id *incrementReceiver = &this->nextVmId;` followed by
+`AnmVmIdStorage *incrementReceiver = &this->nextVmId;` followed by
 `(*incrementReceiver)++`.  The named pointer takes target `-0x04`, the untouched
-compiler `Id()` temporary naturally falls to `-0x08`, and the second postfix
+compiler `AnmVmId()` temporary naturally falls to `-0x08`, and the second postfix
 increment stays at its already-correct home.  Stock VC7.1 then replays 236/236
 bytes with no relocations.  A cold rebuild preserves every one of the thirteen
 pre-existing exact lifecycle units.
+
+SEM-445 keeps the same stack homes with the constructor-free unsigned
+storage on AnmManager and AnmVm. A value-taking AnmVmId constructor emits
+242 bytes and adds a local copy between the counter and the caller's
+return slot. The existing four-byte representation copy preserves all
+236 bytes and the normal x86 return ABI.
 
 ### PhotoStage Update: current-entry interrupt phase closes the final allocation lane (2026-09-06)
 
@@ -1793,7 +1799,7 @@ refresh.
 
 ### CreateVm allocation-owner frontend closes the repeated phase (2026-09-06)
 
-`AnmLoaded::CreateVm @ 0x00444EF0`, `AnmLoadedPositionView::CreateVmAtScreen @ 0x00444FA0`, and `CreateVmAtWorld @ 0x00445060` are canonical exact for 161/180/169 authored bytes. All three retain the ordinary scalar-new topology: global `operator new`, exact `AnmVm::AnmVm @ 0x00401EB0`, constructor-failure EH cleanup, the real `vm` owner, and the original initialization/publication calls.
+`AnmLoaded::CreateVm @ 0x00444EF0`, `AnmLoaded::CreateVmAtScreen @ 0x00444FA0`, and `CreateVmAtWorld @ 0x00445060` are canonical exact for 161/180/169 authored bytes. All three retain the ordinary scalar-new topology: global `operator new`, exact `AnmVm::AnmVm @ 0x00401EB0`, constructor-failure EH cleanup, the real `vm` owner, and the original initialization/publication calls.
 
 The closing source attaches the compiler phase to the allocation frontend itself. `AnmVm` owns a class-specific `__forceinline operator new(size_t)` with target-attested `compilerStorage[0x14]` and a direct forward to global `::operator new(size)`. Stock VC7.1 inlines that frontend into each ordinary `new AnmVm`, so the operator-new relocation and EH topology stay native while only the deep hidden-`this` / constructor-result class moves to the target homes. The repo has exactly three scalar `new AnmVm` call sites, and all three independently require the same phase.
 

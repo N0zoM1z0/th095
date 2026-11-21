@@ -473,11 +473,11 @@ th095::AnmManager::TakeScreenshots,0x00421D00,function
 th095::AnmManager::CaptureToTexture,0x00444620,function
 th095::AnmManager::CaptureToSurface,0x00444760,function
 th095::AnmManager::DrawLayer,0x00444C80,function
-th095::AnmManagerVmLifecycleView::AddVm,0x00444D10,function
-th095::AnmManagerVmLifecycleView::RemoveVm,0x00444E00,function
+th095::AnmManager::AddVm,0x00444D10,function
+th095::AnmManager::RemoveVm,0x00444E00,function
 th095::AnmLoaded::CreateVm,0x00444EF0,function
-th095::AnmLoadedPositionView::CreateVmAtScreen,0x00444FA0,function
-th095::AnmLoadedPositionView::CreateVmAtWorld,0x00445060,function
+th095::AnmLoaded::CreateVmAtScreen,0x00444FA0,function
+th095::AnmLoaded::CreateVmAtWorld,0x00445060,function
 th095::AnmManager::OnUpdate,0x00444980,function
 th095::AnmManager::DrawLayer0,0x004449A0,function
 th095::AnmManager::DrawLayer1,0x004449C0,function

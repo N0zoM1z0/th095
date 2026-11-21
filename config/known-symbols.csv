@@ -158,11 +158,11 @@ address,name,module,confidence,evidence
 0x00444620,th095::AnmManager::CaptureToTexture,AnmManager,exact,Canonical 319-byte indexed texture-entry capture with four relocations
 0x00444760,th095::AnmManager::CaptureToSurface,AnmManager,exact,Canonical 537-byte primary/secondary surface capture with 15 relocations
 0x00444C80,th095::AnmManager::DrawLayer,AnmManager,exact,Exact nine-layer ANM draw traversal with target nested PhotoGameTask gate
-0x00444D10,th095::AnmManagerVmLifecycleView::AddVm,AnmManager,high,Complete intrusive VM tail insertion and nonzero id allocation; exact-sized compiler-local residual only
-0x00444E00,th095::AnmManagerVmLifecycleView::RemoveVm,AnmManager,exact,Canonical 226-byte intrusive unlink and inline VM destruction with two relocations
+0x00444D10,th095::AnmManager::AddVm,AnmManager,high,Complete intrusive VM tail insertion and nonzero id allocation
+0x00444E00,th095::AnmManager::RemoveVm,AnmManager,exact,Canonical 226-byte intrusive unlink and inline VM destruction with two relocations
 0x00444EF0,th095::AnmLoaded::CreateVm,AnmManager,high,Complete render-mode VM creation with all nine target relocations
-0x00444FA0,th095::AnmLoadedPositionView::CreateVmAtScreen,AnmManager,high,Complete screen-space VM creation with all nine target relocations
-0x00445060,th095::AnmLoadedPositionView::CreateVmAtWorld,AnmManager,high,Complete TH095 world-space VM creation through PhotoToScreen with all ten target relocations
+0x00444FA0,th095::AnmLoaded::CreateVmAtScreen,AnmManager,high,Complete screen-space VM creation with all nine target relocations
+0x00445060,th095::AnmLoaded::CreateVmAtWorld,AnmManager,high,Complete TH095 world-space VM creation through PhotoToScreen with all ten target relocations
 0x00444980,th095::AnmManager::OnUpdate,AnmManager,exact,Canonical 19-byte update callback with one relocation
 0x004449A0,th095::AnmManager::DrawLayer0,AnmManager,exact,Canonical 21-byte layer-zero callback with one relocation
 0x004449C0,th095::AnmManager::DrawLayer1,AnmManager,exact,Canonical 21-byte layer-one callback with one relocation

@@ -1,35 +1,11 @@
 #define TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
-#include "AnmVmLifecycle.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
 #include "SupervisorViewportSlot.hpp"
 namespace th095
 {
-
-#ifdef TH095_MATCH_EXACT
-// The two positional creator entries were originally proven through this
-// target-facing partial view. Production canonicalizes them onto AnmLoaded,
-// but exact replay must retain the historical receiver decoration.
-struct AnmLoadedPositionView
-{
-    i32 anmIdx;
-    void *rawData;
-    i32 totalEntries;
-    AnmLoadedSprite *sprites;
-    AnmRawInstr **scripts;
-    void *textures;
-    i32 postloadEntryNumber;
-
-    AnmVmId CreateVmAtScreen(i32 scriptIndex, Float3 *position);
-    AnmVmId CreateVmAtWorld(i32 scriptIndex, Float3 *position);
-};
-#define TH095_ANM_POSITION_RECEIVER AnmLoadedPositionView
-#else
-#define TH095_ANM_POSITION_RECEIVER AnmLoaded
-#endif
-
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -38,20 +14,6 @@ static __forceinline i32 AnmUpdateEitherFlag(i32 first, i32 second)
     return first | second;
 }
 
-typedef char AnmVmLifecycleNextAt0[
-    (offsetof(AnmVmLifecycleView, next) == 0x0) ? 1 : -1];
-#ifndef TH095_MATCH_EXACT
-typedef char AnmVmLifecycleNextInDrawLayerAt4[
-    (offsetof(AnmVmLifecycleView, nextInDrawLayer) == 0x4) ? 1 : -1];
-#endif
-typedef char AnmVmLifecyclePreviousAt8[
-    (offsetof(AnmVmLifecycleView, previous) == 0x8) ? 1 : -1];
-typedef char AnmVmLifecycleDrawLayerAtC[
-    (offsetof(AnmVmLifecycleView, drawLayer) == 0xc) ? 1 : -1];
-typedef char AnmVmLifecycleIdAt10[
-    (offsetof(AnmVmLifecycleView, id) == 0x10) ? 1 : -1];
-typedef char AnmManagerVmLifecycleIdAt383148[
-    (offsetof(AnmManagerVmLifecycleView, nextVmId) == 0x383148) ? 1 : -1];
 // FUNCTION: TH095 0x00444980.
 void __fastcall AnmManager::OnUpdate(void *arg)
 {
@@ -148,14 +110,12 @@ i32 AnmManager::UpdateVms()
         {
             if (vm->pendingDeletion)
             {
-                reinterpret_cast<AnmManagerVmLifecycleView *>(this)->RemoveVm(
-                    reinterpret_cast<AnmVmDeleteView *>(vm));
+                this->RemoveVm(vm);
                 goto vmDone;
             }
             if (AnmManager::ExecuteScript(vm))
             {
-                reinterpret_cast<AnmManagerVmLifecycleView *>(this)->RemoveVm(
-                    reinterpret_cast<AnmVmDeleteView *>(vm));
+                this->RemoveVm(vm);
                 goto vmDone;
             }
             goto addToDrawLayer;
@@ -194,7 +154,7 @@ i32 AnmManager::DrawLayer(i32 layer)
 }
 
 // FUNCTION: TH095 0x00444D10.
-AnmVmId AnmManagerVmLifecycleView::AddVm(AnmVmLifecycleView *vm)
+AnmVmId AnmManager::AddVm(AnmVm *vm)
 {
     vm->next = NULL;
 
@@ -211,29 +171,29 @@ AnmVmId AnmManagerVmLifecycleView::AddVm(AnmVmLifecycleView *vm)
         this->vmListTail = vm;
     }
 
-    AnmVmLifecycleView::Id *incrementReceiver = &this->nextVmId;
+    AnmVmIdStorage *incrementReceiver = &this->nextVmId;
     (*incrementReceiver)++;
-    if (this->nextVmId == AnmVmLifecycleView::Id())
+    if (this->nextVmId == AnmVmId())
     {
         this->nextVmId++;
     }
     vm->id = this->nextVmId;
-    return *reinterpret_cast<AnmVmId *>(&this->nextVmId);
+    // Copy the stored four-byte handle directly into the ABI return slot.
+    // A value-taking constructor introduces a second copy on VC7.1.
+    return *reinterpret_cast<const AnmVmId *>(&this->nextVmId);
 }
 
 // FUNCTION: TH095 0x00444E00.
-i32 AnmManagerVmLifecycleView::RemoveVm(AnmVmDeleteView *node)
+i32 AnmManager::RemoveVm(AnmVm *node)
 {
-    if (node == reinterpret_cast<AnmVmDeleteView *>(this->vmListTail))
+    if (node == this->vmListTail)
     {
-        this->vmListTail =
-            reinterpret_cast<AnmVmLifecycleView *>(node->previous);
+        this->vmListTail = node->previous;
     }
 
     if (node->previous == NULL)
     {
-        this->vmListHead =
-            reinterpret_cast<AnmVmLifecycleView *>(node->next);
+        this->vmListHead = node->next;
         if (this->vmListHead != NULL)
         {
             this->vmListHead->previous = NULL;
@@ -259,30 +219,27 @@ AnmVmId AnmLoaded::CreateVm(i32 scriptIndex, i32 drawLayer)
     AnmVm *vm = new AnmVm;
     vm->drawLayer = drawLayer;
     this->InitializeVm(vm, scriptIndex);
-    return reinterpret_cast<AnmManagerVmLifecycleView *>(g_AnmManager)
-        ->AddVm(reinterpret_cast<AnmVmLifecycleView *>(vm));
+    return g_AnmManager->AddVm(vm);
 }
 
 // FUNCTION: TH095 0x00444FA0.
-AnmVmId TH095_ANM_POSITION_RECEIVER::CreateVmAtScreen(
+AnmVmId AnmLoaded::CreateVmAtScreen(
     i32 scriptIndex, Float3 *position)
 {
     AnmVm *vm = new AnmVm;
-    reinterpret_cast<AnmLoaded *>(this)->InitializeVm(vm, scriptIndex);
+    this->InitializeVm(vm, scriptIndex);
     vm->positionOffset = *position;
-    return reinterpret_cast<AnmManagerVmLifecycleView *>(g_AnmManager)
-        ->AddVm(reinterpret_cast<AnmVmLifecycleView *>(vm));
+    return g_AnmManager->AddVm(vm);
 }
 
 // FUNCTION: TH095 0x00445060.
-AnmVmId TH095_ANM_POSITION_RECEIVER::CreateVmAtWorld(
+AnmVmId AnmLoaded::CreateVmAtWorld(
     i32 scriptIndex, Float3 *position)
 {
     AnmVm *vm = new AnmVm;
-    reinterpret_cast<AnmLoaded *>(this)->InitializeVm(vm, scriptIndex);
+    this->InitializeVm(vm, scriptIndex);
     PhotoToScreen(&vm->positionOffset, position);
-    return reinterpret_cast<AnmManagerVmLifecycleView *>(g_AnmManager)
-        ->AddVm(reinterpret_cast<AnmVmLifecycleView *>(vm));
+    return g_AnmManager->AddVm(vm);
 }
 
 } // namespace th095
