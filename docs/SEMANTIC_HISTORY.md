@@ -20214,3 +20214,22 @@ negative probe rejects two exchanged addresses. Both layouts match the
 retail gameplay samples throughout the three built-in replays. See
 [the current link audit](POSITION_INDEPENDENCE.md#current-windows-i386-link-audit)
 for the section counts, timer observations and local evidence paths.
+
+### SEM-495 — share result drawing and its text owner
+
+At `0x00429C80`, the result renderer writes color and scale on
+`AsciiManager` and sends each animation receiver to `AnmVm::Draw`. Both
+builds now use these declarations from one `ResultScreenDraw.inl` body.
+Result initializers, update and draw share the established result state
+names. Replay rows and name entry pass the address of the active replay
+timestamp to VC7.1's CRT through the shared stored-time helper.
+
+All 24 strict ResultScreen comparisons pass, including the Draw body and
+both switch tables. Comparing ResultScreen's normal object against both
+link orders resolves all 606 code and 13 initialized-data references.
+The retail and both linked images agree on 37 drawing cases and 48
+cursor input cases. The drawing checks compare VM receivers, text,
+positions, font state, replay timestamp addresses and notification
+lifetime. See `.analysis/pi/result-draw-owner/` for the drawing probe.
+ResultScreen's comparison layout and best-shot frame storage remain
+compiler emission debt.

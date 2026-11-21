@@ -1,4 +1,6 @@
 #include "ResultScreen.hpp"
+#include "ResultScreenState.hpp"
+#include "FrontEndLocalTime.hpp"
 #include "ControllerInputSlot.hpp"
 #include "SceneData.hpp"
 
@@ -10,6 +12,7 @@
 #include "SoundPlayer.hpp"
 #include "ZunMath.hpp"
 #include "AnmManager.hpp"
+#include "AsciiManager.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "PhotoStage.hpp"
 #include "GameplayGlobals.hpp"
@@ -25,30 +28,6 @@ namespace th095
 
 extern f32 g_AnmGameSpeed;
 extern ResultScreen *g_ResultScreen;
-
-struct ResultAnmVmDrawView
-{
-    void Draw();
-};
-
-struct ResultAsciiManagerView
-{
-    u8 unknown0000[0x806c];
-    u32 color;
-    f32 scaleX;
-    f32 scaleY;
-
-    void AddString(Float3 *position, const char *text);
-    void AddFormatText(Float3 *position, const char *format, ...);
-};
-
-typedef char ResultAsciiColorAt806C[
-    (offsetof(ResultAsciiManagerView, color) == 0x806c) ? 1 : -1];
-typedef char ResultAsciiScaleXAt8070[
-    (offsetof(ResultAsciiManagerView, scaleX) == 0x8070) ? 1 : -1];
-typedef char ResultAsciiScaleYAt8074[
-    (offsetof(ResultAsciiManagerView, scaleY) == 0x8074) ? 1 : -1];
-
 
 struct ResultScreenInitializeLocals
 {
@@ -78,7 +57,6 @@ extern u8 *__fastcall ReadResultHelpLine(
 extern i32 g_ResultSceneLimits[];
 extern const char *g_ResultAlphabet;
 extern ResultSaveDataView *g_ResultSaveData;
-extern ResultAsciiManagerView g_ResultAsciiManager;
 extern ResultScreenAnmLoadedView *g_ResultAuxAnm;
 extern f64 g_ReplayLagNumerator;
 extern f64 g_ReplayLagDenominator;
@@ -337,7 +315,7 @@ static __forceinline void InitializeGameReplayCursorPhase(
 void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
 {
     g_SoundPlayer.PlaySoundByIdx(SOUND_20, 0);
-    resultScreen->state = 1;
+    resultScreen->state = RESULT_SCREEN_GAME_RESULT_MENU;
     resultScreen->stateTimer.Reset();
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
@@ -350,14 +328,14 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 3), 3);
     if (g_RuntimeGlobalStateOwner->replayMode == REPLAY_MANAGER_RECORD)
     {
-        resultScreen->state = 1;
+        resultScreen->state = RESULT_SCREEN_GAME_RESULT_MENU;
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 4), 4);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 6), 6);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 5), 5);
     }
     else
     {
-        resultScreen->state = 11;
+        resultScreen->state = RESULT_SCREEN_GAME_RESULT_NON_RECORD_MENU;
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 16), 16);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 17), 17);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 18), 18);
@@ -411,7 +389,7 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 7), 7);
     if (g_RuntimeGlobalStateOwner->replayMode == REPLAY_MANAGER_RECORD)
     {
-        resultScreen->state = 3;
+        resultScreen->state = RESULT_SCREEN_REPLAY_RESULT_MENU;
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 9), 9);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 10), 10);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 8), 8);
@@ -488,7 +466,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 11), 11);
     if (g_RuntimeGlobalStateOwner->replayMode == REPLAY_MANAGER_RECORD)
     {
-        resultScreen->state = 5;
+        resultScreen->state = RESULT_SCREEN_PHOTO_RESULT_MENU;
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 14), 14);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 15), 15);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 12), 12);
@@ -783,7 +761,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 1:
+    case RESULT_SCREEN_GAME_RESULT_MENU:
         if (this->UpdateCursor(4) != 0)
         {
             break;
@@ -791,7 +769,7 @@ ChainCallbackResult ResultScreen::Update()
         if (GetPressedButtons(8) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->state = 2;
+            this->state = RESULT_SCREEN_GAME_RESULT_EXIT;
             this->replayCursor.Set(0);
             this->stateTimer.Reset();
             ResultUpdateInterruptFirstPhase(this);
@@ -800,7 +778,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         else if (GetPressedButtons(0x1002) != 0)
         {
-            this->SetState(2);
+            this->SetState(RESULT_SCREEN_GAME_RESULT_EXIT);
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
@@ -818,7 +796,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 2:
+    case RESULT_SCREEN_GAME_RESULT_EXIT:
         if (this->stateTimer >= 8)
         {
             g_AnmGameSpeed = this->savedGameSpeed;
@@ -842,7 +820,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 11:
+    case RESULT_SCREEN_GAME_RESULT_NON_RECORD_MENU:
         if (this->UpdateCursor(16) != 0)
         {
             break;
@@ -850,7 +828,7 @@ ChainCallbackResult ResultScreen::Update()
         if (GetPressedButtons(8) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->state = 12;
+            this->state = RESULT_SCREEN_GAME_RESULT_NON_RECORD_EXIT;
             this->replayCursor.Set(0);
             this->stateTimer.Reset();
             ResultUpdateInterruptFirstPhase(this);
@@ -859,7 +837,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         else if (GetPressedButtons(0x1002) != 0)
         {
-            this->SetState(12);
+            this->SetState(RESULT_SCREEN_GAME_RESULT_NON_RECORD_EXIT);
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
@@ -877,7 +855,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 12:
+    case RESULT_SCREEN_GAME_RESULT_NON_RECORD_EXIT:
         if (this->stateTimer >= 8)
         {
             g_AnmGameSpeed = this->savedGameSpeed;
@@ -900,14 +878,14 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 3:
+    case RESULT_SCREEN_REPLAY_RESULT_MENU:
         if (this->UpdateCursor(8) != 0)
         {
             break;
         }
         if (GetPressedButtons(0x1002) != 0)
         {
-            this->SetState(4);
+            this->SetState(RESULT_SCREEN_REPLAY_RESULT_EXIT);
             for (i32 i = 3; i < 21; i++)
             {
                 this->vms[i].SetInterrupt(1);
@@ -927,7 +905,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 4:
+    case RESULT_SCREEN_REPLAY_RESULT_EXIT:
         if (this->stateTimer >= 8)
         {
             g_AnmGameSpeed = 1.0f;
@@ -940,7 +918,7 @@ ChainCallbackResult ResultScreen::Update()
             case 2:
                 this->replayCursor.Push();
                 this->replayCursor.count = 20;
-                this->state = 13;
+                this->state = RESULT_SCREEN_REPLAY_SLOT_SELECT;
                 this->LoadReplays();
                 this->stateTimer.Reset();
                 break;
@@ -953,7 +931,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 5:
+    case RESULT_SCREEN_PHOTO_RESULT_MENU:
         if (this->UpdateCursor(12) != 0)
         {
             break;
@@ -963,7 +941,7 @@ ChainCallbackResult ResultScreen::Update()
             UpdatePhotoResultScreen(this);
             if (GetPressedButtons(0x1002) != 0)
             {
-                this->SetState(6);
+                this->SetState(RESULT_SCREEN_PHOTO_RESULT_EXIT);
                 for (i32 i = 3; i < 21; i++)
                 {
                     this->vms[i].SetInterrupt(1);
@@ -979,7 +957,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 6:
+    case RESULT_SCREEN_PHOTO_RESULT_EXIT:
         if (this->stateTimer >= 8)
         {
             g_AnmGameSpeed = 1.0f;
@@ -990,7 +968,7 @@ ChainCallbackResult ResultScreen::Update()
             case 3:
                 this->replayCursor.Push();
                 this->replayCursor.count = 20;
-                this->state = 13;
+                this->state = RESULT_SCREEN_REPLAY_SLOT_SELECT;
                 this->LoadReplays();
                 this->stateTimer.Reset();
                 break;
@@ -1052,7 +1030,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 13:
+    case RESULT_SCREEN_REPLAY_SLOT_SELECT:
         this->replayCursor.SaveCurrent();
         if (IsResultMenuInputPressed(0x10))
         {
@@ -1070,7 +1048,7 @@ ChainCallbackResult ResultScreen::Update()
         if (GetPressedButtons(0x1002) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-            this->SetState(14);
+            this->SetState(RESULT_SCREEN_REPLAY_NAME_ENTRY);
             strcpy(this->replayName, g_ResultSaveData->profile.replayName);
             if (strcmp(this->replayName, "        ") != 0)
             {
@@ -1086,7 +1064,7 @@ ChainCallbackResult ResultScreen::Update()
             {
                 this->stateTimer.Reset();
                 this->anm->InitializeVm(GetResultVm(this, 7), 7);
-                this->state = 3;
+                this->state = RESULT_SCREEN_REPLAY_RESULT_MENU;
                 this->anm->InitializeVm(GetResultVm(this, 9), 9);
                 this->anm->InitializeVm(GetResultVm(this, 10), 10);
                 this->anm->InitializeVm(GetResultVm(this, 8), 8);
@@ -1098,9 +1076,9 @@ ChainCallbackResult ResultScreen::Update()
             }
             else if (g_RuntimeGlobalStateOwner->photoLimitTransitionComplete != 0)
             {
-                ResultUpdatePhotoSetStatePhase(this, 5);
+                ResultUpdatePhotoSetStatePhase(this, RESULT_SCREEN_PHOTO_RESULT_MENU);
                 this->anm->InitializeVm(GetResultVm(this, 11), 11);
-                this->state = 5;
+                this->state = RESULT_SCREEN_PHOTO_RESULT_MENU;
                 this->anm->InitializeVm(GetResultVm(this, 14), 14);
                 this->anm->InitializeVm(GetResultVm(this, 15), 15);
                 this->anm->InitializeVm(GetResultVm(this, 12), 12);
@@ -1120,7 +1098,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 14:
+    case RESULT_SCREEN_REPLAY_NAME_ENTRY:
         if (IsResultMenuInputPressed(0x10))
         {
             this->keyboardSelection -= 16;
@@ -1162,7 +1140,7 @@ ChainCallbackResult ResultScreen::Update()
             if (this->keyboardSelection == 95)
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                this->SetState(15);
+                this->SetState(RESULT_SCREEN_REPLAY_WRITE);
             }
             else if (this->keyboardSelection == 94)
             {
@@ -1205,17 +1183,17 @@ ChainCallbackResult ResultScreen::Update()
             }
             else
             {
-                this->SetState(13);
+                this->SetState(RESULT_SCREEN_REPLAY_SLOT_SELECT);
                 this->replayCursor.Pop();
             }
         }
         break;
 
-    case 15:
+    case RESULT_SCREEN_REPLAY_WRITE:
         sprintf(path, "th95_%.2d.rpy", this->replayCursor.GetCurrent() + 1);
         g_ReplayManager->WriteReplay(path, this->replayName);
         strcpy(g_ResultSaveData->profile.replayName, this->replayName);
-        this->SetState(13);
+        this->SetState(RESULT_SCREEN_REPLAY_SLOT_SELECT);
         this->LoadReplays();
         this->replayCursor.Pop();
         break;
@@ -1238,405 +1216,7 @@ updateResultVms:
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-static __forceinline void DrawResultTotalScorePhase(Float3 *position)
-{
-    i32 totalScore = 0;
-    for (u32 scoreIndex = 0; scoreIndex < 120; scoreIndex++)
-    {
-        totalScore += g_ResultSaveData->scoreEntries[scoreIndex].score;
-    }
-    position->x = 230.0f;
-    position->y = 68.0f;
-    position->z = 0.0f;
-    g_ResultAsciiManager.AddFormatText(position, "Total Score %.8d", totalScore);
-}
-
-static __forceinline i32 ResultFindBestShotPhase()
-{
-    // TH095 Draw assigns a 12-byte compiler allocation phase to this
-    // best-shot frontend. 0/4/8/16-byte controls and moving the same 12
-    // bytes to the total-score or ordinary-shot phases do not replay exact.
-    u8 compilerStorage[12];
-    return g_PhotoStageState->FindBestShot();
-}
-
-static __forceinline void DrawResultBestShotLinePhase(
-    ResultScreen *resultScreen, Float3 *position)
-{
-    i32 photoIndex = resultScreen->photoCursor.GetCurrent();
-    position->x = 230.0f;
-    position->y = 290.0f;
-    position->z = 0.0f;
-    g_ResultAsciiManager.AddFormatText(
-        position, "  Best Shot   %.6d",
-        g_PhotoStageState->slots[photoIndex].score);
-}
-
-static __forceinline void DrawResultShotLinePhase(
-    ResultScreen *resultScreen, Float3 *position)
-{
-    i32 photoIndex = resultScreen->photoCursor.GetCurrent();
-    position->x = 230.0f;
-    position->y = 290.0f;
-    position->z = 0.0f;
-    g_ResultAsciiManager.AddFormatText(
-        position, "       Shot   %.6d",
-        g_PhotoStageState->slots[photoIndex].score);
-}
-
-// TH08's patched #pragma var_order is used only as a local-order oracle here.
-// Stock VC7.1 ignores that pragma, so these target-proven identifier buckets
-// reproduce the same physical order for the 28 real Draw locals. Keep the
-// semantic aliases readable and change the backing rank only with a full replay.
-#define i resultDrawBacking157
-#define replayListSceneText resultDrawBacking153
-#define replayListLevelText resultDrawBacking146
-#define replayListPosition resultDrawBacking142
-#define replayListIndex resultDrawBacking096
-#define replayListTimestamp resultDrawBacking092
-#define replayIndex resultDrawBacking026
-#define replayNameSceneText resultDrawBacking022
-#define replayNameLevelText resultDrawBacking139
-#define replayNamePosition resultDrawBacking135
-#define replayNameTimestamp resultDrawBacking131
-#define characterPosition resultDrawBacking119
-#define offsetY resultDrawBacking115
-#define offsetX resultDrawBacking111
-#define characterText resultDrawBacking089
-#define keyboardColumn resultDrawBacking085
-#define positionZ resultDrawBacking081
-#define rowY resultDrawBacking017
-#define characterX resultDrawBacking013
-#define bestShotPosition resultDrawBacking127
-#define shotPosition resultDrawBacking123
-#define scorePosition resultDrawBacking107
-#define highScorePosition resultDrawBacking103
-#define totalScorePosition resultDrawBacking077
-#define slowRatePosition resultDrawBacking073
-#define notificationPosition resultDrawBacking066
-#define replayListTitlePosition resultDrawBacking062
-#define replayNameTitlePosition resultDrawBacking057
-ChainCallbackResult ResultScreen::Draw()
-{
-    Float3 replayNameTitlePosition;
-    Float3 replayListTitlePosition;
-    Float3 notificationPosition;
-    Float3 slowRatePosition;
-    Float3 totalScorePosition;
-    Float3 highScorePosition;
-    Float3 scorePosition;
-    Float3 shotPosition;
-    Float3 bestShotPosition;
-    f32 characterX;
-    f32 rowY;
-    f32 positionZ;
-    i32 keyboardColumn;
-    char characterText[16];
-    f32 offsetX;
-    f32 offsetY;
-    Float3 characterPosition;
-    tm *replayNameTimestamp;
-    Float3 replayNamePosition;
-    char replayNameLevelText[8];
-    char replayNameSceneText[8];
-    i32 replayIndex;
-    tm *replayListTimestamp;
-    i32 replayListIndex;
-    Float3 replayListPosition;
-    char replayListLevelText[8];
-    char replayListSceneText[8];
-    i32 i;
-
-    for (i = 0; i < 21; i++)
-    {
-        reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[i])->Draw();
-    }
-    reinterpret_cast<ResultAnmVmDrawView *>(&this->photoVm)->Draw();
-    reinterpret_cast<ResultAnmVmDrawView *>(&this->photoTransitionVm)->Draw();
-
-    switch (this->state)
-    {
-    case 3:
-        reinterpret_cast<ResultAnmVmDrawView *>(&this->auxiliaryVms[0])->Draw();
-        reinterpret_cast<ResultAnmVmDrawView *>(&this->auxiliaryVms[1])->Draw();
-        break;
-
-    case 5:
-    {
-        if (this->stateTimer.GetCurrent() < 30)
-        {
-            g_ResultAsciiManager.color =
-                (((this->stateTimer.GetCurrent() * 255) / 32) << 24) |
-                0x00ffffff;
-        }
-
-        if (this->photoCursor.GetCurrent() == ResultFindBestShotPhase())
-        {
-            DrawResultBestShotLinePhase(this, &bestShotPosition);
-        }
-        else
-        {
-            DrawResultShotLinePhase(this, &shotPosition);
-        }
-
-        scorePosition.x = 230.0f;
-        scorePosition.y = 40.0f;
-        scorePosition.z = 0.0f;
-        g_ResultAsciiManager.AddFormatText(
-            &scorePosition, "      Score  %.7d",
-            g_RuntimeGlobalStateOwner->score);
-
-        highScorePosition.x = 230.0f;
-        highScorePosition.y = 54.0f;
-        highScorePosition.z = 0.0f;
-        g_ResultAsciiManager.AddFormatText(
-            &highScorePosition, " High Score  %.7d",
-            g_ResultSaveData
-                ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
-                .score);
-
-        DrawResultTotalScorePhase(&totalScorePosition);
-
-        if (this->stateTimer.GetCurrent() < 30)
-        {
-            g_ResultAsciiManager.color =
-                (((this->stateTimer.GetCurrent() * 255) / 32) << 24) |
-                0x00d0d0e0;
-        }
-        else
-        {
-            g_ResultAsciiManager.color = 0xffd0d0e0;
-        }
-        slowRatePosition.x = 230.0f;
-        slowRatePosition.y = 82.0f;
-        slowRatePosition.z = 0.0f;
-        g_ResultAsciiManager.AddFormatText(
-            &slowRatePosition, "  Slow Rate      %2.0f%%",
-            g_ResultSaveData
-                ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
-                .highScoreSlowRate);
-        g_ResultAsciiManager.color = 0xffffffff;
-
-        if (this->notificationTimer > 0)
-        {
-            g_ResultAsciiManager.color = 0xffffff00;
-            notificationPosition.x = 212.0f;
-            notificationPosition.y = 224.0f;
-            notificationPosition.z = 0.0f;
-            g_ResultAsciiManager.AddFormatText(
-                &notificationPosition, "BestShot was overwrited!");
-            g_ResultAsciiManager.color = 0xffffffff;
-            this->notificationTimer--;
-        }
-        break;
-    }
-
-    case 13:
-    {
-        replayListTitlePosition.x = 160.0f;
-        replayListTitlePosition.y = 32.0f;
-        replayListTitlePosition.z = 0.0f;
-        g_ResultAsciiManager.AddFormatText(
-            &replayListTitlePosition, "Select Replay Number");
-
-        replayListPosition.x = 144.0f;
-        replayListPosition.y = 64.0f;
-        replayListPosition.z = 0.0f;
-        for (replayListIndex = 0; replayListIndex < 20; replayListIndex++)
-        {
-            if (this->replayCursor.GetCurrent() == replayListIndex)
-            {
-                g_ResultAsciiManager.color = 0xffffffff;
-            }
-            else
-            {
-                g_ResultAsciiManager.color = 0xff404040;
-            }
-
-            if (this->replays[replayListIndex] == NULL ||
-                this->replays[replayListIndex]->activeInputData == NULL)
-            {
-                g_ResultAsciiManager.AddFormatText(
-                    &replayListPosition, "No.%.2d %s %s-%s %s ------",
-                    replayListIndex + 1, "--------", "--", "-", "--/-- --:--");
-            }
-            else
-            {
-                replayListTimestamp = localtime(
-                    reinterpret_cast<time_t *>(
-                        &this->replays[replayListIndex]
-                             ->activeInputData->timestamp));
-
-                if (this->replays[replayListIndex]->activeInputData->level == 10)
-                {
-                    strcpy(replayListLevelText, "EX");
-                }
-                else
-                {
-                    sprintf(replayListLevelText, "%2d",
-                            this->replays[replayListIndex]
-                                    ->activeInputData->level +
-                                1);
-                }
-                sprintf(replayListSceneText, "%d",
-                        this->replays[replayListIndex]->activeInputData->scene + 1);
-                g_ResultAsciiManager.AddFormatText(
-                    &replayListPosition,
-                    "No.%.2d %s %s-%s %.2d/%.2d %.2d:%.2d %6d",
-                    replayListIndex + 1,
-                    this->replays[replayListIndex]->activeInputData->replayName,
-                    replayListLevelText, replayListSceneText,
-                    replayListTimestamp->tm_mon + 1,
-                    replayListTimestamp->tm_mday, replayListTimestamp->tm_hour,
-                    replayListTimestamp->tm_min,
-                    this->replays[replayListIndex]->activeInputData->score);
-            }
-            replayListPosition.y += 18.0f;
-        }
-        g_ResultAsciiManager.color = 0xffffffff;
-        break;
-    }
-
-    case 14:
-    {
-        replayNameTitlePosition.x = 160.0f;
-        replayNameTitlePosition.y = 32.0f;
-        replayNameTitlePosition.z = 0.0f;
-        g_ResultAsciiManager.AddFormatText(
-            &replayNameTitlePosition, "Replay Name Regist");
-
-        replayNamePosition.x = 144.0f;
-        replayNamePosition.y = 128.0f;
-        replayNamePosition.z = 0.0f;
-        g_ResultAsciiManager.color = 0xa0ffffc0;
-        replayNamePosition.x =
-            (f32)(this->replayNameCursor * 9) + 198.0f;
-        g_ResultAsciiManager.AddFormatText(&replayNamePosition, "_");
-
-        replayNamePosition.x = 144.0f;
-        g_ResultAsciiManager.color = 0xffffffff;
-        replayIndex = this->replayCursor.current;
-        replayNameTimestamp = localtime(
-            reinterpret_cast<time_t *>(
-                &g_ReplayManager->activeInputData->timestamp));
-        if (g_SelectedScene->group == 10)
-        {
-            strcpy(replayNameLevelText, "EX");
-        }
-        else
-        {
-            sprintf(replayNameLevelText, " %d",
-                    g_SelectedScene->group + 1);
-        }
-        sprintf(replayNameSceneText, "%d", g_SelectedScene->scene + 1);
-        g_ResultAsciiManager.AddFormatText(
-            &replayNamePosition,
-            "No.%.2d %s %s-%s %.2d/%.2d %.2d:%.2d %6d",
-            replayIndex + 1, this->replayName, replayNameLevelText,
-            replayNameSceneText, replayNameTimestamp->tm_mon + 1,
-            replayNameTimestamp->tm_mday, replayNameTimestamp->tm_hour,
-            replayNameTimestamp->tm_min,
-            g_RuntimeGlobalStateOwner->score);
-
-        rowY = 320.0f;
-        positionZ = 0.0f;
-        for (i = 0; i < 6; i++)
-        {
-            characterX = 208.0f;
-            for (keyboardColumn = 0; keyboardColumn < 16; keyboardColumn++)
-            {
-                characterX += 12.0f;
-                offsetY = 0.0f;
-                offsetX = 0.0f;
-                if (this->keyboardSelection == i * 16 + keyboardColumn)
-                {
-                    g_ResultAsciiManager.color = 0xffffffc0;
-                    if (this->stateTimer.current % 32 < 16)
-                    {
-                        offsetY = (this->stateTimer.current % 16) *
-                                      0.8f / 16.0f +
-                                  1.2f;
-                    }
-                    else
-                    {
-                        offsetY = 2.0f -
-                                  (this->stateTimer.current % 16) *
-                                      0.8f / 16.0f;
-                    }
-                    g_ResultAsciiManager.scaleX = offsetY;
-                    g_ResultAsciiManager.scaleY = offsetY;
-                    offsetY = -(offsetY - 1.0f) * 8.0f;
-                    offsetX = offsetY;
-                }
-                else
-                {
-                    g_ResultAsciiManager.color = 0xc0c0c0c0;
-                    g_ResultAsciiManager.scaleX = 1.0f;
-                    g_ResultAsciiManager.scaleY = 1.0f;
-                }
-
-                characterPosition.x = characterX + offsetY;
-                characterPosition.y = rowY + offsetX;
-                characterPosition.z = positionZ;
-
-                characterText[0] =
-                    g_ResultAlphabet[i * 16 + keyboardColumn];
-                characterText[1] = '\0';
-                if (i == 5)
-                {
-                    if (keyboardColumn == 14)
-                    {
-                        characterText[0] = 0x7f;
-                    }
-                    else if (keyboardColumn == 15)
-                    {
-                        characterText[0] = (char)0x80;
-                    }
-                    else if (keyboardColumn == 13)
-                    {
-                        characterText[0] = (char)0x81;
-                    }
-                }
-                g_ResultAsciiManager.AddString(
-                    &characterPosition, characterText);
-            }
-            rowY += 16.0f;
-        }
-        g_ResultAsciiManager.scaleX = 1.0f;
-        g_ResultAsciiManager.scaleY = 1.0f;
-        break;
-    }
-    }
-    return CHAIN_CALLBACK_RESULT_CONTINUE;
-}
-#undef replayNameTitlePosition
-#undef replayListTitlePosition
-#undef notificationPosition
-#undef slowRatePosition
-#undef totalScorePosition
-#undef highScorePosition
-#undef scorePosition
-#undef shotPosition
-#undef bestShotPosition
-#undef characterX
-#undef rowY
-#undef positionZ
-#undef keyboardColumn
-#undef characterText
-#undef offsetX
-#undef offsetY
-#undef characterPosition
-#undef replayNameTimestamp
-#undef replayNamePosition
-#undef replayNameLevelText
-#undef replayNameSceneText
-#undef replayIndex
-#undef replayListTimestamp
-#undef replayListIndex
-#undef replayListPosition
-#undef replayListLevelText
-#undef replayListSceneText
-#undef i
+#include "ResultScreenDraw.inl"
 
 
 ChainCallbackResult ResultScreen::OnUpdate(ResultScreen *resultScreen)
