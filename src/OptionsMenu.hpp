@@ -5,7 +5,7 @@
 #ifdef TH095_MATCH_EXACT
 #include "OptionsMenuVmEmission.hpp"
 #else
-#define OPTIONS_LOOKUP_VM(index) g_AnmManager->GetVm(sceneMenu->vmIds[index])
+#define OPTIONS_LOOKUP_VM(index) g_AnmManager->GetVm(this->vmIds[index])
 #define OPTIONS_SHOW_VM(index) OPTIONS_LOOKUP_VM(index)->drawEnabled = 1
 #define OPTIONS_HIDE_VM(index) OPTIONS_LOOKUP_VM(index)->drawEnabled = 0
 #endif

@@ -85,7 +85,7 @@ void FrontEndControllerView::RefreshSceneSelection(i32)
         refreshSelectionQueue,
         (refreshSelectedGroup << 8) | refreshSelectedScene);
 
-    reinterpret_cast<SceneSelectControllerView *>(this)->vmIds.SetInterrupt(0x82, 1);
+    this->vmIds.SetInterrupt(0x82, 1);
 
     refreshUnlockGroup = this->groupCursor.current;
     if (g_ResultSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
@@ -138,8 +138,8 @@ void FrontEndControllerView::RefreshSceneSelection(i32)
         this->stateHistory.values[this->stateHistory.count] = refreshDisplayState;
         this->stateHistory.count++;
         this->currentDisplayState = refreshDisplayState;
-        reinterpret_cast<SceneSelectControllerView *>(this)->vmIds.SetInterrupt(0x15, 5);
-        reinterpret_cast<SceneSelectControllerView *>(this)->vmIds.SetInterrupt(0x16, 5);
+        this->vmIds.SetInterrupt(0x15, 5);
+        this->vmIds.SetInterrupt(0x16, 5);
     }
 
     g_Supervisor.LeaveCriticalSectionWrapper(4);
@@ -155,9 +155,8 @@ void FrontEndControllerView::RefreshSceneSelection(i32)
 #undef refreshLockedGroup
 #undef refreshStateGroup
 
-// The preview VM handles still use the Scene Select overlay.
 #define PREVIEW_TEXT_VM(slot) \
-    (reinterpret_cast<SceneSelectControllerView *>(this)->previewTextVmIds[slot])
+    SCENE_MENU_AUX_HANDLE(this->previewTextVmIds[slot])
 
 // The three dynamic columns belong to text.anm, published by Supervisor.
 #define BUILD_SCENE_PREVIEW_LINE(vmSlot, scriptIndex, columnIndex)                 \

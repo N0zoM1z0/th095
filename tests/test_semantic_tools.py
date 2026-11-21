@@ -1055,14 +1055,12 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 )
             )
 
-    def test_transition_vm_guard_rejects_anonymous_exact_storage(self) -> None:
+    def test_transition_vm_guard_rejects_anonymous_storage(self) -> None:
         GUARD.check_front_end_transition_vm_owner()
-        exact = (ROOT / "src" / "SceneSelectExact.hpp").read_text(
-            encoding="utf-8"
-        )
+        owner = (ROOT / "src" / "FrontEndController.hpp").read_text(encoding="utf-8")
         with self.assertRaises(SystemExit):
             GUARD.check_front_end_transition_vm_owner(
-                exact.replace("AnmVmId transitionVm;", "u8 unknown6100[4];", 1)
+                owner.replace("SceneAnmVmId transitionVm;", "u8 unknown6100[4];", 1)
             )
 
     def test_scene_best_shot_guard_rejects_raw_access(self) -> None:

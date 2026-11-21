@@ -1,10 +1,10 @@
 #include "ReplayScanWorker.hpp"
+#include "Global.hpp"
+#include "Main.hpp"
 
 #ifdef TH095_MATCH_EXACT
 #include "ReplayScanWorkerExact.inl"
 #else
-#include "Main.hpp"
-#include "Global.hpp"
 
 #include "ReplayScanWorkerWin32.hpp"
 
@@ -13,11 +13,17 @@ namespace th095
 
 #include "ReplayScanWorkerBehavior.inl"
 
+} // namespace th095
+
+#endif // TH095_MATCH_EXACT
+
+namespace th095
+{
+
 i32 Supervisor::StartReplayScan(
     void (__fastcall *callback)(void *), void *argument)
 {
-    utils::DebugPrint(
-        "FillBufferWithSound in HandleWaveStreamNotification\r\n");
+    utils::DebugPrint("StartSubThread\n");
     this->EnterCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]++;
     this->replayScanWorker.Start(callback, argument);
@@ -32,5 +38,3 @@ void Supervisor::StopReplayScan()
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

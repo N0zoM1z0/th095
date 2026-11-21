@@ -146,9 +146,9 @@ th095::TextHelperView::RenderTextToTextureBold,0x0041C8F0,function
 th095::TextRenderBufferView::ApplyAlphaBleed,0x0041C1E0,function
 th095::TextRenderBufferView::InvertAlpha,0x0041C600,function
 th095::FrontEndControllerView::UpdateSelectedSceneDetails,0x0044C670,function
-th095::SceneSelectControllerView::SetDetailDigitSprite,0x0044CF60,function
-th095::SceneSelectControllerView::ShowDetailDigit,0x0044CFA0,function
-th095::SceneSelectControllerView::HideDetailDigit,0x0044CFE0,function
+th095::FrontEndControllerView::SetDetailDigitSprite,0x0044CF60,function
+th095::FrontEndControllerView::ShowDetailDigit,0x0044CFA0,function
+th095::FrontEndControllerView::HideDetailDigit,0x0044CFE0,function
 th095::ReplayScanWorker::RequestExit,0x0041BB00,function
 th095::FrontEndControllerView::UpdateReplayBrowser,0x0044DCA0,function
 th095::LoadReplayBrowserEntries,0x00450C30,function
@@ -156,8 +156,8 @@ th095::FrontEndControllerView::LoadReplaySlot,0x00450E20,function
 th095::ReplayScanWorker::~ReplayScanWorker,0x0041BAE0,function
 th095::ReplayScanWorker::Stop,0x0041BB20,function
 th095::ReplayScanWorker::Start,0x0041BBA0,function
-th095::SceneSupervisorView::StartReplayScan,0x004255B0,function
-th095::SceneSupervisorView::StopReplayScan,0x00425640,function
+th095::Supervisor::StartReplayScan,0x004255B0,function
+th095::Supervisor::StopReplayScan,0x00425640,function
 th095::FrontEndControllerView::UpdateOptionsMenu,0x0044E4B0,function
 th095::Controller::GetJoystickCaps,0x004193A0,function
 th095::Controller::GetControllerInput,0x00419410,function
@@ -181,8 +181,8 @@ th095::FrontEndControllerView::OnDraw,0x00445E60,function
 th095::FrontEndControllerView::Update,0x00445E80,function
 th095::FrontEndControllerView::Draw,0x00452630,function
 th095::FrontEndControllerView::UpdateMainMenu,0x00446A50,function
-th095::SceneSelectControllerView::CloseMainMenu,0x00447750,function
-th095::SceneSelectControllerView::UpdateMainMenuSelection,0x004479E0,function
+th095::FrontEndControllerView::CloseMainMenu,0x00447750,function
+th095::FrontEndControllerView::UpdateMainMenuSelection,0x004479E0,function
 th095::FrontEndControllerView::UpdateSceneSelect,0x00447D00,function
 th095::ResultSaveDataView::LoadScenePreviewTexture,0x004362A0,function
 th095::AnmManager::LoadTexture,0x00442B90,function

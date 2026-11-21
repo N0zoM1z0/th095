@@ -68,7 +68,6 @@ struct SceneSelectShallowLocals
  */
 
 // The old Scene Select view serves the remaining POD VM handle calls.
-#define SCENE_MENU(owner) (reinterpret_cast<SceneSelectControllerView *>(owner))
 
 static __forceinline void FreeSceneOwned(void *Block)
 {
@@ -116,11 +115,11 @@ static __forceinline void SceneSelectQueuePopPhase(Queue *queue)
 #define SET_SCENE_VM_VISIBILITY(view, vmIndex, condition)                    \
     if (!(condition))                                                         \
     {                                                                         \
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(view)->vmIds[vmIndex]));   \
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(view->vmIds[vmIndex]));   \
     }                                                                         \
     else                                                                      \
     {                                                                         \
-        SCENE_VM_SHOW(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(view)->vmIds[vmIndex]));     \
+        SCENE_VM_SHOW(SCENE_ANM_MANAGER->GetVm(view->vmIds[vmIndex]));     \
     }
 
 static __forceinline void SceneSelectInitialTimerViewPhase(FrontEndControllerView *view)
@@ -146,13 +145,13 @@ static __forceinline i32 SceneSelectPostTransitionGroupPhase(
 static __forceinline void SceneSelectClearPreviewVmPhase(FrontEndControllerView *view)
 {
     SceneAnmVmId clearedVmId = {0};
-    SCENE_MENU(view)->vmIds.values[0x82] = clearedVmId;
+    view->vmIds.values[0x82] = clearedVmId;
 }
 
 static __forceinline void SceneSelectCreateIndexedVm(
     FrontEndControllerView *view, i32 vmIndex)
 {
-    SCENE_MENU(view)->vmIds[vmIndex] = SCENE_MENU(view)->sceneAnm->CreateVm(vmIndex, 7);
+    view->vmIds[vmIndex] = reinterpret_cast<SceneAnmLoadedView *>(view->sceneAnm)->CreateVm(vmIndex, 7);
 }
 
 static __forceinline void SceneSelectInitialSceneVmPhase(FrontEndControllerView *view, i32 initialSceneIndex)
@@ -172,9 +171,9 @@ static __forceinline void SceneSelectInitialSceneVmPhase(FrontEndControllerView 
     if (g_ResultSaveData->IsSceneGroupUnlocked(
             view->groupCursor.GetCurrent()) == 0)
     {
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(view)->vmIds[initialSceneIndex * 3 + 0x25]));
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(view)->vmIds[initialSceneIndex * 3 + 0x26]));
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(view)->vmIds[initialSceneIndex * 3 + 0x27]));
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(view->vmIds[initialSceneIndex * 3 + 0x25]));
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(view->vmIds[initialSceneIndex * 3 + 0x26]));
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(view->vmIds[initialSceneIndex * 3 + 0x27]));
     }
 }
 
@@ -188,13 +187,13 @@ static __forceinline void SceneSelectNewGroupSceneVmPhase(FrontEndControllerView
     SceneSelectCreateIndexedVm(view, newGroupIndex * 3 + 0x25);
     SceneSelectCreateIndexedVm(view, newGroupIndex * 3 + 0x26);
     SceneSelectCreateIndexedVm(view, newGroupIndex * 3 + 0x27);
-    SCENE_MENU(view)->vmIds.SetInterrupt(
+    view->vmIds.SetInterrupt(
         newGroupIndex * 3 + 0x25,
         groupDirection > 0 ? 10 : 9);
-    SCENE_MENU(view)->vmIds.SetInterrupt(
+    view->vmIds.SetInterrupt(
         newGroupIndex * 3 + 0x26,
         groupDirection > 0 ? 10 : 9);
-    SCENE_MENU(view)->vmIds.SetInterrupt(
+    view->vmIds.SetInterrupt(
         newGroupIndex * 3 + 0x27,
         groupDirection > 0 ? 10 : 9);
 
@@ -209,15 +208,15 @@ static __forceinline void SceneSelectNewGroupSceneVmPhase(FrontEndControllerView
     if (g_ResultSaveData->IsSceneGroupUnlocked(
             view->groupCursor.GetCurrent()) == 0)
     {
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(view)->vmIds[newGroupIndex * 3 + 0x25]));
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(view)->vmIds[newGroupIndex * 3 + 0x26]));
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(view)->vmIds[newGroupIndex * 3 + 0x27]));
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(view->vmIds[newGroupIndex * 3 + 0x25]));
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(view->vmIds[newGroupIndex * 3 + 0x26]));
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(view->vmIds[newGroupIndex * 3 + 0x27]));
     }
 }
 
 static __forceinline void SceneSelectCreateVmAt(FrontEndControllerView *view, i32 vmIndex)
 {
-    SCENE_MENU(view)->vmIds[vmIndex] = SCENE_MENU(view)->sceneAnm->CreateVm(vmIndex, 7);
+    view->vmIds[vmIndex] = reinterpret_cast<SceneAnmLoadedView *>(view->sceneAnm)->CreateVm(vmIndex, 7);
 }
 
 static __forceinline ResultScoreEntryFlagBits *SceneSelectScoreFlagsAt(
@@ -276,11 +275,11 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
                 g_ResultSaveData->LoadScenePreviewTexture(
                     view->sceneAnm,
                     1, loadedSceneLoadValue);
-                SCENE_MENU(view)->vmIds.SetInterrupt(0x82, 1);
+                view->vmIds.SetInterrupt(0x82, 1);
                 SceneSelectCreateVmAt(view, 0x82);
                 g_AnmManager->DrawTextCentered(
                     reinterpret_cast<AnmVm *>(
-                        SCENE_ANM_MANAGER->GetVm(SCENE_MENU(view)->vmIds.values[0x82])),
+                        SCENE_ANM_MANAGER->GetVm(view->vmIds.values[0x82])),
                     0x00efcfcf, 0,
                     g_ResultSaveData->bestShotRecords[
                         (&view->loadedSceneQueue)->Front()].comment);
@@ -381,8 +380,8 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
 
         if (this->pendingTextures.count == 0)
         {
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x15, 4);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x16, 4);
+            this->vmIds.SetInterrupt(0x15, 4);
+            this->vmIds.SetInterrupt(0x16, 4);
         }
     }
     else
@@ -586,7 +585,7 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
             g_Supervisor.LeaveCriticalSectionWrapper(4);
             g_Supervisor.criticalSectionLockCounts[4]--;
             if (SceneSelectDrainedQueueSizePhase(&this->loadedGroupQueue) == 0)
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x14, 4);
+                this->vmIds.SetInterrupt(0x14, 4);
         }
         else
         {
@@ -643,24 +642,24 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
 
         SceneSelectCreateVmAt(this, 0x68);
         SceneSelectCreateVmAt(this, 0x69);
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x19, 3);
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x1a, 3);
-        SCENE_MENU(this)->transitionVm.SetInterrupt(3);
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x1b, 3);
+        this->vmIds.SetInterrupt(0x19, 3);
+        this->vmIds.SetInterrupt(0x1a, 3);
+        this->transitionVm.SetInterrupt(3);
+        this->vmIds.SetInterrupt(0x1b, 3);
         SceneSelectCreateVmAt(this, 0x1e);
         SceneSelectCreateVmAt(this, 0x22);
         if (this->groupCursor.GetCurrent() <= 10)
         {
             SceneSelectCreateVmAt(this, 0x20);
-            SCENE_MENU(this)->sceneAnm->SetSprite(
-                SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x22]),
+            reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+                SCENE_ANM_MANAGER->GetVm(this->vmIds[0x22]),
                 this->groupCursor.GetCurrent() + 0x37);
         }
         else
         {
             SceneSelectCreateVmAt(this, 0x21);
-            SCENE_MENU(this)->sceneAnm->SetSprite(
-                SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x22]),
+            reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+                SCENE_ANM_MANAGER->GetVm(this->vmIds[0x22]),
                 this->groupCursor.GetCurrent() + 0x2c);
         }
         SceneSelectCreateVmAt(this, 0x23);
@@ -707,14 +706,14 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
         SceneSelectCreateVmAt(this, 0x4a);
         SceneSelectCreateVmAt(this, 0x4b);
 
-        SCENE_MENU(this)->sceneAnm->SetSprite(
-            SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x49]),
+        reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+            SCENE_ANM_MANAGER->GetVm(this->vmIds[0x49]),
             (this->groupCursor.GetCurrent() >= 11
                  ? this->groupCursor.GetCurrent() - 11
                  : this->groupCursor.GetCurrent()) +
                 0x28);
-        SCENE_MENU(this)->sceneAnm->SetSprite(
-            SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x4b]),
+        reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+            SCENE_ANM_MANAGER->GetVm(this->vmIds[0x4b]),
             this->sceneCursors[this->groupCursor.GetCurrent()].GetCurrent() + 0x28);
 
         for (initialVmIndex = 0; initialVmIndex < 16; initialVmIndex++)
@@ -730,7 +729,8 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
         SceneSelectCreateVmAt(this, 0x62);
         SceneSelectCreateVmAt(this, 0x63);
 
-        initialGroupVm = SCENE_MENU(this)->vmIds.values[0x68].GetVm();
+        initialGroupVm =
+            reinterpret_cast<SceneAnmVmView *>(this->vmIds.values[0x68].GetVm());
         if (g_ResultSaveData->IsSceneGroupUnlocked(
                 this->groupCursor.GetCurrent()) != 0)
         {
@@ -768,15 +768,15 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
             if (this->sceneCursors[this->groupCursor.GetCurrent()].GetCurrent() ==
                 initialSelectionIndex)
             {
-                SCENE_MENU(this)->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x25, 2);
-                SCENE_MENU(this)->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x26, 2);
-                SCENE_MENU(this)->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x27, 2);
+                this->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x25, 2);
+                this->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x26, 2);
+                this->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x27, 2);
             }
             else
             {
-                SCENE_MENU(this)->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x25, 3);
-                SCENE_MENU(this)->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x26, 3);
-                SCENE_MENU(this)->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x27, 3);
+                this->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x25, 3);
+                this->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x26, 3);
+                this->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x27, 3);
             }
         }
         this->RefreshSceneSelection(
@@ -790,39 +790,39 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
 
     if (SceneInputAnd(g_ControllerInputSlots[0].current, TH_BUTTON_SKIP) != 0)
     {
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x15]));
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x16]));
-        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x45]));
-        if (SCENE_MENU(this)->previewTextVmIds[0].GetVm() != NULL)
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(this->vmIds[0x15]));
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(this->vmIds[0x16]));
+        SCENE_VM_HIDE(SCENE_ANM_MANAGER->GetVm(this->vmIds[0x45]));
+        if (this->previewTextVmIds[0].GetVm() != NULL)
         {
-            SCENE_VM_HIDE(SCENE_MENU(this)->previewTextVmIds[0].GetVm());
+            SCENE_VM_HIDE(this->previewTextVmIds[0].GetVm());
         }
-        if (SCENE_MENU(this)->previewTextVmIds[1].GetVm() != NULL)
+        if (this->previewTextVmIds[1].GetVm() != NULL)
         {
-            SCENE_VM_HIDE(SCENE_MENU(this)->previewTextVmIds[1].GetVm());
+            SCENE_VM_HIDE(this->previewTextVmIds[1].GetVm());
         }
-        if (SCENE_MENU(this)->previewTextVmIds[2].GetVm() != NULL)
+        if (this->previewTextVmIds[2].GetVm() != NULL)
         {
-            SCENE_VM_HIDE(SCENE_MENU(this)->previewTextVmIds[2].GetVm());
+            SCENE_VM_HIDE(this->previewTextVmIds[2].GetVm());
         }
         this->flagBits.sceneDetailsVisible = 0;
     }
     else
     {
-        SCENE_VM_SHOW(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x15]));
-        SCENE_VM_SHOW(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x16]));
-        SCENE_VM_SHOW(SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x45]));
-        if (SCENE_MENU(this)->previewTextVmIds[0].GetVm() != NULL)
+        SCENE_VM_SHOW(SCENE_ANM_MANAGER->GetVm(this->vmIds[0x15]));
+        SCENE_VM_SHOW(SCENE_ANM_MANAGER->GetVm(this->vmIds[0x16]));
+        SCENE_VM_SHOW(SCENE_ANM_MANAGER->GetVm(this->vmIds[0x45]));
+        if (this->previewTextVmIds[0].GetVm() != NULL)
         {
-            SCENE_VM_SHOW(SCENE_MENU(this)->previewTextVmIds[0].GetVm());
+            SCENE_VM_SHOW(this->previewTextVmIds[0].GetVm());
         }
-        if (SCENE_MENU(this)->previewTextVmIds[1].GetVm() != NULL)
+        if (this->previewTextVmIds[1].GetVm() != NULL)
         {
-            SCENE_VM_SHOW(SCENE_MENU(this)->previewTextVmIds[1].GetVm());
+            SCENE_VM_SHOW(this->previewTextVmIds[1].GetVm());
         }
-        if (SCENE_MENU(this)->previewTextVmIds[2].GetVm() != NULL)
+        if (this->previewTextVmIds[2].GetVm() != NULL)
         {
-            SCENE_VM_SHOW(SCENE_MENU(this)->previewTextVmIds[2].GetVm());
+            SCENE_VM_SHOW(this->previewTextVmIds[2].GetVm());
         }
         this->flagBits.sceneDetailsVisible = 1;
     }
@@ -850,22 +850,22 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
     if (this->groupCursor.HasChanged())
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
-        SCENE_ANM_MANAGER->MarkVmForDeletion(SCENE_MENU(this)->vmIds[0x20]);
-        SCENE_ANM_MANAGER->MarkVmForDeletion(SCENE_MENU(this)->vmIds[0x21]);
-        SCENE_ANM_MANAGER->MarkVmForDeletion(SCENE_MENU(this)->vmIds[0x22]);
+        SCENE_ANM_MANAGER->MarkVmForDeletion(this->vmIds[0x20]);
+        SCENE_ANM_MANAGER->MarkVmForDeletion(this->vmIds[0x21]);
+        SCENE_ANM_MANAGER->MarkVmForDeletion(this->vmIds[0x22]);
         SceneSelectCreateVmAt(this, 0x22);
         if (this->groupCursor.GetCurrent() <= 10)
         {
             SceneSelectCreateVmAt(this, 0x20);
-            SCENE_MENU(this)->sceneAnm->SetSprite(
-                SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x22]),
+            reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+                SCENE_ANM_MANAGER->GetVm(this->vmIds[0x22]),
                 this->groupCursor.GetCurrent() + 0x37);
         }
         else
         {
             SceneSelectCreateVmAt(this, 0x21);
-            SCENE_MENU(this)->sceneAnm->SetSprite(
-                SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x22]),
+            reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+                SCENE_ANM_MANAGER->GetVm(this->vmIds[0x22]),
                 this->groupCursor.GetCurrent() + 0x2c);
         }
 
@@ -879,13 +879,13 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
                  g_SceneGroupCounts[this->groupCursor.GetPrevious()];
              previousGroupIndex++)
         {
-            SCENE_MENU(this)->vmIds.SetInterrupt(
+            this->vmIds.SetInterrupt(
                 previousGroupIndex * 3 + 0x25,
                 groupDirection <= 0 ? 8 : 7);
-            SCENE_MENU(this)->vmIds.SetInterrupt(
+            this->vmIds.SetInterrupt(
                 previousGroupIndex * 3 + 0x26,
                 groupDirection <= 0 ? 8 : 7);
-            SCENE_MENU(this)->vmIds.SetInterrupt(
+            this->vmIds.SetInterrupt(
                 previousGroupIndex * 3 + 0x27,
                 groupDirection <= 0 ? 8 : 7);
         }
@@ -896,24 +896,24 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
             SceneSelectNewGroupSceneVmPhase(this, newGroupIndex, groupDirection);
         }
 
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x12, groupDirection <= 0 ? 8 : 7);
+        this->vmIds.SetInterrupt(0x12, groupDirection <= 0 ? 8 : 7);
         SceneSelectCreateVmAt(this, 0x12);
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x12, 5);
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x12, groupDirection > 0 ? 10 : 9);
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x14, 5);
+        this->vmIds.SetInterrupt(0x12, 5);
+        this->vmIds.SetInterrupt(0x12, groupDirection > 0 ? 10 : 9);
+        this->vmIds.SetInterrupt(0x14, 5);
         this->stateTimer.Set(20);
-        SCENE_MENU(this)->sceneAnm->SetSprite(
-            SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x49]),
+        reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+            SCENE_ANM_MANAGER->GetVm(this->vmIds[0x49]),
             (this->groupCursor.GetCurrent() >= 11
                  ? this->groupCursor.GetCurrent() - 11
                  : this->groupCursor.GetCurrent()) +
                 0x28);
-        SCENE_MENU(this)->sceneAnm->SetSprite(
-            SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x4b]),
+        reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+            SCENE_ANM_MANAGER->GetVm(this->vmIds[0x4b]),
             activeSceneCursor.GetCurrent() + 0x28);
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x49, 2);
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x4a, 2);
-        SCENE_MENU(this)->vmIds.SetInterrupt(0x4b, 2);
+        this->vmIds.SetInterrupt(0x49, 2);
+        this->vmIds.SetInterrupt(0x4a, 2);
+        this->vmIds.SetInterrupt(0x4b, 2);
         this->UpdateSelectedSceneDetails();
         g_ResultSaveData->profile.lastSelectedGroup =
             (i16)this->groupCursor.GetCurrent();
@@ -926,7 +926,8 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
             this, 0x24,
             this->groupCursor.GetCurrent() != this->groupCursor.GetCount() - 1);
 
-        transitionGroupVm = SCENE_MENU(this)->vmIds.values[0x68].GetVm();
+        transitionGroupVm =
+            reinterpret_cast<SceneAnmVmView *>(this->vmIds.values[0x68].GetVm());
         if (g_ResultSaveData->IsSceneGroupUnlocked(
                 this->groupCursor.GetCurrent()) != 0)
         {
@@ -975,40 +976,40 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
                 {
                     if (activeSceneCursor.GetCurrent() == selectionIndex)
                     {
-                        SCENE_MENU(this)->vmIds.SetInterrupt(
+                        this->vmIds.SetInterrupt(
                             selectionIndex * 3 + 0x25, 2);
-                        SCENE_MENU(this)->vmIds.SetInterrupt(
+                        this->vmIds.SetInterrupt(
                             selectionIndex * 3 + 0x26, 2);
-                        SCENE_MENU(this)->vmIds.SetInterrupt(
+                        this->vmIds.SetInterrupt(
                             selectionIndex * 3 + 0x27, 2);
                     }
                     else
                     {
-                        SCENE_MENU(this)->vmIds.SetInterrupt(
+                        this->vmIds.SetInterrupt(
                             selectionIndex * 3 + 0x25, 3);
-                        SCENE_MENU(this)->vmIds.SetInterrupt(
+                        this->vmIds.SetInterrupt(
                             selectionIndex * 3 + 0x26, 3);
-                        SCENE_MENU(this)->vmIds.SetInterrupt(
+                        this->vmIds.SetInterrupt(
                             selectionIndex * 3 + 0x27, 3);
                     }
                 }
                 g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
                 this->RefreshSceneSelection(
                     this->selectedScoreEntryIndex);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x12, 5);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x14, 5);
-                SCENE_MENU(this)->sceneAnm->SetSprite(
-                    SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x49]),
+                this->vmIds.SetInterrupt(0x12, 5);
+                this->vmIds.SetInterrupt(0x14, 5);
+                reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+                    SCENE_ANM_MANAGER->GetVm(this->vmIds[0x49]),
                     (this->groupCursor.GetCurrent() >= 11
                          ? this->groupCursor.GetCurrent() - 11
                          : this->groupCursor.GetCurrent()) +
                         0x28);
-                SCENE_MENU(this)->sceneAnm->SetSprite(
-                    SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds[0x4b]),
+                reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+                    SCENE_ANM_MANAGER->GetVm(this->vmIds[0x4b]),
                     activeSceneCursor.GetCurrent() + 0x28);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x49, 2);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x4a, 2);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x4b, 2);
+                this->vmIds.SetInterrupt(0x49, 2);
+                this->vmIds.SetInterrupt(0x4a, 2);
+                this->vmIds.SetInterrupt(0x4b, 2);
                 this->UpdateSelectedSceneDetails();
                 g_ResultSaveData->profile.lastSelectedScene =
                     (i16)activeSceneCursor.GetCurrent();
@@ -1027,46 +1028,46 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
                 this->flagBits.assetLoadStopRequested = 1;
                 g_Supervisor.replayScanWorker.RequestExit();
                 g_AnmManager->MarkVmForDeletion(
-                    SCENE_MENU(this)->previewTextVmIds[0]);
+                    SCENE_MENU_AUX_HANDLE(this->previewTextVmIds[0]));
                 g_AnmManager->MarkVmForDeletion(
-                    SCENE_MENU(this)->previewTextVmIds[1]);
+                    SCENE_MENU_AUX_HANDLE(this->previewTextVmIds[1]));
                 g_AnmManager->MarkVmForDeletion(
-                    SCENE_MENU(this)->previewTextVmIds[2]);
+                    SCENE_MENU_AUX_HANDLE(this->previewTextVmIds[2]));
                 selected = activeSceneCursor.GetCurrent();
-                SCENE_MENU(this)->vmIds.SetInterrupt(selected * 3 + 0x25, 6);
-                SCENE_MENU(this)->vmIds.SetInterrupt(selected * 3 + 0x26, 6);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x1e, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x23, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x24, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x20, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x21, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x22, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x44, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x15, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x16, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x45, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x46, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x13, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x12, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x14, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x49, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x4a, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x4b, 1);
+                this->vmIds.SetInterrupt(selected * 3 + 0x25, 6);
+                this->vmIds.SetInterrupt(selected * 3 + 0x26, 6);
+                this->vmIds.SetInterrupt(0x1e, 1);
+                this->vmIds.SetInterrupt(0x23, 1);
+                this->vmIds.SetInterrupt(0x24, 1);
+                this->vmIds.SetInterrupt(0x20, 1);
+                this->vmIds.SetInterrupt(0x21, 1);
+                this->vmIds.SetInterrupt(0x22, 1);
+                this->vmIds.SetInterrupt(0x44, 1);
+                this->vmIds.SetInterrupt(0x15, 1);
+                this->vmIds.SetInterrupt(0x16, 1);
+                this->vmIds.SetInterrupt(0x45, 1);
+                this->vmIds.SetInterrupt(0x46, 1);
+                this->vmIds.SetInterrupt(0x13, 1);
+                this->vmIds.SetInterrupt(0x12, 1);
+                this->vmIds.SetInterrupt(0x14, 1);
+                this->vmIds.SetInterrupt(0x49, 1);
+                this->vmIds.SetInterrupt(0x4a, 1);
+                this->vmIds.SetInterrupt(0x4b, 1);
                 for (gameExitVmIndex = 0; gameExitVmIndex < 16;
                      gameExitVmIndex++)
                 {
-                    SCENE_MENU(this)->vmIds.SetInterrupt(0x4c + gameExitVmIndex, 1);
+                    this->vmIds.SetInterrupt(0x4c + gameExitVmIndex, 1);
                 }
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x5c, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x5d, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x5e, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x5f, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x60, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x61, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x62, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x63, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x48, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x82, 1);
+                this->vmIds.SetInterrupt(0x5c, 1);
+                this->vmIds.SetInterrupt(0x5d, 1);
+                this->vmIds.SetInterrupt(0x5e, 1);
+                this->vmIds.SetInterrupt(0x5f, 1);
+                this->vmIds.SetInterrupt(0x60, 1);
+                this->vmIds.SetInterrupt(0x61, 1);
+                this->vmIds.SetInterrupt(0x62, 1);
+                this->vmIds.SetInterrupt(0x63, 1);
+                this->vmIds.SetInterrupt(0x48, 1);
+                this->vmIds.SetInterrupt(0x82, 1);
                 SceneSelectClearPreviewVmPhase(this);
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
@@ -1083,56 +1084,56 @@ ChainCallbackResult FrontEndControllerView::UpdateSceneSelect()
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->state = SCENE_SELECT_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x68, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x69, 1);
+            this->vmIds.SetInterrupt(0x68, 1);
+            this->vmIds.SetInterrupt(0x69, 1);
             SceneSelectCreateVmAt(this, 0x66);
             SceneSelectCreateVmAt(this, 0x67);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x19, 2);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x1a, 2);
-            SCENE_MENU(this)->transitionVm.SetInterrupt(2);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x1b, 2);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x1e, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x23, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x24, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x20, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x21, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x22, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x44, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x15, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x16, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x45, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x46, 1);
+            this->vmIds.SetInterrupt(0x19, 2);
+            this->vmIds.SetInterrupt(0x1a, 2);
+            this->transitionVm.SetInterrupt(2);
+            this->vmIds.SetInterrupt(0x1b, 2);
+            this->vmIds.SetInterrupt(0x1e, 1);
+            this->vmIds.SetInterrupt(0x23, 1);
+            this->vmIds.SetInterrupt(0x24, 1);
+            this->vmIds.SetInterrupt(0x20, 1);
+            this->vmIds.SetInterrupt(0x21, 1);
+            this->vmIds.SetInterrupt(0x22, 1);
+            this->vmIds.SetInterrupt(0x44, 1);
+            this->vmIds.SetInterrupt(0x15, 1);
+            this->vmIds.SetInterrupt(0x16, 1);
+            this->vmIds.SetInterrupt(0x45, 1);
+            this->vmIds.SetInterrupt(0x46, 1);
             for (menuExitSceneIndex = 0; menuExitSceneIndex < 9;
                  menuExitSceneIndex++)
             {
-                SCENE_MENU(this)->vmIds.SetInterrupt(menuExitSceneIndex * 3 + 0x25, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(menuExitSceneIndex * 3 + 0x26, 1);
-                SCENE_MENU(this)->vmIds.SetInterrupt(menuExitSceneIndex * 3 + 0x27, 1);
+                this->vmIds.SetInterrupt(menuExitSceneIndex * 3 + 0x25, 1);
+                this->vmIds.SetInterrupt(menuExitSceneIndex * 3 + 0x26, 1);
+                this->vmIds.SetInterrupt(menuExitSceneIndex * 3 + 0x27, 1);
             }
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x13, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x12, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x14, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x49, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x4a, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x4b, 1);
+            this->vmIds.SetInterrupt(0x13, 1);
+            this->vmIds.SetInterrupt(0x12, 1);
+            this->vmIds.SetInterrupt(0x14, 1);
+            this->vmIds.SetInterrupt(0x49, 1);
+            this->vmIds.SetInterrupt(0x4a, 1);
+            this->vmIds.SetInterrupt(0x4b, 1);
             for (menuExitVmIndex = 0; menuExitVmIndex < 16;
                  menuExitVmIndex++)
             {
-                SCENE_MENU(this)->vmIds.SetInterrupt(0x4c + menuExitVmIndex, 1);
+                this->vmIds.SetInterrupt(0x4c + menuExitVmIndex, 1);
             }
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x5c, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x5d, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x5e, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x5f, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x60, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x61, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x62, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x63, 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x48, 1);
-            g_AnmManager->SetInterrupt(SCENE_MENU(this)->previewTextVmIds[0], 1);
-            g_AnmManager->SetInterrupt(SCENE_MENU(this)->previewTextVmIds[1], 1);
-            g_AnmManager->SetInterrupt(SCENE_MENU(this)->previewTextVmIds[2], 1);
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x82, 1);
+            this->vmIds.SetInterrupt(0x5c, 1);
+            this->vmIds.SetInterrupt(0x5d, 1);
+            this->vmIds.SetInterrupt(0x5e, 1);
+            this->vmIds.SetInterrupt(0x5f, 1);
+            this->vmIds.SetInterrupt(0x60, 1);
+            this->vmIds.SetInterrupt(0x61, 1);
+            this->vmIds.SetInterrupt(0x62, 1);
+            this->vmIds.SetInterrupt(0x63, 1);
+            this->vmIds.SetInterrupt(0x48, 1);
+            g_AnmManager->SetInterrupt(SCENE_MENU_AUX_HANDLE(this->previewTextVmIds[0]), 1);
+            g_AnmManager->SetInterrupt(SCENE_MENU_AUX_HANDLE(this->previewTextVmIds[1]), 1);
+            g_AnmManager->SetInterrupt(SCENE_MENU_AUX_HANDLE(this->previewTextVmIds[2]), 1);
+            this->vmIds.SetInterrupt(0x82, 1);
             SceneSelectClearPreviewVmPhase(this);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
@@ -1143,7 +1144,7 @@ update_preview_text:
     {
         if (this->flagBits.previewPending == 0)
         {
-            SCENE_MENU(this)->vmIds.SetInterrupt(0x12, 3);
+            this->vmIds.SetInterrupt(0x12, 3);
             this->flagBits.previewPending = 1;
         }
     }
@@ -1152,7 +1153,7 @@ update_preview_text:
         if (this->flagBits.previewPending != 0)
         {
             previewVm =
-                SCENE_ANM_MANAGER->GetVm(SCENE_MENU(this)->vmIds.values[0x12]);
+                SCENE_ANM_MANAGER->GetVm(this->vmIds.values[0x12]);
             if (g_ResultSaveData->bestShotRecords[
                     this->selectedScoreEntryIndex].componentsLoaded != 0)
             {
@@ -1176,7 +1177,7 @@ update_preview_text:
             {
                 SCENE_VM_HIDE(previewVm);
             }
-            SCENE_ANM_MANAGER->SetInterrupt(SCENE_MENU(this)->vmIds.values[0x12], 2);
+            SCENE_ANM_MANAGER->SetInterrupt(this->vmIds.values[0x12], 2);
             this->flagBits.previewPending = 0;
         }
     }
@@ -1228,7 +1229,6 @@ update_preview_text:
 }
 
 #undef SET_SCENE_VM_VISIBILITY
-#undef SCENE_MENU
 #undef SCENE_ANM_MANAGER
 #undef SCENE_VM_SHOW
 #undef SCENE_VM_HIDE

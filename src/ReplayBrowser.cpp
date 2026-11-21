@@ -20,9 +20,9 @@ char g_SelectedReplayPath[0x100];
 // Target 0x004BDECC remembers the browser cursor.
 DIFFABLE_STATIC(i32, g_ReplayBrowserSelection);
 
-static __forceinline void ReplayBrowserCreateVmAt(SceneSelectControllerView *view, i32 index)
+static __forceinline void ReplayBrowserCreateVmAt(FrontEndControllerView *view, i32 index)
 {
-    view->vmIds[index] = view->sceneAnm->CreateVm(index, 7);
+    view->vmIds[index] = reinterpret_cast<SceneAnmLoadedView *>(view->sceneAnm)->CreateVm(index, 7);
 }
 
 struct ReplayBrowserLoadLocals
@@ -56,8 +56,6 @@ inline u16 IsReplayBrowserMenuInputPressed(u16 buttons)
 
 ChainCallbackResult FrontEndControllerView::UpdateReplayBrowser()
 {
-// The existing Scene Select overlay supplies the shared animation handles.
-#define sceneMenu (reinterpret_cast<SceneSelectControllerView *>(this))
     i32 i;
     i32 replayIndex;
 
@@ -91,14 +89,14 @@ ChainCallbackResult FrontEndControllerView::UpdateReplayBrowser()
         // The browser clears the shared scene-selection field on entry.
         this->selectedScoreEntryIndex = 0;
 
-        ReplayBrowserCreateVmAt(sceneMenu, 0x68);
-        ReplayBrowserCreateVmAt(sceneMenu, 0x69);
-        sceneMenu->vmIds.SetInterrupt(0x19, 3);
-        sceneMenu->vmIds.SetInterrupt(0x1a, 3);
-        sceneMenu->transitionVm.SetInterrupt(3);
-        sceneMenu->vmIds.SetInterrupt(0x1b, 3);
-        ReplayBrowserCreateVmAt(sceneMenu, 0x1f);
-        ReplayBrowserCreateVmAt(sceneMenu, 0x47);
+        ReplayBrowserCreateVmAt(this, 0x68);
+        ReplayBrowserCreateVmAt(this, 0x69);
+        this->vmIds.SetInterrupt(0x19, 3);
+        this->vmIds.SetInterrupt(0x1a, 3);
+        this->transitionVm.SetInterrupt(3);
+        this->vmIds.SetInterrupt(0x1b, 3);
+        ReplayBrowserCreateVmAt(this, 0x1f);
+        ReplayBrowserCreateVmAt(this, 0x47);
 
         this->secondaryCursor.count = 20;
         this->secondaryCursor.wraps = 1;
@@ -169,23 +167,22 @@ ChainCallbackResult FrontEndControllerView::UpdateReplayBrowser()
             FrontEndResetTimer(&this->stateTimer);
             this->state = REPLAY_BROWSER_STATE_INITIALIZE;
             g_Supervisor.replayScanWorker.RequestExit();
-            sceneMenu->vmIds.SetInterrupt(0x1f, 1);
-            sceneMenu->vmIds.SetInterrupt(0x47, 1);
-            sceneMenu->vmIds.SetInterrupt(0x68, 1);
-            sceneMenu->vmIds.SetInterrupt(0x69, 1);
-            ReplayBrowserCreateVmAt(sceneMenu, 0x66);
-            ReplayBrowserCreateVmAt(sceneMenu, 0x67);
-            sceneMenu->vmIds.SetInterrupt(0x19, 2);
-            sceneMenu->vmIds.SetInterrupt(0x1a, 2);
-            sceneMenu->transitionVm.SetInterrupt(2);
-            sceneMenu->vmIds.SetInterrupt(0x1b, 2);
+            this->vmIds.SetInterrupt(0x1f, 1);
+            this->vmIds.SetInterrupt(0x47, 1);
+            this->vmIds.SetInterrupt(0x68, 1);
+            this->vmIds.SetInterrupt(0x69, 1);
+            ReplayBrowserCreateVmAt(this, 0x66);
+            ReplayBrowserCreateVmAt(this, 0x67);
+            this->vmIds.SetInterrupt(0x19, 2);
+            this->vmIds.SetInterrupt(0x1a, 2);
+            this->transitionVm.SetInterrupt(2);
+            this->vmIds.SetInterrupt(0x1b, 2);
         }
 
     default:
         break;
     }
 
-#undef sceneMenu
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 

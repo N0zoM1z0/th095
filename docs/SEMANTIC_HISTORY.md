@@ -20154,3 +20154,32 @@ samples. The reordered link also matches both timer fields. In the
 regular link the integer stage timer advances one input index earlier
 and remains one tick ahead. The traces are under
 `build/position-independence/replay-history-demo0/`.
+
+### SEM-492 — give menu animation handles to the front-end controller
+
+Both title handoffs interrupt 154 handles starting at `+0xBF4`, and Help
+creates its ninth selector in slot `0x99`. The menu table ends before the
+mission allocation pointer at `+0xE5C`. Both controller overlays formerly
+declared 165 handles, making the pointer and ten text entries look like
+handles. The allocated controller now owns the bounded table, the three
+preview handles at `+0xE94`, and the transition handle at `+0x6100`.
+All menu clients use those fields directly.
+
+Using constructed ANM handles for the four auxiliary fields increased the
+pinned constructor from `0x2A2` to `0x2F0`. The shared storage stays
+constructor-free. `SceneSelectEmission.hpp` preserves the comparison calls
+and the assignment lowering for auxiliary handles.
+
+Both builds now run replay-scan launch and stop on Supervisor. The launch
+probe read `StartSubThread\n` at the original relocation target
+`0x00496370`. The old comparison mapped an audio callback message to that
+address. The source and relocation ledger now use the actual launch
+message, and the probe checks the string, forwarded callback and lock count.
+
+All 102 affected strict comparisons pass across 15 translation units.
+The normal controller update moves from `0x0041CEC0` to `0x0043C350` in
+the reversed link. Both layouts and the original agree on the 154
+interrupts before gameplay or replay, Help's last-slot write, preservation
+of all eleven neighboring fields, and the affected title, menu, scene
+and worker paths. A native x86-64 component check verifies the trivial
+handle layout and final-slot write. See `.analysis/pi/front-end-vm-storage/`.

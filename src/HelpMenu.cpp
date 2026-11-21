@@ -11,10 +11,10 @@
 namespace th095
 {
 
-static __forceinline void HelpMenuCreateVmAt(SceneSelectControllerView *view, i32 scriptIndex)
+static __forceinline void HelpMenuCreateVmAt(FrontEndControllerView *view, i32 scriptIndex)
 {
     view->vmIds[scriptIndex] =
-        view->sceneAnm->CreateVm(scriptIndex, 7);
+        reinterpret_cast<SceneAnmLoadedView *>(view->sceneAnm)->CreateVm(scriptIndex, 7);
 }
 
 static __forceinline void HelpMenuFreeAnmData(FrontEndControllerView *view)
@@ -49,21 +49,19 @@ void __fastcall LoadHelpAnm(void *unused)
 
 i32 FrontEndControllerView::UpdateHelpMenu()
 {
-// The animation slots still use Scene Select's POD handle overlay.
-#define sceneMenu (reinterpret_cast<SceneSelectControllerView *>(this))
     switch (this->state)
     {
     case HELP_MENU_INITIALIZE:
         this->groupCursor.Push();
-        sceneMenu->vmIds.SetInterrupt(0x66, 1);
-        sceneMenu->vmIds.SetInterrupt(0x67, 1);
-        HelpMenuCreateVmAt(sceneMenu, 0x68);
-        HelpMenuCreateVmAt(sceneMenu, 0x69);
-        HelpMenuCreateVmAt(sceneMenu, 0x18);
-        sceneMenu->vmIds.SetInterrupt(0x19, 3);
-        sceneMenu->vmIds.SetInterrupt(0x1a, 3);
-        sceneMenu->transitionVm.SetInterrupt(3);
-        sceneMenu->vmIds.SetInterrupt(0x1b, 3);
+        this->vmIds.SetInterrupt(0x66, 1);
+        this->vmIds.SetInterrupt(0x67, 1);
+        HelpMenuCreateVmAt(this, 0x68);
+        HelpMenuCreateVmAt(this, 0x69);
+        HelpMenuCreateVmAt(this, 0x18);
+        this->vmIds.SetInterrupt(0x19, 3);
+        this->vmIds.SetInterrupt(0x1a, 3);
+        this->transitionVm.SetInterrupt(3);
+        this->vmIds.SetInterrupt(0x1b, 3);
         this->state = HELP_MENU_PAGE_SELECT;
         FrontEndResetTimer(&this->stateTimer);
         this->groupCursor.count = 9;
@@ -72,14 +70,14 @@ i32 FrontEndControllerView::UpdateHelpMenu()
         this->sceneAnm->textures[13].Clear();
         for (i32 i = 0; i < 9; i++)
         {
-            HelpMenuCreateVmAt(sceneMenu, 0x91 + i);
+            HelpMenuCreateVmAt(this, 0x91 + i);
             if (this->groupCursor.GetCurrent() == i)
             {
-                sceneMenu->vmIds.SetInterrupt(0x91 + i, 2);
+                this->vmIds.SetInterrupt(0x91 + i, 2);
             }
             else
             {
-                sceneMenu->vmIds.SetInterrupt(0x91 + i, 3);
+                this->vmIds.SetInterrupt(0x91 + i, 3);
             }
         }
         break;
@@ -106,11 +104,11 @@ i32 FrontEndControllerView::UpdateHelpMenu()
             {
                 if (this->groupCursor.GetCurrent() == i)
                 {
-                    sceneMenu->vmIds.SetInterrupt(0x91 + i, 2);
+                    this->vmIds.SetInterrupt(0x91 + i, 2);
                 }
                 else
                 {
-                    sceneMenu->vmIds.SetInterrupt(0x91 + i, 3);
+                    this->vmIds.SetInterrupt(0x91 + i, 3);
                 }
             }
         }
@@ -126,7 +124,7 @@ i32 FrontEndControllerView::UpdateHelpMenu()
             g_Supervisor.StartReplayScan(LoadHelpAnm, NULL);
             for (i32 i = 0; i < 9; i++)
             {
-                sceneMenu->vmIds.SetInterrupt(0x91 + i, 1);
+                this->vmIds.SetInterrupt(0x91 + i, 1);
             }
             break;
         }
@@ -135,18 +133,18 @@ i32 FrontEndControllerView::UpdateHelpMenu()
         {
             this->groupCursor.Pop();
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            sceneMenu->vmIds.SetInterrupt(0x68, 1);
-            sceneMenu->vmIds.SetInterrupt(0x69, 1);
-            HelpMenuCreateVmAt(sceneMenu, 0x66);
-            HelpMenuCreateVmAt(sceneMenu, 0x67);
-            sceneMenu->vmIds.SetInterrupt(0x18, 1);
-            sceneMenu->vmIds.SetInterrupt(0x19, 2);
-            sceneMenu->vmIds.SetInterrupt(0x1a, 2);
-            sceneMenu->transitionVm.SetInterrupt(2);
-            sceneMenu->vmIds.SetInterrupt(0x1b, 2);
+            this->vmIds.SetInterrupt(0x68, 1);
+            this->vmIds.SetInterrupt(0x69, 1);
+            HelpMenuCreateVmAt(this, 0x66);
+            HelpMenuCreateVmAt(this, 0x67);
+            this->vmIds.SetInterrupt(0x18, 1);
+            this->vmIds.SetInterrupt(0x19, 2);
+            this->vmIds.SetInterrupt(0x1a, 2);
+            this->transitionVm.SetInterrupt(2);
+            this->vmIds.SetInterrupt(0x1b, 2);
             for (i32 i = 0; i < 9; i++)
             {
-                sceneMenu->vmIds.SetInterrupt(0x91 + i, 1);
+                this->vmIds.SetInterrupt(0x91 + i, 1);
             }
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->state = HELP_MENU_INITIALIZE;
@@ -165,7 +163,7 @@ i32 FrontEndControllerView::UpdateHelpMenu()
             this->helpAnmData, this->helpAnmSize, 1, 0, 1);
         HelpMenuFreeAnmData(this);
         this->sceneAnm->textures[13].texture->PreLoad();
-        HelpMenuCreateVmAt(sceneMenu, 0x90);
+        HelpMenuCreateVmAt(this, 0x90);
         this->state = HELP_MENU_PAGE_VIEW;
     }
 
@@ -180,7 +178,7 @@ i32 FrontEndControllerView::UpdateHelpMenu()
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
             this->groupCursor.Move(1);
-            sceneMenu->vmIds.SetInterrupt(0x90, 1);
+            this->vmIds.SetInterrupt(0x90, 1);
             goto load_page;
         }
         if (GetHelpPressedButtons(TH_BUTTON_LEFT) != 0 &&
@@ -188,7 +186,7 @@ i32 FrontEndControllerView::UpdateHelpMenu()
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
             this->groupCursor.Move(-1);
-            sceneMenu->vmIds.SetInterrupt(0x90, 1);
+            this->vmIds.SetInterrupt(0x90, 1);
             goto load_page;
         }
 
@@ -198,24 +196,23 @@ i32 FrontEndControllerView::UpdateHelpMenu()
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             this->state = HELP_MENU_PAGE_SELECT;
             FrontEndResetTimer(&this->stateTimer);
-            sceneMenu->vmIds.SetInterrupt(0x90, 1);
+            this->vmIds.SetInterrupt(0x90, 1);
             for (i32 i = 0; i < 9; i++)
             {
-                HelpMenuCreateVmAt(sceneMenu, 0x91 + i);
+                HelpMenuCreateVmAt(this, 0x91 + i);
                 if (this->groupCursor.GetCurrent() == i)
                 {
-                    sceneMenu->vmIds.SetInterrupt(0x91 + i, 2);
+                    this->vmIds.SetInterrupt(0x91 + i, 2);
                 }
                 else
                 {
-                    sceneMenu->vmIds.SetInterrupt(0x91 + i, 3);
+                    this->vmIds.SetInterrupt(0x91 + i, 3);
                 }
             }
         }
         break;
     }
 
-#undef sceneMenu
     return 0;
 }
 

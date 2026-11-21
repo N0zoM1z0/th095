@@ -107,18 +107,15 @@ static __forceinline void FrontEndDrainQueueValue(ScenePreviewDataQueue *queue)
 }
 
 static __forceinline void FrontEndCreateSceneVm(
-    SceneSelectControllerView *controller,
+    FrontEndControllerView *controller,
     i32 scriptIndex)
 {
     controller->vmIds[scriptIndex] =
-        controller->sceneAnm->CreateVm(scriptIndex, 7);
+        reinterpret_cast<SceneAnmLoadedView *>(controller->sceneAnm)->CreateVm(scriptIndex, 7);
 }
 
 ChainCallbackResult FrontEndControllerView::Update()
 {
-// Scene Select still supplies the VM overlay. Expand the cast at each use so
-// VC7.1 keeps the existing frame and accesses the fields through this.
-#define sceneMenu (reinterpret_cast<SceneSelectControllerView *>(this))
     FrontEndUpdateLocals locals;
 
     switch (this->requestedState)
@@ -198,14 +195,14 @@ ChainCallbackResult FrontEndControllerView::Update()
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             FrontEndResetTimer(&this->stateTimer);
             this->state = FRONT_END_MAIN_MENU_STATE_INITIALIZE;
-            FrontEndCreateSceneVm(sceneMenu, 0x66);
-            FrontEndCreateSceneVm(sceneMenu, 0x67);
-            FrontEndCreateSceneVm(sceneMenu, 0x19);
-            FrontEndCreateSceneVm(sceneMenu, 0x1a);
-            sceneMenu->transitionVm = this->transitionAnm->CreateVm(0, 7);
-            FrontEndCreateSceneVm(sceneMenu, 0x1b);
-            FrontEndCreateSceneVm(sceneMenu, 0x64);
-            FrontEndCreateSceneVm(sceneMenu, 0x65);
+            FrontEndCreateSceneVm(this, 0x66);
+            FrontEndCreateSceneVm(this, 0x67);
+            FrontEndCreateSceneVm(this, 0x19);
+            FrontEndCreateSceneVm(this, 0x1a);
+            SCENE_MENU_AUX_HANDLE(this->transitionVm) = this->transitionAnm->CreateVm(0, 7);
+            FrontEndCreateSceneVm(this, 0x1b);
+            FrontEndCreateSceneVm(this, 0x64);
+            FrontEndCreateSceneVm(this, 0x65);
             break;
         }
         case FRONT_END_ENTRY_SCENE_SELECT:
@@ -213,12 +210,12 @@ ChainCallbackResult FrontEndControllerView::Update()
             this->requestedState = FRONT_END_REQUESTED_STATE_SCENE_SELECT;
             this->state = SCENE_SELECT_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
-            FrontEndCreateSceneVm(sceneMenu, 0x19);
-            FrontEndCreateSceneVm(sceneMenu, 0x1a);
-            sceneMenu->transitionVm = this->transitionAnm->CreateVm(0, 7);
-            FrontEndCreateSceneVm(sceneMenu, 0x1b);
-            FrontEndCreateSceneVm(sceneMenu, 0x64);
-            FrontEndCreateSceneVm(sceneMenu, 0x65);
+            FrontEndCreateSceneVm(this, 0x19);
+            FrontEndCreateSceneVm(this, 0x1a);
+            SCENE_MENU_AUX_HANDLE(this->transitionVm) = this->transitionAnm->CreateVm(0, 7);
+            FrontEndCreateSceneVm(this, 0x1b);
+            FrontEndCreateSceneVm(this, 0x64);
+            FrontEndCreateSceneVm(this, 0x65);
             this->entryMode = FRONT_END_ENTRY_MAIN_MENU;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
@@ -228,12 +225,12 @@ ChainCallbackResult FrontEndControllerView::Update()
             this->state = REPLAY_BROWSER_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             this->groupCursor.Set(1);
-            FrontEndCreateSceneVm(sceneMenu, 0x19);
-            FrontEndCreateSceneVm(sceneMenu, 0x1a);
-            sceneMenu->transitionVm = this->transitionAnm->CreateVm(0, 7);
-            FrontEndCreateSceneVm(sceneMenu, 0x1b);
-            FrontEndCreateSceneVm(sceneMenu, 0x64);
-            FrontEndCreateSceneVm(sceneMenu, 0x65);
+            FrontEndCreateSceneVm(this, 0x19);
+            FrontEndCreateSceneVm(this, 0x1a);
+            SCENE_MENU_AUX_HANDLE(this->transitionVm) = this->transitionAnm->CreateVm(0, 7);
+            FrontEndCreateSceneVm(this, 0x1b);
+            FrontEndCreateSceneVm(this, 0x64);
+            FrontEndCreateSceneVm(this, 0x65);
             this->entryMode = FRONT_END_ENTRY_MAIN_MENU;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
@@ -297,13 +294,13 @@ ChainCallbackResult FrontEndControllerView::Update()
                 break;
             }
             for (locals.gameInterruptIndex = 0;
-                 locals.gameInterruptIndex < 0x9a;
+                 locals.gameInterruptIndex < SceneAnmVmIdArray::COUNT;
                  locals.gameInterruptIndex++)
             {
                 TH095_FRONT_ANM_MANAGER->SetInterrupt(
-                    sceneMenu->vmIds[locals.gameInterruptIndex], 1);
+                    this->vmIds[locals.gameInterruptIndex], 1);
             }
-            sceneMenu->transitionVm.SetInterrupt(1);
+            this->transitionVm.SetInterrupt(1);
             g_Supervisor.requestedSceneState = SUPERVISOR_STATE_PHOTO_GAME;
             if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
             {
@@ -344,13 +341,13 @@ ChainCallbackResult FrontEndControllerView::Update()
                 break;
             }
             for (locals.replayInterruptIndex = 0;
-                 locals.replayInterruptIndex < 0x9a;
+                 locals.replayInterruptIndex < SceneAnmVmIdArray::COUNT;
                  locals.replayInterruptIndex++)
             {
                 TH095_FRONT_ANM_MANAGER->SetInterrupt(
-                    sceneMenu->vmIds[locals.replayInterruptIndex], 1);
+                    this->vmIds[locals.replayInterruptIndex], 1);
             }
-            sceneMenu->transitionVm.SetInterrupt(1);
+            this->transitionVm.SetInterrupt(1);
             g_Supervisor.requestedSceneState = SUPERVISOR_STATE_START_REPLAY;
             if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
             {
@@ -373,9 +370,9 @@ ChainCallbackResult FrontEndControllerView::Update()
     // The controller overlays these VM ids as POD storage; keep the exact
     // AnmVmId::GetVm ABI while naming their canonical array ownership.
     locals.first66 =
-        reinterpret_cast<AnmVmId *>(&sceneMenu->vmIds.values[0x66])->GetVm();
+        this->vmIds.values[0x66].GetVm();
     locals.second67 =
-        reinterpret_cast<AnmVmId *>(&sceneMenu->vmIds.values[0x67])->GetVm();
+        this->vmIds.values[0x67].GetVm();
     if (locals.first66 != NULL && locals.second67 != NULL)
     {
         locals.second67->position = locals.first66->position;
@@ -384,9 +381,9 @@ ChainCallbackResult FrontEndControllerView::Update()
     }
 
     locals.first68 =
-        reinterpret_cast<AnmVmId *>(&sceneMenu->vmIds.values[0x68])->GetVm();
+        this->vmIds.values[0x68].GetVm();
     locals.second69 =
-        reinterpret_cast<AnmVmId *>(&sceneMenu->vmIds.values[0x69])->GetVm();
+        this->vmIds.values[0x69].GetVm();
     if (locals.first68 != NULL && locals.second69 != NULL)
     {
         locals.second69->position = locals.first68->position;
@@ -400,11 +397,10 @@ ChainCallbackResult FrontEndControllerView::Update()
     }
     this->stateTimer.Tick();
     this->animationTimer.Tick();
-#undef sceneMenu
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-void SceneSelectControllerView::CloseMainMenu()
+void FrontEndControllerView::CloseMainMenu()
 {
     this->vmIds.SetInterrupt(0, 1);
     this->vmIds.SetInterrupt(1, 1);
@@ -428,7 +424,7 @@ void SceneSelectControllerView::CloseMainMenu()
     this->vmIds.SetInterrupt(16, 1);
 }
 
-void SceneSelectControllerView::UpdateMainMenuSelection()
+void FrontEndControllerView::UpdateMainMenuSelection()
 {
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
         this->vmIds.values[0], (this->GetSelectedGroup() != 0) + 2);
@@ -470,7 +466,6 @@ void SceneSelectControllerView::UpdateMainMenuSelection()
 
 ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
 {
-#define sceneMenu (reinterpret_cast<SceneSelectControllerView *>(this))
     MainMenuVmPositions positions;
 
     switch (this->state)
@@ -485,8 +480,8 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
     positions.position.x = 64.0f;                                             \
     positions.position.y = yValue;                                            \
     positions.position.z = 0.0f;                                              \
-    sceneMenu->vmIds[index] =                                                      \
-        sceneMenu->sceneAnm->CreateVmAtScreen(index, &positions.position)
+    this->vmIds[index] =                                                      \
+        reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->CreateVmAtScreen(index, &positions.position)
         CREATE_MAIN_MENU_VM(position0, 0, 130.0f);
         CREATE_MAIN_MENU_VM(position1, 1, 168.0f);
         CREATE_MAIN_MENU_VM(position2, 2, 206.0f);
@@ -515,7 +510,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
     }
     if ((this->stateTimer.current == 30) != 0)
     {
-        sceneMenu->UpdateMainMenuSelection();
+        this->UpdateMainMenuSelection();
     }
 
     this->groupCursor.SaveCurrent();
@@ -532,7 +527,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
     if (this->groupCursor.HasChanged())
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
-        sceneMenu->UpdateMainMenuSelection();
+        this->UpdateMainMenuSelection();
     }
 
     if (FrontEndInputAnd(g_ControllerInputSlots[0].current, TH_BUTTON_DEMO_INTERRUPT) != 0)
@@ -563,7 +558,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
         {
         case 0:
         {
-            sceneMenu->CloseMainMenu();
+            this->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_SCENE_SELECT;
             this->state = SCENE_SELECT_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
@@ -592,13 +587,13 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
         case 1:
-            sceneMenu->CloseMainMenu();
+            this->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_REPLAY_BROWSER;
             this->state = REPLAY_BROWSER_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 3:
-            sceneMenu->CloseMainMenu();
+            this->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_OPTIONS;
             this->state = OPTIONS_MENU_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
@@ -611,13 +606,13 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
             // ordering these labels numerically makes a relocation-normalized
             // COFF comparison look exact while swapping Music Room/Options in
             // the fully linked executable.
-            sceneMenu->CloseMainMenu();
+            this->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_MUSIC_ROOM;
             this->state = MUSIC_ROOM_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 4:
-            sceneMenu->CloseMainMenu();
+            this->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_HELP;
             this->state = HELP_MENU_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
@@ -639,13 +634,12 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
             goto exitMainMenu;
         }
         this->groupCursor.Set(5);
-        sceneMenu->UpdateMainMenuSelection();
+        this->UpdateMainMenuSelection();
     }
     break;
     default:
         break;
     }
-#undef sceneMenu
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 

@@ -59,8 +59,8 @@ address,name,module,confidence,evidence
 0x0041BAE0,th095::ReplayScanWorker::~ReplayScanWorker,ReplayScanWorker,exact,Canonical replay-scan-worker destructor VC7.1 comparison
 0x0041BB20,th095::ReplayScanWorker::Stop,ReplayScanWorker,exact,Canonical replay-scan-worker stop VC7.1 comparison with three relocations
 0x0041BBA0,th095::ReplayScanWorker::Start,ReplayScanWorker,exact,Canonical replay-scan-worker start VC7.1 comparison with two relocations
-0x004255B0,th095::SceneSupervisorView::StartReplayScan,Supervisor,exact,Canonical Supervisor replay-scan launch VC7.1 comparison with five relocations
-0x00425640,th095::SceneSupervisorView::StopReplayScan,Supervisor,exact,Canonical Supervisor replay-scan stop VC7.1 comparison
+0x004255B0,th095::Supervisor::StartReplayScan,Supervisor,exact,Canonical Supervisor replay-scan launch VC7.1 comparison with five relocations
+0x00425640,th095::Supervisor::StopReplayScan,Supervisor,exact,Canonical Supervisor replay-scan stop VC7.1 comparison
 0x0044E4B0,th095::FrontEndControllerView::UpdateOptionsMenu,OptionsMenu,exact,Canonical 10103-byte options/key-configuration state machine with 372 replayed relocations
 0x004193A0,th095::Controller::GetJoystickCaps,Controller,exact,Canonical controller-get-joystick-caps VC7.1 comparison with seven relocations
 0x00419410,th095::Controller::GetControllerInput,Controller,exact,Canonical controller-get-controller-input VC7.1 comparison with 37 relocations
@@ -83,8 +83,8 @@ address,name,module,confidence,evidence
 0x00445E60,th095::FrontEndControllerView::OnDraw,FrontEndController,exact,Canonical ownership wrapper targeting the shared draw path
 0x00445E80,th095::FrontEndControllerView::Update,FrontEndController,high,Shared front-end dispatcher identified by exact wrapper and complete target call graph
 0x00446A50,th095::FrontEndControllerView::UpdateMainMenu,FrontEndController,exact,Shared-controller state 1 target with title-menu transitions and six-row VM setup
-0x00447750,th095::SceneSelectControllerView::CloseMainMenu,FrontEndController,exact,Canonical twenty-VM main-menu close interrupt sequence
-0x004479E0,th095::SceneSelectControllerView::UpdateMainMenuSelection,FrontEndController,exact,Canonical eighteen-VM main-menu selection interrupt sequence
+0x00447750,th095::FrontEndControllerView::CloseMainMenu,FrontEndController,exact,Canonical twenty-VM main-menu close interrupt sequence
+0x004479E0,th095::FrontEndControllerView::UpdateMainMenuSelection,FrontEndController,exact,Canonical eighteen-VM main-menu selection interrupt sequence
 0x00447D00,th095::FrontEndControllerView::UpdateSceneSelect,SceneSelect,high,Shared-controller state 2 target and root of the TH095 scene-selection cluster
 0x00452630,th095::FrontEndControllerView::Draw,FrontEndController,high,Complete scene-result and replay-browser text renderer with exact 19-call topology
 0x004362A0,th095::ResultSaveDataView::LoadScenePreviewTexture,SceneSelect,high,Target-local selected-scene thumbnail upload into an ANM texture

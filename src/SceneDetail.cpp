@@ -5,11 +5,26 @@
 namespace th095
 {
 
-// Only the animation handle access still uses the Scene Select view.
-#define sceneMenu (reinterpret_cast<SceneSelectControllerView *>(this))
+inline void FrontEndControllerView::SetDetailDigitSpriteInline(
+    i32 vmIndex, i32 spriteIndex)
+{
+    reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
+        SCENE_DETAIL_MANAGER->GetVm(this->vmIds.values[vmIndex]), spriteIndex);
+}
+
+inline void FrontEndControllerView::ShowDetailDigitInline(i32 vmIndex)
+{
+    SCENE_DETAIL_SHOW(SCENE_DETAIL_MANAGER->GetVm(this->vmIds.values[vmIndex]));
+}
+
+inline void FrontEndControllerView::HideDetailDigitInline(i32 vmIndex)
+{
+    SCENE_DETAIL_HIDE(SCENE_DETAIL_MANAGER->GetVm(this->vmIds.values[vmIndex]));
+}
+
 
 #define SET_DETAIL_SPRITE(vmIndex, spriteIndex)                               \
-    sceneMenu->SetDetailDigitSpriteInline(vmIndex, spriteIndex)
+    this->SetDetailDigitSpriteInline(vmIndex, spriteIndex)
 
 void FrontEndControllerView::UpdateSelectedSceneDetails()
 {
@@ -65,71 +80,70 @@ void FrontEndControllerView::UpdateSelectedSceneDetails()
     if (value / 100000 != 0)
     {
         SET_DETAIL_SPRITE(0x5e, value / 100000 % 10 + 0x4b);
-        sceneMenu->ShowDetailDigitInline(0x5e);
+        this->ShowDetailDigitInline(0x5e);
     }
     else
     {
-        sceneMenu->HideDetailDigitInline(0x5e);
+        this->HideDetailDigitInline(0x5e);
     }
 
     if (value / 10000 != 0)
     {
         SET_DETAIL_SPRITE(0x5f, value / 10000 % 10 + 0x4b);
-        sceneMenu->ShowDetailDigitInline(0x5f);
+        this->ShowDetailDigitInline(0x5f);
     }
     else
     {
-        sceneMenu->HideDetailDigitInline(0x5f);
+        this->HideDetailDigitInline(0x5f);
     }
 
     if (value / 1000 != 0)
     {
         SET_DETAIL_SPRITE(0x60, value / 1000 % 10 + 0x4b);
-        sceneMenu->ShowDetailDigit(0x60);
+        this->ShowDetailDigit(0x60);
     }
     else
     {
-        sceneMenu->HideDetailDigit(0x60);
+        this->HideDetailDigit(0x60);
     }
 
     if (value / 100 != 0)
     {
-        sceneMenu->SetDetailDigitSprite(0x61, value / 100 % 10 + 0x4b);
-        sceneMenu->ShowDetailDigit(0x61);
+        this->SetDetailDigitSprite(0x61, value / 100 % 10 + 0x4b);
+        this->ShowDetailDigit(0x61);
     }
     else
     {
-        sceneMenu->HideDetailDigit(0x61);
+        this->HideDetailDigit(0x61);
     }
 
     if (value / 10 != 0)
     {
-        sceneMenu->SetDetailDigitSprite(0x62, value / 10 % 10 + 0x4b);
-        sceneMenu->ShowDetailDigit(0x62);
+        this->SetDetailDigitSprite(0x62, value / 10 % 10 + 0x4b);
+        this->ShowDetailDigit(0x62);
     }
     else
     {
-        sceneMenu->HideDetailDigit(0x62);
+        this->HideDetailDigit(0x62);
     }
 
-    sceneMenu->SetDetailDigitSprite(0x63, value % 10 + 0x4b);
+    this->SetDetailDigitSprite(0x63, value % 10 + 0x4b);
 }
 
 #undef SET_DETAIL_SPRITE
-#undef sceneMenu
 #undef LocalTimeFromStoredTimestamp
 
-void SceneSelectControllerView::SetDetailDigitSprite(i32 vmIndex, i32 spriteIndex)
+void FrontEndControllerView::SetDetailDigitSprite(i32 vmIndex, i32 spriteIndex)
 {
     this->SetDetailDigitSpriteInline(vmIndex, spriteIndex);
 }
 
-void SceneSelectControllerView::ShowDetailDigit(i32 vmIndex)
+void FrontEndControllerView::ShowDetailDigit(i32 vmIndex)
 {
     this->ShowDetailDigitInline(vmIndex);
 }
 
-void SceneSelectControllerView::HideDetailDigit(i32 vmIndex)
+void FrontEndControllerView::HideDetailDigit(i32 vmIndex)
 {
     this->HideDetailDigitInline(vmIndex);
 }

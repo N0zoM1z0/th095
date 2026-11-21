@@ -207,30 +207,29 @@ uses the canonical ASCII manager and Supervisor lock count.
 SEM-480 moves title updates and main-menu dispatch onto that controller.
 SEM-481 gives Scene Select one asset worker on the allocated controller.
 SEM-482 moves the display-history producer, preview timer and fallback
-text readers onto the same controller. The VM handles still use the
-Scene Select overlay.
+text readers onto the same controller.
 SEM-483 shares the front-end screen substates across both builds and
 uses named button masks in the main menu.
 SEM-484 runs the Help update and loader on the allocated controller.
-Help still uses the shared Scene Select animation handle view.
 SEM-485 moves Music Room and its track tables onto the allocated
 controller and identifies the Music Room comment buffer freed by
 the controller destructor.
 SEM-486 moves Replay Browser and its scanner onto the allocated controller.
 The update shares the replay array and cursors with drawing and cleanup.
-The animation handles still use the Scene Select view.
 SEM-487 moves Options state, input mapping, and the window-mode snapshot
 onto the allocated controller. The digit lookup still uses a bounded
-comparison adapter with the shared Scene Select VM view.
+comparison adapter for the ANM call ABI.
 SEM-488 moves scene-detail reads onto the allocated controller and shares
 the stored timestamp conversion with replay drawing.
 SEM-489 removes the two Scene Select update layouts and shares one update
-on the allocated controller. The ANM handle view and the comparison VM
-access adapter are the next ownership boundary in this path.
+on the allocated controller.
 SEM-490 routes main-menu, result-screen and screenshot input directly
 through the live controller slot in both builds.
 SEM-491 places replay history in that slot and shares the frame step
 between both builds. The photo camera and player read the history fields.
+SEM-492 gives the controller all 154 menu handles and the preview and
+transition handles. The menu handle table ends at the mission allocation
+pointer. SceneSelectEmission.hpp holds the remaining comparison call ABI.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

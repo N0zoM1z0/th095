@@ -27,23 +27,21 @@ inline u16 IsOptionsMenuInputPressed(u16 buttons)
                  ((g_ControllerInputSlots[0].repeat & buttons) != 0));
 }
 
-static __forceinline void OptionsCreateFixedVm(SceneSelectControllerView *menu, i32 scriptIndex)
+static __forceinline void OptionsCreateFixedVm(FrontEndControllerView *menu, i32 scriptIndex)
 {
-    menu->vmIds[scriptIndex] = menu->sceneAnm->CreateVm(scriptIndex, 7);
+    menu->vmIds[scriptIndex] = reinterpret_cast<SceneAnmLoadedView *>(menu->sceneAnm)->CreateVm(scriptIndex, 7);
 }
 
 static __forceinline void OptionsCreateInitialVm(
-    SceneSelectControllerView *menu, i32 scriptIndex)
+    FrontEndControllerView *menu, i32 scriptIndex)
 {
-    menu->vmIds[scriptIndex] = menu->sceneAnm->CreateVm(scriptIndex, 7);
+    menu->vmIds[scriptIndex] = reinterpret_cast<SceneAnmLoadedView *>(menu->sceneAnm)->CreateVm(scriptIndex, 7);
 }
 
-// The animation slots still use the Scene Select POD handle overlay.
-#define sceneMenu (reinterpret_cast<SceneSelectControllerView *>(this))
 
 __forceinline void FrontEndControllerView::SetOptionDigitSprite(i32 vmIndex, i32 digit)
 {
-    sceneMenu->sceneAnm->SetSprite(
+    reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
         OPTIONS_LOOKUP_VM(vmIndex),
         digit + 0x66);
 }
@@ -56,10 +54,10 @@ __forceinline void FrontEndControllerView::UpdateButton00Sprites()
         i32 tensSprite;
     } digits;
     digits.tensSprite = this->optionsButtonMapping.shotButton / 10 + 0x66;
-    sceneMenu->sceneAnm->SetSprite(
+    reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
         OPTIONS_LOOKUP_VM(0x74), digits.tensSprite);
     digits.onesSprite = this->optionsButtonMapping.shotButton % 10 + 0x66;
-    sceneMenu->sceneAnm->SetSprite(
+    reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
         OPTIONS_LOOKUP_VM(0x75), digits.onesSprite);
 }
 
@@ -71,10 +69,10 @@ __forceinline void FrontEndControllerView::UpdateButton02Sprites()
         i32 tensSprite;
     } digits;
     digits.tensSprite = this->optionsButtonMapping.bombButton / 10 + 0x66;
-    sceneMenu->sceneAnm->SetSprite(
+    reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
         OPTIONS_LOOKUP_VM(0x72), digits.tensSprite);
     digits.onesSprite = this->optionsButtonMapping.bombButton % 10 + 0x66;
-    sceneMenu->sceneAnm->SetSprite(
+    reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
         OPTIONS_LOOKUP_VM(0x73), digits.onesSprite);
 }
 
@@ -86,10 +84,10 @@ __forceinline void FrontEndControllerView::UpdateButton06Sprites()
         i32 tensSprite;
     } digits;
     digits.tensSprite = this->optionsButtonMapping.menuButton / 10 + 0x66;
-    sceneMenu->sceneAnm->SetSprite(
+    reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
         OPTIONS_LOOKUP_VM(0x76), digits.tensSprite);
     digits.onesSprite = this->optionsButtonMapping.menuButton % 10 + 0x66;
-    sceneMenu->sceneAnm->SetSprite(
+    reinterpret_cast<SceneAnmLoadedView *>(this->sceneAnm)->SetSprite(
         OPTIONS_LOOKUP_VM(0x77), digits.onesSprite);
 }
 
@@ -143,41 +141,41 @@ __forceinline void FrontEndControllerView::UpdateWindowModeSprites()
 {
     if (g_Supervisor.config.windowed == 0)
     {
-        sceneMenu->vmIds.SetInterrupt(0x78, 4);
-        sceneMenu->vmIds.SetInterrupt(0x79, 5);
+        this->vmIds.SetInterrupt(0x78, 4);
+        this->vmIds.SetInterrupt(0x79, 5);
     }
     else
     {
-        sceneMenu->vmIds.SetInterrupt(0x78, 5);
-        sceneMenu->vmIds.SetInterrupt(0x79, 4);
+        this->vmIds.SetInterrupt(0x78, 5);
+        this->vmIds.SetInterrupt(0x79, 4);
     }
 }
 
 __forceinline void FrontEndControllerView::UpdateOptionsSelectionSprites()
 {
-    sceneMenu->vmIds.SetInterrupt(0x6b, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON02_BINDING) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x6c, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON00_BINDING) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x6d, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON06_BINDING) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x6e, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_WINDOW_MODE) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x6f, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x70, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x71, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_EXIT) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x72, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON02_BINDING) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x73, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON02_BINDING) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x74, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON00_BINDING) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x75, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON00_BINDING) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x76, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON06_BINDING) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x77, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON06_BINDING) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x78, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_WINDOW_MODE) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x79, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_WINDOW_MODE) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x7a, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x7b, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x7c, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x7d, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x7e, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x7f, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x80, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
-    sceneMenu->vmIds.SetInterrupt(0x81, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x6b, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON02_BINDING) + 2);
+    this->vmIds.SetInterrupt(0x6c, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON00_BINDING) + 2);
+    this->vmIds.SetInterrupt(0x6d, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON06_BINDING) + 2);
+    this->vmIds.SetInterrupt(0x6e, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_WINDOW_MODE) + 2);
+    this->vmIds.SetInterrupt(0x6f, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x70, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x71, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_EXIT) + 2);
+    this->vmIds.SetInterrupt(0x72, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON02_BINDING) + 2);
+    this->vmIds.SetInterrupt(0x73, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON02_BINDING) + 2);
+    this->vmIds.SetInterrupt(0x74, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON00_BINDING) + 2);
+    this->vmIds.SetInterrupt(0x75, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON00_BINDING) + 2);
+    this->vmIds.SetInterrupt(0x76, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON06_BINDING) + 2);
+    this->vmIds.SetInterrupt(0x77, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON06_BINDING) + 2);
+    this->vmIds.SetInterrupt(0x78, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_WINDOW_MODE) + 2);
+    this->vmIds.SetInterrupt(0x79, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_WINDOW_MODE) + 2);
+    this->vmIds.SetInterrupt(0x7a, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x7b, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x7c, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x7d, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x7e, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x7f, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x80, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
+    this->vmIds.SetInterrupt(0x81, (this->groupCursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
 }
 
 ChainCallbackResult FrontEndControllerView::UpdateOptionsMenu()
@@ -208,17 +206,17 @@ ChainCallbackResult FrontEndControllerView::UpdateOptionsMenu()
         this->groupCursor.wraps = 1;
         this->state = OPTIONS_MENU_STATE_ACTIVE;
 
-        OptionsCreateInitialVm(sceneMenu, 0x68);
-        OptionsCreateInitialVm(sceneMenu, 0x69);
-        sceneMenu->vmIds.SetInterrupt(0x19, 3);
-        sceneMenu->vmIds.SetInterrupt(0x1a, 3);
-        sceneMenu->transitionVm.SetInterrupt(3);
-        sceneMenu->vmIds.SetInterrupt(0x1b, 3);
-        OptionsCreateInitialVm(sceneMenu, 0x6a);
+        OptionsCreateInitialVm(this, 0x68);
+        OptionsCreateInitialVm(this, 0x69);
+        this->vmIds.SetInterrupt(0x19, 3);
+        this->vmIds.SetInterrupt(0x1a, 3);
+        this->transitionVm.SetInterrupt(3);
+        this->vmIds.SetInterrupt(0x1b, 3);
+        OptionsCreateInitialVm(this, 0x6a);
         for (shallow.initialIndex = 0; shallow.initialIndex < 0x17;
              shallow.initialIndex++)
         {
-            OptionsCreateInitialVm(sceneMenu, shallow.initialIndex + 0x6b);
+            OptionsCreateInitialVm(this, shallow.initialIndex + 0x6b);
         }
 
         this->optionsSavedWindowed = g_Supervisor.config.windowed;
@@ -418,21 +416,21 @@ options_finish:
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->state = OPTIONS_MENU_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
-            sceneMenu->vmIds.SetInterrupt(0x68, 1);
-            sceneMenu->vmIds.SetInterrupt(0x69, 1);
-            OptionsCreateFixedVm(sceneMenu, 0x66);
-            OptionsCreateFixedVm(sceneMenu, 0x67);
-            sceneMenu->vmIds.SetInterrupt(0x19, 2);
-            sceneMenu->vmIds.SetInterrupt(0x1a, 2);
-            sceneMenu->transitionVm.SetInterrupt(2);
-            sceneMenu->vmIds.SetInterrupt(0x1b, 2);
+            this->vmIds.SetInterrupt(0x68, 1);
+            this->vmIds.SetInterrupt(0x69, 1);
+            OptionsCreateFixedVm(this, 0x66);
+            OptionsCreateFixedVm(this, 0x67);
+            this->vmIds.SetInterrupt(0x19, 2);
+            this->vmIds.SetInterrupt(0x1a, 2);
+            this->transitionVm.SetInterrupt(2);
+            this->vmIds.SetInterrupt(0x1b, 2);
             for (shallow.teardownIndex = 0;
                  shallow.teardownIndex < 0x17;
                  shallow.teardownIndex++)
             {
-                sceneMenu->vmIds.SetInterrupt(shallow.teardownIndex + 0x6b, 1);
+                this->vmIds.SetInterrupt(shallow.teardownIndex + 0x6b, 1);
             }
-            sceneMenu->vmIds.SetInterrupt(0x6a, 1);
+            this->vmIds.SetInterrupt(0x6a, 1);
             g_Supervisor.config.controllerMapping.bindings[0] = this->optionsButtonMapping;
             g_ControllerInputSlots[0].mappings[0] = g_Supervisor.config.controllerMapping.bindings[0];
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
@@ -470,6 +468,5 @@ options_finish:
 #undef OPTIONS_HIDE_VM
 #undef OPTIONS_SHOW_VM
 #undef OPTIONS_LOOKUP_VM
-#undef sceneMenu
 
 } // namespace th095

@@ -1148,7 +1148,6 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     lifecycle = supervisor_header_source("SupervisorLifecycle.cpp")
-    scene_exact = (SRC / "SceneSelectExact.hpp").read_text(encoding="utf-8")
     worker_body = (SRC / "ReplayScanWorker.cpp").read_text(encoding="utf-8")
     worker_exact = (SRC / "ReplayScanWorkerExact.inl").read_text(encoding="utf-8")
     anm_preload = (SRC / "AnmPreload.cpp").read_text(encoding="utf-8")
@@ -1229,7 +1228,6 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
         ("MainExact.hpp", main_exact_header),
         ("SupervisorRuntime.hpp", runtime_header),
         ("SupervisorLifecycle.cpp", lifecycle),
-        ("SceneSelectExact.hpp", scene_exact),
         ("ReplayScanWorker.cpp", worker_body),
     ):
         if '#include "ReplayScanWorker.hpp"' not in text:
@@ -2374,24 +2372,6 @@ def check_scene_select_front_end_prefix_owner(
     scene_update_text: str | None = None,
     owner_text: str | None = None,
 ) -> None:
-    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
-        scene = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        for declaration in (
-            "ZunTimer stateTimer;", "ZunTimer animationTimer;",
-        ):
-            if declaration not in scene:
-                fail(f"{name} lost shared front-end timer storage: {declaration}")
-        if "ResultScreenTimer stateTimer;" in scene:
-            fail(f"{name} restored the profile-sensitive timer projection")
-        if "SceneAnmLoadedView *transitionAnm;" not in scene:
-            fail(f"{name} lost the transition ANM pointer")
-        if "ResultScreenReplayCursor secondaryCursor;" not in scene:
-            fail(f"{name} lost the shared secondary cursor")
-        if "offsetof(SceneSelectControllerView, animationTimer) == 0x14" not in scene:
-            fail(f"{name} lost animation-timer layout assertion")
-        if "offsetof(SceneSelectControllerView, secondaryCursor) == 0xf8" not in scene:
-            fail(f"{name} lost secondary-cursor layout assertion")
-
     owner = source_without_comments(
         owner_text if owner_text is not None
         else (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
@@ -2499,44 +2479,49 @@ def check_scene_select_cursor_count_owner(
         fail("Scene Select restored its duplicate cursor-count view")
 
 
-def check_front_end_transition_vm_owner(exact_header_text: str | None = None) -> None:
-    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
-        header = source_without_comments(
-            exact_header_text
-            if name == "SceneSelectExact.hpp" and exact_header_text is not None
-            else (SRC / name).read_text(encoding="utf-8")
-        )
-        for marker in (
-            "u8 unknown0ea4[0x525c];",
-            "AnmVmId transitionVm;",
-            "u8 unknown6104[0x0c];",
-            "offsetof(SceneSelectControllerView, transitionVm) == 0x6100",
-            "offsetof(SceneSelectControllerView, requestedState) == 0x6110",
-        ):
-            if marker not in header:
-                fail(f"{name} lost its bounded transition-VM storage: {marker}")
-        if "unknown0ea4[0x526c]" in header:
-            fail(f"{name} restored anonymous transition-VM storage")
+def check_front_end_transition_vm_owner(owner_text: str | None = None) -> None:
+    header = source_without_comments(
+        owner_text if owner_text is not None
+        else (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
+    )
+    table = source_without_comments((SRC / "SceneMenuVmIds.hpp").read_text(encoding="utf-8"))
+    for marker in (
+        "SceneAnmVmIdArray vmIds;", "SceneAnmVmId previewTextVmIds[3];",
+        "SceneAnmVmId transitionVm;", "offsetof(FrontEndControllerView, vmIds) == 0xbf4",
+        "offsetof(FrontEndControllerView, ownedMissionMessageData)",
+        "offsetof(FrontEndControllerView, previewTextVmIds) == 0xe94",
+        "offsetof(FrontEndControllerView, transitionVm) == 0x6100",
+    ):
+        if marker not in header:
+            fail(f"FrontEnd controller lost menu VM storage: {marker}")
+    if "COUNT = 0x9a" not in table or "SceneAnmVmId values[COUNT];" not in table:
+        fail("the menu VM table no longer ends before the mission data pointer")
+    if any(token in table for token in PROFILE_NAMES):
+        fail("the menu VM table became profile-selected")
+    for name in ("SceneSelect.hpp", "SceneSelectEmission.hpp"):
+        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if "struct SceneSelectControllerView" in body or "SceneAnmVmIdArray vmIds;" in body:
+            fail(f"{name} restored the controller overlay")
 
     for name, markers in (
         (
             "FrontEndController.cpp",
             (
-                "sceneMenu->transitionVm.SetInterrupt(1);",
+                "this->transitionVm.SetInterrupt(1);",
             ),
         ),
         (
             "SceneSelectUpdate.cpp",
             (
-                "SCENE_MENU(this)->transitionVm.SetInterrupt(3);",
-                "SCENE_MENU(this)->transitionVm.SetInterrupt(2);",
+                "this->transitionVm.SetInterrupt(3);",
+                "this->transitionVm.SetInterrupt(2);",
             ),
         ),
         (
             "ReplayBrowser.cpp",
             (
-                "sceneMenu->transitionVm.SetInterrupt(3);",
-                "sceneMenu->transitionVm.SetInterrupt(2);",
+                "this->transitionVm.SetInterrupt(3);",
+                "this->transitionVm.SetInterrupt(2);",
             ),
         ),
     ):
@@ -2545,7 +2530,7 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
             if marker not in body:
                 fail(f"{name} lost a transition-VM producer/consumer: {marker}")
         if name == "FrontEndController.cpp" and body.count(
-            "sceneMenu->transitionVm = this->transitionAnm->CreateVm(0, 7);"
+            "SCENE_MENU_AUX_HANDLE(this->transitionVm) = this->transitionAnm->CreateVm(0, 7);"
         ) != 3:
             fail("FrontEnd coordinator lost one of three transition-VM creations")
     for name in (
@@ -2555,7 +2540,7 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
     ):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         for interrupt in (3, 2):
-            if f"sceneMenu->transitionVm.SetInterrupt({interrupt});" not in body:
+            if f"this->transitionVm.SetInterrupt({interrupt});" not in body:
                 fail(f"{name} lost transition-VM interrupt {interrupt}")
 
 
@@ -2614,14 +2599,6 @@ def check_front_end_requested_state_owner(
         if f"this->requestedState = FRONT_END_REQUESTED_STATE_{name};" not in controller:
             fail(f"FrontEnd coordinator lost named publication for {name}")
 
-    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
-        scene = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if '#include "FrontEndGlobals.hpp"' not in scene:
-            fail(f"{name} lost the shared requested-state owner include")
-        if "FrontEndRequestedState requestedState;" not in scene:
-            fail(f"{name} lost shared requested-state storage")
-        if "offsetof(SceneSelectControllerView, requestedState) == 0x6110" not in scene:
-            fail(f"{name} lost requested-state offset assertion")
     scene_update = source_without_comments(
         scene_update_text if scene_update_text is not None
         else (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
@@ -2658,17 +2635,6 @@ def check_front_end_flags_owner(
         fail("FrontEnd controller flag owner became profile-selected")
     if "sizeof(FrontEndControllerFlagBits) == 4" not in header:
         fail("FrontEnd controller flag owner lost its four-byte assertion")
-
-    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
-        scene = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if '#include "FrontEndGlobals.hpp"' not in scene:
-            fail(f"{name} lost its shared FrontEnd owner include")
-        if re.search(r"\bstruct\s+FrontEndControllerFlagBits\s*\{", scene):
-            fail(f"{name} restored a duplicate FrontEnd flag declaration")
-        if "FrontEndControllerFlagBits flagBits;" not in scene:
-            fail(f"{name} lost its shared flag-bit field")
-        if "offsetof(SceneSelectControllerView, flags) == 0x6120" not in scene:
-            fail(f"{name} lost its flag-word offset assertion")
 
     controller = source_without_comments(
         controller_text
@@ -2740,28 +2706,22 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
         ("scenePreviewQueue", "6320"),
         ("loadedGroupQueue", "6368"),
     )
-    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
-        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        owner_start = source.index("struct SceneSelectControllerView")
-        owner = source[owner_start:source.index("i32 GetSelectedGroup()", owner_start)]
-        actual = re.findall(r"\b(SceneValueQueue|ScenePreviewDataQueue)\s+(\w+)\s*;", owner)
-        expected = [
-            ("ScenePreviewDataQueue" if field in ("groupPreviewDataQueue", "scenePreviewDataQueue")
-             else "SceneValueQueue", field)
-            for field, _ in queue_fields
-        ]
-        if actual != expected:
-            fail(f"{name} lost the complete ordered nine-queue owner")
-        for field, offset in queue_fields:
-            if f"offsetof(SceneSelectControllerView, {field}) == 0x{offset}" not in source:
-                fail(f"{name} lost the {field} offset assertion")
-        for field, offset in (("stateHistory", "63b0"), ("pendingTextures", "63cc")):
-            if f"offsetof(SceneSelectControllerView, {field}) == 0x{offset}" not in source:
-                fail(f"{name} lost the {field} offset assertion")
-        if "SceneStateHistory stateHistory;" not in owner:
-            fail(f"{name} lost its post-queue history owner")
-        if "FrontEndPendingTextureData pendingTextures;" not in owner:
-            fail(f"{name} lost its shared pending-texture owner")
+    owner = source_without_comments((SRC / "FrontEndController.hpp").read_text(encoding="utf-8"))
+    actual = re.findall(r"\b(SceneValueQueue|ScenePreviewDataQueue)\s+(\w+)\s*;", owner)
+    expected = [
+        ("ScenePreviewDataQueue" if field in ("groupPreviewDataQueue", "scenePreviewDataQueue")
+         else "SceneValueQueue", field)
+        for field, _ in queue_fields
+    ]
+    if actual != expected:
+        fail("FrontEnd controller lost the ordered nine-queue layout")
+    for field, offset in (*queue_fields, ("stateHistory", "63b0"), ("pendingTextures", "63cc")):
+        if f"offsetof(FrontEndControllerView, {field}) == 0x{offset}" not in owner:
+            fail(f"FrontEnd controller lost the {field} offset assertion")
+    if "SceneStateHistory stateHistory;" not in owner:
+        fail("FrontEnd controller lost its post-queue history")
+    if "FrontEndPendingTextureData pendingTextures;" not in owner:
+        fail("FrontEnd controller lost its pending texture storage")
 
     controller = source_without_comments(
         controller_text
@@ -2837,10 +2797,9 @@ def check_scene_value_queue_owner(
             r"FrontEndPointerQueueView)\b", source
         ):
             fail(f"{path.name} restored a retired queue projection")
-    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp", "FrontEndController.hpp"):
-        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if '#include "SceneValueQueue.hpp"' not in source:
-            fail(f"{name} lost the canonical raw queue include")
+    owner = source_without_comments((SRC / "FrontEndController.hpp").read_text(encoding="utf-8"))
+    if '#include "SceneValueQueue.hpp"' not in owner:
+        fail("FrontEnd controller lost the canonical raw queue include")
     source = source_without_comments((SRC / "SceneSelectController.cpp").read_text(encoding="utf-8"))
     if source.count('#include "SceneValueQueue.inl"') != 1:
         fail("Scene Select lost the shared Push/Pop implementation")
@@ -2868,13 +2827,10 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
             fail(f"preview data queue lost native address/metadata storage: {token}")
     if any(token in header for token in (*PROFILE_NAMES, "Global.hpp", "i32 bits;")):
         fail("preview data queue restored selected/truncated storage")
-    for name in (
-        "SceneSelect.hpp", "SceneSelectExact.hpp", "FrontEndController.hpp",
-    ):
-        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        for field in ("groupPreviewDataQueue", "scenePreviewDataQueue"):
-            if f"ScenePreviewDataQueue {field};" not in source:
-                fail(f"{name} lost the native address channel {field}")
+    owner = source_without_comments((SRC / "FrontEndController.hpp").read_text(encoding="utf-8"))
+    for field in ("groupPreviewDataQueue", "scenePreviewDataQueue"):
+        if f"ScenePreviewDataQueue {field};" not in owner:
+            fail(f"FrontEnd controller lost the native address channel {field}")
     source = (SRC / "SceneSelectController.cpp").read_text(encoding="utf-8")
     if '#include "ScenePreviewDataQueue.inl"' not in source:
         fail("Scene Select lost the shared address-word Pop")
@@ -3341,16 +3297,13 @@ def check_front_end_pending_texture_owner(header_text: str | None = None) -> Non
             fail(f"pending-texture owner lost its pointer/size contract: {declaration}")
     if any(token in header for token in (*PROFILE_NAMES, "Global.hpp")):
         fail("pending-texture owner restored profile or platform dependencies")
-    for name in (
-        "SceneSelect.hpp", "SceneSelectExact.hpp", "FrontEndController.hpp",
-    ):
-        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if body.count("FrontEndPendingTextureData pendingTextures;") != 1:
-            fail(f"{name} lost its unique canonical pending-texture member")
-        if re.search(r"\b(?:pendingTextureCount|pendingPrimaryData|pendingSecondaryData)\b", body):
-            fail(f"{name} restored a partial pending-texture declaration or access")
-        if "offsetof(FrontEndPendingTextureData, primaryData) == 0x04" not in body:
-            fail(f"{name} lost its target pointer-layout evidence")
+    owner = source_without_comments((SRC / "FrontEndController.hpp").read_text(encoding="utf-8"))
+    if owner.count("FrontEndPendingTextureData pendingTextures;") != 1:
+        fail("FrontEnd controller lost its canonical pending-texture member")
+    if re.search(r"\b(?:pendingTextureCount|pendingPrimaryData|pendingSecondaryData)\b", owner):
+        fail("FrontEnd controller restored partial pending-texture storage")
+    if "offsetof(FrontEndPendingTextureData, primaryData) == 0x04" not in owner:
+        fail("FrontEnd controller lost its target pointer-layout evidence")
     body = source_without_comments((SRC / "SceneSelectAssets.cpp").read_text(encoding="utf-8"))
     owner = (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
     if "FrontEndControllerView *view;" not in body:
@@ -4857,7 +4810,7 @@ def main() -> int:
     print("  Scene Select best-shot preview: typed record fields in the shared update")
     print("  Scene Select VM colors: one shared interpolation ABI view")
     print("  Front-end cursor: one shared layout and movement/history body")
-    print("  FrontEnd transition VM: one shared +0x6100 handle across title pages")
+    print("  FrontEnd VM storage: 154 menu slots followed by mission data, plus preview and transition handles")
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  FrontEnd flags: one shared owner for bits 0..5")
     print("  FrontEnd scene queues: nine typed owners and post-queue cleanup in both profiles")

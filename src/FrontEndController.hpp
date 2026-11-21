@@ -7,6 +7,7 @@
 #include "FrontEndPendingTextureData.hpp"
 #include "ResultScreenReplayCursor.hpp"
 #include "SceneData.hpp"
+#include "SceneMenuVmIds.hpp"
 #include "ScenePreviewDataQueue.hpp"
 #include "SceneValueQueue.hpp"
 #include "ZunTimer.hpp"
@@ -42,12 +43,13 @@ struct FrontEndControllerView
     ResultScreenReplayCursor secondaryCursor;
     ResultScreenReplayCursor sceneCursors[12];
     i32 selectedScoreEntryIndex;
-    u8 unknown0bf4[0x268];
+    SceneAnmVmIdArray vmIds;
     u8 *ownedMissionMessageData;
     SceneEncodedText specialEncodedText[10];
     i8 specialDisplayStates[10];
     i8 currentDisplayState;
-    u8 unknown0e93[0x0d];
+    u8 unknown0e93;
+    SceneAnmVmId previewTextVmIds[3];
     i32 previewTimer;
     u8 optionsSavedWindowed;
     u8 unknown0ea5[3];
@@ -59,7 +61,8 @@ struct FrontEndControllerView
     char musicTrackPaths[32][64];
     char musicTrackDescriptions[32][8][64];
     AnmVmIdStorage musicVmStorage[40];
-    u8 unknown60a0[0x64];
+    u8 unknown60a0[0x60];
+    SceneAnmVmId transitionVm;
     i32 musicTrackCount;
     i32 transitionReady;
     i32 state;
@@ -103,6 +106,11 @@ struct FrontEndControllerView
     void RefreshSceneSelection(i32 selectedScoreEntryIndex);
     void BuildScenePreviewText();
     void UpdateSelectedSceneDetails();
+    void CloseMainMenu();
+    void UpdateMainMenuSelection();
+    void SetDetailDigitSprite(i32 vmIndex, i32 spriteIndex);
+    void ShowDetailDigit(i32 vmIndex);
+    void HideDetailDigit(i32 vmIndex);
     i32 GetSelectedGroup()
     {
         return this->groupCursor.current;
@@ -113,6 +121,9 @@ struct FrontEndControllerView
     static ChainCallbackResult __fastcall OnDraw(void *controller);
 
 private:
+    inline void SetDetailDigitSpriteInline(i32 vmIndex, i32 spriteIndex);
+    inline void ShowDetailDigitInline(i32 vmIndex);
+    inline void HideDetailDigitInline(i32 vmIndex);
     __forceinline void SetOptionDigitSprite(i32 vmIndex, i32 digit);
     __forceinline void UpdateButton00Sprites();
     __forceinline void UpdateButton02Sprites();
@@ -131,6 +142,12 @@ typedef char FrontEndLifecyclePendingTextureDataLayout[
      offsetof(FrontEndPendingTextureData, primarySize) == 0x10 &&
      offsetof(FrontEndPendingTextureData, secondaryData) == 0x1c &&
      offsetof(FrontEndPendingTextureData, secondarySize) == 0x28) ? 1 : -1];
+typedef char FrontEndMenuVmLayout[
+    (offsetof(FrontEndControllerView, vmIds) == 0xbf4 &&
+     offsetof(FrontEndControllerView, vmIds) + sizeof(SceneAnmVmIdArray) ==
+         offsetof(FrontEndControllerView, ownedMissionMessageData) &&
+     offsetof(FrontEndControllerView, previewTextVmIds) == 0xe94 &&
+     offsetof(FrontEndControllerView, transitionVm) == 0x6100) ? 1 : -1];
 typedef char FrontEndLifecycleOwnedMissionDataAtE5C[
     (offsetof(FrontEndControllerView, ownedMissionMessageData) == 0xe5c)
         ? 1
@@ -156,10 +173,16 @@ typedef char FrontEndControllerMusicRoomLayout[
      offsetof(FrontEndControllerView, musicTrackDescriptions) == 0x2000 &&
      offsetof(FrontEndControllerView, musicVmStorage) == 0x6000 &&
      offsetof(FrontEndControllerView, musicTrackCount) == 0x6104) ? 1 : -1];
-typedef char FrontEndLifecycleGroupDataQueueAt61B8[
-    (offsetof(FrontEndControllerView, groupPreviewDataQueue) == 0x61b8)
-        ? 1
-        : -1];
+typedef char FrontEndControllerSceneQueues[
+    (offsetof(FrontEndControllerView, selectionQueue) == 0x6128 &&
+     offsetof(FrontEndControllerView, loadedSceneQueue) == 0x6170 &&
+     offsetof(FrontEndControllerView, groupPreviewDataQueue) == 0x61b8 &&
+     offsetof(FrontEndControllerView, groupPreviewSizeQueue) == 0x6200 &&
+     offsetof(FrontEndControllerView, scenePreviewDataQueue) == 0x6248 &&
+     offsetof(FrontEndControllerView, scenePreviewSizeQueue) == 0x6290 &&
+     offsetof(FrontEndControllerView, groupPreviewQueue) == 0x62d8 &&
+     offsetof(FrontEndControllerView, scenePreviewQueue) == 0x6320 &&
+     offsetof(FrontEndControllerView, loadedGroupQueue) == 0x6368) ? 1 : -1];
 typedef char FrontEndControllerSelectedScoreAtBF0[
     (offsetof(FrontEndControllerView, selectedScoreEntryIndex) == 0xbf0) ? 1 : -1];
 typedef char FrontEndControllerUpdateFields[
@@ -176,10 +199,6 @@ typedef char FrontEndLifecycleFlagsAt6120[
     (offsetof(FrontEndControllerView, flagBits) == 0x6120) ? 1 : -1];
 typedef char FrontEndLifecycleEntryModeAt6124[
     (offsetof(FrontEndControllerView, entryMode) == 0x6124) ? 1 : -1];
-typedef char FrontEndLifecycleSceneDataQueueAt6248[
-    (offsetof(FrontEndControllerView, scenePreviewDataQueue) == 0x6248)
-        ? 1
-        : -1];
 typedef char FrontEndLifecyclePendingPrimaryAt63D0[
     (offsetof(FrontEndControllerView, pendingTextures) +
          offsetof(FrontEndPendingTextureData, primaryData) == 0x63d0)

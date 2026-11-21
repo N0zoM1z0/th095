@@ -30,9 +30,9 @@ static __forceinline i32 MusicRoomTimerChangedAndEven(ZunTimer *timer)
     return timer->current != timer->previous && timer->current % 2 == 0;
 }
 
-static __forceinline void MusicRoomCreateVmAt(SceneSelectControllerView *view, i32 scriptIndex)
+static __forceinline void MusicRoomCreateVmAt(FrontEndControllerView *view, i32 scriptIndex)
 {
-    view->vmIds[scriptIndex] = view->sceneAnm->CreateVm(scriptIndex, 7);
+    view->vmIds[scriptIndex] = reinterpret_cast<SceneAnmLoadedView *>(view->sceneAnm)->CreateVm(scriptIndex, 7);
 }
 
 static __forceinline void MusicRoomFreeCommentFile(FrontEndControllerView *view)
@@ -101,17 +101,16 @@ i32 FrontEndControllerView::UpdateMusicRoom()
 {
 // The controller allocates these handle slots without running AnmVmId constructors.
 #define musicVms (reinterpret_cast<MusicRoomVmIds *>(&this->musicVmStorage))
-#define sceneMenu (reinterpret_cast<SceneSelectControllerView *>(this))
     switch (this->state)
     {
     case MUSIC_ROOM_STATE_INITIALIZE:
     {
         this->groupCursor.Push();
-        sceneMenu->vmIds.SetInterrupt(0x66, 1);
-        sceneMenu->vmIds.SetInterrupt(0x67, 1);
-        MusicRoomCreateVmAt(sceneMenu, 0x68);
-        MusicRoomCreateVmAt(sceneMenu, 0x69);
-        MusicRoomCreateVmAt(sceneMenu, 0x17);
+        this->vmIds.SetInterrupt(0x66, 1);
+        this->vmIds.SetInterrupt(0x67, 1);
+        MusicRoomCreateVmAt(this, 0x68);
+        MusicRoomCreateVmAt(this, 0x69);
+        MusicRoomCreateVmAt(this, 0x17);
 
         // Target 0x004510E1 reads 0x004C4AAC, Supervisor::textAnm, for the
         // writable text surface.  title.anm remains the owner of the music
@@ -119,10 +118,10 @@ i32 FrontEndControllerView::UpdateMusicRoom()
         g_Supervisor.textAnm->textures[0].Clear();
         this->sceneAnm->textures[13].Clear();
 
-        sceneMenu->vmIds.SetInterrupt(0x19, 3);
-        sceneMenu->vmIds.SetInterrupt(0x1a, 3);
-        sceneMenu->transitionVm.SetInterrupt(3);
-        sceneMenu->vmIds.SetInterrupt(0x1b, 3);
+        this->vmIds.SetInterrupt(0x19, 3);
+        this->vmIds.SetInterrupt(0x1a, 3);
+        this->transitionVm.SetInterrupt(3);
+        this->vmIds.SetInterrupt(0x1b, 3);
         this->state = MUSIC_ROOM_STATE_TRACK_LIST_REVEAL;
         FrontEndResetTimer(&this->stateTimer);
 
@@ -268,15 +267,15 @@ i32 FrontEndControllerView::UpdateMusicRoom()
             for (i32 descriptionIndex = 0; descriptionIndex < 8; descriptionIndex++)
                 musicVms->descriptions[descriptionIndex].SetInterrupt(1);
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            sceneMenu->vmIds.SetInterrupt(0x68, 1);
-            sceneMenu->vmIds.SetInterrupt(0x69, 1);
-            MusicRoomCreateVmAt(sceneMenu, 0x66);
-            MusicRoomCreateVmAt(sceneMenu, 0x67);
-            sceneMenu->vmIds.SetInterrupt(0x17, 1);
-            sceneMenu->vmIds.SetInterrupt(0x19, 2);
-            sceneMenu->vmIds.SetInterrupt(0x1a, 2);
-            sceneMenu->transitionVm.SetInterrupt(2);
-            sceneMenu->vmIds.SetInterrupt(0x1b, 2);
+            this->vmIds.SetInterrupt(0x68, 1);
+            this->vmIds.SetInterrupt(0x69, 1);
+            MusicRoomCreateVmAt(this, 0x66);
+            MusicRoomCreateVmAt(this, 0x67);
+            this->vmIds.SetInterrupt(0x17, 1);
+            this->vmIds.SetInterrupt(0x19, 2);
+            this->vmIds.SetInterrupt(0x1a, 2);
+            this->transitionVm.SetInterrupt(2);
+            this->vmIds.SetInterrupt(0x1b, 2);
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->state = MUSIC_ROOM_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
@@ -286,7 +285,6 @@ i32 FrontEndControllerView::UpdateMusicRoom()
         break;
     }
     }
-#undef sceneMenu
 #undef musicVms
     return 0;
 }
