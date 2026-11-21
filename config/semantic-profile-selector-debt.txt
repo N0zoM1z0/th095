@@ -3,12 +3,8 @@
 # Format: count<TAB>repository path<TAB>normalized directive
 # This file is an exact closed baseline: remove or lower entries when debt is
 # retired; never add or increase an entry to admit a new selector directive.
-1	src/AnmManager.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/AnmManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AnmManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-2	src/AnmManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-2	src/AnmManager.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/AnmManagerTrail.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+1	src/AnmManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 7	src/AnmPreload.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/AnmPreload.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/AnmSurface.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -19,7 +15,7 @@
 8	src/Background.cpp	#ifdef TH095_MATCH_EXACT
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-23	src/BulletManager.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+22	src/BulletManager.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/BulletManager.cpp	#ifdef DIFFBUILD
 1	src/BulletManager.cpp	#ifndef DIFFBUILD
@@ -28,14 +24,13 @@
 1	src/diffbuild.hpp	#ifdef DIFFBUILD
 3	src/diffbuild.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ecl/AnmManagerEclView.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-2	src/ecl/AnmManagerEclView.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/ecl/AnmManagerEclView.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+1	src/ecl/AnmManagerEclView.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/ecl/AnmManagerEclView.hpp	#ifdef TH095_MATCH_EXACT
 3	src/ecl/AnmManagerEclView.hpp	#ifndef TH095_MATCH_EXACT
 1	src/ecl/EclOperands.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
 1	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
-9	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+7	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
 6	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 8	src/EclExtended.cpp	#ifdef DIFFBUILD

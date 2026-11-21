@@ -4,10 +4,6 @@
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define ownedRenderData generatedVertices
-#endif
-
 // Target address 0x004CA1B8 is the process-wide manager pointer.  TH08 places
 // the equivalent storage in AnmManager.cpp, and TH095 WinMain assigns and
 // clears this same pointer around the manager lifetime.
@@ -636,11 +632,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->useSecondaryColor = currentInstr->byteArgs[0];
             break;
         case ANM_OP_FLAG27:
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            vm->flag27 = currentInstr->byteArgs[0];
-#else
             vm->rotateWithBulletAngle = currentInstr->byteArgs[0];
-#endif
             break;
         case ANM_OP_ALTERNATE_RNG:
             vm->useAlternateRng = currentInstr->byteArgs[0];

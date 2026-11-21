@@ -449,11 +449,7 @@ struct AnmVm
     u8 unknown000[0x0c];
     u32 renderMode;
     u8 unknown010[4];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    void *generatedVertices;
-#else
     void *ownedRenderData;
-#endif
     Float3 rotation;
     Float3 angleVel;
     Float2 scale;
@@ -510,11 +506,7 @@ struct AnmVm
             u32 alignmentY : 2;
             u32 renderModeBits : 4;
             u32 flag26 : 1;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            u32 flag27 : 1;
-#else
             u32 rotateWithBulletAngle : 1;
-#endif
             u32 flag28 : 1;
             u32 useUnitSpeed : 1;
             u32 useAlternateRng : 1;

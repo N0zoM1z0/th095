@@ -19139,3 +19139,23 @@ three manager destruction cases. Both links replay all 2,712 demo0
 indices with identical gameplay fields. The stage timer first advances
 at index 30 in both links and index 28 in the retail reference.
 See `.analysis/pi/anm-vm-list-owner/`.
+
+### SEM-446 — share the ANM render payload and bullet rotation flag
+
+VM +0x14 owns both the generated vertex strip and the radial-trail
+allocation. The interpreter, strip renderer and radial callbacks use
+`ownedRenderData` in both profiles. Trail initialization frees an
+existing payload before replacing it, and VM deletion frees the
+current payload after unlinking.
+
+Opcode 82 stores the low bit of its literal operand in VM flags bit
+27. DrawBucket uses `rotateWithBulletAngle` to decide whether to
+replace the VM rotation Z with the bullet angle plus π/2 and request
+a rotation update. Extended callbacks 2 and 4 clear that bit after
+reinitializing the VM and restore the previous rotation Z bit pattern.
+
+All 515 affected strict exact comparisons pass across 61 translation
+units. Both normal links retain all four mapped sections of their
+SEM-445 replay images. They agree with retail on 36 opcode 82 cases,
+48 bullet angle and bucket cases, eight radial-trail lifetimes and
+16 ECL callback transitions. See `.analysis/pi/anm-vm-render-state/`.

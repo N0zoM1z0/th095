@@ -3,10 +3,6 @@
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define ownedRenderData generatedVertices
-#endif
-
 class ZunMemory
 {
   public:

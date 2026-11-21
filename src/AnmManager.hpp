@@ -264,11 +264,7 @@ struct AnmVmBase
     AnmVm *previous;                // +0x008
     u32 drawLayer;                  // +0x00c
     AnmVmIdStorage id;              // +0x010
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    void *generatedVertices;        // +0x014
-#else
-    void *ownedRenderData;          // +0x014; render-mode-owned allocation
-#endif
+    void *ownedRenderData;          // +0x014
     Float3 rotation;                // +0x018
     Float3 angleVel;                // +0x024
     Float2 scale;                   // +0x030
@@ -332,11 +328,7 @@ struct AnmVmBase
             u32 alignmentY : 2; // AnmAlignment, physical bits 20..21.
             u32 renderModeBits : 4;
             u32 pendingDeletion : 1;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            u32 flag27 : 1;
-#else
             u32 rotateWithBulletAngle : 1;
-#endif
             u32 bypassPhotoGameSuppression : 1;
             u32 useUnitSpeed : 1;
             u32 useAlternateRng : 1;
@@ -404,19 +396,11 @@ struct AnmVm : AnmVmBase
 
     ~AnmVm()
     {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-        if (this->generatedVertices != NULL)
-        {
-            void *generatedVertices = this->generatedVertices;
-            free(generatedVertices);
-        }
-#else
         if (this->ownedRenderData != NULL)
         {
             void *ownedRenderData = this->ownedRenderData;
             free(ownedRenderData);
         }
-#endif
     }
 
     void Initialize();

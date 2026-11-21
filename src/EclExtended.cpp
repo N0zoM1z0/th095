@@ -803,11 +803,7 @@ void __fastcall Callback02(PhotoEnemyView *enemy, EclRawInstruction *instruction
         {
             savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
             TH095_EXT_REINITIALIZE_SHIFTED(index);
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            index->vm.flagsWord &= 0xf7ffffffU;
-#else
             index->vm.rotateWithBulletAngle = 0;
-#endif
             index->vm.pendingInterrupt = 2;
             *reinterpret_cast<u32 *>(&index->vm.rotation.z) = savedActiveSprite;
             TH095_EXTENDED_FROM_ANGLE(
@@ -880,11 +876,7 @@ void __fastcall Callback04(PhotoEnemyView *enemy, EclRawInstruction *instruction
         {
             savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
             TH095_EXT_REINITIALIZE_SHIFTED(index);
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            index->vm.flagsWord &= 0xf7ffffffU;
-#else
             index->vm.rotateWithBulletAngle = 0;
-#endif
             index->vm.pendingInterrupt = 2;
             *reinterpret_cast<u32 *>(&index->vm.rotation.z) = savedActiveSprite;
             TH095_EXTENDED_FROM_ANGLE(
