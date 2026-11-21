@@ -2314,6 +2314,21 @@ condition moves the existing button clear before the call. The new
 variants are under `.analysis/controller-get-input/key-acquisition-sequence/`.
 The current linked layouts pass all 1,312 retail input cases.
 
+Five accumulator-control variants try guarding the OR directly or
+assigning a conditional result. Guarding every key emits 2,463 bytes.
+Guarding the first Win32 key or the first key in each backend emits
+2,651 or 2,647 bytes. All three reserve the current 0x11C frame.
+
+A conditional assignment for the first key in each backend puts
+two live temporaries below `inputIndex`. This reproduces the 0x124
+frame and keeps all seven input-index operands at EBP-0x11C, but
+emits 2,712 bytes and 585 instructions. The compiler writes each
+temporary in both arms and then reads it. Retail leaves both slots
+unused and emits 2,662 bytes and 579 instructions. The single Win32
+conditional assignment emits 2,687 bytes with a 0x120 frame.
+See `.analysis/controller-get-input/key-accumulator-branches/`.
+The current links pass all 1,312 input behavior cases.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
