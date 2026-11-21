@@ -14,6 +14,38 @@ recomputes it when the symbol moves. Target ABI member offsets and serialized
 file offsets have separate layout contracts. ASLR and native 64-bit ports have
 separate validation.
 
+## Current Windows i386 link audit
+
+The normal build at `e767c48` uses the same 88 game objects and 270 archive
+members in both links. The second link reverses the game objects and
+preserves the library order. The section comparison checks all 918 game
+code sections, 843 initialized sections, and the table that registers
+15 game initializers and the CRT cookie initializer. Its 11,469 code
+references and 639 initialized-data references resolve in both links.
+
+The archive audit checks 1,649 code and 1,953 initialized sections,
+including 7,748 code and 1,007 initialized-data references. Four D3DX
+vector-constructor definitions are superseded by a game COMDAT in both
+links. Both PNG warning symbols lead to the same one-byte return stub.
+The negative probe that swaps two recovered private D3DX addresses
+produces 16 mismatches. All 172 imports retain their DLL and symbol or
+ordinal, with 127 IAT slots moving.
+
+The game object literal sweep finds six unbound in-range immediates.
+All six are uses of the mask `0x00400000`. The library members are
+byte-identical to the previous audited archive inputs. The link checks,
+binary digests and diagnostic recipes are under
+`.analysis/pi/current-image-audit/`.
+
+Both layouts complete the three built-in replays in one Wine cycle.
+At all 8,127 input indices in each layout, the sampled score, position,
+RNG and camera fields agree with the retail traces. The integer stage
+timer differs by at most one tick. Both links start the demo0 stage timer
+one tick later than retail. The regular link starts one tick earlier in
+demo1, and the reordered link starts one tick earlier in demo2. The
+remaining integer timer traces agree with retail. The cycle outputs are
+under `build/position-independence/current-image-audit/`.
+
 ## Checking a storage owner
 
 1. Establish the target's actual destination using the instruction, operand

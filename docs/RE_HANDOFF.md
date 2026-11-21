@@ -14,10 +14,11 @@ and [source ownership](SOURCE_MAP.md). Live totals come from the ledgers and
 
 ## Current work
 
-The [PI evidence](POSITION_INDEPENDENCE.md) covers the two normal link
-orders, initialized data, library and import references, and the three built-in
-replays. The full cycle agrees on the gameplay samples. The latest focused
-demo0 repeat saw scene timer differences of up to two ticks at startup.
+The [current Windows i386 PI audit](POSITION_INDEPENDENCE.md#current-windows-i386-link-audit)
+covers game and library relocations, initialized data, and imports in
+both normal link orders. Both layouts complete the three built-in replays
+with the retail gameplay samples at all 8,127 input indices and integer
+stage timer differences of at most one tick.
 SEM-358 and SEM-360 correct MIDI and DirectInput storage. SEM-376 makes the
 normal readers honor both controller indices. SEM-404 confirms the retail
 frame callback polls slot zero and

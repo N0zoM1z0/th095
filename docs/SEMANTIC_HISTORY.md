@@ -20205,3 +20205,12 @@ repaired operands resolve to moving literals in both normal link orders.
 Executing four resource-failure paths and two streaming-buffer failures
 in the original and both linked executables also produces the same
 diagnostic bytes. See `.analysis/pi/literal-payload/`.
+
+### SEM-494 — verify current Windows i386 link layouts
+
+The normal `e767c48` images pass the game, library, initializer and import
+comparisons with the game object order reversed. The private D3DX
+negative probe rejects two exchanged addresses. Both layouts match the
+retail gameplay samples throughout the three built-in replays. See
+[the current link audit](POSITION_INDEPENDENCE.md#current-windows-i386-link-audit)
+for the section counts, timer observations and local evidence paths.
