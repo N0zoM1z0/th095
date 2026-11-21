@@ -266,6 +266,8 @@ commands using the retail table and their callers.
 SEM-506 shares the PlayerInf and camera initialization code. Movement
 uses the controller masks, and the death transition calls the shared
 ANM and SoundPlayer methods.
+SEM-507 gives SHOT a 32-bit descriptor field and preserves its in-place
+rebase and signed interval scan.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

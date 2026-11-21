@@ -245,6 +245,10 @@ void PhotoGameUpdateView::Destroy()
     }
 }
 
+typedef char PhotoPlayerShotPowerLevelsLayout[
+    (offsetof(PhotoPlayerMovementConfigView, shotPowerLevels) == 0x24 &&
+     sizeof(PhotoPlayerMovementConfigView::ShotPowerLevel) == 0x8) ? 1 : -1];
+
 i32 PhotoGameUpdateView::LoadSht(char *path)
 {
     struct
@@ -278,11 +282,10 @@ i32 PhotoGameUpdateView::LoadSht(char *path)
          powerLevelIndex < this->movementConfig->shotPowerLevelCount;
          ++powerLevelIndex)
     {
-        reinterpret_cast<u32 &>(
-            this->movementConfig->shotPowerLevels[powerLevelIndex].descriptors) +=
+        this->movementConfig->shotPowerLevels[powerLevelIndex].descriptorLocation +=
             reinterpret_cast<u32>(this->movementConfig);
         descriptor = reinterpret_cast<PhotoPlayerShotDescriptorView *>(
-            this->movementConfig->shotPowerLevels[powerLevelIndex].descriptors);
+            this->movementConfig->shotPowerLevels[powerLevelIndex].descriptorLocation);
         while (descriptor->fireInterval >= 0)
         {
             ++descriptor;

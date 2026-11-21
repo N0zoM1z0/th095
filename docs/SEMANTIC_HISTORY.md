@@ -20472,3 +20472,19 @@ two links, 248 code references and eight initialized-data references
 resolve to their owners. Both links agree with the original on 108
 movement and focus cases, six camera initializations and six death
 transitions. See `.analysis/pi/photo-game-share/`.
+
+### SEM-507 — give the SHOT descriptor slot its 32-bit type
+
+The SHOT loader adds the movement file’s base to each 32-bit descriptor
+slot. Records start at +0x24 and have an eight-byte stride. Once rebased,
+the slot holds the x86 address of the first descriptor. The loader reads
+each descriptor’s signed 16-bit fire interval and steps by 0x38 bytes
+until it reaches a negative interval. The field is now a word in the
+layout, so the rebase no longer casts a pointer lvalue to an integer
+reference.
+
+All 221 affected strict comparisons pass, and the 265-byte loader also
+matches in normal COFF. Twenty synthetic SHOT load cases agree across
+retail and both layouts, covering a missing file, zero power levels,
+multiple levels and signed terminators. The linked images retain the
+previous mapped bytes. See `.analysis/pi/player-sht-owner/`.

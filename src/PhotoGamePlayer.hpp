@@ -20,7 +20,7 @@ struct PhotoPlayerMovementConfigView
     f32 focusedDiagonalSpeed;
     struct ShotPowerLevel
     {
-        void *descriptors;
+        u32 descriptorLocation; // File offset before LoadSht rebases it in place.
         i32 unknown004;
     } shotPowerLevels[1];
 };
