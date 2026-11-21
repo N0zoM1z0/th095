@@ -3443,6 +3443,9 @@ def check_photo_enemy_owner() -> None:
         "offsetof(PhotoEnemyView, eclTimer) == 0x296c",
         "PhotoEnemyEclTimerCurrentAt2974",
         "offsetof(PhotoEnemyView, itemDropType) == 0x2bd8",
+        "offsetof(PhotoEnemyView, photoTargetSlot) == 0x2be5",
+        "offsetof(PhotoEnemyView, eclSchedule) == 0x2c54",
+        "offsetof(PhotoEnemyView, unknown2c50) == 0x2c50",
         "PhotoEnemyFlagsAt2BF4",
         "PHOTO_ENEMY_ECL_CONTROL_OFFSET",
         "PhotoEnemyChildEclBlocksAt2CAC",
@@ -3464,12 +3467,12 @@ def check_photo_enemy_owner() -> None:
         "offsetof(PhotoEnemyManagerView, timelines) == 0x4cc0",
         "offsetof(PhotoEnemyManagerView, drawGroupHeads) == 0x4dc0",
         "PhotoEnemyManagerEclManagerAt4DF4",
-        "PHOTO_ENEMY_ECL_MANAGER_OFFSET",
+        "offsetof(PhotoEnemyManagerView, eclManager) == 0x4df4",
         "offsetof(PhotoEnemyManagerView, enemyAnm) == 0x4df8",
         "offsetof(PhotoEnemyManagerView, unknown4dfc) == 0x4dfc",
         "offsetof(PhotoEnemyManagerView, enemyPool) == 0x4e00",
         "PhotoEnemyManagerPhotoTargetsAt26AE00",
-        "PHOTO_ENEMY_ECL_PHOTO_TARGETS_OFFSET",
+        "offsetof(PhotoEnemyManagerView, photoTargets) == 0x26ae00",
         "offsetof(PhotoEnemyManagerView, calcChain) == 0x26ae20",
         "offsetof(PhotoEnemyManagerView, eclPhotoCardSession) == 0x26ae28",
         "sizeof(PhotoEnemyManagerView) == 0x26ae30",
@@ -3647,11 +3650,6 @@ def check_photo_enemy_owner() -> None:
         fail("ResolveFloatLValue restored a legacy Enemy compact-field access")
 
     required_operand_offsets = (
-        "PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET = 0x2be5",
-        "PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET = 0x2c50",
-        "PHOTO_ENEMY_ECL_SCHEDULE_OFFSET = 0x2c54",
-        "PHOTO_ENEMY_ECL_MANAGER_OFFSET = 0x4df4",
-        "PHOTO_ENEMY_ECL_PHOTO_TARGETS_OFFSET = 0x26ae00",
         "PHOTO_ENEMY_ECL_CONTROL_OFFSET = 0x2bf4",
     )
     for fact in required_operand_offsets:
@@ -3721,7 +3719,7 @@ def check_photo_enemy_owner() -> None:
     restored = [name for name in retired_run_views if name in run_surfaces]
     if restored:
         fail(f"RunEcl restored compact-enemy projections: {', '.join(restored)}")
-    if ").calls[TH08_ECL_READ_I(ctx, 0)].rawValue =" not in run_surfaces:
+    if "->eclSchedule.calls[TH08_ECL_READ_I(ctx, 0)].rawValue =" not in run_surfaces:
         fail("ECL opcode 115 must store the complete scheduled call word")
     for marker in (
         "g_PhotoEnemyManager->photoTargets",

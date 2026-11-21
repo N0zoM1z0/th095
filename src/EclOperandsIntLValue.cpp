@@ -56,8 +56,5 @@ i32 *__fastcall ResolveIntLValue(
 
 } // namespace EclOperands
 
-#undef TH095_ECL_PHOTO_TARGET_SLOT
-#undef TH095_PHOTO_ENEMY_U8
-#undef TH095_PHOTO_ENEMY_I32
 
 } // namespace th095

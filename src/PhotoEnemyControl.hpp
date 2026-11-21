@@ -32,6 +32,11 @@ enum PhotoEnemyMovementControlMask
     PHOTO_ENEMY_MOVEMENT_MODE_MASK = 0x00000c00,
 };
 
+enum PhotoEnemyPhotoTargetControl
+{
+    PHOTO_ENEMY_PHOTO_TARGET_MASK = 1U << 1,
+};
+
 enum PhotoEnemyDeferredShotControl
 {
     PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_SHIFT = 15,

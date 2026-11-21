@@ -14,6 +14,29 @@
 namespace th095
 {
 
+enum
+{
+    PHOTO_ENEMY_SCHEDULE_SLOT_COUNT = 10,
+    PHOTO_ENEMY_SCHEDULE_INACTIVE = -1,
+};
+
+// Opcode 115 writes the full word. Dispatch consumes its low signed half.
+union PhotoEnemyScheduledCall
+{
+    i32 rawValue;
+    struct
+    {
+        i16 subroutineId;
+        i16 unknown02;
+    };
+};
+
+struct PhotoEnemyEclSchedule
+{
+    i32 photoIndices[PHOTO_ENEMY_SCHEDULE_SLOT_COUNT];
+    PhotoEnemyScheduledCall calls[PHOTO_ENEMY_SCHEDULE_SLOT_COUNT];
+};
+
 struct PhotoEnemyTrailSampleView
 {
     Float3 position;
@@ -156,7 +179,7 @@ struct PhotoEnemyView
     Float2 movementBoundsMin;              // +0x2c3c
     Float2 movementBoundsMax;              // +0x2c44
     f32 minimumPlayerDistanceSquared;      // +0x2c4c
-    u8 unknown2c50[4];
+    i32 unknown2c50;                       // +0x2c50
     PhotoEnemyEclSchedule eclSchedule;     // +0x2c54
     i32 pendingCallbackFrame;              // +0x2ca4
     i32 unknown2ca8;                       // +0x2ca8
@@ -252,18 +275,15 @@ typedef char PhotoEnemyBulletDescriptorAt298C[
      offsetof(PhotoEnemyView, bulletSpawnDescriptor) +
          offsetof(PhotoBulletSpawnDescriptor, transformSound) == 0x2b90) ? 1 : -1];
 typedef char PhotoEnemyPhotoTargetSlotAt2BE5[
-    (offsetof(PhotoEnemyView, photoTargetSlot) ==
-        PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, photoTargetSlot) == 0x2be5) ? 1 : -1];
 typedef char PhotoEnemyItemDropTypeAt2BD8[
     (offsetof(PhotoEnemyView, itemDropType) == 0x2bd8) ? 1 : -1];
 typedef char PhotoEnemyEclScheduleAt2C54[
-    (offsetof(PhotoEnemyView, eclSchedule) ==
-         PHOTO_ENEMY_ECL_SCHEDULE_OFFSET &&
+    (offsetof(PhotoEnemyView, eclSchedule) == 0x2c54 &&
      offsetof(PhotoEnemyEclSchedule, calls) == 0x28 &&
      sizeof(PhotoEnemyEclSchedule) == 0x50) ? 1 : -1];
 typedef char PhotoEnemyUnknownAt2C50[
-    (offsetof(PhotoEnemyView, unknown2c50) ==
-        PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, unknown2c50) == 0x2c50) ? 1 : -1];
 typedef char PhotoEnemyFlagsAt2BF4[
     (offsetof(PhotoEnemyView, flags1) == PHOTO_ENEMY_ECL_CONTROL_OFFSET &&
      offsetof(PhotoEnemyView, flags2) ==

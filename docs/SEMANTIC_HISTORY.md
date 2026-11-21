@@ -18697,3 +18697,19 @@ All 167 affected exact units pass. The 308 focused retail comparisons
 include 48 new operand and opcode cases and agree in both normal link
 orders. The current game-object link comparison also passes. See
 `.analysis/pi/ecl-enemy-state/`.
+
+### SEM-425 — use the compact enemy for photo schedules and target slots
+
+The ECL photo-target and schedule readers now use the fields written by
+opcodes 109 and 115. Opcode 115 resolves its slot twice and writes the
+full 32-bit call word. The dispatcher uses the signed low half and
+compares the threshold with the camera's current photo index. The
+nearby +0x2C50 field keeps its unknown name and uses the signed word
+that both readers already observe.
+
+All 167 affected exact units pass. Both normal links resolve 91 references
+from 14 objects to the moved EnemyInf slot. The 322 state and interpreter
+cases agree with retail, as do 48 schedule writes, 20 schedule operand
+cases and 14 dispatch traces. The schedule fixtures include separate
+resolved indices for the two stores and nonzero upper call words.
+See `.analysis/pi/ecl-photo-schedule/`.

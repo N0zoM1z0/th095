@@ -71,6 +71,17 @@ enum EclEnemyStateSelector
     ECL_ENEMY_SCORE = 0x275c,
 };
 
+enum EclPhotoTargetSelector
+{
+    ECL_PHOTO_TARGET_SLOT = 0x2753,
+    ECL_SCHEDULED_PHOTO_INDEX0 = 0x2757,
+    ECL_SCHEDULED_PHOTO_INDEX1 = 0x2758,
+    ECL_SCHEDULED_PHOTO_INDEX2 = 0x2759,
+    ECL_SCHEDULED_PHOTO_INDEX3 = 0x275a,
+    ECL_FIRST_PHOTO_TARGET_WORLD_X = 0x2762,
+    ECL_FIRST_PHOTO_TARGET_WORLD_Y = 0x2763,
+};
+
 i32 __fastcall ResolveInt(Enemy *enemy, i32 operand);
 i32 *__fastcall ResolveIntLValue(Enemy *enemy, i32 *operand, u16 flags, i32 flagIndex);
 f32 *__fastcall ResolveFloatLValue(Enemy *enemy, f32 *operand, u16 flags, i32 flagIndex);

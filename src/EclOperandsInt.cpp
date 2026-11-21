@@ -141,10 +141,10 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2755: return (i32)enemy->lastFrameDisplacement.y;
     case 0x2756: return (i32)enemy->lastFrameDisplacement.z;
 
-    case 0x2757: return TH095_ECL_SCHEDULE(enemy).photoIndices[0];
-    case 0x2758: return TH095_ECL_SCHEDULE(enemy).photoIndices[1];
-    case 0x2759: return TH095_ECL_SCHEDULE(enemy).photoIndices[2];
-    case 0x275a: return TH095_ECL_SCHEDULE(enemy).photoIndices[3];
+    case ECL_SCHEDULED_PHOTO_INDEX0: return reinterpret_cast<PhotoEnemyView *>(enemy)->eclSchedule.photoIndices[0];
+    case ECL_SCHEDULED_PHOTO_INDEX1: return reinterpret_cast<PhotoEnemyView *>(enemy)->eclSchedule.photoIndices[1];
+    case ECL_SCHEDULED_PHOTO_INDEX2: return reinterpret_cast<PhotoEnemyView *>(enemy)->eclSchedule.photoIndices[2];
+    case ECL_SCHEDULED_PHOTO_INDEX3: return reinterpret_cast<PhotoEnemyView *>(enemy)->eclSchedule.photoIndices[3];
     case ECL_ENEMY_MOVEMENT_ANGLE: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->movementAngle;
     case ECL_ENEMY_ANGULAR_VELOCITY: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->angularVelocity;
     case ECL_ENEMY_SPEED: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->speed;
@@ -152,9 +152,8 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case ECL_ENEMY_ORBIT_RADIUS: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->orbitRadius;
     case ECL_ENEMY_ORBIT_ANGLE: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->orbitAngle;
     case ECL_ENEMY_ORBIT_ANGULAR_VELOCITY: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->orbitAngularVelocity;
-    case 0x2752: return TH095_PHOTO_ENEMY_I32(
-        enemy, PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET);
-    case 0x2753: return TH095_ECL_PHOTO_TARGET_SLOT(enemy);
+    case 0x2752: return reinterpret_cast<PhotoEnemyView *>(enemy)->unknown2c50;
+    case ECL_PHOTO_TARGET_SLOT: return reinterpret_cast<PhotoEnemyView *>(enemy)->photoTargetSlot;
     case ECL_ENEMY_ITEM_DROP_TYPE: return reinterpret_cast<PhotoEnemyView *>(enemy)->itemDropType;
     case ECL_ENEMY_SCORE: return reinterpret_cast<PhotoEnemyView *>(enemy)->score;
 
@@ -169,8 +168,8 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
         return TH095_ECL_INT_PHOTO_INDEX;
     case 0x2764:
         return TH095_ECL_INT_PHOTOS_TAKEN;
-    case 0x2762: return (i32)g_PhotoEnemyManager->photoTargets[0]->worldPosition.x;
-    case 0x2763: return (i32)g_PhotoEnemyManager->photoTargets[0]->worldPosition.y;
+    case ECL_FIRST_PHOTO_TARGET_WORLD_X: return (i32)g_PhotoEnemyManager->photoTargets[0]->worldPosition.x;
+    case ECL_FIRST_PHOTO_TARGET_WORLD_Y: return (i32)g_PhotoEnemyManager->photoTargets[0]->worldPosition.y;
     default: return operand;
     }
 }
@@ -180,8 +179,5 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PHOTOS_TAKEN
 #undef TH095_ECL_INT_PHOTO_INDEX
 #undef TH095_ECL_INT_PLAYER_POSITION
-#undef TH095_ECL_PHOTO_TARGET_SLOT
-#undef TH095_PHOTO_ENEMY_U8
-#undef TH095_PHOTO_ENEMY_I32
 
 } // namespace th095

@@ -95,14 +95,14 @@
         {
             g_PhotoEnemyManager->photoTargets[TH08_ECL_READ_I(ctx, 0)] =
                 reinterpret_cast<PhotoEnemyView *>(enemy);
-            TH095_RUN_ECL_CONTROL_WORD(enemy) |= 2U;
-            TH095_ECL_PHOTO_TARGET_SLOT(enemy) =
+            reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 |= PHOTO_ENEMY_PHOTO_TARGET_MASK;
+            reinterpret_cast<PhotoEnemyView *>(enemy)->photoTargetSlot =
                 static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
         }
         else
         {
-            g_PhotoEnemyManager->photoTargets[TH095_ECL_PHOTO_TARGET_SLOT(enemy)] = 0;
-            TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~2U;
+            g_PhotoEnemyManager->photoTargets[reinterpret_cast<PhotoEnemyView *>(enemy)->photoTargetSlot] = 0;
+            reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 &= ~PHOTO_ENEMY_PHOTO_TARGET_MASK;
         }
         break;
 
@@ -167,9 +167,9 @@ enter_subroutine:
     }
 
     case 115:
-        TH095_ECL_SCHEDULE(enemy).photoIndices[TH08_ECL_READ_I(ctx, 0)] =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->eclSchedule.photoIndices[TH08_ECL_READ_I(ctx, 0)] =
             TH08_ECL_READ_I(ctx, 1);
-        TH095_ECL_SCHEDULE(enemy).calls[TH08_ECL_READ_I(ctx, 0)].rawValue =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->eclSchedule.calls[TH08_ECL_READ_I(ctx, 0)].rawValue =
             TH08_ECL_READ_I(ctx, 2);
         break;
 

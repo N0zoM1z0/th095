@@ -141,10 +141,10 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x2755: return this->lastFrameDisplacement.y;
     case 0x2756: return this->lastFrameDisplacement.z;
 
-    case 0x2757: return (f32)TH095_ECL_SCHEDULE(this).photoIndices[0];
-    case 0x2758: return (f32)TH095_ECL_SCHEDULE(this).photoIndices[1];
-    case 0x2759: return (f32)TH095_ECL_SCHEDULE(this).photoIndices[2];
-    case 0x275a: return (f32)TH095_ECL_SCHEDULE(this).photoIndices[3];
+    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX0: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclSchedule.photoIndices[0];
+    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX1: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclSchedule.photoIndices[1];
+    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX2: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclSchedule.photoIndices[2];
+    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX3: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclSchedule.photoIndices[3];
     case 0x2730: return TH095_ECL_FLOAT_PLAYER_ANGLE(&this->worldPosition);
     case 0x2765:
     {
@@ -159,9 +159,8 @@ f32 Enemy::ResolveFloat(f32 operand)
     case EclOperands::ECL_ENEMY_ORBIT_RADIUS: return reinterpret_cast<PhotoEnemyView *>(this)->orbitRadius;
     case EclOperands::ECL_ENEMY_ORBIT_ANGLE: return reinterpret_cast<PhotoEnemyView *>(this)->orbitAngle;
     case EclOperands::ECL_ENEMY_ORBIT_ANGULAR_VELOCITY: return reinterpret_cast<PhotoEnemyView *>(this)->orbitAngularVelocity;
-    case 0x2753: return (f32)TH095_ECL_PHOTO_TARGET_SLOT(this);
-    case 0x2752: return (f32)TH095_PHOTO_ENEMY_I32(
-        this, PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET);
+    case EclOperands::ECL_PHOTO_TARGET_SLOT: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->photoTargetSlot;
+    case 0x2752: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->unknown2c50;
     case 0x2732:
     {
         Float3 delta = TH095_ECL_FLOAT_PLAYER_POSITION - this->worldPosition;
@@ -171,8 +170,8 @@ f32 Enemy::ResolveFloat(f32 operand)
         return (f32)(i32)TH095_ECL_FLOAT_PHOTO_INDEX;
     case 0x2764:
         return (f32)(i32)TH095_ECL_FLOAT_PHOTOS_TAKEN;
-    case 0x2762: return g_PhotoEnemyManager->photoTargets[0]->worldPosition.x;
-    case 0x2763: return g_PhotoEnemyManager->photoTargets[0]->worldPosition.y;
+    case EclOperands::ECL_FIRST_PHOTO_TARGET_WORLD_X: return g_PhotoEnemyManager->photoTargets[0]->worldPosition.x;
+    case EclOperands::ECL_FIRST_PHOTO_TARGET_WORLD_Y: return g_PhotoEnemyManager->photoTargets[0]->worldPosition.y;
     default: return operand;
     }
 }
@@ -180,8 +179,5 @@ f32 Enemy::ResolveFloat(f32 operand)
 #undef TH095_ECL_FLOAT_PHOTOS_TAKEN
 #undef TH095_ECL_FLOAT_PHOTO_INDEX
 #undef TH095_ECL_FLOAT_PLAYER_POSITION
-#undef TH095_ECL_PHOTO_TARGET_SLOT
-#undef TH095_PHOTO_ENEMY_U8
-#undef TH095_PHOTO_ENEMY_I32
 
 } // namespace th095

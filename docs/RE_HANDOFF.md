@@ -96,7 +96,9 @@ the 0x2C deferred-shot instruction between ECL capture and cadence dispatch.
 SEM-423 uses the compact enemy descriptor for ECL transform and sound writes
 and shares the typed squared-distance gate with the shot dispatcher.
 SEM-424 uses the compact enemy fields for life, score, drops, the ECL
-timer and the callback staging writes.
+timer and the callback staging writes. SEM-425 routes photo-target
+registration and the photo-index schedule through the same typed enemy
+and manager fields used by the readers and scheduled calls.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
