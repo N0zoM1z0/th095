@@ -19259,3 +19259,30 @@ Six callback probes grow with all three typed conversions tested.
 In the two-handle background callback at 0x00413FC0, construction
 plus assignment or memcpy grows 92 bytes to 142. A direct value
 constructor emits 117 bytes. See `.analysis/pi/ecl-anm-lookup/`.
+
+### SEM-451 — use typed RunEcl movement and world spawning
+
+RunEcl computes world position on the canonical Float3 fields and
+copies the orbit origin from the same position owner. The bullet
+spawn descriptor receives the computed shot position through a
+typed three-float copy. The low movement handlers write the named
+polar and orbit modes through the existing control bitfield. The
+high handlers read floating operands from the instruction union.
+
+Opcode 150 calls AnmLoaded::CreateVmAtWorld directly. It evaluates
+the script operand and discards the returned handle. Changing the
+three stored results to scalar assignments changes the target
+register order or extent. Using all the direct union reads in the
+low handlers also changes the extent, so the low-handler float
+accesses retain their existing spelling.
+
+The full 27,747-byte comparison and all 647 relocations pass.
+All four world-spawn calls reach the moved factory in each normal
+link. The retail executable and both links agree on 90 focused
+world-spawn, float-operand and movement cases. The existing shot
+descriptor, visual and card cases also pass. Both layouts agree
+with retail in all ten sampled gameplay fields over 2,712 demo0
+frames. The global timer first advances two frames later in the
+regular layout and one frame earlier in the reordered layout.
+The paired library sections pass 7,748 code and 1,007 initialized
+data relocation checks. See `.analysis/pi/ecl-wire-operands/`.

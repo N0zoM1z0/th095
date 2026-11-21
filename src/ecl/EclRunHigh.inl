@@ -89,7 +89,7 @@ inline void DecrementTimer(ZunTimer *timer, i32 value)
 #define ECL_READ_FLOAT_BITS(index) \
     ((instruction->operandFlags & (1U << (index))) \
          ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[(index)]) \
-         : *reinterpret_cast<f32 *>(&instruction->operands[(index)].asInt))
+         : instruction->operands[(index)].asFloat)
 
 #define ECL_WRITE_FLOAT(index) \
     EclOperands::ResolveFloatLValue( \

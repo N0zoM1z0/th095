@@ -76,6 +76,12 @@ static __forceinline PhotoEnemyAnmVmIdStorage Th095EclSpawnWorld(
 // The low/high opcode bodies are included lexically below so VC7 can reproduce
 // RunEcl's target handler order, shared labels, locals, and stack frame.
 
+static __forceinline void AssignEclShotPosition(
+    PhotoBulletVector &destination, const Float3 &position)
+{
+    memcpy(&destination, &position, sizeof(destination));
+}
+
 static __forceinline void InitializeEclTargetTimer(ZunTimer *timer)
 {
     timer->current = 0;
@@ -106,9 +112,7 @@ restart_context:
             goto enter_subroutine;
 
 low_redispatch_instruction:
-        *reinterpret_cast<D3DXVECTOR3 *>(&enemy->worldPosition) =
-            *reinterpret_cast<D3DXVECTOR3 *>(&enemy->position) +
-            *reinterpret_cast<D3DXVECTOR3 *>(&enemy->positionOffset);
+        enemy->worldPosition = enemy->position + enemy->positionOffset;
 
         if ((int)enemy->activeEclContext->secondaryTime > 0)
         {

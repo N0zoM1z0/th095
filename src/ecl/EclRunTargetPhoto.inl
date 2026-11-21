@@ -221,8 +221,7 @@
     case 150:
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
-        TH095_ECL_ANM_SPAWN_WORLD(
-            TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, ECL_READ_INT(0), &position);
+        g_PhotoEnemyManager->enemyAnm->CreateVmAtWorld(ECL_READ_INT(0), &position);
         break;
     }
 

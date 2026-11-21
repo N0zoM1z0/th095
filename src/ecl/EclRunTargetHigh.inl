@@ -65,9 +65,8 @@
         break;
 
     case 99:
-        reinterpret_cast<Float3 &>(
-            enemy->bulletSpawnDescriptor.position) =
-                enemy->position + enemy->shootOffset;
+        AssignEclShotPosition(enemy->bulletSpawnDescriptor.position,
+                              enemy->position + enemy->shootOffset);
         g_PhotoBulletManager->SpawnBulletPattern(
             &enemy->bulletSpawnDescriptor);
         break;
@@ -76,11 +75,11 @@
         enemy->shootOffset.x =
             (instruction->operandFlags & 1U)
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[0])
-                : *reinterpret_cast<f32 *>(&instruction->operands[0].asInt);
+                : instruction->operands[0].asFloat;
         enemy->shootOffset.y =
             (instruction->operandFlags & 2U)
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[1])
-                : *reinterpret_cast<f32 *>(&instruction->operands[1].asInt);
+                : instruction->operands[1].asFloat;
         enemy->shootOffset.z = 0.0f;
         break;
 
@@ -347,7 +346,7 @@ enter_subroutine:
         enemy->vm.rotation.z =
             (instruction->operandFlags & 1U)
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[0])
-                : *reinterpret_cast<f32 *>(&instruction->operands[0].asInt);
+                : instruction->operands[0].asFloat;
         break;
 
     case 136:

@@ -148,7 +148,10 @@ Callbacks 2–4 still use the separate VC7.1 reinitialization receivers.
 SEM-450 calls the canonical VM factory, initializer, interpreter and
 sprite methods from ECL. The enemy marker initializes its handle
 directly from the factory return. Manager lookup retains its exact
-four-byte argument adapter.
+four-byte argument adapter. SEM-451 uses the canonical world and
+movement fields in RunEcl. Opcode 150 calls the ANM factory directly.
+The three opcodes that store a returned handle retain their existing
+return-copy route.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

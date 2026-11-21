@@ -69,11 +69,6 @@ EclRawInstruction *__fastcall CompareOperands(
     (((insn)->operandFlags & (1U << (index))) \
          ? owner->ResolveFloat(RawFloat((insn), (index))) \
          : RawFloat((insn), (index)))
-#define ReadFloatRawArg(owner, insn, index) \
-    (((insn)->operandFlags & (1U << (index))) \
-         ? owner->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt((insn), (index)))) \
-         : RawFloat((insn), (index)))
-
 #define WriteInt(owner, insn, index) \
     EclOperands::ResolveIntLValue(owner, &RawInt((insn), (index)), \
                                   (insn)->operandFlags, (index))
@@ -370,9 +365,7 @@ EclRawInstruction *__fastcall CompareOperands(
     case 65:
         enemy->movementAngle = AddNormalizeAngle(((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0))), 0.0f);
         enemy->speed = ((instruction->operandFlags & (1U << 1)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
-        enemy->flags1 =
-            (enemy->flags1 &
-             0xfffff3ffU) | 0x400U;
+        enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_POLAR;
         enemy->movementDuration = 0;
         enemy->movementTimer = 0;
         break;
@@ -381,9 +374,7 @@ EclRawInstruction *__fastcall CompareOperands(
         {
             enemy->movementAngle = AddNormalizeAngle(((instruction->operandFlags & (1U << 2)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 2))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 2))), 0.0f);
             enemy->speed = ((instruction->operandFlags & (1U << 3)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
-            enemy->flags1 =
-                (enemy->flags1 &
-                 0xfffff3ffU) | 0x400U;
+            enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_POLAR;
             enemy->movementDuration = 0;
             enemy->movementTimer = 0;
         }
@@ -409,9 +400,7 @@ EclRawInstruction *__fastcall CompareOperands(
                     g_RuntimePlayerOwner->AngleFromPoint(
                         &enemy->position));
             enemy->speed = ((instruction->operandFlags & (1U << 3)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
-            enemy->flags1 =
-                (enemy->flags1 &
-                 0xfffff3ffU) | 0x400U;
+            enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_POLAR;
             // The target resolves operand 0 again before timer assignment.
             enemy->movementTimer =
                 (enemy->movementDuration = ReadInt(enemy, instruction, 0));
@@ -424,15 +413,11 @@ EclRawInstruction *__fastcall CompareOperands(
 
     case 70:
         enemy->angularVelocity = ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0)));
-        enemy->flags1 =
-            (enemy->flags1 &
-             0xfffff3ffU) | 0x400U;
+        enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_POLAR;
         break;
     case 71:
         enemy->acceleration = ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0)));
-        enemy->flags1 =
-            (enemy->flags1 &
-             0xfffff3ffU) | 0x400U;
+        enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_POLAR;
         break;
     case 72:
         enemy->movementTimer =
@@ -453,15 +438,12 @@ EclRawInstruction *__fastcall CompareOperands(
         enemy->radialVelocity = ((instruction->operandFlags & (1U << 6))
             ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 6)))
             : *reinterpret_cast<f32 *>(&RawInt(instruction, 6)));
-        enemy->flags1 |=
-            0xc00U;
+        enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_ORBIT;
         break;
     case 73:
         enemy->movementTimer =
             (enemy->movementDuration = ReadInt(enemy, instruction, 0));
-        *reinterpret_cast<D3DXVECTOR3 *>(
-            &enemy->movementInterpolationOrigin) =
-            *reinterpret_cast<D3DXVECTOR3 *>(&enemy->position);
+        enemy->movementInterpolationOrigin = enemy->position;
         enemy->orbitAngle = ((instruction->operandFlags & (1U << 1))
                 ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1)))
                 : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
@@ -472,16 +454,14 @@ EclRawInstruction *__fastcall CompareOperands(
         enemy->radialVelocity = ((instruction->operandFlags & (1U << 3))
                 ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3)))
                 : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
-        enemy->flags1 |=
-            0xc00U;
+        enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_ORBIT;
         break;
     case 74:
         enemy->movementTimer =
             (enemy->movementDuration = ReadInt(enemy, instruction, 0));
         enemy->orbitAngularVelocity = ((instruction->operandFlags & (1U << 1)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
         enemy->radialVelocity = ((instruction->operandFlags & (1U << 2)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 2))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 2)));
-        enemy->flags1 |=
-            0xc00U;
+        enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_ORBIT;
         break;
     case 75:
         enemy->movementBounds.lower.x =
