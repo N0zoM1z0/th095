@@ -7,15 +7,6 @@
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define previousSelectedBitmap originalBitmap
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define ownedBitmap bitmap
-#define bitmapBits buffer
-#endif
-
 DIFFABLE_STATIC(HFONT, g_TextFontWidth19);
 DIFFABLE_STATIC(HFONT, g_TextFontWidth20OrMore);
 DIFFABLE_STATIC(HFONT, g_TextFontWidth17OrLess);
@@ -96,14 +87,8 @@ bool TextRenderBufferView::AllocateBufferWithFallback(
     return false;
 }
 
-struct TextBitmapInfo
-{
-    BITMAPINFOHEADER header;
-    RGBQUAD colors[17];
-};
-
 typedef char TextBitmapInfoSizeIs6C[
-    (sizeof(TextBitmapInfo) == 0x6c) ? 1 : -1];
+    (sizeof(BITMAPV4HEADER) == 0x6c) ? 1 : -1];
 
 bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
                                              D3DFORMAT format)
@@ -120,7 +105,7 @@ bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
         HBITMAP bitmapObj;
         TextRenderFormatInfo *formatInfo;
     } deep;
-    TextBitmapInfo bitmapInfo;
+    BITMAPV4HEADER bitmapInfo;
 #define bitmapData deep.bitmapData
 #define bitmapObj deep.bitmapObj
 #define formatInfo deep.formatInfo
@@ -129,7 +114,7 @@ bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
 #define imageWidthInBytes averagedPanLocal12.imageWidthInBytes
 
     this->ReleaseBuffer();
-    memset(&bitmapInfo, 0, sizeof(TextBitmapInfo));
+    memset(&bitmapInfo, 0, sizeof(bitmapInfo));
     formatInfo = this->GetFormatInfo(format);
     if (formatInfo == NULL)
     {
@@ -137,19 +122,19 @@ bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
     }
     imageWidthInBytes =
         ((((width * formatInfo->bitCount) / 8) + 3) / 4) * 4;
-    bitmapInfo.header.biSize = sizeof(TextBitmapInfo);
-    bitmapInfo.header.biWidth = width;
-    bitmapInfo.header.biHeight = -(height + 1);
-    bitmapInfo.header.biPlanes = 1;
-    bitmapInfo.header.biBitCount = formatInfo->bitCount;
-    bitmapInfo.header.biSizeImage = height * imageWidthInBytes;
+    bitmapInfo.bV4Size = sizeof(bitmapInfo);
+    bitmapInfo.bV4Width = width;
+    bitmapInfo.bV4Height = -(height + 1);
+    bitmapInfo.bV4Planes = 1;
+    bitmapInfo.bV4BitCount = formatInfo->bitCount;
+    bitmapInfo.bV4SizeImage = height * imageWidthInBytes;
     if (format != D3DFMT_X1R5G5B5 && format != D3DFMT_X8R8G8B8)
     {
-        bitmapInfo.header.biCompression = BI_BITFIELDS;
-        reinterpret_cast<u32 *>(bitmapInfo.colors)[0] = formatInfo->redMask;
-        reinterpret_cast<u32 *>(bitmapInfo.colors)[1] = formatInfo->greenMask;
-        reinterpret_cast<u32 *>(bitmapInfo.colors)[2] = formatInfo->blueMask;
-        reinterpret_cast<u32 *>(bitmapInfo.colors)[3] = formatInfo->alphaMask;
+        bitmapInfo.bV4V4Compression = BI_BITFIELDS;
+        bitmapInfo.bV4RedMask = formatInfo->redMask;
+        bitmapInfo.bV4GreenMask = formatInfo->greenMask;
+        bitmapInfo.bV4BlueMask = formatInfo->blueMask;
+        bitmapInfo.bV4AlphaMask = formatInfo->alphaMask;
     }
     bitmapObj = CreateDIBSection(NULL, reinterpret_cast<BITMAPINFO *>(&bitmapInfo),
                               DIB_RGB_COLORS,
@@ -158,7 +143,7 @@ bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
     {
         return false;
     }
-    memset(bitmapData, 0, bitmapInfo.header.biSizeImage);
+    memset(bitmapData, 0, bitmapInfo.bV4SizeImage);
     deviceContext = CreateCompatibleDC(NULL);
     originalBitmapObj = SelectObject(deviceContext, bitmapObj);
 #undef originalBitmapObj
@@ -167,7 +152,7 @@ bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
     this->hdc = averagedPanLocal12.deviceContext;
     this->ownedBitmap = bitmapObj;
     this->bitmapBits = bitmapData;
-    this->imageSizeInBytes = bitmapInfo.header.biSizeImage;
+    this->imageSizeInBytes = bitmapInfo.bV4SizeImage;
     this->previousSelectedBitmap = averagedPanLocal12.originalBitmapObj;
     this->width = width;
     this->height = height;

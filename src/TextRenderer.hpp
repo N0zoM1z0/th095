@@ -11,13 +11,6 @@
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define g_TextFontWidth17OrLess g_TextFont17
-#define g_TextFontWidth18 g_TextFont18
-#define g_TextFontWidth19 g_TextFont19
-#define g_TextFontWidth20OrMore g_TextFont20
-#endif
-
 struct TextRenderFormatInfo
 {
     D3DFORMAT format;
@@ -40,18 +33,9 @@ struct TextRenderBufferView
     u32 imageSizeInBytes;
     i32 imageWidthInBytes;
     HDC hdc;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    HGDIOBJ originalBitmap;
-#else
     HGDIOBJ previousSelectedBitmap;
-#endif
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    HGDIOBJ bitmap;
-    u8 *buffer;
-#else
     HGDIOBJ ownedBitmap;
     u8 *bitmapBits;
-#endif
 
     bool ReleaseBuffer();
     bool AllocateBufferWithFallback(i32 width, i32 height,
@@ -78,20 +62,10 @@ typedef char TextRenderBufferImageSizeAt10C[
     (offsetof(TextRenderBufferView, imageSizeInBytes) == 0x10c) ? 1 : -1];
 typedef char TextRenderBufferHdcAt114[
     (offsetof(TextRenderBufferView, hdc) == 0x114) ? 1 : -1];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-typedef char TextRenderBufferPreviousBitmapAt118[
-    (offsetof(TextRenderBufferView, originalBitmap) == 0x118) ? 1 : -1];
-#else
 typedef char TextRenderBufferPreviousBitmapAt118[
     (offsetof(TextRenderBufferView, previousSelectedBitmap) == 0x118) ? 1 : -1];
-#endif
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-typedef char TextRenderBufferDataAt120[
-    (offsetof(TextRenderBufferView, buffer) == 0x120) ? 1 : -1];
-#else
 typedef char TextRenderBufferDataAt120[
     (offsetof(TextRenderBufferView, bitmapBits) == 0x120) ? 1 : -1];
-#endif
 typedef char TextRenderFormatInfoSizeIs18[
     (sizeof(TextRenderFormatInfo) == 0x18) ? 1 : -1];
 

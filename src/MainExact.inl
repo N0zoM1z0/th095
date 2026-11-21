@@ -3,6 +3,7 @@
 #include "AsciiManager.hpp"
 #include "Controller.hpp"
 #include "PhotoGameTask.hpp"
+#include "TextRenderer.hpp"
 #include "pbg/PbgArchive.hpp"
 
 #include <direct.h>
@@ -24,12 +25,6 @@ struct FrontEndControllerView
 {
     static FrontEndControllerView *__fastcall Create(i32 mode);
     void Destroy();
-};
-
-struct TextHelperView
-{
-    static void CreateTextBuffer();
-    static void ReleaseTextBuffer();
 };
 
 struct MidiTimer

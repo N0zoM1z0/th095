@@ -13,6 +13,7 @@
 #endif
 #include "SoundPlayer.hpp"
 #include "SupervisorViewportSlot.hpp"
+#include "TextRenderer.hpp"
 #include "pbg/PbgArchive.hpp"
 #include <direct.h>
 #include <math.h>
@@ -119,12 +120,6 @@ struct FrontEndLifecycleView
 #define TH095_FRONT_END_DESTROY(controller) (controller)->Destroy()
 #define TH095_FRONT_END_RELEASE_RESOURCES() ReleaseSceneSelectAnms()
 #endif
-
-struct TextHelperView
-{
-    static void CreateTextBuffer();
-    static void ReleaseTextBuffer();
-};
 
 struct MidiTimer
 {

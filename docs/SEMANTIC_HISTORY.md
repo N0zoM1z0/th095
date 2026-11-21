@@ -19646,3 +19646,23 @@ input indices. The scene timer starts one frame earlier in the regular
 link and one frame later in the reordered link. The game and library
 relocation audits pass in both layouts. See
 `.analysis/pi/main-anm-update/`.
+
+### SEM-471 — share the text renderer GDI state
+
+Both Main builds use the TextRenderer declaration. Both TextRenderer
+profiles use the same buffer layout and four glyph-width font symbols.
+The twelve original font references retain their target destinations.
+
+TryAllocateBuffer at `0x0041BF90` passes a 108-byte top-down DIB header
+to CreateDIBSection. The four masks at offsets 0x28 through 0x34 are
+the Win32 `BITMAPV4HEADER` fields. The buffer retains the returned DIB
+handle separately from the pixel pointer and restores the previously
+selected object before deleting the DC and the DIB.
+
+All 103 affected strict exact comparisons pass. Each normal link has
+identical mapped sections before and after the change. An emulated
+comparison of the original and both normal links checks the seven format
+records, six allocation formats, six failure and fallback paths, seven
+glyph-width selections, and the GDI cleanup order. The fixture stubs GDI
+and stops bold rendering at the first font selection. See
+`.analysis/pi/shared-text-renderer/`.
