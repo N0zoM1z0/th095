@@ -15,11 +15,11 @@ namespace EclRunLow
 {
 #define DEP_READ_INT(enemy, instruction, index) \
     ((instruction)->operandFlags & (1U << (index)) \
-         ? EclOperands::ResolveInt((enemy), (instruction)->operands[index].asInt) \
+         ? EclOperands::ResolveInt(reinterpret_cast<PhotoEnemyView *>(enemy), (instruction)->operands[index].asInt) \
          : (instruction)->operands[index].asInt)
 #define DEP_READ_FLOAT(enemy, instruction, index) \
     ((instruction)->operandFlags & (1U << (index)) \
-         ? (enemy)->ResolveFloat((instruction)->operands[index].asFloat) \
+         ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat((instruction)->operands[index].asFloat) \
          : (instruction)->operands[index].asFloat)
 
 extern EnemyEclInterpolatorCallback g_EclInterpolatorCallbacks[];
@@ -31,17 +31,17 @@ void __fastcall StartTimedPolarDisplacement(
     PhotoEnemyView *enemy, EclRawInstruction *instruction, f32 angle)
 {
     enemy->movementInterpolationDelta.x =
-        cosf(angle) * DEP_READ_FLOAT(reinterpret_cast<Enemy *>(enemy), instruction, 2) *
-        DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 0);
+        cosf(angle) * DEP_READ_FLOAT(enemy, instruction, 2) *
+        DEP_READ_INT(enemy, instruction, 0);
     enemy->movementInterpolationDelta.y =
-        sinf(angle) * DEP_READ_FLOAT(reinterpret_cast<Enemy *>(enemy), instruction, 2) *
-        DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 0);
+        sinf(angle) * DEP_READ_FLOAT(enemy, instruction, 2) *
+        DEP_READ_INT(enemy, instruction, 0);
     enemy->movementInterpolationDelta.z = 0.0f;
     enemy->movementInterpolationOrigin = enemy->worldPosition;
     enemy->movementTimer =
         (enemy->movementDuration =
-             DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 0));
-    enemy->control.movementEasing = DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 1);
+             DEP_READ_INT(enemy, instruction, 0));
+    enemy->control.movementEasing = DEP_READ_INT(enemy, instruction, 1);
     enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_INTERPOLATED;
 }
 
@@ -89,10 +89,10 @@ void __fastcall BeginBoundaryAwareMove(
         angle = -angle;
     }
 
-    if (DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 0) <= 0)
+    if (DEP_READ_INT(enemy, instruction, 0) <= 0)
     {
         enemy->movementAngle = angle;
-        enemy->speed = DEP_READ_FLOAT(reinterpret_cast<Enemy *>(enemy), instruction, 2);
+        enemy->speed = DEP_READ_FLOAT(enemy, instruction, 2);
         enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_POLAR;
         enemy->movementDuration = 0;
         enemy->movementTimer = 0;
@@ -108,9 +108,9 @@ void __fastcall InterpolateLinear(Enemy *enemy, EnemyEclInterpolationSlot *slot,
 {
     f32 start;
     f32 end;
-    start = enemy->ResolveFloat(slot->parameters[0]);
-    end = enemy->ResolveFloat(slot->parameters[1]);
-    *EclOperands::ResolveFloatLValue(enemy, &slot->affectedVariable, 0, -1) =
+    start = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[0]);
+    end = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[1]);
+    *EclOperands::ResolveFloatLValue(reinterpret_cast<PhotoEnemyView *>(enemy), &slot->affectedVariable, 0, -1) =
         (end - start) * t + start;
 }
 
@@ -138,15 +138,15 @@ void __fastcall InterpolateHermite(Enemy *enemy, EnemyEclInterpolationSlot *slot
     f32 hermiteWeight1;
     f32 hermiteWeight2;
     f32 hermiteWeight3;
-    hermiteParameter0 = enemy->ResolveFloat(slot->parameters[0]);
-    hermiteParameter1 = enemy->ResolveFloat(slot->parameters[1]);
-    hermiteParameter2 = enemy->ResolveFloat(slot->parameters[2]);
-    hermiteParameter3 = enemy->ResolveFloat(slot->parameters[3]);
+    hermiteParameter0 = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[0]);
+    hermiteParameter1 = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[1]);
+    hermiteParameter2 = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[2]);
+    hermiteParameter3 = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[3]);
     hermiteWeight0 = (t - 1.0f) * (t - 1.0f) * (2.0f * t + 1.0f);
     hermiteWeight1 = t * t * (3.0f - 2.0f * t);
     hermiteWeight2 = (1.0f - t) * (1.0f - t) * t;
     hermiteWeight3 = (t - 1.0f) * t * t;
-    *EclOperands::ResolveFloatLValue(enemy, &slot->affectedVariable, 0, -1) =
+    *EclOperands::ResolveFloatLValue(reinterpret_cast<PhotoEnemyView *>(enemy), &slot->affectedVariable, 0, -1) =
         hermiteWeight0 * hermiteParameter0 + hermiteWeight1 * hermiteParameter1 + hermiteWeight2 * hermiteParameter2 + hermiteWeight3 * hermiteParameter3;
 }
 
@@ -173,7 +173,7 @@ void __fastcall ApplyInterpolationOperation(Enemy *enemy, EclRawInstruction *ins
 {
     f32 delta;
     delta = DEP_READ_FLOAT(enemy, instruction, 1) - DEP_READ_FLOAT(enemy, instruction, 2);
-    *EclOperands::ResolveFloatLValue(enemy,
+    *EclOperands::ResolveFloatLValue(reinterpret_cast<PhotoEnemyView *>(enemy),
         reinterpret_cast<f32 *>(instruction->operands), instruction->operandFlags, 0) =
         delta * DEP_READ_FLOAT(enemy, instruction, 3) + DEP_READ_FLOAT(enemy, instruction, 2);
 }
@@ -204,7 +204,8 @@ void __fastcall InstallInterpolationSlot(Enemy *enemy, EclRawInstruction *instru
 }
 
 // FUNCTION: TH095 0x00411A00; TH08 0x004215F0 is the source-shape oracle.
-EclRawInstruction *__fastcall CompareOperands(Enemy *enemy, EclRawInstruction *instruction)
+EclRawInstruction *__fastcall CompareOperands(
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     switch (instruction->opcode)
     {

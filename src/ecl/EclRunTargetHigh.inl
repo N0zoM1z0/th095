@@ -252,13 +252,13 @@ enter_subroutine:
                 Float3 position;
                 memcpy(&packet, instruction->operands, sizeof(packet));
                 position.x = (instruction->operandFlags & (1U << 1))
-                    ? enemy->ResolveFloat(packet.position.x)
+                    ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(packet.position.x)
                     : packet.position.x;
                 position.y = (instruction->operandFlags & (1U << 2))
-                    ? enemy->ResolveFloat(packet.position.y)
+                    ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(packet.position.y)
                     : packet.position.y;
                 position.z = (instruction->operandFlags & (1U << 3))
-                    ? enemy->ResolveFloat(packet.position.z)
+                    ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(packet.position.z)
                     : packet.position.z;
                 position += reinterpret_cast<PhotoEnemyView *>(enemy)->position;
                 spawned =

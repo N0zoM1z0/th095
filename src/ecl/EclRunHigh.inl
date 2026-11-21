@@ -199,7 +199,7 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
 #define TH08_ECL_READ_I16(ctx, byteOffset, flagIndex) \
     ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << (flagIndex))) \
          ? EclOperands::ResolveInt( \
-               TH08_ECL_CONTEXT_ENEMY(ctx), \
+               reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)), \
                static_cast<i32>(*reinterpret_cast<i16 *>( \
                    reinterpret_cast<u8 *>(TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operands) + (byteOffset)))) \
          : static_cast<i32>(*reinterpret_cast<i16 *>( \
@@ -207,7 +207,7 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
 #define TH08_ECL_READ_I(ctx, index) \
     ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << (index))) \
          ? EclOperands::ResolveInt( \
-               TH08_ECL_CONTEXT_ENEMY(ctx), \
+               reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)), \
                TH08_ECL_RAW_I((ctx), (index))) \
          : TH08_ECL_RAW_I((ctx), (index)))
 #define TH08_ECL_READ_F(ctx, index) \
@@ -226,11 +226,11 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
 
 #define TH08_ECL_WRITE_I(ctx, index) \
     EclOperands::ResolveIntLValue( \
-        TH08_ECL_CONTEXT_ENEMY(ctx), \
+        reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)), \
         &TH08_ECL_RAW_I((ctx), (index)), TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags, (index))
 #define TH08_ECL_WRITE_F(ctx, index) \
     EclOperands::ResolveFloatLValue( \
-        TH08_ECL_CONTEXT_ENEMY(ctx), \
+        reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)), \
         &TH08_ECL_RAW_F((ctx), (index)), TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags, (index))
 #define TH08_ECL_LASER(ctx, index) \
     (TH08_ECL_CONTEXT_ENEMY(ctx)->laserSlots[(index)])
@@ -333,53 +333,53 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
             *reinterpret_cast<D3DXVECTOR3 *>(
                 &TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset);
         descriptor->bulletType = args->bulletType;
-        descriptor->color = (u16)((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & 2U) ? EclOperands::ResolveInt(TH08_ECL_CONTEXT_ENEMY(ctx), static_cast<i32>(args->color)) : static_cast<i32>(args->color));
+        descriptor->color = (u16)((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & 2U) ? EclOperands::ResolveInt(reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)), static_cast<i32>(args->color)) : static_cast<i32>(args->color));
         descriptor->angle =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 2))
-                ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                       args->angle)
                 : args->angle;
         descriptor->speed1 =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 3))
-                ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                       args->speed)
                 : args->speed;
         descriptor->laserStartOffset =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 4))
-                ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                       args->startOffset)
                 : args->startOffset;
         descriptor->laserEndOffset =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 5))
-                ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                       args->endOffset)
                 : args->endOffset;
         descriptor->laserStartLength =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 6))
-                ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                       args->startLength)
                 : args->startLength;
         descriptor->laserWidth =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 7))
-                ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                       args->width)
                 : args->width;
         descriptor->laserStartTime =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 8))
                 ? EclOperands::ResolveInt(
-                      TH08_ECL_CONTEXT_ENEMY(ctx),
+                      reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)),
                       args->startTime)
                 : args->startTime;
         descriptor->laserDuration =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 9))
                 ? EclOperands::ResolveInt(
-                      TH08_ECL_CONTEXT_ENEMY(ctx),
+                      reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)),
                       args->duration)
                 : args->duration;
         descriptor->laserDespawnDuration =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 10))
                 ? EclOperands::ResolveInt(
-                      TH08_ECL_CONTEXT_ENEMY(ctx),
+                      reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)),
                       args->despawnDuration)
                 : args->despawnDuration;
         descriptor->laserHitboxStartTime = args->hitboxStartTime;
@@ -404,7 +404,7 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
             TH08_ECL_LASER(ctx, lhsInt)->angle =
                 AddNormalizeAngle(
                     TH08_ECL_LASER(ctx, lhsInt)->angle,
-                    ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 1)) ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1))) : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1))));
+                    ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 1)) ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1))) : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1))));
         break;
     case 118:
         lhsInt = TH08_ECL_READ_I(ctx, 0);
@@ -412,22 +412,22 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
             TH08_ECL_LASER(ctx, lhsInt)->angle =
                 g_Player.AngleToPoint(
                     &TH08_ECL_LASER(ctx, lhsInt)->position) +
-                ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 1)) ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1))) : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1)));
+                ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 1)) ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1))) : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1)));
         break;
     case 119:
         lhsInt = TH08_ECL_READ_I(ctx, 0);
         if (TH08_ECL_LASER(ctx, lhsInt))
         {
             TH08_ECL_LASER(ctx, lhsInt)->position.x = ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 1))
-                    ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                    ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                           *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1)))
                     : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 1))) + TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition.x;
             TH08_ECL_LASER(ctx, lhsInt)->position.y = ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 2))
-                    ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                    ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                           *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 2)))
                     : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 2))) + TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition.y;
             TH08_ECL_LASER(ctx, lhsInt)->position.z = ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 3))
-                    ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                    ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                           *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 3)))
                     : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 3))) + TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition.z;
         }
@@ -574,13 +574,13 @@ enter_subroutine:
     {
         Float3 vector;
         vector.x = ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 3))
-            ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 3)))
+            ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 3)))
             : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 3)));
         vector.y = ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 4))
-            ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 4)))
+            ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 4)))
             : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 4)));
         vector.z = ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << 5))
-            ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 5)))
+            ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(*reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 5)))
             : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 5)));
         g_EffectManager.SpawnEffectWithVelocity(
             TH08_ECL_READ_I(ctx, 0),
@@ -899,7 +899,7 @@ enter_subroutine:
     case 82:
         TH08_ECL_CONTEXT_ENEMY(ctx)->minimumPlayerDistanceSquared =
             (TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & 1U)
-                ? TH08_ECL_CONTEXT_ENEMY(ctx)->ResolveFloat(
+                ? reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat(
                       *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 0)))
                 : *reinterpret_cast<f32 *>(&TH08_ECL_RAW_I(ctx, 0));
         TH08_ECL_CONTEXT_ENEMY(ctx)->minimumPlayerDistanceSquared *=

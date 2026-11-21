@@ -173,6 +173,7 @@ struct PhotoEnemyView
     ~PhotoEnemyView()
     {
     }
+    f32 ResolveFloat(f32 operand);
     void UpdateShotAndAnm();
     void IntegrateMovement();
     void ClampPosition();

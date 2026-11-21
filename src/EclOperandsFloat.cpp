@@ -65,7 +65,7 @@ extern EclFloatOperandPlayerView *g_EclFloatOperandPlayer;
 
 // FUNCTION: TH095 0x004105A0.  This is the float half of TH095's operand
 // resolver pair, including photography counters and the active boss slots.
-f32 Enemy::ResolveFloat(f32 operand)
+f32 PhotoEnemyView::ResolveFloat(f32 operand)
 {
     switch ((i32)operand)
     {
@@ -93,10 +93,10 @@ f32 Enemy::ResolveFloat(f32 operand)
     case TH095_ECL_RANDOM_SELECTOR(0x2723, ECL_RANDOM_F32_SIGNED): return g_Rng.GetRandomF32Signed();
     case 0x2751: return g_Rng.GetRandomF32() * 6.2831855f - 3.1415927f;
 
-    case EclOperands::ECL_ENEMY_TIMER: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclTimer.current;
-    case EclOperands::ECL_ENEMY_LIFE: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->life;
-    case EclOperands::ECL_ENEMY_ITEM_DROP_TYPE: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->itemDropType;
-    case EclOperands::ECL_ENEMY_SCORE: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->score;
+    case EclOperands::ECL_ENEMY_TIMER: return (f32)this->eclTimer.current;
+    case EclOperands::ECL_ENEMY_LIFE: return (f32)this->life;
+    case EclOperands::ECL_ENEMY_ITEM_DROP_TYPE: return (f32)this->itemDropType;
+    case EclOperands::ECL_ENEMY_SCORE: return (f32)this->score;
 
     case EclOperands::ECL_MANAGER_PARAMETER_INT0: return (f32)g_PhotoEnemyManager->eclManager->callParameters.ints[0];
     case EclOperands::ECL_MANAGER_PARAMETER_INT1: return (f32)g_PhotoEnemyManager->eclManager->callParameters.ints[1];
@@ -120,9 +120,9 @@ f32 Enemy::ResolveFloat(f32 operand)
     case EclOperands::ECL_CALL_PARAMETER_FLOAT2: return this->activeEclContext->scriptState.callParameters.floats[2];
     case EclOperands::ECL_CALL_PARAMETER_FLOAT3: return this->activeEclContext->scriptState.callParameters.floats[3];
 
-    case EclOperands::ECL_ENEMY_POSITION_X: return reinterpret_cast<PhotoEnemyView *>(this)->worldPosition.x;
-    case EclOperands::ECL_ENEMY_POSITION_Y: return reinterpret_cast<PhotoEnemyView *>(this)->worldPosition.y;
-    case EclOperands::ECL_ENEMY_POSITION_Z: return reinterpret_cast<PhotoEnemyView *>(this)->worldPosition.z;
+    case EclOperands::ECL_ENEMY_POSITION_X: return this->worldPosition.x;
+    case EclOperands::ECL_ENEMY_POSITION_Y: return this->worldPosition.y;
+    case EclOperands::ECL_ENEMY_POSITION_Z: return this->worldPosition.z;
     case 0x272d: return TH095_ECL_FLOAT_PLAYER_POSITION.x;
     case 0x272e: return TH095_ECL_FLOAT_PLAYER_POSITION.y;
     case 0x272f: return TH095_ECL_FLOAT_PLAYER_POSITION.z;
@@ -130,20 +130,20 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x275e: return this->activeEclContext->scriptState.extraFloatVariables[1];
     case 0x275f: return this->activeEclContext->scriptState.extraFloatVariables[2];
     case 0x2760: return this->activeEclContext->scriptState.extraFloatVariables[3];
-    case EclOperands::ECL_ENEMY_INTERPOLATION_ORIGIN_X: return reinterpret_cast<PhotoEnemyView *>(this)->movementInterpolationOrigin.x;
-    case EclOperands::ECL_ENEMY_INTERPOLATION_ORIGIN_Y: return reinterpret_cast<PhotoEnemyView *>(this)->movementInterpolationOrigin.y;
-    case EclOperands::ECL_ENEMY_INTERPOLATION_ORIGIN_Z: return reinterpret_cast<PhotoEnemyView *>(this)->movementInterpolationOrigin.z;
-    case EclOperands::ECL_ENEMY_INTERPOLATION_DELTA_X: return reinterpret_cast<PhotoEnemyView *>(this)->movementInterpolationDelta.x;
-    case EclOperands::ECL_ENEMY_INTERPOLATION_DELTA_Y: return reinterpret_cast<PhotoEnemyView *>(this)->movementInterpolationDelta.y;
-    case EclOperands::ECL_ENEMY_INTERPOLATION_DELTA_Z: return reinterpret_cast<PhotoEnemyView *>(this)->movementInterpolationDelta.z;
-    case 0x2754: return this->lastFrameDisplacement.x;
-    case 0x2755: return this->lastFrameDisplacement.y;
-    case 0x2756: return this->lastFrameDisplacement.z;
+    case EclOperands::ECL_ENEMY_INTERPOLATION_ORIGIN_X: return this->movementInterpolationOrigin.x;
+    case EclOperands::ECL_ENEMY_INTERPOLATION_ORIGIN_Y: return this->movementInterpolationOrigin.y;
+    case EclOperands::ECL_ENEMY_INTERPOLATION_ORIGIN_Z: return this->movementInterpolationOrigin.z;
+    case EclOperands::ECL_ENEMY_INTERPOLATION_DELTA_X: return this->movementInterpolationDelta.x;
+    case EclOperands::ECL_ENEMY_INTERPOLATION_DELTA_Y: return this->movementInterpolationDelta.y;
+    case EclOperands::ECL_ENEMY_INTERPOLATION_DELTA_Z: return this->movementInterpolationDelta.z;
+    case 0x2754: return this->positionDelta.x;
+    case 0x2755: return this->positionDelta.y;
+    case 0x2756: return this->positionDelta.z;
 
-    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX0: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclSchedule.photoIndices[0];
-    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX1: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclSchedule.photoIndices[1];
-    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX2: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclSchedule.photoIndices[2];
-    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX3: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclSchedule.photoIndices[3];
+    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX0: return (f32)this->eclSchedule.photoIndices[0];
+    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX1: return (f32)this->eclSchedule.photoIndices[1];
+    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX2: return (f32)this->eclSchedule.photoIndices[2];
+    case EclOperands::ECL_SCHEDULED_PHOTO_INDEX3: return (f32)this->eclSchedule.photoIndices[3];
     case 0x2730: return TH095_ECL_FLOAT_PLAYER_ANGLE(&this->worldPosition);
     case 0x2765:
     {
@@ -151,15 +151,15 @@ f32 Enemy::ResolveFloat(f32 operand)
         return TH095_ECL_FLOAT_PLAYER_ANGLE(&position);
     }
 
-    case EclOperands::ECL_ENEMY_MOVEMENT_ANGLE: return reinterpret_cast<PhotoEnemyView *>(this)->movementAngle;
-    case EclOperands::ECL_ENEMY_ANGULAR_VELOCITY: return reinterpret_cast<PhotoEnemyView *>(this)->angularVelocity;
-    case EclOperands::ECL_ENEMY_SPEED: return reinterpret_cast<PhotoEnemyView *>(this)->speed;
-    case EclOperands::ECL_ENEMY_ACCELERATION: return reinterpret_cast<PhotoEnemyView *>(this)->acceleration;
-    case EclOperands::ECL_ENEMY_ORBIT_RADIUS: return reinterpret_cast<PhotoEnemyView *>(this)->orbitRadius;
-    case EclOperands::ECL_ENEMY_ORBIT_ANGLE: return reinterpret_cast<PhotoEnemyView *>(this)->orbitAngle;
-    case EclOperands::ECL_ENEMY_ORBIT_ANGULAR_VELOCITY: return reinterpret_cast<PhotoEnemyView *>(this)->orbitAngularVelocity;
-    case EclOperands::ECL_PHOTO_TARGET_SLOT: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->photoTargetSlot;
-    case 0x2752: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->unknown2c50;
+    case EclOperands::ECL_ENEMY_MOVEMENT_ANGLE: return this->movementAngle;
+    case EclOperands::ECL_ENEMY_ANGULAR_VELOCITY: return this->angularVelocity;
+    case EclOperands::ECL_ENEMY_SPEED: return this->speed;
+    case EclOperands::ECL_ENEMY_ACCELERATION: return this->acceleration;
+    case EclOperands::ECL_ENEMY_ORBIT_RADIUS: return this->orbitRadius;
+    case EclOperands::ECL_ENEMY_ORBIT_ANGLE: return this->orbitAngle;
+    case EclOperands::ECL_ENEMY_ORBIT_ANGULAR_VELOCITY: return this->orbitAngularVelocity;
+    case EclOperands::ECL_PHOTO_TARGET_SLOT: return (f32)this->photoTargetSlot;
+    case 0x2752: return (f32)this->unknown2c50;
     case 0x2732:
     {
         Float3 delta = TH095_ECL_FLOAT_PLAYER_POSITION - this->worldPosition;

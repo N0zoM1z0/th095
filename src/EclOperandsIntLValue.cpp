@@ -15,7 +15,7 @@ namespace EclOperands
 // selector is writable; a disabled operand and every read-only selector keep
 // pointing at the instruction's inline value.
 i32 *__fastcall ResolveIntLValue(
-    Enemy *enemy, i32 *operand, u16 flags, i32 flagIndex)
+    PhotoEnemyView *enemy, i32 *operand, u16 flags, i32 flagIndex)
 {
     if (flagIndex >= 0 && !(flags & (1 << flagIndex)))
         return operand;
@@ -40,10 +40,10 @@ i32 *__fastcall ResolveIntLValue(
     case 0x2726: return &enemy->activeEclContext->scriptState.extraIntVariables[2];
     case 0x2727: return &enemy->activeEclContext->scriptState.extraIntVariables[3];
 
-    case ECL_ENEMY_TIMER: return &reinterpret_cast<PhotoEnemyView *>(enemy)->eclTimer.current;
-    case ECL_ENEMY_LIFE: return &reinterpret_cast<PhotoEnemyView *>(enemy)->life;
-    case ECL_ENEMY_ITEM_DROP_TYPE: return &reinterpret_cast<PhotoEnemyView *>(enemy)->itemDropType;
-    case ECL_ENEMY_SCORE: return &reinterpret_cast<PhotoEnemyView *>(enemy)->score;
+    case ECL_ENEMY_TIMER: return &enemy->eclTimer.current;
+    case ECL_ENEMY_LIFE: return &enemy->life;
+    case ECL_ENEMY_ITEM_DROP_TYPE: return &enemy->itemDropType;
+    case ECL_ENEMY_SCORE: return &enemy->score;
 
     case ECL_MANAGER_PARAMETER_INT0: return &g_PhotoEnemyManager->eclManager->callParameters.ints[0];
     case ECL_MANAGER_PARAMETER_INT1: return &g_PhotoEnemyManager->eclManager->callParameters.ints[1];

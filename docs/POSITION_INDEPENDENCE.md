@@ -357,3 +357,25 @@ data references. The library replay resolves 7,748 code references and
 sections handled as described above. Both builds import the same 172
 names or ordinals across nine DLLs, and 127 IAT entries move. See
 `.analysis/pi/enemy-manager-task/`.
+
+## ECL comparison calls and replay
+
+SEM-432 removed a RunEcl-local `CompareOperands` that shared the
+canonical function's decorated name. Both link maps now list only the
+EclDependencies definition, and the actual call operand reaches it in
+both layouts. The 369 operand resolver calls also follow their moved
+destinations.
+
+Removing the local helper and its associated sections leaves 11,448
+game code references and 639 initialized-data references. The current
+library replay resolves 7,748 code references and 1,007 initialized-data
+references. All 172 PE import identities still agree, with 127 IAT
+entries moving.
+
+The original and both normal links finish the archive's `demo0.rpy`
+with 52,930 points and six photos. Score, position, RNG and camera
+samples agree at all 2,712 input indices. The stage timer first advances
+at index 28 in retail and 29 in both normal links. The integer stage
+timer matches or is one tick behind retail throughout. See
+`.analysis/pi/ecl-resolver-owner/` for the checks and
+`build/position-independence/ecl-resolver-demo0/` for the traces.

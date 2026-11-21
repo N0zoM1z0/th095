@@ -4,7 +4,7 @@
 
 namespace th095
 {
-struct Enemy;
+struct PhotoEnemyView;
 
 namespace EclOperands
 {
@@ -82,9 +82,9 @@ enum EclPhotoTargetSelector
     ECL_FIRST_PHOTO_TARGET_WORLD_Y = 0x2763,
 };
 
-i32 __fastcall ResolveInt(Enemy *enemy, i32 operand);
-i32 *__fastcall ResolveIntLValue(Enemy *enemy, i32 *operand, u16 flags, i32 flagIndex);
-f32 *__fastcall ResolveFloatLValue(Enemy *enemy, f32 *operand, u16 flags, i32 flagIndex);
+i32 __fastcall ResolveInt(PhotoEnemyView *enemy, i32 operand);
+i32 *__fastcall ResolveIntLValue(PhotoEnemyView *enemy, i32 *operand, u16 flags, i32 flagIndex);
+f32 *__fastcall ResolveFloatLValue(PhotoEnemyView *enemy, f32 *operand, u16 flags, i32 flagIndex);
 
 } // namespace EclOperands
 } // namespace th095

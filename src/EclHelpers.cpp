@@ -1,11 +1,7 @@
 #include "EnemyManager.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "PhotoEnemy.hpp"
-#else
-#include "EclHelpersPhotoEnemyEmission.hpp"
-#endif
+#include "PhotoEnemyLayout.hpp"
 #include "ZunMath.hpp"
 #include <math.h>
 
@@ -17,11 +13,11 @@ namespace EclHelpers
     (reinterpret_cast<PhotoEnemyView *>(enemy)->control)
 #define ReadInt(enemy, instruction, index) \
     ((instruction)->operandFlags & (1 << (index)) \
-         ? EclOperands::ResolveInt((enemy), (instruction)->operands[index].asInt) \
+         ? EclOperands::ResolveInt(reinterpret_cast<PhotoEnemyView *>(enemy), (instruction)->operands[index].asInt) \
          : (instruction)->operands[index].asInt)
 #define ReadFloat(enemy, instruction, index) \
     ((instruction)->operandFlags & (1 << (index)) \
-         ? (enemy)->ResolveFloat((instruction)->operands[index].asFloat) \
+         ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat((instruction)->operands[index].asFloat) \
          : (instruction)->operands[index].asFloat)
 
 // FUNCTION: TH095 0x00411150; TH08 0x00422020 is the source-shape oracle.

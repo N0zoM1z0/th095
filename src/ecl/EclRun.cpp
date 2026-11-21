@@ -7,7 +7,6 @@
 #include "BulletManager.hpp"
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "BackgroundEclEmission.hpp"
-#include "EnemyFloatOperandEclEmission.hpp"
 #include "PhotoCameraEclEmission.hpp"
 #else
 #include "Background.hpp"
@@ -110,15 +109,14 @@
     ::th095::Th095EclSpawnWorld((spawner), (script), (position))
 #endif
 
-#ifdef DIFFBUILD
 #define TH095_ECL_RESOLVE_FLOAT(enemy, operand) \
-    reinterpret_cast<EclRunHigh::EnemyFloatOperandView *>(enemy)->ResolveFloat(operand)
+    reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat((operand).asFloat)
+
+#ifdef DIFFBUILD
 #define TH095_ECL_CLAMP_POSITION(enemy) (enemy)->ClampPosition()
 #define TH095_ECL_CONFIGURE_PHOTO_ANM(vm, work, value) \
     TH095_ECL_ANM_MANAGER->ConfigureEnemyPhotoAnm((vm), (work), (value))
 #else
-#define TH095_ECL_RESOLVE_FLOAT(enemy, operand) \
-    (enemy)->ResolveFloat((operand).asFloat)
 #define TH095_ECL_CLAMP_POSITION(enemy) \
     reinterpret_cast<::th095::PhotoEnemyView *>(enemy)->ClampPosition()
 #define TH095_ECL_CONFIGURE_PHOTO_ANM(vm, work, value) \

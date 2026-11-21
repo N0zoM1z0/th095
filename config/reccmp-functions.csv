@@ -226,7 +226,7 @@ th095::PhotoGameUpdateView::UpdateMainState,0x0042F190,function
 th095::EclOperands::ResolveInt,0x0040FAE0,function
 th095::EclOperands::ResolveIntLValue,0x00410300,function
 th095::EclOperands::ResolveFloatLValue,0x00410DB0,function
-th095::Enemy::ResolveFloat,0x004105A0,function
+th095::PhotoEnemyView::ResolveFloat,0x004105A0,function
 th095::PhotoStageStateView::Update,0x0042AD60,function
 th095::UpdatePhotoStage,0x0042C3E0,function
 th095::PhotoStageStateView::SavePhoto,0x0042C450,function

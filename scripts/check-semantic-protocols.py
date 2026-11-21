@@ -3522,7 +3522,9 @@ def check_photo_enemy_owner() -> None:
     )
     for path in canonical_element_consumers:
         text = path.read_text(encoding="utf-8")
-        if 'PhotoEnemy.hpp"' not in text and 'PhotoEnemyManager.hpp"' not in text:
+        if not any(f'{name}"' in text for name in (
+            "PhotoEnemy.hpp", "PhotoEnemyManager.hpp", "PhotoEnemyLayout.hpp"
+        )):
             fail(f"{path.relative_to(SRC)} must consume canonical PhotoEnemyView")
         if re.search(r"\bstruct\s+PhotoEnemyView\s*\{", text):
             fail(f"{path.relative_to(SRC)} must not redefine PhotoEnemyView")
@@ -3627,27 +3629,6 @@ def check_photo_enemy_owner() -> None:
             fail(f"{path.relative_to(SRC)} restored a duplicate runtime-manager view")
         if "g_PhotoEnemyManager->eclManager" not in text:
             fail(f"{path.relative_to(SRC)} bypasses the shared runtime operand path")
-
-    float_lvalue = (SRC / "EclOperandsFloatLValue.cpp").read_text(
-        encoding="utf-8"
-    )
-    if re.search(
-        r"enemy->(?:activeEclContext\b(?!->scriptState\.(?:callParameters\.floats|floatVariables|extraFloatVariables)\[)|"
-        r"position|movementInterpolation(?:Origin|Delta)|"
-        r"movementAngle|angularVelocity|speed|acceleration|orbit(?:Radius|Angle|AngularVelocity))",
-        float_lvalue,
-    ):
-        fail("ResolveFloatLValue restored a legacy Enemy compact-field access")
-
-    required_emission_adapters = (
-        SRC / "EclHelpersPhotoEnemyEmission.hpp",
-    )
-    for path in required_emission_adapters:
-        if not path.exists():
-            fail(f"missing named EnemyInf emission adapter: {path.relative_to(ROOT)}")
-        text = path.read_text(encoding="utf-8")
-        if any(name in text for name in PROFILE_NAMES):
-            fail(f"{path.relative_to(ROOT)} must not contain a profile selector")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if "g_PhotoEnemyManager->enemyAnm" not in ecl_run:
@@ -4235,38 +4216,20 @@ def check_ecl_photo_player_owner() -> None:
             fail(f"photo-angle emission adapter gained runtime storage: {token}")
 
 
-def check_ecl_float_resolver_boundary() -> None:
-    ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
-    high = (SRC / "ecl" / "EclRunHigh.inl").read_text(encoding="utf-8")
-    if '#include "EnemyFloatOperandEclEmission.hpp"' not in ecl_run:
-        fail("EclRun must name its isolated float-resolver emission adapter")
-    if "struct EnemyFloatOperandView" in high:
-        fail("EclRunHigh.inl must not restore the float-resolver receiver view")
-    if "(enemy)->ResolveFloat((operand).asFloat)" not in ecl_run:
-        fail("normal EclRun must call canonical Enemy::ResolveFloat(float)")
-    if (
-        "reinterpret_cast<EclRunHigh::EnemyFloatOperandView *>(enemy)"
-        "->ResolveFloat(operand)" not in ecl_run
+def check_ecl_resolver_owner() -> None:
+    for filename, signature in (
+        ("EclOperandsInt.cpp", "ResolveInt(PhotoEnemyView *enemy"),
+        ("EclOperandsIntLValue.cpp", "PhotoEnemyView *enemy, i32 *operand"),
+        ("EclOperandsFloatLValue.cpp", "PhotoEnemyView *enemy, f32 *operand"),
+        ("EclOperandsFloat.cpp", "PhotoEnemyView::ResolveFloat(f32 operand)"),
     ):
-        fail("exact EclRun lost its historical float-resolver decoration")
-
-    emission = (SRC / "ecl" / "EnemyFloatOperandEclEmission.hpp").read_text(
-        encoding="utf-8"
-    )
-    if "Compiler-emission adapter for EclRun only" not in emission:
-        fail("float-resolver emission adapter must state its narrow ownership")
-    if "0x004105A0" not in emission:
-        fail("float-resolver emission adapter must document its canonical target")
-    if "TH095_MATCH_EXACT" in emission or "DIFFBUILD" in emission:
-        fail("float-resolver emission adapter must not contain a profile split")
-    if len(re.findall(r"\bstruct\s+EnemyFloatOperandView\s*\{", emission)) != 1:
-        fail("float-resolver emission adapter must keep one method-only receiver")
-    if "f32 ResolveFloat(EclRawOperand operand);" not in emission:
-        fail("float-resolver emission adapter lost the historical method decoration")
-    forbidden_storage = ("unknown", "offsetof(", "sizeof(", "targetPadding", "[")
-    for token in forbidden_storage:
-        if token in emission:
-            fail(f"float-resolver emission adapter gained runtime storage: {token}")
+        source = (SRC / filename).read_text(encoding="utf-8")
+        if signature not in source:
+            fail(f"{filename} must resolve operands on the compact enemy")
+    for filename in ("EclRun.cpp", "EclRunHigh.inl"):
+        source = (SRC / "ecl" / filename).read_text(encoding="utf-8")
+        if "EnemyFloatOperandView" in source or "EnemyFloatOperandEclEmission" in source:
+            fail(f"{filename} restored the retired float resolver adapter")
 
 
 def check_photo_straight_laser_packet() -> None:
@@ -4883,7 +4846,7 @@ def main() -> int:
     check_photo_card_info_owner()
     check_photo_camera_state_owner()
     check_ecl_photo_player_owner()
-    check_ecl_float_resolver_boundary()
+    check_ecl_resolver_owner()
     check_photo_straight_laser_packet()
     check_photo_rotating_laser_packet()
     check_small_closed_domains()
@@ -4931,7 +4894,7 @@ def main() -> int:
     print("  PhotoCamera state: shared mode/handle/loaded-ANM/flags/focus representation")
     print("  PlayerInf runtime: profile-independent owner shared by PhotoCamera, PhotoStage, and ECL")
     print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
-    print("  RunEcl float resolver: canonical normal method with method-only emission adapter")
+    print("  ECL resolvers: four compact-enemy entry points in both profiles")
     print("  straight photo effect: one profile-independent 0x28-byte packet owner")
     print("  rotating photo effect: one profile-independent 0x48-byte packet owner")
     print("  Replay manager, color mode, and viewport domains: explicit")

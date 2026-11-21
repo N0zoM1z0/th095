@@ -18825,3 +18825,28 @@ both links agree in 48 focused ECL-to-score cases, including immediate
 and indirect operands, two stage instances and fractional multipliers.
 All four mapped sections in each normal PE match the corresponding
 library-audited SEM-430 image. See `.analysis/pi/stage-score-owner/`.
+
+### SEM-432 — give ECL resolvers the compact enemy receiver
+
+The integer and lvalue resolvers now take `PhotoEnemyView *`. The float
+resolver is a method of that layout. Both value resolvers read
+`positionDelta` from +0x28D0/+0x28D4/+0x28D8 for selectors
+0x2754–0x2756. The movement integrator is the independent writer.
+RunEcl's 53 former float proxy calls use the same float argument and
+method as its other callers. EclHelpers also uses the complete compact
+layout for the control word. Both emission declarations are retired.
+
+The linked call check exposed two implementations of `CompareOperands`.
+RunEcl defined and called the local TH08 version even though the
+comparison manifest attached the relocation to the same-named TH095
+function. The local version wrote only the current frame on a taken
+branch. The dispatcher now calls the canonical EclDependencies function
+at retail 0x00411A00, which writes all three fields of the active
+context timer.
+
+All 167 affected exact units pass with complete extents and relocations.
+Both regular and reversed links follow all 369 resolver calls and the
+dispatcher's comparison call. Both builds reproduce the retail result in
+288 comparison cases. The previous builds failed all 144 taken-branch
+timer checks. The 54 movement-delta and 642 related cases also agree
+across all three images. See `.analysis/pi/ecl-resolver-owner/`.

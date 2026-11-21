@@ -60,7 +60,6 @@
 3	src/EclExtended.cpp	#ifdef TH095_MATCH_EXACT
 3	src/EclExtended.cpp	#ifndef DIFFBUILD
 1	src/EclExtended.cpp	#ifndef TH095_MATCH_EXACT
-1	src/EclHelpers.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 3	src/EclOperandsFloat.cpp	#ifdef DIFFBUILD
 1	src/EclOperandsFloat.cpp	#ifndef DIFFBUILD
 3	src/EclOperandsInt.cpp	#ifdef DIFFBUILD

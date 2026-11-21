@@ -45,32 +45,32 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclShotInstruction *instru
 
     packed = args->bulletType;
     descriptor->bulletType = (instruction->header.operandFlags & 1)
-        ? EclOperands::ResolveInt(enemy, packed)
+        ? EclOperands::ResolveInt(reinterpret_cast<PhotoEnemyView *>(enemy), packed)
         : packed;
     descriptor->aimMode = instruction->header.opcode - 0x56;
     descriptor->count1 = (instruction->header.operandFlags & 4)
-        ? EclOperands::ResolveInt(enemy, args->count1)
+        ? EclOperands::ResolveInt(reinterpret_cast<PhotoEnemyView *>(enemy), args->count1)
         : args->count1;
     descriptor->count2 = (instruction->header.operandFlags & 8)
-        ? EclOperands::ResolveInt(enemy, args->count2)
+        ? EclOperands::ResolveInt(reinterpret_cast<PhotoEnemyView *>(enemy), args->count2)
         : args->count2;
     descriptor->angle = (instruction->header.operandFlags & 0x40)
-        ? enemy->ResolveFloat(args->angle)
+        ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(args->angle)
         : args->angle;
     descriptor->speed1 = (instruction->header.operandFlags & 0x10)
-        ? enemy->ResolveFloat(args->speed1)
+        ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(args->speed1)
         : args->speed1;
     descriptor->angleStep = (instruction->header.operandFlags & 0x80)
-        ? enemy->ResolveFloat(args->angleStep)
+        ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(args->angleStep)
         : args->angleStep;
     descriptor->speed2 = (instruction->header.operandFlags & 0x20)
-        ? enemy->ResolveFloat(args->speed2)
+        ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(args->speed2)
         : args->speed2;
     descriptor->unknown1FA = 0;
     descriptor->transformFlags = args->transformFlags;
     packed = args->color;
     descriptor->color = (instruction->header.operandFlags & 2)
-        ? EclOperands::ResolveInt(enemy, packed)
+        ? EclOperands::ResolveInt(reinterpret_cast<PhotoEnemyView *>(enemy), packed)
         : packed;
     g_PhotoBulletManager->SpawnBulletPattern(descriptor);
 }
