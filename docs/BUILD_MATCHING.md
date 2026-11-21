@@ -2278,6 +2278,17 @@ indexed assignment emits 2,658 bytes and a 0x120 frame. The three inlined
 predicates grow the frame to 0x12C or 0x130. See
 `.analysis/controller-get-input/assignment-dispatch/`.
 
+The matching TH09 input reader snapshots each slot assignment into a byte
+before testing and passing it to the controller reader. Applying byte
+snapshots to the two fixed TH095 slots, or to all three reads, emits
+2,682 bytes and 583 instructions with a 0x120-byte frame. Binding all
+three assignments as const references emits 2,697 bytes and 590
+instructions with a 0x128-byte frame. The TH095 target reads the
+assignment again at dispatch. Keep the repeated reads. The published
+body remains 2,655 bytes and agrees with retail on all 1,312 cases in
+both normal link layouts. The pinned probes are under
+`.analysis/controller-get-input/cached-slot-assignments/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now

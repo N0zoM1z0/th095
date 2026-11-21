@@ -19678,8 +19678,8 @@ legacy exact VM views at the call boundary. Scene Select's exact
 centered-text call uses the canonical manager symbol at the same
 retail address.
 
-All 515 affected strict comparisons pass, including every function
-in the 61 translation units that consume the changed header.
+All 515 affected strict comparisons pass across the 61 rebuilt
+translation units.
 Both normal links retain all four mapped sections byte for byte.
 The eleven text-related calls follow their AnmText and TextRenderer
 symbols in the two layouts. The game-object audit compares 11,439
