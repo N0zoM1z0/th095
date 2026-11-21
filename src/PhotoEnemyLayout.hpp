@@ -1,46 +1,17 @@
 #pragma once
 
 #include "AnmVertex.hpp"
-#include "EclScriptState.hpp"
+#include "EnemyEclContext.hpp"
 #include "PhotoBulletSpawnDescriptor.hpp"
 #include "PhotoEnemyControl.hpp"
 #include "PhotoEnemyEclAccess.hpp"
 #include "ZunTimer.hpp"
-#include "ecl/EclCallback.hpp"
 #include "inttypes.hpp"
 
 #include <stddef.h>
 
 namespace th095
 {
-
-struct EnemyChildEclBlock;
-
-struct PhotoEnemyEclInterpolationSlotView
-{
-    void *callback;
-    ZunTimer timer;
-    u8 unknown010[0x20];
-
-    PhotoEnemyEclInterpolationSlotView()
-    {
-    }
-};
-
-struct PhotoEnemyEclContextView
-{
-    void *currentInstruction;
-    ZunTimer time;
-    EclExtendedCallback perFrameCallback;
-    EclRawInstruction *perFrameInstruction;
-    EclScriptState scriptState; // +0x018
-    ZunTimer secondaryTime;
-    PhotoEnemyEclInterpolationSlotView interpolationSlots[8];
-    u8 unknown224[8];
-    i16 subroutineId;
-
-    PhotoEnemyEclContextView();
-};
 
 struct PhotoEnemyTrailSampleView
 {
@@ -70,10 +41,10 @@ struct PhotoEnemyView
     u8 unknown0004[4];
     AnmVm vm;                              // +0x0008
     i32 anmHandles[2];                     // +0x02d4
-    PhotoEnemyEclContextView mainEclContext; // +0x02dc
-    PhotoEnemyEclContextView eclCallStack[16]; // +0x050c
-    PhotoEnemyEclContextView *activeEclContext; // +0x280c
-    PhotoEnemyEclContextView *activeEclCallStack; // +0x2810
+    EnemyEclContext mainEclContext; // +0x02dc
+    EnemyEclContext eclCallStack[16]; // +0x050c
+    EnemyEclContext *activeEclContext; // +0x280c
+    EnemyEclContext *activeEclCallStack; // +0x2810
     i32 eclIntVariables[8];                // +0x2814
     f32 eclFloatVariables[8];              // +0x2834
     i16 mainEclCallStackDepth;             // +0x2854
@@ -213,17 +184,6 @@ struct PhotoEnemyView
     void Deactivate();
 };
 
-typedef char PhotoEnemyEclInterpolationSlotSizeIs30[
-    (sizeof(PhotoEnemyEclInterpolationSlotView) == 0x30) ? 1 : -1];
-typedef char PhotoEnemyEclContextCallbackFields[
-    (offsetof(PhotoEnemyEclContextView, perFrameCallback) == 0x10 &&
-     offsetof(PhotoEnemyEclContextView, perFrameInstruction) == 0x14) ? 1 : -1];
-typedef char PhotoEnemyEclContextScriptStateAt18[
-    (offsetof(PhotoEnemyEclContextView, scriptState) == 0x18) ? 1 : -1];
-typedef char PhotoEnemyEclContextSecondaryTimerAt98[
-    (offsetof(PhotoEnemyEclContextView, secondaryTime) == 0x98) ? 1 : -1];
-typedef char PhotoEnemyEclContextSubroutineAt22C[
-    (offsetof(PhotoEnemyEclContextView, subroutineId) == 0x22c) ? 1 : -1];
 typedef char PhotoEnemyTrailSampleSizeIs1C[
     (sizeof(PhotoEnemyTrailSampleView) == 0x1c) ? 1 : -1];
 typedef char PhotoEnemyScheduledCallSizeIs4[
@@ -243,7 +203,7 @@ typedef char PhotoEnemyMainEclContextAt2DC[
     (offsetof(PhotoEnemyView, mainEclContext) == 0x2dc) ? 1 : -1];
 typedef char PhotoEnemyMainEclScriptStateAt2F4[
     (offsetof(PhotoEnemyView, mainEclContext) +
-         offsetof(PhotoEnemyEclContextView, scriptState) == 0x2f4) ? 1 : -1];
+         offsetof(EnemyEclContext, scriptState) == 0x2f4) ? 1 : -1];
 typedef char PhotoEnemyActiveEclContextAt280C[
     (offsetof(PhotoEnemyView, activeEclContext) == 0x280c) ? 1 : -1];
 typedef char PhotoEnemyPhotoCaptureSubroutineAt285A[
@@ -341,8 +301,7 @@ typedef char PhotoEnemyAnmScriptsAt2C0E[
      offsetof(PhotoEnemyView, specialAnmScript) ==
          PHOTO_ENEMY_ECL_SPECIAL_ANM_SCRIPT_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyChildEclBlocksAt2CAC[
-    (offsetof(PhotoEnemyView, childEclBlocks) ==
-     PHOTO_ENEMY_ECL_CHILD_BLOCKS_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac) ? 1 : -1];
 typedef char PhotoEnemyPhotoPulseAt2C1C[
     (offsetof(PhotoEnemyView, photoPulseVmId) ==
          PHOTO_ENEMY_ECL_PHOTO_PULSE_VM_OFFSET &&

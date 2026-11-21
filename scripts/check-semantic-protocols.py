@@ -3442,7 +3442,7 @@ def check_photo_enemy_owner() -> None:
         "PhotoEnemyFlagsAt2BF4",
         "PHOTO_ENEMY_ECL_CONTROL_OFFSET",
         "PhotoEnemyChildEclBlocksAt2CAC",
-        "PHOTO_ENEMY_ECL_CHILD_BLOCKS_OFFSET",
+        "offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac",
         "PhotoEnemyAttachedVmAt4CBC",
         "PHOTO_ENEMY_ECL_ATTACHED_VM_OFFSET",
     )
@@ -3653,7 +3653,6 @@ def check_photo_enemy_owner() -> None:
         "PHOTO_ENEMY_ECL_MANAGER_OFFSET = 0x4df4",
         "PHOTO_ENEMY_ECL_PHOTO_TARGETS_OFFSET = 0x26ae00",
         "PHOTO_ENEMY_ECL_CONTROL_OFFSET = 0x2bf4",
-        "PHOTO_ENEMY_ECL_CHILD_BLOCKS_OFFSET = 0x2cac",
     )
     for fact in required_operand_offsets:
         if fact not in operand_access:
@@ -3727,7 +3726,7 @@ def check_photo_enemy_owner() -> None:
     for marker in (
         "g_PhotoEnemyManager->photoTargets",
         "TH095_ECL_SHOOT_INTERVAL_FRAMES",
-        "TH095_ECL_CHILD_BLOCK",
+        "reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks",
         "TH095_ENEMY_ECL_CONTROL_BITS",
         "TH095_ENEMY_ECL_SECONDARY_BITS",
         "TH095_ECL_PHOTO_PULSE_TIMER",

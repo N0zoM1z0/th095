@@ -3,7 +3,7 @@
 #include "Global.hpp"
 #include "AnmManagerEclView.hpp"
 #include "EclCallback.hpp"
-#include "EclScriptState.hpp"
+#include "EnemyEclContext.hpp"
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 
@@ -204,76 +204,6 @@ struct EclRawHeader
 };
 typedef char EclRawHeaderTimelineCountOffsetCheck[offsetof(EclRawHeader, timelineCount) == 0x6 ? 1 : -1];
 typedef char EclRawHeaderSubTableOffsetCheck[offsetof(EclRawHeader, subOffsets) == 0x48 ? 1 : -1];
-
-struct EnemyEclInterpolationSlot;
-typedef void (__fastcall *EnemyEclInterpolatorCallback)(
-    Enemy *enemy, EnemyEclInterpolationSlot *slot, f32 progress);
-
-struct EnemyEclInterpolationSlot
-{
-    EnemyEclInterpolationSlot();
-
-    EnemyEclInterpolatorCallback callback;
-    ZunTimer timer;
-    i32 duration;
-    i32 callbackIndex;
-    i32 easing;
-    f32 parameters[4];
-    f32 affectedVariable;
-};
-C_ASSERT(sizeof(EnemyEclInterpolationSlot) == 0x30);
-C_ASSERT(offsetof(EnemyEclInterpolationSlot, duration) == 0x10);
-C_ASSERT(offsetof(EnemyEclInterpolationSlot, callbackIndex) == 0x14);
-C_ASSERT(offsetof(EnemyEclInterpolationSlot, parameters) == 0x1c);
-C_ASSERT(offsetof(EnemyEclInterpolationSlot, affectedVariable) == 0x2c);
-
-// Target-observed TH08 per-enemy ECL interpreter context. The constructor-
-// bearing Enemy storage type retains its target symbol separately, while this
-// ABI view names the state consumed by EclManager and the exact interpreter.
-struct EnemyEclContext
-{
-    EnemyEclContext();
-
-    EclRawInstruction *currentInstr;
-    ZunTimer time;
-    EclExtendedCallback perFrameCallback;
-    EclRawInstruction *perFrameInstruction;
-    EclScriptState scriptState;
-    ZunTimer secondaryTime;
-    EnemyEclInterpolationSlot interpolationSlots[8];
-    i32 unconsumedDword224;
-    i32 childContextSlot;
-    i16 subId;
-    u8 contextTailAlignment22E[2];
-};
-typedef char EnemyEclContextCallbackOffsetCheck[offsetof(EnemyEclContext, perFrameCallback) == 0x10 ? 1 : -1];
-typedef char EnemyEclContextCallbackInstructionOffsetCheck[offsetof(EnemyEclContext, perFrameInstruction) == 0x14 ? 1 : -1];
-typedef char EnemyEclContextScriptStateOffsetCheck[offsetof(EnemyEclContext, scriptState) == 0x18 ? 1 : -1];
-typedef char EnemyEclContextSecondaryTimerOffsetCheck[offsetof(EnemyEclContext, secondaryTime) == 0x98 ? 1 : -1];
-typedef char EnemyEclContextInterpolationSlotsOffsetCheck[offsetof(EnemyEclContext, interpolationSlots) == 0xa4 ? 1 : -1];
-typedef char EnemyEclContextUnconsumedOffsetCheck[offsetof(EnemyEclContext, unconsumedDword224) == 0x224 ? 1 : -1];
-typedef char EnemyEclContextChildSlotOffsetCheck[offsetof(EnemyEclContext, childContextSlot) == 0x228 ? 1 : -1];
-typedef char EnemyEclContextSubIdOffsetCheck[offsetof(EnemyEclContext, subId) == 0x22c ? 1 : -1];
-typedef char EnemyEclContextTailAlignmentOffsetCheck[offsetof(EnemyEclContext, contextTailAlignment22E) == 0x22e ? 1 : -1];
-typedef char EnemyEclContextSizeCheck[sizeof(EnemyEclContext) == 0x230 ? 1 : -1];
-
-// Raw-allocated by ECL opcode 135. The target clears the complete block,
-// installs one child context at +0x8, and uses the 16 following contexts as
-// that child's call stack.
-struct EnemyChildEclBlock
-{
-    i32 subId;
-    u16 unconsumedWord04;
-    i16 callStackDepth;
-    EnemyEclContext eclContext;
-    EnemyEclContext callStack[16];
-};
-C_ASSERT(sizeof(EnemyChildEclBlock) == 0x2538);
-C_ASSERT(offsetof(EnemyChildEclBlock, subId) == 0x0);
-C_ASSERT(offsetof(EnemyChildEclBlock, unconsumedWord04) == 0x4);
-C_ASSERT(offsetof(EnemyChildEclBlock, callStackDepth) == 0x6);
-C_ASSERT(offsetof(EnemyChildEclBlock, eclContext) == 0x8);
-C_ASSERT(offsetof(EnemyChildEclBlock, callStack) == 0x238);
 
 struct EclTimelineState
 {

@@ -17,12 +17,8 @@ Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 struct PhotoEnemyView;
 struct PhotoEnemyManagerView;
-struct PhotoEnemyEclContextView;
-#if !defined(TH095_MATCH_EXACT)
-struct EnemyChildEclBlock;
-#endif
 
-PhotoEnemyEclContextView::PhotoEnemyEclContextView()
+EnemyEclContext::EnemyEclContext()
 {
 }
 
@@ -71,18 +67,18 @@ i32 PhotoEnemyEclManagerView::Load(char *path)
 }
 
 i32 PhotoEnemyEclManagerView::InitializeContext(
-    PhotoEnemyEclContextView *context, i16 subroutineId)
+    EnemyEclContext *context, i16 subroutineId)
 {
     if (subroutineId < 0)
     {
         return ZUN_SUCCESS;
     }
 
-    context->currentInstruction = reinterpret_cast<void *>(
+    context->currentInstr = reinterpret_cast<EclRawInstruction *>(
         this->subroutineTable[subroutineId]);
     context->time = 0;
     context->secondaryTime = 0;
-    context->subroutineId = subroutineId;
+    context->subId = subroutineId;
     return ZUN_SUCCESS;
 }
 

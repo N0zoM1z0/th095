@@ -327,8 +327,7 @@ low_advance_instruction:
     if (activeChildContext == -1)
         enemy->mainEclCallStackDepth = enemy->activeEclCallStackDepth;
     else
-        TH095_ECL_CHILD_BLOCK(
-            enemy, activeChildContext, EnemyChildEclBlock)->callStackDepth =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[activeChildContext]->callStackDepth =
             enemy->activeEclCallStackDepth;
 
     enemy->activeEclContext->currentInstr = instruction;
@@ -337,10 +336,10 @@ low_advance_instruction:
 low_select_next_context:
     for (i32 next = activeChildContext + 1; next < 16; ++next)
     {
-        if (TH095_ECL_CHILD_BLOCK(enemy, next, EnemyChildEclBlock))
+        if (reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[next])
         {
             EnemyChildEclBlock *childContext =
-                TH095_ECL_CHILD_BLOCK(enemy, next, EnemyChildEclBlock);
+                reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[next];
             enemy->activeEclCallStack = childContext->callStack;
             enemy->activeEclContext = &childContext->eclContext;
             instruction = enemy->activeEclContext->currentInstr;

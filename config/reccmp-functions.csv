@@ -257,7 +257,7 @@ th095::PhotoEnemyView::~PhotoEnemyView,0x004152D0,function
 th095::PhotoEnemyManagerView::Destroy,0x00414B30,function
 th095::PhotoEnemyManagerView::PhotoEnemyManagerView,0x00414B90,function
 th095::PhotoEnemyView::PhotoEnemyView,0x00415040,function
-th095::PhotoEnemyEclContextView::PhotoEnemyEclContextView,0x00415310,function
+th095::EnemyEclContext::EnemyEclContext,0x00415310,function
 th095::PhotoEnemyManagerView::LoadResources,0x004153D0,function
 th095::PhotoEnemyManagerView::~PhotoEnemyManagerView,0x004154E0,function
 th095::PhotoEnemyManagerView::Spawn,0x004156C0,function

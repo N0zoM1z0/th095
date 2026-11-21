@@ -157,7 +157,7 @@ enter_subroutine:
                    sizeof(enemy->mainEclContextStorage));
         }
         this->InitializeContext(
-            reinterpret_cast<PhotoEnemyEclContextView *>(&enemy->mainEclContextStorage),
+            &enemy->mainEclContextStorage,
             enemy->eclSubroutineIds[enemy->pendingEclSubroutineIndex]);
         if (enemy->activeEclCallStackDepth < 15)
             ++enemy->activeEclCallStackDepth;
@@ -198,32 +198,26 @@ enter_subroutine:
     case 117:
     {
         lhsInt = TH08_ECL_READ_I(ctx, 0);
-        if (TH095_ECL_CHILD_BLOCK(enemy, lhsInt, EnemyChildEclBlock))
+        if (reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt])
             g_ZunMemory.Free(
-                TH095_ECL_CHILD_BLOCK(enemy, lhsInt, EnemyChildEclBlock));
-        TH095_ECL_CHILD_BLOCK(enemy, lhsInt, EnemyChildEclBlock) = 0;
+                reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]);
+        reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt] = 0;
         if (TH08_ECL_READ_I(ctx, 1) >= 0)
         {
-            TH095_ECL_CHILD_BLOCK(enemy, lhsInt, EnemyChildEclBlock) =
+            reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt] =
                 static_cast<EnemyChildEclBlock *>(
                     Th095Alloc(sizeof(EnemyChildEclBlock)));
-            if (TH095_ECL_CHILD_BLOCK(enemy, lhsInt, EnemyChildEclBlock))
+            if (reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt])
             {
-                memset(TH095_ECL_CHILD_BLOCK(
-                           enemy, lhsInt, EnemyChildEclBlock), 0,
+                memset(reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt], 0,
                        sizeof(EnemyChildEclBlock));
-                TH095_ECL_CHILD_BLOCK(
-                    enemy, lhsInt, EnemyChildEclBlock)->subId =
+                reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]->subId =
                     TH08_ECL_READ_I(ctx, 1);
                 this->InitializeContext(
-                    reinterpret_cast<PhotoEnemyEclContextView *>(
-                        &TH095_ECL_CHILD_BLOCK(
-                            enemy, lhsInt, EnemyChildEclBlock)->eclContext),
-                    TH095_ECL_CHILD_BLOCK(
-                        enemy, lhsInt, EnemyChildEclBlock)->subId);
+                    &reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]->eclContext,
+                    reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]->subId);
                 memcpy(
-                    &TH095_ECL_CHILD_BLOCK(
-                        enemy, lhsInt, EnemyChildEclBlock)->eclContext.scriptState,
+                    &reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]->eclContext.scriptState,
                     &enemy->activeEclContext->scriptState, sizeof(EclScriptState));
             }
         }

@@ -256,7 +256,7 @@ th095::PhotoEnemyView::~PhotoEnemyView
 th095::PhotoEnemyManagerView::Destroy
 th095::PhotoEnemyManagerView::PhotoEnemyManagerView
 th095::PhotoEnemyView::PhotoEnemyView
-th095::PhotoEnemyEclContextView::PhotoEnemyEclContextView
+th095::EnemyEclContext::EnemyEclContext
 th095::PhotoEnemyManagerView::LoadResources
 th095::PhotoEnemyManagerView::~PhotoEnemyManagerView
 th095::PhotoEnemyManagerView::Spawn

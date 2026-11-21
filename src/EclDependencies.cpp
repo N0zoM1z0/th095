@@ -238,10 +238,9 @@ compare_failure:
 
 #define DEP_ANM_DIRECTION(enemy) \
     (reinterpret_cast<PhotoEnemyView *>(enemy)->anmDirection)
-static __forceinline void **TargetChildEclBlocks(Enemy *enemy)
+static __forceinline EnemyChildEclBlock **TargetChildEclBlocks(Enemy *enemy)
 {
-    return reinterpret_cast<void **>(
-        &reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[0]);
+    return reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks;
 }
 
 // FUNCTION: TH095 0x00411F70; TH08 0x00421BD0 is the source-shape oracle.
@@ -257,7 +256,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
     }
 
     g_PhotoEnemyManager->eclManager->InitializeContext(
-        reinterpret_cast<PhotoEnemyEclContextView *>(enemy->activeEclContext),
+        enemy->activeEclContext,
         static_cast<i16>(rawSubId));
 
     enemy->activeEclContext->scriptState.callParameters =

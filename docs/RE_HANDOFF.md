@@ -88,6 +88,8 @@ and both call-parameter banks. SEM-418 puts interpreter entry and context
 initialization on that allocation in both builds. The interpreter still
 uses the legacy enemy argument layout. SEM-419 gives both contexts the
 same script-state record and removes the float-variable offset accessors.
+SEM-420 shares their full context and interpolation-slot declarations and
+routes child creation, dispatch and return through the compact enemy array.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

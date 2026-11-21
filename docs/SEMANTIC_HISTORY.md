@@ -18608,3 +18608,24 @@ links move the spawn method, and both call sites follow it. The 133 focused
 retail comparisons include float lvalue gating, caller-state inheritance and
 child allocation failure. The 218 effect and extension callback comparisons
 also agree in both link orders. See `.analysis/pi/ecl-script-state/`.
+
+### SEM-420 — share the enemy ECL context
+
+The main context, saved frames and allocated children use the same 0x230
+declaration. The constructor initializes two context timers and the timers
+in all eight 0x30 interpolation slots. The installer and interpreter use
+the same callback and slot fields.
+
+Opcode 117 creates the child block and the interpreter uses the compact
+enemy's typed child array for dispatch. A return with no saved frame frees
+and clears the pointer selected by the one-based context slot, then
+restores the main context and stack. This removes the byte-offset child
+access and the initializer's casts between the two context declarations.
+
+All 167 affected exact units pass. Eleven call relocations use the renamed
+constructor and initializer, and 516 private labels were refreshed without
+changing the relocated fields. Both normal link orders move the two
+methods and all eleven calls follow them. The 196 retail comparisons
+include constructor writes, callback table entries, first-free and same
+operand slot selection, full tables and child returns. See
+`.analysis/pi/ecl-context-owner/`.
