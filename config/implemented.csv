@@ -170,7 +170,7 @@ th095::FileSystem::Encrypt
 th095::FileSystem::OpenFile
 th095::FileSystem::CheckIfFileAlreadyExists
 th095::SceneValueQueue::Pop
-th095::MusicRoomView::UpdateMusicRoom
+th095::FrontEndControllerView::UpdateMusicRoom
 th095::SkipMusicCommentLine
 th095::ReadMusicCommentLine
 th095::FrontEndControllerView::UpdateHelpMenu

@@ -223,11 +223,11 @@ FrontEndControllerView *__fastcall FrontEndControllerView::Create(i32 mode)
     return controller;
 }
 
-static __forceinline void FrontEndFreeReplayListData(FrontEndControllerView *view)
+static __forceinline void FrontEndFreeMusicCommentFile(FrontEndControllerView *view)
 {
-    if (view->replayListData != NULL)
+    if (view->musicCommentFile != NULL)
     {
-        void *data = view->replayListData;
+        void *data = view->musicCommentFile;
         free(data);
     }
 }
@@ -293,7 +293,7 @@ FrontEndControllerView::~FrontEndControllerView()
     g_Chain.Cut(this->drawChain);
     g_ActiveMenuController = NULL;
 
-    FrontEndFreeReplayListData(this);
+    FrontEndFreeMusicCommentFile(this);
     FrontEndFreeMissionMessageData(this);
 
     while (this->groupPreviewDataQueue.Size() != 0)

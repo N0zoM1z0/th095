@@ -19990,3 +19990,25 @@ cover page selection, timer gating, file publication, upload, free,
 preload, page bounds, and return to the main menu. A failed file open
 still publishes `PAGE_DATA_READY` with a null buffer. The upload expects
 valid ANM data. See `.analysis/pi/help-page-owner/`.
+
+### SEM-485 — run Music Room on the allocated front-end controller
+
+The allocation at controller `+0xFFC` holds the Music Room comment
+file. Music Room stores the result of opening `sprt/musiccmt.txt`
+there and clears the field after freeing it on exit. The title
+controller destructor frees the same allocation if Music Room is open.
+The field and destructor helper now name that ownership.
+
+Both builds share the Music Room update and parser. The update accesses
+the actual controller's three track tables, count, cursor, timer and
+states. The controller holds the track and description handles as POD
+storage at `+0x6000`. Its bounded handle view preserves the existing
+`AnmVmId` calls and avoids constructor stores. Menu animation handles
+still use the Scene Select view.
+
+All 102 affected strict comparisons pass across 15 translation units.
+Music Room moves from `0x004278B0` to `0x00432630` with reversed object
+order. The original and both normal links agree on 14 Music Room
+cases, including parsing, timed text reveal, cursor movement, playback,
+file-open failure, normal exit and destructor cleanup. See
+`.analysis/pi/music-room-owner/`.

@@ -213,6 +213,9 @@ SEM-483 shares the front-end screen substates across both builds and
 uses named button masks in the main menu.
 SEM-484 runs the Help update and loader on the allocated controller.
 Help still uses the shared Scene Select animation handle view.
+SEM-485 moves Music Room and its track tables onto the allocated
+controller and identifies the Music Room comment buffer freed by
+the controller destructor.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

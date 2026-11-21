@@ -429,7 +429,7 @@ residual can reflect a misplaced shared semantic tail, so compare branch
   ReplayBrowser rule above: move the *producer* into a helper to delay an sret;
   move the *scalar consumer/assignment* into a helper when outer srets must stay
   ahead of it.
-- `MusicRoomView::UpdateMusicRoom @ 0x00450FC0` extends those rules with a
+- `FrontEndControllerView::UpdateMusicRoom @ 0x00450FC0` extends those rules with a
   mixed-phase exact case. Build 3077 can require some `CreateVm` return objects
   to remain outer-function temporaries while fixed VM stores use a source-local
   producer helper; this places the dynamic track/description srets before the

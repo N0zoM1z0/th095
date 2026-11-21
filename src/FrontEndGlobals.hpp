@@ -49,15 +49,12 @@ enum OptionsMenuStateValue
 typedef char OptionsMenuStateSizeIs4[
     (sizeof(OptionsMenuState) == sizeof(i32)) ? 1 : -1];
 
-typedef i32 MusicRoomState;
 enum MusicRoomStateValue
 {
     MUSIC_ROOM_STATE_INITIALIZE = 0,
     MUSIC_ROOM_STATE_TRACK_LIST_REVEAL = 1,
     MUSIC_ROOM_STATE_INTERACTIVE = 2,
 };
-typedef char MusicRoomStateSizeIs4[
-    (sizeof(MusicRoomState) == sizeof(i32)) ? 1 : -1];
 
 enum SceneSelectState
 {

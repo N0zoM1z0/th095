@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AnmVmId.hpp"
 #include "Chain.hpp"
 #include "FrontEndGlobals.hpp"
 #include "FrontEndPendingTextureData.hpp"
@@ -50,8 +51,13 @@ struct FrontEndControllerView
     u8 unknown0ea4[4];
     ReplayManager *replays[80];
     u8 unknown0fe8[0x14];
-    void *replayListData;
-    u8 unknown1000[0x5108];
+    char *musicCommentFile;
+    char musicTrackTitles[32][64];
+    char musicTrackPaths[32][64];
+    char musicTrackDescriptions[32][8][64];
+    AnmVmIdStorage musicVmStorage[40];
+    u8 unknown60a0[0x64];
+    i32 musicTrackCount;
     i32 transitionReady;
     i32 state;
     FrontEndRequestedState requestedState;
@@ -86,6 +92,7 @@ struct FrontEndControllerView
     ChainCallbackResult Update();
     ChainCallbackResult UpdateMainMenu();
     i32 UpdateHelpMenu();
+    i32 UpdateMusicRoom();
     void RefreshSceneSelection(i32 selectedScoreEntryIndex);
     void BuildScenePreviewText();
     i32 GetSelectedGroup()
@@ -121,8 +128,13 @@ typedef char FrontEndControllerSceneDisplayAtE88[
      offsetof(FrontEndControllerView, previewTimer) == 0xea0) ? 1 : -1];
 typedef char FrontEndLifecycleReplaysAtEA8[
     (offsetof(FrontEndControllerView, replays) == 0xea8) ? 1 : -1];
-typedef char FrontEndLifecycleReplayListDataAtFFC[
-    (offsetof(FrontEndControllerView, replayListData) == 0xffc) ? 1 : -1];
+typedef char FrontEndControllerMusicRoomLayout[
+    (offsetof(FrontEndControllerView, musicCommentFile) == 0xffc &&
+     offsetof(FrontEndControllerView, musicTrackTitles) == 0x1000 &&
+     offsetof(FrontEndControllerView, musicTrackPaths) == 0x1800 &&
+     offsetof(FrontEndControllerView, musicTrackDescriptions) == 0x2000 &&
+     offsetof(FrontEndControllerView, musicVmStorage) == 0x6000 &&
+     offsetof(FrontEndControllerView, musicTrackCount) == 0x6104) ? 1 : -1];
 typedef char FrontEndLifecycleGroupDataQueueAt61B8[
     (offsetof(FrontEndControllerView, groupPreviewDataQueue) == 0x61b8)
         ? 1

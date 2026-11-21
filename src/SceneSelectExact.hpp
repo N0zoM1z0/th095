@@ -311,8 +311,10 @@ extern u32 g_SceneLockedInitialColor;
 
 void __fastcall LoadSceneSelectionAssets(void *unused);
 
-void __cdecl SceneWriteText(SceneAnmManagerView *manager,
-                            SceneAnmVmView *vm, u32 color, u32 unknown,
+struct AnmManager;
+
+void __cdecl SceneWriteText(AnmManager *manager,
+                            AnmVm *vm, u32 color, u32 unknown,
                             const char *text);
 
 } // namespace th095
