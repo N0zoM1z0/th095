@@ -2295,6 +2295,16 @@ body remains 2,655 bytes and agrees with retail on all 1,312 cases in
 both normal link layouts. The pinned probes are under
 `.analysis/controller-get-input/cached-slot-assignments/`.
 
+The backend-buffer probes use real storage for both keyboard APIs. A union
+with one array per backend emits the same 2,655 bytes and 22 relocations as
+the shared array. Declaring an array inside each branch produces a 0x21C
+frame with different stack operands. Binding one reference per backend
+produces the target's 0x124 frame and starts the Win32 mask in EDX. That
+variant moves all seven input-index accesses to EBP-0x124 and adds 54
+instructions for the two references. Retail keeps the index at EBP-0x11C.
+The pinned probes are in
+`.analysis/controller-get-input/backend-snapshots/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
