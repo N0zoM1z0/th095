@@ -12,6 +12,7 @@ namespace th095
 
 struct EnemyEclContext;
 struct PhotoEnemyView;
+struct PhotoEnemyTimelineInstruction;
 
 struct PhotoEnemyEclFileView
 {
@@ -21,9 +22,9 @@ struct PhotoEnemyEclFileView
     u32 timelineOffsets[16];
     u32 subroutineOffsets[1];
 
-    __forceinline void *GetTimeline(i32 index)
+    __forceinline const PhotoEnemyTimelineInstruction *GetTimeline(i32 index)
     {
-        return reinterpret_cast<void *>(this->timelineOffsets[index]);
+        return reinterpret_cast<const PhotoEnemyTimelineInstruction *>(this->timelineOffsets[index]);
     }
 };
 

@@ -94,6 +94,21 @@ inline PhotoEnemyTimelineView::PhotoEnemyTimelineView()
 }
 #endif
 
+enum PhotoEnemyTimelineOpcode
+{
+    TIMELINE_SPAWN_FIXED = 0,
+    TIMELINE_SPAWN_FIXED_MIRRORED = 1,
+    TIMELINE_SPAWN_IN_RANGE = 2,
+    TIMELINE_SPAWN_ACROSS_PLAYFIELD = 3,
+    TIMELINE_SPAWN_IN_RANGE_MIRRORED = 4,
+    TIMELINE_SPAWN_ACROSS_PLAYFIELD_MIRRORED = 5,
+    TIMELINE_REQUEST_ENEMY_SUBROUTINE = 8,
+    TIMELINE_WAIT_FOR_ENEMY_INACTIVE = 10,
+    TIMELINE_SPAWN_WITH_PARAMETERS = 11,
+    TIMELINE_SPAWN_WITH_PARAMETERS_MIRRORED = 12,
+    TIMELINE_SPAWN_FIXED_ALTERNATE = 15, // Same arguments and behavior as opcode 0.
+};
+
 struct PhotoEnemyTimelineInstruction
 {
     i32 time;
@@ -101,6 +116,9 @@ struct PhotoEnemyTimelineInstruction
     u8 size;
     u8 unknown07;
 };
+
+typedef char PhotoEnemyTimelineInstructionSizeIs8[
+    (sizeof(PhotoEnemyTimelineInstruction) == 8) ? 1 : -1];
 
 struct PhotoEnemyTimelineSpawnArgs
 {
@@ -141,6 +159,17 @@ struct PhotoEnemyTimelineExtendedSpawnArgs
     i32 timelineParam0;
     i32 timelineParam1;
     i32 score;
+};
+
+struct PhotoEnemyTimelineSubroutineArgs
+{
+    i32 enemySlot;
+    i32 subroutineIndex;
+};
+
+struct PhotoEnemyTimelineWaitArgs
+{
+    i32 enemySlot;
 };
 
 PhotoEnemyManagerView *g_PhotoEnemyManager; // Retail 0x004BDDC0
@@ -309,57 +338,54 @@ void PhotoEnemyManagerView::Destroy()
 }
 
 // FUNCTION: TH095 0x004163F0.
-// TH08 supplies the ancestral raw-argument source shape.  The target-local
-// 20-byte special-spawn record and GetRandomF32InRange call are compiler-
-// observed: together they restore the original VC7.1 local chronology.
+// Timeline records carry opcode-specific payloads immediately after the header.
+// The extended spawn keeps its three live locals together for VC7.1.
 void PhotoEnemyTimelineView::Run()
 {
     u32 mirrorMovementX = 0;
 
-    while (static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
-            ->time >= 0)
+    while (this->instruction->time >= 0)
     {
-        if (this->timer ==
-            static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
-                ->time)
+        if (this->timer == this->instruction->time)
         {
             mirrorMovementX = 0;
-            switch (static_cast<PhotoEnemyTimelineInstruction *>(
-                        this->instruction)->opcode)
+            switch (this->instruction->opcode)
             {
-            case 1:
+            case TIMELINE_SPAWN_FIXED_MIRRORED:
                 mirrorMovementX = 1;
-            case 0:
+            case TIMELINE_SPAWN_FIXED:
             {
-                i32 *args = reinterpret_cast<i32 *>(
-                    reinterpret_cast<u8 *>(this->instruction) + 8);
+                const PhotoEnemyTimelineSpawnArgs *args =
+                    reinterpret_cast<const PhotoEnemyTimelineSpawnArgs *>(
+                        this->instruction + 1);
                 Float3 position;
-                position.x = *reinterpret_cast<f32 *>(&args[1]);
-                position.y = *reinterpret_cast<f32 *>(&args[2]);
+                position.x = args->x;
+                position.y = args->y;
                 position.z = 0.0f;
                 g_PhotoEnemyManager->Spawn(
-                    args[0], &position, args[3], args[4], args[5],
-                    mirrorMovementX);
+                    args->subroutineId, &position, args->life, args->itemDrop,
+                    args->score, mirrorMovementX);
                 break;
             }
 
-            case 15:
+            case TIMELINE_SPAWN_FIXED_ALTERNATE:
             {
-                i32 *args = reinterpret_cast<i32 *>(
-                    reinterpret_cast<u8 *>(this->instruction) + 8);
+                const PhotoEnemyTimelineSpawnArgs *args =
+                    reinterpret_cast<const PhotoEnemyTimelineSpawnArgs *>(
+                        this->instruction + 1);
                 Float3 position;
-                position.x = *reinterpret_cast<f32 *>(&args[1]);
-                position.y = *reinterpret_cast<f32 *>(&args[2]);
+                position.x = args->x;
+                position.y = args->y;
                 position.z = 0.0f;
                 g_PhotoEnemyManager->Spawn(
-                    args[0], &position, args[3], args[4], args[5],
-                    mirrorMovementX);
+                    args->subroutineId, &position, args->life, args->itemDrop,
+                    args->score, mirrorMovementX);
                 break;
             }
 
-            case 12:
+            case TIMELINE_SPAWN_WITH_PARAMETERS_MIRRORED:
                 mirrorMovementX = 1;
-            case 11:
+            case TIMELINE_SPAWN_WITH_PARAMETERS:
             {
                 // One fully-live record preserves the target's contiguous
                 // position/spawned/args homes without padding.
@@ -367,74 +393,72 @@ void PhotoEnemyTimelineView::Run()
                 {
                     Float3 position;
                     PhotoEnemyView *enemy;
-                    i32 *args;
+                    const PhotoEnemyTimelineExtendedSpawnArgs *args;
                 } locals;
-                locals.args = reinterpret_cast<i32 *>(
-                    reinterpret_cast<u8 *>(this->instruction) + 8);
-                locals.position.x = *reinterpret_cast<f32 *>(&locals.args[1]);
-                locals.position.y = *reinterpret_cast<f32 *>(&locals.args[2]);
+                locals.args = reinterpret_cast<const PhotoEnemyTimelineExtendedSpawnArgs *>(
+                    this->instruction + 1);
+                locals.position.x = locals.args->x;
+                locals.position.y = locals.args->y;
                 locals.position.z = 0.0f;
                 locals.enemy = g_PhotoEnemyManager->Spawn(
-                    locals.args[0], &locals.position, locals.args[3], -1,
-                    locals.args[6], mirrorMovementX);
-                locals.enemy->timelineParam0 = locals.args[4];
-                locals.enemy->timelineParam1 = locals.args[5];
+                    locals.args->subroutineId, &locals.position, locals.args->life, -1,
+                    locals.args->score, mirrorMovementX);
+                locals.enemy->timelineParam0 = locals.args->timelineParam0;
+                locals.enemy->timelineParam1 = locals.args->timelineParam1;
                 break;
             }
 
-            case 4:
+            case TIMELINE_SPAWN_IN_RANGE_MIRRORED:
                 mirrorMovementX = 1;
-            case 2:
+            case TIMELINE_SPAWN_IN_RANGE:
             {
-                i32 *args = reinterpret_cast<i32 *>(
-                    reinterpret_cast<u8 *>(this->instruction) + 8);
+                const PhotoEnemyTimelineRandomRangeArgs *args =
+                    reinterpret_cast<const PhotoEnemyTimelineRandomRangeArgs *>(
+                        this->instruction + 1);
                 Float3 position;
-                position.x = g_Rng.GetRandomF32InRange(
-                        *reinterpret_cast<f32 *>(&args[2]) -
-                        *reinterpret_cast<f32 *>(&args[1])) +
-                    *reinterpret_cast<f32 *>(&args[1]);
-                position.y = *reinterpret_cast<f32 *>(&args[3]);
+                position.x = g_Rng.GetRandomF32InRange(args->maximumX - args->minimumX) +
+                    args->minimumX;
+                position.y = args->y;
                 position.z = 0.0f;
                 g_PhotoEnemyManager->Spawn(
-                    args[0], &position, args[4], args[5], args[6],
-                    mirrorMovementX);
+                    args->subroutineId, &position, args->life, args->itemDrop,
+                    args->score, mirrorMovementX);
                 break;
             }
 
-            case 5:
+            case TIMELINE_SPAWN_ACROSS_PLAYFIELD_MIRRORED:
                 mirrorMovementX = 1;
-            case 3:
+            case TIMELINE_SPAWN_ACROSS_PLAYFIELD:
             {
-                i32 *args = reinterpret_cast<i32 *>(
-                    reinterpret_cast<u8 *>(this->instruction) + 8);
+                const PhotoEnemyTimelineRandomWidthArgs *args =
+                    reinterpret_cast<const PhotoEnemyTimelineRandomWidthArgs *>(
+                        this->instruction + 1);
                 Float3 position;
                 position.x = g_Rng.GetRandomF32() * 384.0f;
-                position.y = *reinterpret_cast<f32 *>(&args[1]);
+                position.y = args->y;
                 position.z = 0.0f;
                 g_PhotoEnemyManager->Spawn(
-                    args[0], &position, args[2], args[3], args[4],
-                    mirrorMovementX);
+                    args->subroutineId, &position, args->life, args->itemDrop,
+                    args->score, mirrorMovementX);
                 break;
             }
 
-            case 8:
+            case TIMELINE_REQUEST_ENEMY_SUBROUTINE:
                 g_PhotoEnemyManager->timelineEnemySlots[
-                    reinterpret_cast<i32 *>(
-                        reinterpret_cast<u8 *>(this->instruction) + 8)[0]]
+                    reinterpret_cast<const PhotoEnemyTimelineSubroutineArgs *>(
+                        this->instruction + 1)->enemySlot]
                     ->pendingEclSubroutineIndex = static_cast<i16>(
-                        reinterpret_cast<i32 *>(
-                            reinterpret_cast<u8 *>(this->instruction) + 8)[1]);
+                        reinterpret_cast<const PhotoEnemyTimelineSubroutineArgs *>(
+                            this->instruction + 1)->subroutineIndex);
                 break;
 
-            case 10:
+            case TIMELINE_WAIT_FOR_ENEMY_INACTIVE:
                 if (g_PhotoEnemyManager->timelineEnemySlots[
-                        reinterpret_cast<i32 *>(
-                            reinterpret_cast<u8 *>(this->instruction) + 8)[0]] !=
-                        NULL &&
+                        reinterpret_cast<const PhotoEnemyTimelineWaitArgs *>(
+                            this->instruction + 1)->enemySlot] != NULL &&
                     g_PhotoEnemyManager->timelineEnemySlots[
-                        reinterpret_cast<i32 *>(
-                            reinterpret_cast<u8 *>(this->instruction) + 8)[0]]
-                            ->control.active != 0)
+                        reinterpret_cast<const PhotoEnemyTimelineWaitArgs *>(
+                            this->instruction + 1)->enemySlot]->control.active != 0)
                 {
                     this->timer.Decrement(1);
                     goto finish;
@@ -442,16 +466,13 @@ void PhotoEnemyTimelineView::Run()
                 break;
             }
         }
-        else if (this->timer <
-            static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
-                ->time)
+        else if (this->timer < this->instruction->time)
         {
             break;
         }
 
-        this->instruction = reinterpret_cast<u8 *>(this->instruction) +
-            static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
-                ->size;
+        this->instruction = reinterpret_cast<const PhotoEnemyTimelineInstruction *>(
+            reinterpret_cast<const u8 *>(this->instruction) + this->instruction->size);
     }
 
 finish:

@@ -20578,3 +20578,24 @@ All 22 EnemyManagerUpdate exact units pass. Executing the constructor on
 dirty memory produces the same 2,534,960-byte EnemyInf state in retail
 and both normal links. The two links also retain their previous mapped
 bytes. See `.analysis/pi/enemy-template-fields/`.
+
+### SEM-513 — type enemy timeline records and their loader binding
+
+The timeline file and EnemyInf hand off one read-only instruction pointer.
+Each record starts with an eight-byte header. Run reads the signed frame and
+command from that header, interprets the command's payload, and advances by
+the encoded record size. It still stops on a negative frame and waits for
+future records. The header's final byte remains unknown.
+
+The dispatch uses named commands and typed payloads for the four spawn forms,
+subroutine requests, and waits. The dedicated handler for opcode 15 reproduces
+the fixed-position spawn. Opcode 8 narrows a signed subroutine index to the
+enemy's signed 16-bit pending index. Opcode 10 leaves the cursor in place
+and offsets the timer tick while the specified enemy slot is active.
+
+The strict VC7.1 replay passes all 163 units that consume the affected
+sources and headers, including the timeline interpreter's 64-byte switch
+table. The interpreter and its EnemyInf update caller also match in normal
+COFF. All 154 timeline cases agree in retail and both linked layouts. The
+normal images retain their mapped bytes. Evidence is under
+`.analysis/pi/timeline-wire/`.

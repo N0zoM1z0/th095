@@ -12,11 +12,12 @@ namespace th095
 class ChainElem;
 struct PhotoCardInfoView;
 struct PhotoEnemyEclManagerView;
+struct PhotoEnemyTimelineInstruction;
 
 struct PhotoEnemyTimelineView
 {
     ZunTimer timer;
-    void *instruction;
+    const PhotoEnemyTimelineInstruction *instruction;
 
     PhotoEnemyTimelineView();
     void Run();
