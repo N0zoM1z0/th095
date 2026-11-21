@@ -18804,3 +18804,24 @@ in the factory, draw and task consumers follow their destinations in both
 normal links. Retail and both links agree in 66 cases covering load failure,
 chain publication, the update gate and the four draw-group heads.
 See `.analysis/pi/enemy-manager-task/`.
+
+### SEM-431 — share the stage score multiplier in ECL and camera
+
+PhotoOverlay initializes the stage multiplier to 1.0 at 0x0042AA78.
+Opcode 149 writes it at 0x0040F00E. Camera scoring applies it at
+0x004339C0 before truncating and rounding the score to a multiple of ten.
+Both ECL builds now write `g_PhotoStageState->scoreMultiplier` and
+both camera builds read it from the same layout. The score offset macro
+and padded camera stage declaration are retired.
+
+RunEcl already supplies an ANM declaration through its legacy ECL
+includes. Pulling in the full camera header there redefines those types.
+`PhotoStageLayout.hpp` supplies the shared stage layout and uses the
+trivial photo ANM handle from `PhotoAnmVmId.hpp`.
+
+All 271 affected exact comparisons pass. The stage slot moves from
+0x004D65C0 to 0x004DBE18, and both normal references follow it. Retail and
+both links agree in 48 focused ECL-to-score cases, including immediate
+and indirect operands, two stage instances and fractional multipliers.
+All four mapped sections in each normal PE match the corresponding
+library-audited SEM-430 image. See `.analysis/pi/stage-score-owner/`.

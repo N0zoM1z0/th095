@@ -11,9 +11,9 @@
 #endif
 #include "PhotoEffectRuntime.hpp"
 #include "SoundPlayer.hpp"
+#include "PhotoStage.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "ScoreData.hpp"
-#include "PhotoStage.hpp"
 #endif
 namespace th095
 {
@@ -27,10 +27,6 @@ struct PhotoAnmVmIdValue
         this->value = value;
     }
 };
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#include "PhotoCameraStageEmission.inl"
-#endif
 
 static __forceinline const AnmVmId &PhotoAnmId(const i32 &value)
 {

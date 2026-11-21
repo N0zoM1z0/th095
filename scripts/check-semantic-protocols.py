@@ -3791,11 +3791,11 @@ def check_photo_game_task_ecl_owner() -> None:
 
 
 def check_photo_stage_owner() -> None:
-    header = (SRC / "PhotoStage.hpp").read_text(encoding="utf-8")
+    header = (SRC / "PhotoStageLayout.hpp").read_text(encoding="utf-8")
     if any(name in header for name in PROFILE_NAMES):
-        fail("canonical PhotoStage.hpp must not select a build-profile layout")
+        fail("canonical PhotoStageLayout.hpp must not select a build-profile layout")
     if len(re.findall(r"\bstruct\s+PhotoStageStateView\s*\{", header)) != 1:
-        fail("PhotoStage.hpp must define exactly one canonical stage owner")
+        fail("PhotoStageLayout.hpp must define exactly one canonical stage owner")
     required_layout = (
         "sizeof(PhotoStageStateView) == 0x25730",
         "offsetof(PhotoStageStateView, scoreMultiplier) == 0x25718",
@@ -3816,8 +3816,8 @@ def check_photo_stage_owner() -> None:
     )
     for path in direct_consumers:
         text = path.read_text(encoding="utf-8")
-        if 'PhotoStage.hpp"' not in text:
-            fail(f"{path.relative_to(SRC)} must consume canonical PhotoStage.hpp")
+        if not any(f'{name}"' in text for name in ("PhotoStage.hpp", "PhotoStageLayout.hpp")):
+            fail(f"{path.relative_to(SRC)} must consume the canonical photo stage")
 
     overlay = (SRC / "PhotoOverlay.cpp").read_text(encoding="utf-8")
     if "PhotoOverlayManagerView" in overlay:
@@ -3827,22 +3827,13 @@ def check_photo_stage_owner() -> None:
     if "PhotoStageStateView::Create" not in overlay:
         fail("normal PhotoOverlay must implement the canonical stage lifecycle")
 
-    camera = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
-    if '#include "PhotoCameraStageEmission.inl"' not in camera:
-        fail("PhotoCamera must isolate its legacy stage receiver declaration")
-    emission = (SRC / "PhotoCameraStageEmission.inl").read_text(
-        encoding="utf-8"
-    )
-    if "VC7 emission adapter for PhotoCamera only" not in emission:
-        fail("PhotoCamera stage adapter must state its narrow ownership")
-    if any(name in emission for name in PROFILE_NAMES):
-        fail("PhotoCamera stage emission adapter must not select a profile")
-
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
-    if "EclStageScoreStateView" in ecl_run:
-        fail("EclRun restored the retired stage-score projection")
-    if "g_PhotoStageState->scoreMultiplier" not in ecl_run:
-        fail("normal EclRun lost canonical stage score access")
+    for retired in ("EclStageScoreStateView", "g_Th095StageState"):
+        if retired in ecl_run:
+            fail(f"EclRun restored a retired stage-score projection: {retired}")
+    photo_ops = (SRC / "ecl" / "EclRunTargetPhoto.inl").read_text(encoding="utf-8")
+    if "g_PhotoStageState->scoreMultiplier" not in photo_ops:
+        fail("EclRun lost canonical stage score access")
 
 
 def check_photo_card_info_owner() -> None:
@@ -3896,8 +3887,11 @@ def check_photo_card_info_owner() -> None:
 def check_photo_camera_state_owner() -> None:
     header_path = SRC / "PhotoCamera.hpp"
     header = header_path.read_text(encoding="utf-8")
-    handle_start = header.index("struct PhotoAnmVmId\n")
-    handle_body = braced_body_after(header, handle_start, "PhotoAnmVmId")
+    handle = (SRC / "PhotoAnmVmId.hpp").read_text(encoding="utf-8")
+    if '#include "PhotoAnmVmId.hpp"' not in header:
+        fail("PhotoCamera lost the shared Photo ANM handle")
+    handle_start = handle.index("struct PhotoAnmVmId\n")
+    handle_body = braced_body_after(handle, handle_start, "PhotoAnmVmId")
     if "TH095_MATCH_EXACT" in handle_body or "DIFFBUILD" in handle_body:
         fail("PhotoAnmVmId storage must be profile-independent")
     required_handle = (
@@ -3910,11 +3904,11 @@ def check_photo_camera_state_owner() -> None:
         "offsetof(PhotoAnmVmId, value) == 0x0",
     )
     for fact in required_handle:
-        if fact not in header:
+        if fact not in handle:
             fail(f"shared Photo ANM handle lost fact: {fact}")
     if re.search(r"\bPhotoAnmVmId\s*\(\s*\)", handle_body):
         fail("PhotoAnmVmId must remain trivial default-construction storage")
-    if "typedef AnmVmId PhotoAnmVmId;" in header:
+    if "typedef AnmVmId PhotoAnmVmId;" in handle:
         fail("PhotoCamera restored constructor-bearing AnmVmId storage")
 
     if "typedef AnmLoaded PhotoAnmLoadedView;" not in header:

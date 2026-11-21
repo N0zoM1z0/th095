@@ -32,9 +32,9 @@
 #include "../PhotoEffectRuntime.hpp"
 #include "../PhotoEnemyEclManager.hpp"
 #include "../PhotoEnemyManagerLayout.hpp"
+#include "../PhotoStageLayout.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "../PhotoCardInfo.hpp"
-#include "../PhotoStage.hpp"
 #include "../PhotoGamePlayer.hpp"
 #endif
 
@@ -57,15 +57,6 @@
 
 #define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
     reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(g_PhotoEnemyManager->enemyAnm)
-
-#ifdef DIFFBUILD
-#define TH095_ECL_STAGE_STATE EclRunHigh::g_Th095StageState
-#define TH095_ECL_STAGE_SCORE_MULTIPLIER \
-    *reinterpret_cast<f32 *>(TH095_ECL_STAGE_STATE + 0x25718)
-#else
-#define TH095_ECL_STAGE_SCORE_MULTIPLIER \
-    (::th095::g_PhotoStageState->scoreMultiplier)
-#endif
 
 #ifdef DIFFBUILD
 #define TH095_ECL_PHOTO_MODE EclRunHigh::g_Th095PhotoMode

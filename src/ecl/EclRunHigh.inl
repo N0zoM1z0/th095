@@ -154,7 +154,6 @@ inline i32 Th095PreserveI32(i32 value)
     return *reinterpret_cast<volatile i32 *>(&value);
 }
 
-extern u8 *g_Th095StageState;
 extern AnmManagerLookup *g_Th095AnmManager;
 extern PhotoModeController *g_Th095PhotoMode;
 extern EclExtendedCallback g_Th095ExInsn[];
@@ -800,7 +799,7 @@ enter_subroutine:
         break;
     }
     case 149:
-        TH095_ECL_STAGE_SCORE_MULTIPLIER =
+        g_PhotoStageState->scoreMultiplier =
             TH08_ECL_READ_F(ctx, 0);
         break;
     case 150:

@@ -214,7 +214,7 @@
     }
 
     case 149:
-        TH095_ECL_STAGE_SCORE_MULTIPLIER =
+        g_PhotoStageState->scoreMultiplier =
             TH08_ECL_READ_F_RAWARG(ctx, 0);
         break;
 
