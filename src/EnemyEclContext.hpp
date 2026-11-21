@@ -7,9 +7,10 @@
 namespace th095
 {
 
+struct PhotoEnemyView;
 struct EnemyEclInterpolationSlot;
 typedef void (__fastcall *EnemyEclInterpolatorCallback)(
-    Enemy *enemy, EnemyEclInterpolationSlot *slot, f32 progress);
+    PhotoEnemyView *enemy, EnemyEclInterpolationSlot *slot, f32 progress);
 
 struct EnemyEclInterpolationSlot
 {

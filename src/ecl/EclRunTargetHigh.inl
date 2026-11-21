@@ -19,8 +19,7 @@
             break;
         }
         DispatchShotInstruction(
-            reinterpret_cast<Enemy *>(enemy),
-            reinterpret_cast<EclShotInstruction *>(instruction));
+            enemy, reinterpret_cast<EclShotInstruction *>(instruction));
         break;
 
     case 101:

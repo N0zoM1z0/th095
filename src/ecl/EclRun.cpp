@@ -287,7 +287,7 @@ low_advance_instruction:
                     break;
                 }
 
-                entry->callback(reinterpret_cast<Enemy *>(enemy), entry, progress);
+                entry->callback(enemy, entry, progress);
                 if (entry->timer >= entry->duration)
                     entry->callback = 0;
 

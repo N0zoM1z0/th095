@@ -114,7 +114,9 @@ in both profiles. SEM-432 gives all four operand resolvers the compact
 enemy receiver and retires the exact-side float call adapter. RunEcl now
 uses the TH095 comparison helper so a taken branch resets all three timer
 fields. SEM-433 gives RunEcl and UpdateMovement the compact enemy receiver.
-Context and callback helpers still have legacy signatures.
+SEM-434 uses the compact enemy in the context, movement, and shot helpers
+and in both interpolation callbacks. Extended callbacks still take the
+legacy receiver.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

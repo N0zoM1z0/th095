@@ -18869,3 +18869,23 @@ The collision dimensions and immediate and per-frame ECL callback
 fixtures agree in 23 further cases. Both normal builds have the same four
 mapped sections as the SEM-432 demo0 replay images. See
 `.analysis/pi/ecl-dispatch-owner/`.
+
+### SEM-434 — pass the compact enemy to ECL helpers
+
+Subroutine calls and returns use the compact enemy's active context, saved
+stack and child block array. The movement helpers and shot dispatcher take
+that same receiver; the shot descriptor and minimum squared distance are
+direct fields. RunEcl and the shot cadence updater call the same dispatcher.
+
+The table at retail 0x004A4250 has seven linear entries and one Hermite
+entry. `EclDependencies.cpp` emits it in both profiles with a fastcall
+callback taking the compact enemy, the active slot and its progress.
+Both COFF objects own eight symbolic table relocations. The table moves
+from 0x004B824C to 0x004B96E8 and all eight entries plus ten helper and
+table references follow their destinations.
+
+All 167 affected exact comparisons pass. The retail executable and
+both normal links agree on 112 end-to-end interpolation trajectories
+and 329 cases covering shot dispatch, cadence and related bullet state.
+The four mapped sections in each normal link match the corresponding
+SEM-432 replay image. See `.analysis/pi/ecl-helper-owner/`.

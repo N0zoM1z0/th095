@@ -7,7 +7,7 @@ namespace th095
 {
 namespace EclRunHigh
 {
-void __fastcall DispatchShotInstruction(Enemy *enemy, EclShotInstruction *instruction);
+void __fastcall DispatchShotInstruction(PhotoEnemyView *enemy, EclShotInstruction *instruction);
 }
 
 // FUNCTION: TH095 0x00413030; TH08 UpdateShotAndAnm is the source-shape oracle.
@@ -24,7 +24,7 @@ void PhotoEnemyView::UpdateShotAndAnm()
             if (this->shootIntervalTimer >= this->shootIntervalFrames)
             {
                 EclRunHigh::DispatchShotInstruction(
-                    reinterpret_cast<Enemy *>(this), &this->pendingShotInstruction);
+                    this, &this->pendingShotInstruction);
                 this->shootIntervalTimer = 0;
             }
         }

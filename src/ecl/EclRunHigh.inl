@@ -81,7 +81,7 @@ C_ASSERT(offsetof(LaserSpawnArgs, transformFlags) == 0x30);
 
 // Target behavior at 0x00422720 establishes this as the Enemy bullet-spawn
 // descriptor dispatcher.
-void __fastcall DispatchShotInstruction(Enemy *enemy,
+void __fastcall DispatchShotInstruction(PhotoEnemyView *enemy,
                                         EclShotInstruction *instruction);
 
 struct SpawnPacketTyped

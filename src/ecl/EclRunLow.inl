@@ -35,15 +35,15 @@
 namespace th095
 {
 
+struct PhotoEnemyView;
+
 namespace EclHelpers
 {
 void __fastcall ConfigurePolarMotion(
-    Enemy *enemy, EclRawInstruction *instruction);
+    PhotoEnemyView *enemy, EclRawInstruction *instruction);
 void __fastcall ConfigureRelativeMotion(
-    Enemy *enemy, EclRawInstruction *instruction);
+    PhotoEnemyView *enemy, EclRawInstruction *instruction);
 }
-
-struct PhotoEnemyView;
 
 namespace EclRunLow
 {
@@ -71,12 +71,12 @@ struct SpawnedEffectAnmVm
 };
 
 void __fastcall ApplyInterpolationOperation(
-    Enemy *enemy, EclRawInstruction *instruction);
+    PhotoEnemyView *enemy, EclRawInstruction *instruction);
 void __fastcall InstallInterpolationSlot(
-    Enemy *enemy, EclRawInstruction *instruction);
-void __fastcall CallSubOnEnemy(Enemy *enemy,
+    PhotoEnemyView *enemy, EclRawInstruction *instruction);
+void __fastcall CallSubOnEnemy(PhotoEnemyView *enemy,
                                EclRawInstruction *instruction, i32 rawSubId);
-i32 __fastcall PopEclContext(Enemy *enemy,
+i32 __fastcall PopEclContext(PhotoEnemyView *enemy,
                              EclRawInstruction *instruction);
 void __fastcall SetPrimaryAnmScripts(
     PhotoEnemyView *enemy, EclRawInstruction *instruction,
@@ -281,11 +281,11 @@ EclRawInstruction *__fastcall CompareOperands(
         break;
 
     case 35:
-        ApplyInterpolationOperation(reinterpret_cast<Enemy *>(enemy), instruction);
+        ApplyInterpolationOperation(enemy, instruction);
         break;
 
     case 36:
-        InstallInterpolationSlot(reinterpret_cast<Enemy *>(enemy), instruction);
+        InstallInterpolationSlot(enemy, instruction);
         break;
 
     case 38:
@@ -337,11 +337,11 @@ EclRawInstruction *__fastcall CompareOperands(
     }
 
     case 52:
-        CallSubOnEnemy(reinterpret_cast<Enemy *>(enemy), instruction, RawInt(instruction, 0));
+        CallSubOnEnemy(enemy, instruction, RawInt(instruction, 0));
         TH08_ECL_RUN_LOW_YIELD(LOW_RESTART_RUN_LOOP, 0);
 
     case 53:
-        if (!PopEclContext(reinterpret_cast<Enemy *>(enemy), instruction))
+        if (!PopEclContext(enemy, instruction))
             TH08_ECL_RUN_LOW_YIELD(LOW_RESTART_RUN_LOOP, 0);
         TH08_ECL_RUN_LOW_YIELD(LOW_SELECT_NEXT_CONTEXT, 0);
 
@@ -435,7 +435,7 @@ EclRawInstruction *__fastcall CompareOperands(
         enemy->ClampPosition();
         break;
     case 64:
-        EclHelpers::ConfigureRelativeMotion(reinterpret_cast<Enemy *>(enemy), instruction);
+        EclHelpers::ConfigureRelativeMotion(enemy, instruction);
         break;
     case 65:
         enemy->movementAngle = AddNormalizeAngle(((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0))), 0.0f);
@@ -457,7 +457,7 @@ EclRawInstruction *__fastcall CompareOperands(
             enemy->movementDuration = 0;
             enemy->movementTimer = 0;
         }
-        else EclHelpers::ConfigurePolarMotion(reinterpret_cast<Enemy *>(enemy), instruction);
+        else EclHelpers::ConfigurePolarMotion(enemy, instruction);
         break;
     case 67:
         BeginBoundaryAwareMove(enemy, instruction);
@@ -488,7 +488,7 @@ EclRawInstruction *__fastcall CompareOperands(
         }
         else
         {
-            EclHelpers::ConfigurePolarMotion(reinterpret_cast<Enemy *>(enemy), instruction);
+            EclHelpers::ConfigurePolarMotion(enemy, instruction);
         }
         break;
 

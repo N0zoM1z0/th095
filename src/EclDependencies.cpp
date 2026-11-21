@@ -15,14 +15,12 @@ namespace EclRunLow
 {
 #define DEP_READ_INT(enemy, instruction, index) \
     ((instruction)->operandFlags & (1U << (index)) \
-         ? EclOperands::ResolveInt(reinterpret_cast<PhotoEnemyView *>(enemy), (instruction)->operands[index].asInt) \
+         ? EclOperands::ResolveInt(enemy, (instruction)->operands[index].asInt) \
          : (instruction)->operands[index].asInt)
 #define DEP_READ_FLOAT(enemy, instruction, index) \
     ((instruction)->operandFlags & (1U << (index)) \
-         ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat((instruction)->operands[index].asFloat) \
+         ? enemy->ResolveFloat((instruction)->operands[index].asFloat) \
          : (instruction)->operands[index].asFloat)
-
-extern EnemyEclInterpolatorCallback g_EclInterpolatorCallbacks[];
 
 #pragma var_order(end, start)
 
@@ -104,13 +102,13 @@ void __fastcall BeginBoundaryAwareMove(
 }
 
 // FUNCTION: TH095 0x004115A0; TH08 0x00421120 is the source-shape oracle.
-void __fastcall InterpolateLinear(Enemy *enemy, EnemyEclInterpolationSlot *slot, f32 t)
+void __fastcall InterpolateLinear(PhotoEnemyView *enemy, EnemyEclInterpolationSlot *slot, f32 t)
 {
     f32 start;
     f32 end;
-    start = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[0]);
-    end = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[1]);
-    *EclOperands::ResolveFloatLValue(reinterpret_cast<PhotoEnemyView *>(enemy), &slot->affectedVariable, 0, -1) =
+    start = enemy->ResolveFloat(slot->parameters[0]);
+    end = enemy->ResolveFloat(slot->parameters[1]);
+    *EclOperands::ResolveFloatLValue(enemy, &slot->affectedVariable, 0, -1) =
         (end - start) * t + start;
 }
 
@@ -128,7 +126,7 @@ void __fastcall InterpolateLinear(Enemy *enemy, EnemyEclInterpolationSlot *slot,
 
 #pragma var_order(hermiteWeight3, hermiteParameter3, hermiteWeight1, hermiteParameter2, hermiteParameter1, hermiteWeight2, hermiteWeight0, hermiteParameter0)
 // FUNCTION: TH095 0x00411600; TH08 0x00421180 is the source-shape oracle.
-void __fastcall InterpolateHermite(Enemy *enemy, EnemyEclInterpolationSlot *slot, f32 t)
+void __fastcall InterpolateHermite(PhotoEnemyView *enemy, EnemyEclInterpolationSlot *slot, f32 t)
 {
     f32 hermiteParameter0;
     f32 hermiteParameter1;
@@ -138,15 +136,15 @@ void __fastcall InterpolateHermite(Enemy *enemy, EnemyEclInterpolationSlot *slot
     f32 hermiteWeight1;
     f32 hermiteWeight2;
     f32 hermiteWeight3;
-    hermiteParameter0 = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[0]);
-    hermiteParameter1 = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[1]);
-    hermiteParameter2 = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[2]);
-    hermiteParameter3 = reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(slot->parameters[3]);
+    hermiteParameter0 = enemy->ResolveFloat(slot->parameters[0]);
+    hermiteParameter1 = enemy->ResolveFloat(slot->parameters[1]);
+    hermiteParameter2 = enemy->ResolveFloat(slot->parameters[2]);
+    hermiteParameter3 = enemy->ResolveFloat(slot->parameters[3]);
     hermiteWeight0 = (t - 1.0f) * (t - 1.0f) * (2.0f * t + 1.0f);
     hermiteWeight1 = t * t * (3.0f - 2.0f * t);
     hermiteWeight2 = (1.0f - t) * (1.0f - t) * t;
     hermiteWeight3 = (t - 1.0f) * t * t;
-    *EclOperands::ResolveFloatLValue(reinterpret_cast<PhotoEnemyView *>(enemy), &slot->affectedVariable, 0, -1) =
+    *EclOperands::ResolveFloatLValue(enemy, &slot->affectedVariable, 0, -1) =
         hermiteWeight0 * hermiteParameter0 + hermiteWeight1 * hermiteParameter1 + hermiteWeight2 * hermiteParameter2 + hermiteWeight3 * hermiteParameter3;
 }
 
@@ -159,27 +157,25 @@ void __fastcall InterpolateHermite(Enemy *enemy, EnemyEclInterpolationSlot *slot
 #undef hermiteWeight0
 #undef hermiteParameter0
 
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 // Target 0x004A4250 contains seven linear interpolation entries followed by
 // the single Hermite callback.  Bind named reconstructed functions so the
 // production linker, rather than hard-coded image addresses, owns relocation.
 EnemyEclInterpolatorCallback g_EclInterpolatorCallbacks[8] = {
     InterpolateLinear, InterpolateLinear, InterpolateLinear, InterpolateLinear,
     InterpolateLinear, InterpolateLinear, InterpolateLinear, InterpolateHermite};
-#endif
 
 // FUNCTION: TH095 0x00411700; TH08 0x00421300 is the source-shape oracle.
-void __fastcall ApplyInterpolationOperation(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall ApplyInterpolationOperation(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     f32 delta;
     delta = DEP_READ_FLOAT(enemy, instruction, 1) - DEP_READ_FLOAT(enemy, instruction, 2);
-    *EclOperands::ResolveFloatLValue(reinterpret_cast<PhotoEnemyView *>(enemy),
+    *EclOperands::ResolveFloatLValue(enemy,
         reinterpret_cast<f32 *>(instruction->operands), instruction->operandFlags, 0) =
         delta * DEP_READ_FLOAT(enemy, instruction, 3) + DEP_READ_FLOAT(enemy, instruction, 2);
 }
 
 // FUNCTION: TH095 0x004117F0; TH08 0x004213F0 is the source-shape oracle.
-void __fastcall InstallInterpolationSlot(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall InstallInterpolationSlot(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     EnemyEclInterpolationSlot *slot;
     i32 i;
@@ -230,18 +226,13 @@ compare_failure:
     }
 }
 
-static __forceinline EnemyChildEclBlock **TargetChildEclBlocks(Enemy *enemy)
-{
-    return reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks;
-}
-
 // FUNCTION: TH095 0x00411F70; TH08 0x00421BD0 is the source-shape oracle.
-void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32 rawSubId)
+void __fastcall CallSubOnEnemy(PhotoEnemyView *enemy, EclRawInstruction *instruction, i32 rawSubId)
 {
     enemy->activeEclContext->currentInstr =
         reinterpret_cast<EclRawInstruction *>(reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
 
-    if (reinterpret_cast<PhotoEnemyView *>(enemy)->control.suppressEclCallStack == 0)
+    if (enemy->control.suppressEclCallStack == 0)
     {
         enemy->activeEclCallStack[enemy->activeEclCallStackDepth] =
             *enemy->activeEclContext;
@@ -254,7 +245,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
     enemy->activeEclContext->scriptState.callParameters =
         g_PhotoEnemyManager->eclManager->callParameters;
 
-    if (reinterpret_cast<PhotoEnemyView *>(enemy)->control.suppressEclCallStack == 0 &&
+    if (enemy->control.suppressEclCallStack == 0 &&
         enemy->activeEclCallStackDepth < 15)
     {
         ++enemy->activeEclCallStackDepth;
@@ -262,25 +253,25 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
 }
 
 // FUNCTION: TH095 0x00412060; TH08 0x00421CB0 is the source-shape oracle.
-int __fastcall PopEclContext(Enemy *enemy, EclRawInstruction *instruction)
+int __fastcall PopEclContext(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     i32 contextIndex;
 
-    if (reinterpret_cast<PhotoEnemyView *>(enemy)->control.suppressEclCallStack != 0)
+    if (enemy->control.suppressEclCallStack != 0)
         utils::DebugPrint("error : no Stack Ret\r\n");
 
     --enemy->activeEclCallStackDepth;
     if (enemy->activeEclCallStackDepth < 0)
     {
         contextIndex = enemy->activeEclContext->childContextSlot - 1;
-        if (TargetChildEclBlocks(enemy)[contextIndex] != NULL)
+        if (enemy->childEclBlocks[contextIndex] != NULL)
         {
-            void *argument = TargetChildEclBlocks(enemy)[contextIndex];
+            void *argument = enemy->childEclBlocks[contextIndex];
             free(argument);
         }
-        TargetChildEclBlocks(enemy)[contextIndex] = NULL;
-        enemy->activeEclCallStack = &enemy->mainEclCallStackStorage[0];
-        enemy->activeEclContext = &enemy->mainEclContextStorage;
+        enemy->childEclBlocks[contextIndex] = NULL;
+        enemy->activeEclCallStack = &enemy->eclCallStack[0];
+        enemy->activeEclContext = &enemy->mainEclContext;
         enemy->activeEclCallStackDepth = enemy->mainEclCallStackDepth;
         return 1;
     }
