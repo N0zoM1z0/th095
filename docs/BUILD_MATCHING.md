@@ -2211,6 +2211,16 @@ pointer emits 2,675 bytes and also reserves 0x120. The target remains 2,662
 bytes with a 0x124 frame. These probes preserve the existing production
 body. See `.analysis/controller-get-input/backend-boundaries/`.
 
+Seven further probes cover controller dispatch and the input-history tail.
+Using conditional expressions for the three controller dispatches reserves
+0x124 and keeps all seven input-index operands at EBP-0x11C. It adds nine
+live accesses to three merged button values below that slot and grows the
+body to 2,749 bytes. The target accesses none of that space. A shared
+pressed/released delta also reserves 0x124, but moves the input index and
+changes the instruction sequence. The plain bit test emits the baseline
+bytes and all 22 relocations. See
+`.analysis/controller-get-input/dispatch-and-history/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
