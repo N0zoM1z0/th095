@@ -574,8 +574,6 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             (ROOT / "src" / "SupervisorMemberConstruction.hpp").read_text(encoding="utf-8"),
         )
         self.assertIn('#include "SupervisorRuntime.hpp"', lifecycle)
-        legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
-        self.assertIn("C_ASSERT(sizeof(GameConfiguration) == 0x3C);", legacy)
 
     def test_supervisor_configuration_policy_remains_parent_specific(self) -> None:
         construction = (ROOT / "src/SupervisorMemberConstruction.hpp").read_text(encoding="utf-8")
@@ -618,10 +616,6 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         )
         self.assertIn("SupervisorFlags flags;", GUARD.supervisor_header_source("SupervisorLifecycle.cpp"))
         self.assertNotIn("struct SupervisorLifecycleFlags", lifecycle)
-        legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
-        self.assertIn("u32 d3dDevDisconnectFlag : 1;", legacy)
-        self.assertIn("C_ASSERT(sizeof(LegacySupervisorFlags) == 0x4);", legacy)
-        self.assertIn("LegacySupervisorFlags flags;", legacy)
 
     def test_supervisor_flags_guard_rejects_overlay_or_unproved_role(self) -> None:
         header = (ROOT / "src" / "SupervisorFlags.hpp").read_text(encoding="utf-8")
@@ -723,7 +717,6 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             ("AsciiManager.cpp", "alignmentX = ANM_ALIGNMENT_START;", "alignmentX = 1;"),
             ("PhotoEffect.cpp", "alignmentY = ANM_ALIGNMENT_END;", "alignmentY = ANM_ALIGNMENT_START;"),
             ("AnmDrawCore.cpp", "case ANM_ALIGNMENT_START:", "case ANM_ALIGNMENT_UNHANDLED:"),
-            ("ecl/AnmManagerEclView.hpp", "u32 alignmentY : 2;", "u32 renderStateB : 2;"),
         ]
         for name, before, after in mutations:
             source = (ROOT / "src" / name).read_text(encoding="utf-8")
@@ -964,9 +957,6 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("DIFFBUILD", header)
         self.assertIn("SUPERVISOR_STATE_ERROR = 6", header)
         self.assertIn("SUPERVISOR_STATE_RETRY_PHOTO_GAME = 8", header)
-        legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
-        self.assertIn("SupervisorState_ExitGame = -1", legacy)
-        self.assertIn("SupervisorState_GameManagerNextStageWeird = 12", legacy)
         supervisor = (ROOT / "src" / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
         self.assertIn("i32 activeSceneState;", supervisor)
         self.assertIn("i32 requestedSceneState;", supervisor)

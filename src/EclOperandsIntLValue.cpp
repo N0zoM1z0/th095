@@ -1,5 +1,5 @@
+#include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
-#include "ecl/AnmManagerEclView.hpp"
 #include "PhotoEnemyEclManager.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #include "ecl/EclOperands.hpp"

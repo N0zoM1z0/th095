@@ -237,7 +237,7 @@ selected for Clang accepts no helper behavior or portable product. Lifecycle's
 partial parent and viewport adapter are retired; the shared fieldless configuration
 construction policy is still required. The actual Win32/Wine lifetime checker
 executes both real embedded workers independently of the native component fixtures.
-Other projections, the 0x364 compatibility family and native/ODR closure remain open. See
+Bounded emission projections and native layout work remain open. See
 [the declaration and oracle boundary](SUPERVISOR_DECLARATION.md).
 
 The gameplay viewport initializer, selector and Apply now share the canonical
@@ -265,8 +265,7 @@ explicit target behavior. The copy's unused word and rendering role stay
 unknown; see [the vertex contract](ANM_QUAD_VERTICES.md).
 
 The 28-byte ANM batch/generated/trail wire likewise has one Float3/RHW/BGRA/UV
-owner in both products. The legacy ECL declaration imports this complete wire
-while retaining its separately tracked parent/global-color ABI. The DrawInner
+owner in both products. The DrawInner
 flags have one shared enum; [the batch contract](ANM_VERTEX_BATCH.md) separates
 packet ownership from unbounded enqueue, advancing flush cursors, explicit
 rewind and cache/API timing. This does not accept general capacity safety or

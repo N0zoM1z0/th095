@@ -1,4 +1,4 @@
-#include "ecl/EclManager.hpp"
+#include "AnmManager.hpp"
 #include "ecl/EclOperands.hpp"
 #include "PhotoEnemyLayout.hpp"
 #include "ZunMath.hpp"

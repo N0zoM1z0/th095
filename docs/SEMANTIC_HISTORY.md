@@ -20746,3 +20746,16 @@ respectively. After accounting for those starts, the integer timers
 agree through the first photo. The link and fixture evidence is under
 `.analysis/pi/gameplay-pointer-owners/`. The Wine traces are under
 `build/position-independence/gameplay-pointer-owners/`.
+
+### SEM-523 — retire the inherited ANM and Supervisor headers
+
+ECL movement, the writable integer operand resolver and enemy animation
+use the shared TH095 ANM declarations. ZunTimer includes its own header.
+The inherited ANM, ECL and Supervisor headers and their unused TH08
+dependents are gone. The protocol checks now validate the remaining
+canonical owners.
+
+All six affected exact units pass, including the integer resolver’s
+switch tables and the enemy animation call relocations. Both link
+orders retain their mapped bytes. Evidence is under
+`.analysis/pi/canonical-ecl-anm/`.

@@ -1,5 +1,5 @@
+#include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
-#include "ecl/EclManager.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 
 namespace th095

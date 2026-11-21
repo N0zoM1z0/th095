@@ -435,21 +435,9 @@ def check_background_owner() -> None:
 
 
 def check_ecl_type_boundaries() -> None:
-    anm_boundary = (SRC / "ecl" / "AnmManagerEclView.hpp").read_text(
-        encoding="utf-8"
-    )
-    normal_prefix, separator, exact_suffix = anm_boundary.partition("#else")
-    if not separator or '#include "../AnmManager.hpp"' not in normal_prefix:
-        fail("normal ECL code must route to canonical AnmManager.hpp")
-    if "enum AnmOpcode" not in exact_suffix or "sizeof(AnmManager) == 0x2a2570" not in exact_suffix:
-        fail("legacy ECL ANM declarations must remain isolated in the emission branch")
-
-    supervisor_boundary = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
-    normal_prefix, separator, exact_suffix = supervisor_boundary.partition("#else")
-    if not separator or "#ifdef TH095_MAIN_HPP" not in normal_prefix:
-        fail("Supervisor compatibility header must preserve an existing canonical Main owner")
-    if "sizeof(Supervisor) == 0x364" not in exact_suffix:
-        fail("legacy Supervisor declaration must remain isolated in the emission branch")
+    for name in ("EclHelpers.cpp", "EclOperandsIntLValue.cpp", "EnemyShotAnm.cpp"):
+        if '#include "AnmManager.hpp"' not in (SRC / name).read_text(encoding="utf-8"):
+            fail(f"{name} must import the canonical ANM declaration")
 
 
 def check_ecl_extended_type_boundaries() -> None:
@@ -1301,7 +1289,6 @@ def check_game_configuration_owner(overrides: dict[str, str] | None = None) -> N
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
     runtime_header = changed.get("SupervisorRuntime.hpp", (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8"))
     lifecycle = supervisor_header_source("SupervisorLifecycle.cpp")
-    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     manifest = (ROOT / "config" / "match-units.toml").read_text(
         encoding="utf-8"
     )
@@ -1349,16 +1336,8 @@ def check_game_configuration_owner(overrides: dict[str, str] | None = None) -> N
     for name, locations in declarations.items():
         if locations != ["src/GameConfiguration.hpp"]:
             fail(f"{name} declarations are not canonical: {locations}")
-    if configuration_declarations != [
-        "src/GameConfiguration.hpp",
-        "src/Supervisor.hpp",
-    ]:
-        fail(
-            "GameConfiguration declarations must be the TH095 owner plus the "
-            f"legacy compatibility layout: {configuration_declarations}"
-        )
-    if "C_ASSERT(sizeof(GameConfiguration) == 0x3C);" not in legacy:
-        fail("legacy Supervisor.hpp lost its distinct 0x3C compatibility layout")
+    if configuration_declarations != ["src/GameConfiguration.hpp"]:
+        fail(f"GameConfiguration declarations are not canonical: {configuration_declarations}")
 
     for path, text in (
         ("Main.hpp", main_header),
@@ -1426,7 +1405,6 @@ def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
     main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     lifecycle = supervisor_header_source("SupervisorLifecycle.cpp")
-    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
     controller = (SRC / "Controller.cpp").read_text(encoding="utf-8")
     front_end = (SRC / "FrontEndLifecycle.cpp").read_text(encoding="utf-8")
@@ -1469,16 +1447,7 @@ def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
             declarations.append(path.relative_to(ROOT).as_posix())
     if declarations != ["src/SupervisorFlags.hpp"]:
         fail(f"SupervisorFlags must have one canonical declaration: {declarations}")
-    if "C_ASSERT(sizeof(LegacySupervisorFlags) == 0x4);" not in legacy:
-        fail("legacy Supervisor.hpp lost its distinct four-byte flag layout")
-    if "LegacySupervisorFlags flags;" not in legacy:
-        fail("legacy Supervisor restored the canonical flag type at its wrong owner")
-    legacy_start = legacy.index("struct LegacySupervisorFlags")
-    legacy_body = braced_body_after(legacy, legacy_start, "LegacySupervisorFlags")
-    if "d3dDevDisconnectFlag" not in legacy_body:
-        fail("legacy Supervisor flags lost their compatibility field spelling")
-    if "resultRestartActive" in legacy_body or "unknown13" in legacy_body:
-        fail("legacy Supervisor flags were silently widened to the TH095 owner")
+
 
     for path, text in (
         ("Main.hpp", main_header),
@@ -2067,7 +2036,6 @@ def check_supervisor_state_owner() -> None:
     main_header = supervisor_header_source("Main.hpp")
     main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
-    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
 
@@ -2087,23 +2055,8 @@ def check_supervisor_state_owner() -> None:
         text = source_without_comments(path.read_text(encoding="utf-8"))
         if re.search(r"\benum\s+SupervisorState\s*\{", text):
             declarations.append(path.relative_to(ROOT).as_posix())
-    if declarations != ["src/Supervisor.hpp", "src/SupervisorState.hpp"]:
-        fail(
-            "SupervisorState declarations must be the TH095 owner plus the "
-            f"legacy compatibility enum: {declarations}"
-        )
-
-    legacy_start = legacy.index("enum SupervisorState")
-    legacy_body = braced_body_after(legacy, legacy_start, "SupervisorState")
-    for fact in (
-        "SupervisorState_ExitGame = -1",
-        "SupervisorState_Init = 0",
-        "SupervisorState_GameManagerNextStageWeird = 12",
-    ):
-        if fact not in legacy_body:
-            fail(f"legacy Supervisor state domain lost compatibility value: {fact}")
-    if "SUPERVISOR_STATE_FRONT_END" in legacy_body:
-        fail("legacy Supervisor state domain was silently merged with TH095")
+    if declarations != ["src/SupervisorState.hpp"]:
+        fail(f"SupervisorState declarations are not canonical: {declarations}")
 
     for path, text in (
         ("Main.hpp", main_header),
@@ -2179,7 +2132,6 @@ def check_supervisor_startup_phase_owner() -> None:
     main_header = supervisor_header_source("Main.hpp")
     main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
-    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
 
@@ -2216,18 +2168,6 @@ def check_supervisor_startup_phase_owner() -> None:
         if "i32 startupThreadState;" in text:
             fail(f"{path} restored integer-only startup phase storage")
 
-    for marker in (
-        "SupervisorStartupThreadState_Idle = 0",
-        "SupervisorStartupThreadState_Running = 1",
-        "SupervisorStartupThreadState_Failed = 2",
-        "SupervisorStartupThreadState startupThreadState;",
-        "offsetof(Supervisor, startupThreadState) == 0x294",
-    ):
-        if marker not in legacy:
-            fail(f"legacy Supervisor startup domain lost compatibility fact: {marker}")
-    if "SupervisorStartupPhase" in legacy:
-        fail("legacy TH08-shaped Supervisor was silently merged with TH095")
-
     constants = (
         "SUPERVISOR_STARTUP_PHASE_IDLE",
         "SUPERVISOR_STARTUP_PHASE_RUNNING",
@@ -2257,7 +2197,6 @@ def check_supervisor_fog_cache_owner() -> None:
     main_header = supervisor_header_source("Main.hpp")
     main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
-    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
 
@@ -2293,18 +2232,6 @@ def check_supervisor_fog_cache_owner() -> None:
             fail(f"{path} lost the canonical fogState type")
         if "i32 fogState;" in text:
             fail(f"{path} restored integer-only fog-cache storage")
-
-    for marker in (
-        "FOG_DISABLED = 0",
-        "FOG_ENABLED = 1",
-        "FOG_UNSET = 0xff",
-        "FogState fogState;",
-        "this->fogState = FOG_UNSET;",
-    ):
-        if marker not in legacy:
-            fail(f"legacy Supervisor fog domain lost compatibility fact: {marker}")
-    if "SupervisorFogCacheState" in legacy:
-        fail("legacy TH08-shaped Supervisor was silently merged with TH095 fog cache")
 
     constants = (
         "SUPERVISOR_FOG_CACHE_DISABLED",
@@ -4379,8 +4306,7 @@ def check_background_anm_owner(source_text: dict[str, str] | None = None) -> Non
 def check_anm_alignment(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmAlignment.hpp", "AnmManager.hpp", "AnmManager.cpp",
-             "AnmDrawCore.cpp", "AsciiManager.cpp", "PhotoEffect.cpp",
-             "ecl/AnmManagerEclView.hpp")
+             "AnmDrawCore.cpp", "AsciiManager.cpp", "PhotoEffect.cpp")
     texts = {name: source_without_comments(overrides.get(
         name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
     owner = texts["AnmAlignment.hpp"]
@@ -4394,10 +4320,9 @@ def check_anm_alignment(source_text: dict[str, str] | None = None) -> None:
         fail("ANM alignment must preserve its complete explicit two-bit domain")
     if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
         fail("ANM alignment vocabulary must be profile-independent")
-    for name in ("AnmManager.hpp", "ecl/AnmManagerEclView.hpp"):
-        for axis in ("X", "Y"):
-            if len(re.findall(r"\bu32\s+alignment" + axis + r"\s*:\s*2\s*;", texts[name])) != 1:
-                fail(f"{name}: alignment must retain unsigned two-bit storage")
+    for axis in ("X", "Y"):
+        if len(re.findall(r"\bu32\s+alignment" + axis + r"\s*:\s*2\s*;", texts["AnmManager.hpp"])) != 1:
+            fail("AnmManager.hpp: alignment must retain unsigned two-bit storage")
     if re.search(r"u32\s+scriptDisabled\s*:\s*1\s*;\s*u32\s+alignmentX\s*:\s*2\s*;\s*u32\s+alignmentY\s*:\s*2\s*;\s*u32\s+renderModeBits\s*:\s*4\s*;", texts["AnmManager.hpp"]) is None:
         fail("canonical ANM alignment must retain physical bits 18..21")
     if re.search(r"\bANM_OP_ALIGNMENT\s*=\s*65\s*,", texts["AnmManager.hpp"]) is None:
@@ -4441,7 +4366,7 @@ def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmBlendMode.hpp", "AnmManager.hpp", "AnmManager.cpp",
              "AnmDrawCore.cpp", "Main.cpp", "MainExact.inl", "SupervisorOnUpdate.inl",
-             "ScreenEffectDraw.cpp", "ecl/AnmManagerEclView.hpp")
+             "ScreenEffectDraw.cpp")
     texts = {name: source_without_comments(overrides.get(
         name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
     owner = texts["AnmBlendMode.hpp"]
@@ -4459,17 +4384,16 @@ def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
             fail(f"{domain}: preserve the complete explicit destination-blend/cache domain")
     if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
         fail("ANM blend vocabulary must be profile-independent")
-    for name in ("AnmManager.hpp", "ecl/AnmManagerEclView.hpp"):
-        if re.search(r"\bu8\s+cachedBlendMode\s*;", texts[name]) is None:
-            fail(f"{name}: blend cache storage must remain one byte")
-        match = re.search(r"void\s+InvalidateBlendMode\(\)\s*\{([^}]+)\}", texts[name])
-        if match is None or re.fullmatch(
-            r"\s*this->cachedBlendMode\s*=\s*(?:th095::)?ANM_BLEND_CACHE_INVALIDATED\s*;\s*", match[1]
-        ) is None:
-            fail(f"{name}: blend invalidation must only store its cache sentinel")
-    for name, count in (("AnmManager.hpp", 1), ("ecl/AnmManagerEclView.hpp", 2)):
-        if len(re.findall(r"\bu32\s+blendMode\s*:\s*2\s*;", texts[name])) != count:
-            fail(f"{name}: preserve the VM selector's unsigned two-bit representation")
+    manager = texts["AnmManager.hpp"]
+    if re.search(r"\bu8\s+cachedBlendMode\s*;", manager) is None:
+        fail("AnmManager.hpp: blend cache storage must remain one byte")
+    match = re.search(r"void\s+InvalidateBlendMode\(\)\s*\{([^}]+)\}", manager)
+    if match is None or re.fullmatch(
+        r"\s*this->cachedBlendMode\s*=\s*(?:th095::)?ANM_BLEND_CACHE_INVALIDATED\s*;\s*", match[1]
+    ) is None:
+        fail("AnmManager.hpp: blend invalidation must only store its cache sentinel")
+    if len(re.findall(r"\bu32\s+blendMode\s*:\s*2\s*;", texts["AnmManager.hpp"])) != 1:
+        fail("AnmManager.hpp: preserve the VM selector's unsigned two-bit representation")
     if "offsetof(AnmManager, cachedBlendMode) == 0x1764" not in texts["AnmManager.hpp"]:
         fail("ANM blend cache lost its canonical offset assertion")
     if "this->blendMode = ANM_BLEND_ADDITIVE;" not in texts["AnmManager.hpp"]:
@@ -4481,7 +4405,7 @@ def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
         "AnmManager.cpp": ["ANM_BLEND_ALPHA"],
         "AnmDrawCore.cpp": ["vm->blendMode", "vm->blendMode"],
         "Main.cpp": [], "MainExact.inl": [], "SupervisorOnUpdate.inl": [],
-        "ScreenEffectDraw.cpp": [], "ecl/AnmManagerEclView.hpp": ["ANM_BLEND_CACHE_INVALIDATED"],
+        "ScreenEffectDraw.cpp": [],
     }
     for name, expected in expected_writes.items():
         writes = re.findall(r"\bcachedBlendMode\s*=(?!=)\s*([^;]+);", texts[name])
@@ -4515,7 +4439,7 @@ def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmDrawPath.hpp", "AnmManager.hpp", "AnmManager.cpp",
              "AnmDrawCore.cpp", "Main.cpp", "MainExact.inl", "SupervisorOnUpdate.inl",
-             "ScreenEffectDraw.cpp", "ecl/AnmManagerEclView.hpp")
+             "ScreenEffectDraw.cpp")
     texts = {name: source_without_comments(overrides.get(
         name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
     owner = texts["AnmDrawPath.hpp"]
@@ -4533,14 +4457,14 @@ def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
         fail("ANM draw-path domain must retain its five explicit values")
     if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
         fail("ANM draw-path vocabulary must be profile-independent")
-    for name in ("AnmManager.hpp", "ecl/AnmManagerEclView.hpp"):
-        if re.search(r"\bu8\s+cachedDrawPath\s*;", texts[name]) is None:
-            fail(f"{name}: ANM draw-path storage must remain one byte")
-        match = re.search(r"void\s+InvalidateDrawPath\(\)\s*\{([^}]+)\}", texts[name])
-        if match is None or re.fullmatch(
-            r"\s*this->cachedDrawPath\s*=\s*(?:th095::)?ANM_DRAW_PATH_INVALIDATED\s*;\s*", match[1]
-        ) is None:
-            fail(f"{name}: draw-path invalidation must only publish its byte sentinel")
+    manager = texts["AnmManager.hpp"]
+    if re.search(r"\bu8\s+cachedDrawPath\s*;", manager) is None:
+        fail("AnmManager.hpp: ANM draw-path storage must remain one byte")
+    match = re.search(r"void\s+InvalidateDrawPath\(\)\s*\{([^}]+)\}", manager)
+    if match is None or re.fullmatch(
+        r"\s*this->cachedDrawPath\s*=\s*(?:th095::)?ANM_DRAW_PATH_INVALIDATED\s*;\s*", match[1]
+    ) is None:
+        fail("AnmManager.hpp: draw-path invalidation must only publish its byte sentinel")
     if "offsetof(AnmManager, cachedDrawPath) == 0x1766" not in texts["AnmManager.hpp"]:
         fail("ANM draw-path cache lost its canonical offset assertion")
     expected_writes = {
@@ -4549,7 +4473,7 @@ def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
         "AnmDrawCore.cpp": ["ANM_DRAW_PATH_BUFFERED_QUADS", "ANM_DRAW_PATH_STREAMED_QUAD",
                             "ANM_DRAW_PATH_IMMEDIATE_VERTICES", "ANM_DRAW_PATH_IMMEDIATE_VERTICES"],
         "Main.cpp": [], "MainExact.inl": [], "SupervisorOnUpdate.inl": [],
-        "ScreenEffectDraw.cpp": [], "ecl/AnmManagerEclView.hpp": ["ANM_DRAW_PATH_INVALIDATED"],
+        "ScreenEffectDraw.cpp": [],
     }
     for name, text in texts.items():
         if re.search(r"\b(?:currentVertexShader|ClearVertexShader|AnmVertexShader)\b", text):
@@ -4586,7 +4510,7 @@ def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
 
 def check_anm_batch_vertices(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
-    names = ("AnmVertex.hpp", "Main.hpp", "MainExact.hpp", "AnmManager.hpp", "AnmManager.cpp", "AnmDrawCore.cpp", "ecl/AnmManagerEclView.hpp")
+    names = ("AnmVertex.hpp", "Main.hpp", "MainExact.hpp", "AnmManager.hpp", "AnmManager.cpp", "AnmDrawCore.cpp")
     texts = {name: source_without_comments(overrides.get(name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
     owner = texts["AnmVertex.hpp"]
     if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
@@ -4611,8 +4535,6 @@ def check_anm_batch_vertices(source_text: dict[str, str] | None = None) -> None:
     for name in ("Main.hpp", "MainExact.hpp"):
         if '#include "AnmVertex.hpp"' not in texts[name]:
             fail("Main lost the shared ANM batch wire declaration")
-    if '#include "../AnmVertex.hpp"' not in texts["ecl/AnmManagerEclView.hpp"]:
-        fail("Legacy ECL lost its complete shared ANM wire declaration")
     manager = texts["AnmManager.hpp"]
     if re.search(r"AnmVertex\s+vertexBuffer\[0x20000\]", manager) is None:
         fail("ANM batch lost its target vertex-buffer representation")
@@ -4781,7 +4703,7 @@ def main() -> int:
     print("  Background stage opcode dispatch: 15/15 named")
     print("  Background owner: one profile-independent 0x201C declaration")
     print("  ScreenEffect quad: shared Float3, 20-byte XYZRHW/diffuse wire and canonical parents")
-    print("  normal ECL types: canonical ANM, Supervisor, and Background owners")
+    print("  ECL types: shared ANM, Supervisor, and Background owners")
     print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, EnemyInf, PlayerInf, Camera, and PhotoGameTask owners")
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
     print("  SoundPlayer owner: one canonical class declaration and direct shared-body consumers")

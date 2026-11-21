@@ -41,7 +41,7 @@ The parent's body reset alone cannot establish original member types or names.
 Exact loading-screen methods use the canonical i32 loadingScreenState at
 +0x714. Attested setup/hide/completion/draw code shows 0 inactive, 1 active and
 values from 2 onward as a completion/prompt counter, including thresholds
-5/35/65. The separate 0x364 compatibility family keeps its own +0x2FC field.
+5/35/65.
 
 ## Actual-header layout oracle
 
@@ -109,9 +109,8 @@ Supervisor declaration.
 
 The lifecycle partial parent and SupervisorViewportLifecycle are retired. The
 shared fieldless configuration construction policy remains necessary under the
-pinned compiler. The old 0x364 Supervisor.hpp family, other bounded target/emission
-projections and MainExact's surrounding legacy APIs remain separate debt.
-Global ODR closure, original declaration recovery and native parent layout are
-not claimed. No mapping, source-presence or exact credit is added.
+pinned compiler. SEM-523 retires the unused 0x364 declaration. The remaining
+work includes bounded emission projections, MainExact’s surrounding APIs
+and the native parent layout.
 
 SEM-345 records primary-header convergence; SEM-346 records lifetime convergence.

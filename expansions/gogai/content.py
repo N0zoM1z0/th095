@@ -1,6 +1,6 @@
 """Original fan-authored scene scripts for the reconstructed TH095 interpreter.
 
-The wire layout follows src/ecl/EclManager.hpp and EnemyManagerUpdate.cpp.
+The wire layout follows src/EclInstruction.hpp and src/EnemyManagerUpdate.cpp.
 Only a deliberately small subset of the existing ECL API is emitted. This is
 an assembler for this content, not a general ECL compiler or an asset dump.
 """

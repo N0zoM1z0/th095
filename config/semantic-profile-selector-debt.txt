@@ -7,10 +7,6 @@
 1	src/AnmPreload.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/diffbuild.hpp	#ifdef DIFFBUILD
 3	src/diffbuild.hpp	#ifdef TH095_MATCH_EXACT
-1	src/ecl/AnmManagerEclView.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/ecl/AnmManagerEclView.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/ecl/AnmManagerEclView.hpp	#ifdef TH095_MATCH_EXACT
-3	src/ecl/AnmManagerEclView.hpp	#ifndef TH095_MATCH_EXACT
 1	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/FrontEndController.cpp	#ifdef TH095_MATCH_EXACT
@@ -23,5 +19,3 @@
 1	src/SceneSelect.hpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelectController.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelectUpdate.cpp	#ifdef TH095_MATCH_EXACT
-1	src/Supervisor.hpp	#ifdef TH095_MATCH_EXACT
-1	src/Supervisor.hpp	#ifndef TH095_MATCH_EXACT
