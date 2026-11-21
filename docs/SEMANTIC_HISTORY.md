@@ -19378,3 +19378,20 @@ and relocation destinations. The five remaining extent differences
 cover bullet-motion reset, enemy-marker update and callbacks 2–4.
 Both normal links pass the current game and library relocation checks
 and the full three-replay cycle. See `.analysis/pi/ecl-shared-handle-call/`.
+
+### SEM-457 — read low ECL floats from their operand field
+
+The low handlers now use one expression for 62 floating-point reads.
+It reads `EclRawOperand::asFloat` and invokes the enemy's float
+resolver only when the corresponding operand bit is set. This
+replaces 116 integer-member pointer casts across the arithmetic,
+movement, and hitbox handlers.
+
+The direct union field and the lexical `ReadFloat(index)` expression
+both preserve the 27,747-byte comparison extent. Expanding the
+previous general macro with receiver and instruction parameters grows
+the body to 27,917 bytes. The final exact comparison verifies all 647
+relocations. Both normal links retain their SEM-456 loaded sections
+byte for byte. Retail and both links agree on 140 arithmetic cases,
+including mixed operand modes and negative zero, and on the movement
+and control fixtures. See `.analysis/pi/ecl-low-float-access/`.
