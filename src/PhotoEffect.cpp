@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#include "PhotoEffectExact.inl"
-#else
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "PhotoGamePlayer.hpp"
@@ -25,16 +22,12 @@ extern f32 g_AnmGameSpeed;
 
 
 extern AnmManager *g_AnmManager;
-#ifndef DIFFBUILD
 // Target 0x004A43D8: color selected by each of the 16 photo-effect types.
 u32 g_PhotoEffectColors[16] = {
     0xff808080, 0xffff0000, 0xffff0000, 0xff800080,
     0xff800080, 0xff0000ff, 0xff0000ff, 0xff008080,
     0xff008080, 0xff00ff00, 0xff00ff00, 0xff00ff00,
     0xff808000, 0xff808000, 0xff808000, 0xff808080};
-#else
-extern u32 g_PhotoEffectColors[];
-#endif
 
 
 static inline i32 PhotoEffectEitherFlag(i32 first, i32 second)
@@ -221,12 +214,9 @@ i32 PhotoRotatingLaserView::Update()
     if (this->spawn.followPhotoTarget != 0 &&
         g_PhotoEnemyManager->photoTargets[0] != NULL)
     {
-        this->position.x =
-            g_PhotoEnemyManager->photoTargets[0]->position.x;
-        this->position.y =
-            g_PhotoEnemyManager->photoTargets[0]->position.y;
-        this->position.z =
-            g_PhotoEnemyManager->photoTargets[0]->position.z;
+        memcpy(&this->position,
+               &g_PhotoEnemyManager->photoTargets[0]->position,
+               sizeof(this->position));
     }
 
     *reinterpret_cast<Float3 *>(&this->position) +=
@@ -393,7 +383,7 @@ i32 PhotoStraightLaserView::DrawSecondary()
         secondaryCount++;
         secondaryVm = g_AnmManager->GetVm(
             g_PhotoEffectManager->anm->CreateVmAtWorld(
-                0x126, reinterpret_cast<Float3 *>(&secondaryPosition)));
+                0x126, &secondaryPosition));
         secondaryVm->color1.color = g_PhotoEffectColors[this->spawn.color];
         secondaryPosition += secondaryStep;
         secondaryDistance += 12.0f;
@@ -419,7 +409,7 @@ i32 PhotoRotatingLaserView::DrawSecondary()
         secondaryCount++;
         secondaryVm = g_AnmManager->GetVm(
             g_PhotoEffectManager->anm->CreateVmAtWorld(
-                0x126, reinterpret_cast<Float3 *>(&secondaryPosition)));
+                0x126, &secondaryPosition));
         secondaryVm->color1.color = g_PhotoEffectColors[this->spawn.color];
         secondaryPosition += secondaryStep;
         secondaryDistance += 12.0f;
@@ -484,7 +474,7 @@ i32 PhotoStraightLaserView::CheckCollision(
             hitCount++;
             AnmVm *vm = g_AnmManager->GetVm(
                 g_PhotoEffectManager->anm->CreateVmAtWorld(
-                    0x126, reinterpret_cast<Float3 *>(&sample)));
+                    0x126, &sample));
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
@@ -631,7 +621,7 @@ i32 PhotoRotatingLaserView::CheckCollision(
             hitCount++;
             AnmVm *vm = g_AnmManager->GetVm(
                 g_PhotoEffectManager->anm->CreateVmAtWorld(
-                    0x126, reinterpret_cast<Float3 *>(&sample)));
+                    0x126, &sample));
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
@@ -1123,161 +1113,14 @@ PhotoRotatingLaserView::PhotoRotatingLaserView()
 {
 }
 
-// FUNCTION: TH095 0x0041E750.
-// The shallow-local rank mirrors the exact CheckCollision prefix. The inner
-// half-size vector is deliberately reused as the maximum bound after minimum
-// materialization; keeping these lifetimes separate is target-visible in VC7.1.
-#define countTarget iLocal11
-#define indexTarget averagedPanLocal12
-#define minimumTarget commandCursorLocal02
-#define sampleTarget soundIndexLocal01
-#define stepTarget restartCommandProcessingLocal05
-i32 PhotoStraightLaserView::CountPhotoTargets(
-    Float3 *position, Float3 *size, i32 capture)
-{
-    Float3 stepTarget;
-    i32 indexTarget;
-    i32 countTarget;
-    Float3 minimumTarget;
-    Float3 sampleTarget;
+// Both target vtables use the same two query bodies.
+#define TH095_PHOTO_LASER_TYPE PhotoStraightLaserView
+#include "PhotoLaserQueries.inl"
+#undef TH095_PHOTO_LASER_TYPE
 
-    countTarget = 0;
-    indexTarget = 0;
-    {
-        f32 bufferLocal04 = 6.0f;
-        Float3 jLocal00;
+#define TH095_PHOTO_LASER_TYPE PhotoRotatingLaserView
+#include "PhotoLaserQueries.inl"
+#undef TH095_PHOTO_LASER_TYPE
 
-        jLocal00 = *size / 2.0f;
-        minimumTarget = *position - jLocal00;
-        jLocal00 = *position + jLocal00;
-        stepTarget.z = 0.0f;
-        stepTarget.FromAngleMagnitude(this->angle, 6.0f);
-        sampleTarget =
-            *reinterpret_cast<Float3 *>(&this->position) + stepTarget;
-        stepTarget += stepTarget;
-
-        while (bufferLocal04 + 6.0f < this->length)
-        {
-            if (sampleTarget.x < minimumTarget.x ||
-                sampleTarget.x > jLocal00.x ||
-                sampleTarget.y < minimumTarget.y ||
-                sampleTarget.y > jLocal00.y)
-            {
-            }
-            else
-            {
-                countTarget++;
-            }
-            sampleTarget += stepTarget;
-            bufferLocal04 += 12.0f;
-            indexTarget++;
-        }
-    }
-    return countTarget;
-}
-#undef stepTarget
-#undef sampleTarget
-#undef minimumTarget
-#undef indexTarget
-#undef countTarget
-
-i32 PhotoRotatingLaserView::CountPhotoTargets(
-    Float3 *position, Float3 *size, i32 capture)
-{
-    i32 count = 0;
-    i32 index = 0;
-    f32 distance = 6.0f;
-    Float3 halfSize = *size / 2.0f;
-    Float3 minimum = *position - halfSize;
-    Float3 maximum = *position + halfSize;
-
-    Float3 step;
-    step.FromAngleMagnitude(this->angle, 6.0f);
-    Float3 sample =
-        *reinterpret_cast<Float3 *>(&this->position) + step;
-    step += step;
-
-    for (; distance + 6.0f < this->length;
-         distance += 12.0f, index++)
-    {
-        if (minimum.x <= sample.x && sample.x <= maximum.x &&
-            minimum.y <= sample.y && sample.y <= maximum.y)
-        {
-            count++;
-        }
-        sample += step;
-    }
-    return count;
-}
-
-// Non-trivial Float3 locals must remain independent so VC7 preserves constructor
-// timing. These backing buckets restore the target physical order
-// difference -> delta -> local without aggregating the objects.
-#define nearbyLocal restartCommandProcessingLocal05
-#define nearbyDelta averagedPanLocal12
-#define nearbyDifference iLocal11
-i32 PhotoStraightLaserView::CountNearbyTargets(
-    Float3 *position, f32 radius)
-{
-    Float3 nearbyLocal;
-    Float3 nearbyDifference =
-        *position - *reinterpret_cast<Float3 *>(&this->position);
-    Float3 nearbyDelta = nearbyDifference;
-    Rotate(&nearbyLocal, &nearbyDelta, -this->angle);
-
-    nearbyDelta.x = nearbyLocal.x - radius;
-    nearbyDelta.y = nearbyLocal.y - radius;
-    nearbyLocal.x += radius;
-    nearbyLocal.y += radius;
-
-    if (nearbyDelta.x > this->length ||
-        this->width / 2.0f < nearbyDelta.y ||
-        nearbyLocal.x < 0.0f ||
-        nearbyLocal.y < -this->width / 2.0f)
-    {
-        return 0;
-    }
-    return 2;
-}
-#undef nearbyLocal
-#undef nearbyDelta
-#undef nearbyDifference
-
-i32 PhotoRotatingLaserView::CountNearbyTargets(
-    Float3 *position, f32 radius)
-{
-    Float3 local;
-    Float3 difference =
-        *position - *reinterpret_cast<Float3 *>(&this->position);
-    Float3 delta = difference;
-    Rotate(&local, &delta, -this->angle);
-
-    delta.x = local.x - radius;
-    delta.y = local.y - radius;
-    local.x += radius;
-    local.y += radius;
-
-    if (delta.x > this->length ||
-        this->width / 2.0f < delta.y ||
-        local.x < 0.0f ||
-        local.y < -this->width / 2.0f)
-    {
-        return 0;
-    }
-    return 2;
-}
-
-#undef PHOTO_EFFECT_STATE_RETIRED
-#undef PHOTO_EFFECT_STATE_ACTIVE
-#undef PHOTO_EFFECT_STATE_STARTUP
-#undef PHOTO_EFFECT_STATE_GROWING
-#undef PHOTO_EFFECT_STATE_FADING
-
-}
-
-#endif // TH095_MATCH_EXACT
-
-namespace th095
-{
 PhotoEffectManagerView *g_PhotoEffectManager; // Retail 0x004C45E0
 }

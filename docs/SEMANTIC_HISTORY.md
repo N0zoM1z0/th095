@@ -19047,3 +19047,26 @@ surviving fragment. The fixture checks each published fragment field.
 Both link orders replay all 2,712 input indices of `demo/demo0.rpy`
 with matching gameplay fields and a stage timer within one tick of
 retail. See `.analysis/pi/straight-laser-owner/`.
+
+### SEM-442 — share the PhotoEffect implementation and folded queries
+
+Both builds compile the same PhotoEffect behavior. The twelve changed
+COFF identities use the canonical game speed, bullet script-base lookup
+and rotation function, with their retail destinations preserved. Both
+objects also emit all 64 palette bytes from 0x004A43D8.
+
+The retail straight and rotating vtables both use 0x0041E750 for the
+photo count and 0x0041F280 for the nearby count. The shared query source
+restores those folds in both normal links. It also initializes the
+rotating count's step Z before the XY-only direction operation, as
+the retail query does. Both COFF vtables have eight symbolic entries
+and both linked tables follow their methods when moved.
+
+All 34 affected strict exact comparisons pass. Both normal links agree
+with retail on 32 virtual query cases and 16 update cases, including
+suspending and restoring game speed during capture. Both links replay
+all 2,712 input indices with matching gameplay fields. The regular
+link's stage timer agrees with retail, and the reordered link stays
+within one tick. The remaining PhotoEffect selector chooses the
+spelling of 2D render mode 1. See
+`.analysis/pi/photo-effect-shared/`.

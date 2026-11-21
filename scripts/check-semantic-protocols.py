@@ -4207,13 +4207,11 @@ def check_photo_straight_laser_packet() -> None:
         encoding="utf-8"
     )
     photo_effect = (SRC / "PhotoEffect.cpp").read_text(encoding="utf-8")
-    exact_effect = (SRC / "PhotoEffectExact.inl").read_text(encoding="utf-8")
     owner = (SRC / "PhotoStraightLaser.hpp").read_text(encoding="utf-8")
     for path, text in (
         ("ecl/EclRunHigh.inl", high),
         ("ecl/EclRunTargetPhoto.inl", target_photo),
         ("PhotoEffect.cpp", photo_effect),
-        ("PhotoEffectExact.inl", exact_effect),
     ):
         if "PhotoEffectArgsSmall" in text:
             fail(f"{path} restored the retired straight-laser packet projection")
@@ -4246,8 +4244,10 @@ def check_photo_straight_laser_packet() -> None:
         "this->length = this->spawn.initialLength",
         "args.terminalDistance",
     ):
-        if fact not in photo_effect or fact not in exact_effect:
+        if fact not in photo_effect:
             fail(f"PhotoEffect lost canonical packet consumer/producer: {fact}")
+    if (SRC / "PhotoEffectExact.inl").exists():
+        fail("PhotoEffect must keep one shared implementation")
 
     rotating_header = (SRC / "PhotoRotatingLaserArgs.hpp").read_text(
         encoding="utf-8"
@@ -4295,7 +4295,6 @@ def check_photo_rotating_laser_packet() -> None:
     )
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
     photo_effect = (SRC / "PhotoEffect.cpp").read_text(encoding="utf-8")
-    exact_effect = (SRC / "PhotoEffectExact.inl").read_text(encoding="utf-8")
     owner = (SRC / "PhotoRotatingLaser.hpp").read_text(encoding="utf-8")
     retired_projections = (
         "PhotoEffectArgs args;",
@@ -4318,7 +4317,6 @@ def check_photo_rotating_laser_packet() -> None:
         ("ecl/EclRunTargetPhoto.inl", target_photo),
         ("EclExtended.cpp", extended),
         ("PhotoEffect.cpp", photo_effect),
-        ("PhotoEffectExact.inl", exact_effect),
     ):
         if re.search(r"\bstruct\s+PhotoEffectArgs\b", text):
             fail(f"{path} restored the retired PhotoEffectArgs type")
@@ -4361,7 +4359,6 @@ def check_photo_rotating_laser_packet() -> None:
     for name, consumer in (
         ("EclExtended.cpp", extended),
         ("PhotoEffect.cpp", photo_effect),
-        ("PhotoEffectExact.inl", exact_effect),
     ):
         if '#include "PhotoRotatingLaser.hpp"' not in consumer:
             fail(f"{name} must consume the shared rotating-laser owner")
@@ -4380,7 +4377,7 @@ def check_photo_rotating_laser_packet() -> None:
         "this->spawn.followPhotoTarget",
         "this->spawn.velocity",
     ):
-        if fact not in photo_effect or fact not in exact_effect:
+        if fact not in photo_effect:
             fail(f"PhotoEffect lost canonical rotating packet consumer: {fact}")
 
 
@@ -4445,7 +4442,7 @@ def check_anm_alignment(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmAlignment.hpp", "AnmManager.hpp", "AnmManager.cpp",
              "AnmDrawCore.cpp", "AsciiManager.cpp", "PhotoEffect.cpp",
-             "PhotoEffectExact.inl", "ecl/AnmManagerEclView.hpp")
+             "ecl/AnmManagerEclView.hpp")
     texts = {name: source_without_comments(overrides.get(
         name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
     owner = texts["AnmAlignment.hpp"]
@@ -4483,7 +4480,6 @@ def check_anm_alignment(source_text: dict[str, str] | None = None) -> None:
         "AnmManager.cpp": [("X", "currentInstr->shortArgs[0]"), ("Y", "currentInstr->shortArgs[1]")],
         "AsciiManager.cpp": [("X", "ANM_ALIGNMENT_START"), ("Y", "ANM_ALIGNMENT_START")] * 2,
         "PhotoEffect.cpp": [("X", "ANM_ALIGNMENT_CENTER"), ("Y", "ANM_ALIGNMENT_END")] * 2,
-        "PhotoEffectExact.inl": [("X", "ANM_ALIGNMENT_CENTER"), ("Y", "ANM_ALIGNMENT_END")] * 2,
     }
     for name in names:
         actual = [(axis, value.strip()) for axis, value in re.findall(
