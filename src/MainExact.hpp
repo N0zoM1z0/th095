@@ -15,6 +15,7 @@
 #include "Chain.hpp"
 #include "FileSystemApi.hpp"
 #include "GameWindow.hpp"
+#include "GameErrorContext.hpp"
 #include "GameConfiguration.hpp"
 #include "MidiOutputApi.hpp"
 #include "ReplayScanWorker.hpp"
@@ -60,31 +61,6 @@ struct SoundPlayer
 
 typedef char MainSoundPlayerBgmVolumeAt52C4[(offsetof(SoundPlayer, bgmVolume) == 0x52c4) ? 1 : -1];
 
-extern char *g_GameErrorContextCursor;
-
-struct GameErrorContext
-{
-    enum Message
-    {
-        LOGGER_START,
-        OPTION_CHANGED_RESTART,
-        D3D_CREATE_FAILED
-    };
-
-    void Log(Message message);
-    void Fatal(Message message);
-    const char *Log(const char *format, ...);
-    const char *Fatal(const char *format, ...);
-    char buffer[0x2000];
-
-    void ResetContext()
-    {
-        g_GameErrorContextCursor = this->buffer;
-        *g_GameErrorContextCursor = '\0';
-    }
-    void Flush();
-};
-
 namespace utils
 {
 void DebugPrint(char *format, ...);
@@ -93,7 +69,6 @@ void DebugPrint(char *format, ...);
 extern GameWindow g_GameWindow;
 extern Supervisor g_Supervisor;
 extern SoundPlayer g_SoundPlayer;
-extern GameErrorContext g_GameErrorContext;
 extern AnmManager *g_AnmManager;
 extern u16 g_PressedButtons;
 extern char g_WindowTitle[];

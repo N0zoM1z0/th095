@@ -19550,3 +19550,16 @@ the screenshot write order and payload checks, the configuration
 read/write check and the archive version paths. The probe stubs Win32
 file calls, configuration I/O and archive loading. See
 `.analysis/pi/shared-file-api/`.
+
+### SEM-465 — use the logger's cursor from both Main builds
+
+Both WinMain builds use the canonical GameErrorContext. The restart
+branch writes the buffer base to the cursor at context+0x2000, then
+clears the first byte through that cursor. Both relocation operands
+still reach 0x004C4420 in retail.
+
+All 48 Main comparisons pass. The linked cursor moves from 0x004D54C0
+to 0x004DCE20. The branch fixture exercises normal exit, error and
+restart, each with the fatal latch clear and set. In retail and both
+links, the cursor and first byte change on restart and the fatal latch
+keeps its value. See `.analysis/pi/main-error-context/`.

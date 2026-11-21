@@ -871,6 +871,11 @@ def check_game_error_context_owner() -> None:
         fail("GameErrorContext.hpp must expose one canonical struct declaration")
     if re.search(r"\bclass\s+GameErrorContext\b", header):
         fail("GameErrorContext.hpp restored its selected class declaration")
+    main_exact = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    if '#include "GameErrorContext.hpp"' not in main_exact:
+        fail("MainExact.hpp lost the canonical GameErrorContext")
+    if re.search(r"\b(?:struct|class)\s+GameErrorContext\b|g_GameErrorContextCursor", main_exact):
+        fail("MainExact.hpp restored a separate GameErrorContext declaration")
     if "DIFFABLE_STATIC(GameErrorContext, g_GameErrorContext);" not in global_source:
         fail("Global.cpp lost canonical GameErrorContext storage ownership")
     for path in sorted(SRC.rglob("*")):
@@ -886,7 +891,9 @@ def check_game_error_context_owner() -> None:
     class_identity = "?g_GameErrorContext@th095@@3VGameErrorContext@1@A"
     if class_identity in manifest:
         fail("match manifest restored the selected GameErrorContext class identity")
-    if manifest.count(struct_identity) != 89:
+    if "g_GameErrorContextCursor" in manifest:
+        fail("match manifest restored a separate GameErrorContext cursor")
+    if manifest.count(struct_identity) != 91:
         fail("match manifest lost canonical GameErrorContext struct identities")
 
 
