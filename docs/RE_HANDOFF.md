@@ -300,9 +300,10 @@ accepted exact match. The target's 0x124-byte frame has eight bytes below
 the lowest observed stack operand. The current pinned build reserves 0x11C
 and differs in keyboard-path register scheduling. A fresh compile reproduced
 2,655 bytes against the target's 2,662. The [expression and behavior probes](BUILD_MATCHING.md#getinput-keyboard-expression-probes)
-include the latest conditional-assignment attempt. That variant matches
-the frame size and parameter home while adding six accesses to the two
-slots that retail leaves unused.
+localize the DirectInput register difference to the first 15 key tests.
+Splitting the key reads there into inlined reference helpers reproduces
+the current bytes. Returning the mask by value grows the frame to 0x120
+and moves the input index to that lowest slot.
 
 ## Local inputs
 

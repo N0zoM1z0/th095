@@ -2329,6 +2329,25 @@ conditional assignment emits 2,687 bytes with a 0x120 frame.
 See `.analysis/controller-get-input/key-accumulator-branches/`.
 The current links pass all 1,312 input behavior cases.
 
+Six keyboard high-bit and value spellings leave the frame at 0x11C.
+Testing for a clear bit and reversing the ternary arms emits the same
+2,655 bytes and 22 relocations. Typing both L masks as `TouhouButton`
+does the same. A comparison against the set bit, a `bool` cast, and a
+complemented test increase the instruction count. Extracting the mask
+with a signed shift emits 2,325 bytes in 479 instructions.
+
+The paired key loads differ in register choice for all 25 Win32 keys
+and the first 15 DirectInput keys. DirectInput resumes the baseline
+register sequence at `DIK_LCONTROL @ 0x0041A163`, through the last ten
+keys. See `.analysis/controller-get-input/key-normalization/`.
+
+Splitting the two DirectInput key groups at that boundary into explicit
+scopes or inlined reference helpers preserves the baseline bytes and all
+22 relocations. Passing the mask by value and returning it emits 2,686
+bytes in 583 instructions for either key group. In both cases the frame
+grows to 0x120 and all seven input-index accesses move to its lowest slot.
+See `.analysis/controller-get-input/key-groups/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now

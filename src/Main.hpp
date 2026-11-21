@@ -46,12 +46,6 @@ struct DummyMidiTimer;
 
 typedef char MainSoundPlayerBgmVolumeAt52C4[(offsetof(SoundPlayer, bgmVolume) == 0x52c4) ? 1 : -1];
 
-namespace Controller
-{
-u16 GetJoystickCaps();
-void ResetKeyboard();
-} // namespace Controller
-
 namespace utils
 {
 void DebugPrint(char *format, ...);

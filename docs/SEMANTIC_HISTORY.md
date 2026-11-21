@@ -20709,3 +20709,18 @@ All four affected exact units pass. The regular and reversed links
 retain their mapped bytes, and the legacy Player header compiles on
 its own in both profiles. The build and link evidence is under
 `.analysis/pi/retire-legacy-enemy-bullet/`.
+
+### SEM-521 — share the Controller button enum and API
+
+Both profiles define the L key as bit 15 of `TouhouButton`. Win32 and
+DirectInput publish it through the live input slot, and Scene Select
+uses the pressed edge to toggle the best-shot lock when a score record
+exists. `Controller.hpp` supplies the real indexed input API. Main and
+the global header no longer declare a second set of prototypes.
+
+All 646 exact units in the affected header closure pass strict comparison.
+Both links retain their mapped bytes. Retail and both link orders agree
+across 1,312 input cases and 144 L-key cases that execute GetInput and
+the Scene Select lock branch. The lock test covers held and fresh keys,
+empty and populated records, and both directions of the toggle.
+Evidence is under `.analysis/pi/controller-button-domain/`.
