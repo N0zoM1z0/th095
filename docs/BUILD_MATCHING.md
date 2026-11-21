@@ -2252,6 +2252,14 @@ bytes with a 32-bit argument. All four still reserve 0x11C. The existing
 links pass the 1,312-case retail input comparison. See
 `.analysis/controller-get-input/key-byte-owner/`.
 
+Five pinned probes vary the qualifiers on live GetInput storage.
+Qualifying the key bytes, button accumulator, API result, or current
+history bits reproduces the 2,655-byte baseline and all 22 relocations.
+Qualifying the slot pointer itself grows the body to 2,680 bytes and
+reserves 0x128. VC7.1 rejects the pointer's `__restrict` spelling with
+C4235. The closest form still reserves 0x11C. See
+`.analysis/controller-get-input/qualifier-probes/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
