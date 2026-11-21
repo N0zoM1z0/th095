@@ -56,9 +56,8 @@
     ::th095::g_RuntimePlayerOwner->AngleFromPoint(point)
 #endif
 
-#define TH095_ECL_PRIMARY_ENEMY_ANM (g_PhotoEnemyManager->enemyAnm)
 #define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
-    reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(TH095_ECL_PRIMARY_ENEMY_ANM)
+    reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(g_PhotoEnemyManager->enemyAnm)
 
 #ifdef DIFFBUILD
 #define TH095_ECL_STAGE_STATE EclRunHigh::g_Th095StageState
@@ -353,7 +352,7 @@ low_select_next_context:
     enemy->activeEclCallStack = enemy->mainEclCallStackStorage;
     enemy->activeEclContext = &enemy->mainEclContextStorage;
     enemy->UpdateMovement();
-    enemy->UpdateShotAndAnm();
+    reinterpret_cast<PhotoEnemyView *>(enemy)->UpdateShotAndAnm();
 
     return ZUN_SUCCESS;
 }

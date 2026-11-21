@@ -79,7 +79,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy,
 i32 __fastcall PopEclContext(Enemy *enemy,
                              EclRawInstruction *instruction);
 void __fastcall SetPrimaryAnmScripts(
-    Enemy *enemy, EclRawInstruction *instruction,
+    PhotoEnemyView *enemy, EclRawInstruction *instruction,
     i32 script0, i32 script1, i32 script2, i32 script3, i32 script4,
     i32 script5);
 void __fastcall SetExtraAnmScript(Enemy *enemy,
@@ -427,23 +427,23 @@ static EclRawInstruction *__fastcall CompareOperands(
         TH08_ECL_RUN_LOW_YIELD(LOW_SELECT_NEXT_CONTEXT, 0);
 
     case 54:
-        TH095_ECL_PRIMARY_ENEMY_ANM
+        g_PhotoEnemyManager->enemyAnm
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
         reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 &=
-            ~TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
+            ~PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
         break;
     case 55:
         lhsInt = ReadInt(enemy, instruction, 0);
-        SetPrimaryAnmScripts(enemy, instruction, lhsInt, lhsInt + 1,
+        SetPrimaryAnmScripts(reinterpret_cast<PhotoEnemyView *>(enemy), instruction, lhsInt, lhsInt + 1,
                              lhsInt + 2, lhsInt + 3, lhsInt + 4,
                              lhsInt + 5);
         reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 &=
-            ~TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
+            ~PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
         break;
     case 56:
-        SetPrimaryAnmScripts(enemy, instruction,
+        SetPrimaryAnmScripts(reinterpret_cast<PhotoEnemyView *>(enemy), instruction,
                              ReadInt(enemy, instruction, 0),
                              ReadInt(enemy, instruction, 1),
                              ReadInt(enemy, instruction, 2),
@@ -451,7 +451,7 @@ static EclRawInstruction *__fastcall CompareOperands(
                              ReadInt(enemy, instruction, 4),
                              ReadInt(enemy, instruction, 5));
         reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 &=
-            ~TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
+            ~PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
         break;
 #if 0 // TH095: opcode 57 is the ordinary advance path.
     case 57:
@@ -460,23 +460,22 @@ static EclRawInstruction *__fastcall CompareOperands(
         break;
 #endif
     case 58:
-        (*reinterpret_cast<AnmLoaded **>(
-            g_PhotoEnemyManager->unknown4dfc))
+        g_PhotoEnemyManager->unknown4dfc
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
         reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 |=
-            TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
+            PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
         break;
     case 59:
         lhsInt = ReadInt(enemy, instruction, 0);
-        SetPrimaryAnmScripts(enemy, instruction, lhsInt, lhsInt + 1, lhsInt + 2,
+        SetPrimaryAnmScripts(reinterpret_cast<PhotoEnemyView *>(enemy), instruction, lhsInt, lhsInt + 1, lhsInt + 2,
                              lhsInt + 3, lhsInt + 4, lhsInt + 5);
         reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 |=
-            TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
+            PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
         break;
     case 60:
-        SetPrimaryAnmScripts(enemy, instruction,
+        SetPrimaryAnmScripts(reinterpret_cast<PhotoEnemyView *>(enemy), instruction,
                              ReadInt(enemy, instruction, 0),
                              ReadInt(enemy, instruction, 1),
                              ReadInt(enemy, instruction, 2),
@@ -484,7 +483,7 @@ static EclRawInstruction *__fastcall CompareOperands(
                              ReadInt(enemy, instruction, 4),
                              ReadInt(enemy, instruction, 5));
         reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 |=
-            TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
+            PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
         break;
 #if 0 // TH095: opcode 61 is the ordinary advance path.
     case 61:
@@ -494,20 +493,19 @@ static EclRawInstruction *__fastcall CompareOperands(
 #endif
     case 62:
         if (((reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 >>
-              TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT) & 1U) == 0)
+              PHOTO_ENEMY_ALTERNATE_ANM_BANK_SHIFT) & 1U) == 0)
         {
-            TH095_ECL_PRIMARY_ENEMY_ANM
+            g_PhotoEnemyManager->enemyAnm
                 ->SetAndExecuteScriptIdx(
                 &enemy->vm,
-                TH095_ECL_SPECIAL_ANM_SCRIPT(enemy));
+                reinterpret_cast<PhotoEnemyView *>(enemy)->anmScripts.special);
         }
         else
         {
-            (*reinterpret_cast<AnmLoaded **>(
-                g_PhotoEnemyManager->unknown4dfc))
+            g_PhotoEnemyManager->unknown4dfc
                 ->SetAndExecuteScriptIdx(
                 &enemy->vm,
-                TH095_ECL_SPECIAL_ANM_SCRIPT(enemy));
+                reinterpret_cast<PhotoEnemyView *>(enemy)->anmScripts.special);
         }
         break;
 

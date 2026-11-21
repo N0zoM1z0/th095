@@ -32,6 +32,12 @@ enum PhotoEnemyMovementControlMask
     PHOTO_ENEMY_MOVEMENT_MODE_MASK = 0x00000c00,
 };
 
+enum PhotoEnemyAnmBankControl
+{
+    PHOTO_ENEMY_ALTERNATE_ANM_BANK_SHIFT = 31,
+    PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK = 1U << PHOTO_ENEMY_ALTERNATE_ANM_BANK_SHIFT,
+};
+
 enum PhotoEnemyMovementBoundsControl
 {
     PHOTO_ENEMY_CLAMP_TO_MOVEMENT_BOUNDS_MASK = 1U << 17,

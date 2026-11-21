@@ -2,6 +2,7 @@
 
 #include "AnmVertex.hpp"
 #include "EclInstruction.hpp"
+#include "EnemyAnmScripts.hpp"
 #include "EnemyEclContext.hpp"
 #include "EnemyMovementBounds.hpp"
 #include "PhotoBulletSpawnDescriptor.hpp"
@@ -136,12 +137,7 @@ struct PhotoEnemyView
     u8 anmDirection;                       // +0x2c0a
     u8 drawGroup;                          // +0x2c0b
     u8 unknown2c0c[2];
-    i16 idleAnmScript;                     // +0x2c0e
-    i16 idleFromLeftAnmScript;             // +0x2c10
-    i16 idleFromRightAnmScript;            // +0x2c12
-    i16 moveLeftAnmScript;                 // +0x2c14
-    i16 moveRightAnmScript;                // +0x2c16
-    i16 specialAnmScript;                  // +0x2c18
+    EnemyAnmScripts anmScripts;            // +0x2c0e
     u8 unknown2c1a[2];
     PhotoEnemyAnmVmIdStorage photoPulseVmId; // +0x2c1c
     PhotoEnemyAnmVmIdStorage photoMarkerVmId; // +0x2c20
@@ -170,6 +166,7 @@ struct PhotoEnemyView
     ~PhotoEnemyView()
     {
     }
+    void UpdateShotAndAnm();
     void IntegrateMovement();
     void ClampPosition();
     void RestartEcl();
@@ -266,9 +263,7 @@ typedef char PhotoEnemyDrawGroupAt2C0B[
     (offsetof(PhotoEnemyView, drawGroup) == PHOTO_ENEMY_ECL_DRAW_GROUP_OFFSET)
         ? 1 : -1];
 typedef char PhotoEnemyAnmScriptsAt2C0E[
-    (offsetof(PhotoEnemyView, idleAnmScript) == 0x2c0e &&
-     offsetof(PhotoEnemyView, specialAnmScript) ==
-         PHOTO_ENEMY_ECL_SPECIAL_ANM_SCRIPT_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, anmScripts) == 0x2c0e) ? 1 : -1];
 typedef char PhotoEnemyChildEclBlocksAt2CAC[
     (offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac) ? 1 : -1];
 typedef char PhotoEnemyPhotoPulseAt2C1C[

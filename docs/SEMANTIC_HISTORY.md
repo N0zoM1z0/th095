@@ -18743,3 +18743,24 @@ duration operands of opcode 143. The 74 capture and drop comparisons
 also agree across retail and both normal link orders. The game-object
 link comparison passes for 11,474 code references and 639 initialized
 data references. See `.analysis/pi/ecl-enemy-flags/`.
+
+### SEM-428 — share the enemy animation scripts
+
+The compact enemy's six signed animation script numbers now share
+`EnemyAnmScripts`. The ECL setter writes the table and invalidates the
+cached direction. The compact enemy's updater selects the idle or movement
+script using the old direction, velocity and mirror bit. Opcode 62 reads
+the special script from the same table.
+
+The second ANM slot stores an `AnmLoaded *` just like the primary slot.
+A direct-displacement scan found three reads, through the two ECL handlers
+and the movement animation update. The constructor clears both slots and
+the loader publishes the primary at +0x4DF8. The second slot keeps
+`unknown4dfc` because its non-null source remains unresolved.
+
+All 167 affected exact units pass. Both normal link orders move the
+setter and updater, and all five calls follow them. The 642 focused
+comparisons agree with retail, including 28 script and bank opcode cases
+and 86 direction cases. The animation fixture supplies each bank and
+observes the actual receiver and script pointer. See
+`.analysis/pi/enemy-primary-anm/`.

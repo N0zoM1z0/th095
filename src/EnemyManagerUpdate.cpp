@@ -207,9 +207,9 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
     enemy->shootIntervalFrames = 0;
     enemy->shootIntervalTimer = 0;
     enemy->shootOffset = Float3(0.0f, 0.0f, 0.0f);
-    enemy->moveLeftAnmScript = -1;
-    enemy->moveRightAnmScript = -1;
-    enemy->idleAnmScript = -1;
+    enemy->anmScripts.moveLeft = -1;
+    enemy->anmScripts.moveRight = -1;
+    enemy->anmScripts.idleInitial = -1;
     enemy->flags1 &= ~0x00000004;
     enemy->flags1 |= 0x00000008;
     enemy->flags1 &= ~0x00000010;

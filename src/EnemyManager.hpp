@@ -6,6 +6,7 @@
 // PhotoEnemyManager.hpp; keep this header only where inherited Enemy/ECL
 // method declarations are still required.
 #include "Global.hpp"
+#include "EnemyAnmScripts.hpp"
 #include "EnemyMovementBounds.hpp"
 #include "ecl/AnmManagerEclView.hpp"
 #include "BulletManager.hpp"
@@ -41,8 +42,6 @@ enum EnemyTrailFlagMask
     ENEMY_TRAIL_HIDE_HEAD_ANM = 1U << 4,
 };
 
-#define TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK 0x80000000U
-#define TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT 31
 
 struct EnemyBulletRankInfluence
 {
@@ -184,17 +183,6 @@ struct EnemyFlag2Bits
 };
 C_ASSERT(sizeof(EnemyFlag2Bits) == 4);
 
-struct EnemyAnmScripts
-{
-    i16 idleInitial;
-    i16 idleFromLeft;
-    i16 idleFromRight;
-    i16 moveLeft;
-    i16 moveRight;
-    i16 special;
-};
-C_ASSERT(sizeof(EnemyAnmScripts) == 0xc);
-
 void __fastcall PrepareSpellcardForTimerCallback(Spellcard *spellcard);
 
 struct Enemy
@@ -307,7 +295,6 @@ struct Enemy
     // enemy in ECX and take no explicit arguments.
     void ReleaseAttachedEffects();
     void UpdateMovement();
-    void UpdateShotAndAnm();
     void ReleaseChildEclBlocks();
     void ResetBulletRankInfluence();
     i32 HasParentChain();

@@ -37,7 +37,7 @@ struct PhotoEnemyManagerView
     PhotoEnemyView *timelineEnemySlots[4];     // +0x004de4
     PhotoEnemyEclManagerView *eclManager;      // +0x004df4
     AnmLoaded *enemyAnm;                       // +0x004df8
-    u8 unknown4dfc[4];                         // +0x004dfc
+    AnmLoaded *unknown4dfc;                  // +0x004dfc
     PhotoEnemyView enemyPool[128];             // +0x004e00
     PhotoEnemyView *photoTargets[8];           // +0x26ae00
     ChainElem *calcChain;                      // +0x26ae20

@@ -229,8 +229,6 @@ compare_failure:
     }
 }
 
-#define DEP_ANM_DIRECTION(enemy) \
-    (reinterpret_cast<PhotoEnemyView *>(enemy)->anmDirection)
 static __forceinline EnemyChildEclBlock **TargetChildEclBlocks(Enemy *enemy)
 {
     return reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks;
@@ -293,25 +291,24 @@ int __fastcall PopEclContext(Enemy *enemy, EclRawInstruction *instruction)
 
 // FUNCTION: TH095 0x00412190; TH08 0x00421DE0 is the source-shape oracle.
 void __fastcall SetPrimaryAnmScripts(
-    Enemy *enemy, EclRawInstruction *instruction,
+    PhotoEnemyView *enemy, EclRawInstruction *instruction,
     i32 script0, i32 script1, i32 script2, i32 script3, i32 script4, i32 script5)
 {
-    reinterpret_cast<PhotoEnemyView *>(enemy)->idleAnmScript =
+    enemy->anmScripts.idleInitial =
         static_cast<i16>(script0);
-    reinterpret_cast<PhotoEnemyView *>(enemy)->moveLeftAnmScript =
+    enemy->anmScripts.moveLeft =
         static_cast<i16>(script1);
-    reinterpret_cast<PhotoEnemyView *>(enemy)->moveRightAnmScript =
+    enemy->anmScripts.moveRight =
         static_cast<i16>(script2);
-    reinterpret_cast<PhotoEnemyView *>(enemy)->idleFromLeftAnmScript =
+    enemy->anmScripts.idleFromLeft =
         static_cast<i16>(script3);
-    reinterpret_cast<PhotoEnemyView *>(enemy)->idleFromRightAnmScript =
+    enemy->anmScripts.idleFromRight =
         static_cast<i16>(script4);
-    reinterpret_cast<PhotoEnemyView *>(enemy)->specialAnmScript =
+    enemy->anmScripts.special =
         static_cast<i16>(script5);
-    DEP_ANM_DIRECTION(enemy) = 0xff;
+    enemy->anmDirection = 0xff;
 }
 
-#undef DEP_ANM_DIRECTION
 #undef DEP_READ_FLOAT
 #undef DEP_READ_INT
 }

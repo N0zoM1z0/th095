@@ -3487,8 +3487,8 @@ def check_photo_enemy_owner() -> None:
         fail("EnemyInf must embed the canonical 128-element pool directly")
     if "PhotoEnemySlotStorage" in manager or "PhotoEnemySlotStorage" in element:
         fail("retired raw PhotoEnemySlotStorage must not be restored")
-    if "u8 unknown4dfc[4]" not in manager:
-        fail("EnemyInf +0x4DFC must remain opaque pending producer/lifetime proof")
+    if "AnmLoaded *unknown4dfc" not in manager:
+        fail("EnemyInf +0x4DFC must preserve the observed ANM receiver without assuming a producer")
     if "alternateEnemyAnm" in manager or "secondaryEnemyAnm" in manager:
         fail("EnemyInf +0x4DFC was named without producer/lifetime proof")
 
