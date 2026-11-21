@@ -37,6 +37,12 @@ struct FrontEndControllerFlagBits
 typedef char FrontEndControllerFlagBitsSizeIs4[
     (sizeof(FrontEndControllerFlagBits) == 4) ? 1 : -1];
 
+struct SceneStateHistory
+{
+    i32 values[3];
+    i32 count;
+};
+
 // The target has one active front-end/pause controller pointer at 0x004CA2F4.
 // Its concrete view changes with the current menu, so keep the storage type
 // neutral and cast only at the owning call site.

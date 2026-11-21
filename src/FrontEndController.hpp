@@ -57,7 +57,8 @@ struct FrontEndControllerView
     SceneValueQueue groupPreviewQueue;
     SceneValueQueue scenePreviewQueue;
     SceneValueQueue loadedGroupQueue;
-    u8 unknown63b0[0x1c];
+    SceneStateHistory stateHistory;
+    u8 unknown63c0[0x0c];
     FrontEndPendingTextureData pendingTextures;
     ChainElem *calcChain;
     ChainElem *drawChain;
@@ -130,6 +131,9 @@ typedef char FrontEndLifecyclePendingSecondaryAt63E8[
          offsetof(FrontEndPendingTextureData, secondaryData) == 0x63e8)
         ? 1
         : -1];
+typedef char FrontEndControllerStateHistoryAt63B0[
+    (offsetof(FrontEndControllerView, stateHistory) == 0x63b0 &&
+     offsetof(SceneStateHistory, count) == 0x0c) ? 1 : -1];
 typedef char FrontEndLifecycleChainsAt6400[
     (offsetof(FrontEndControllerView, calcChain) == 0x6400 &&
      offsetof(FrontEndControllerView, drawChain) == 0x6404)

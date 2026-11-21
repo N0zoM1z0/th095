@@ -1,29 +1,12 @@
-#ifdef TH095_MATCH_EXACT
-#include "SceneSelectAssetsExact.inl"
-#else
-#include "SceneSelect.hpp"
-
 #include "FileSystem.hpp"
-#include "FrontEndGlobals.hpp"
+#include "FrontEndController.hpp"
+#include "Main.hpp"
+#include "ScoreData.hpp"
 
 #include <stdio.h>
 
 namespace th095
 {
-
-typedef char SceneSelectionAssetPendingTextureDataLayout[
-    (sizeof(FrontEndPendingTextureData) == 0x34 &&
-     offsetof(SceneSelectControllerView, pendingTextures) == 0x63cc &&
-     offsetof(FrontEndPendingTextureData, primaryData) == 0x04 &&
-     offsetof(FrontEndPendingTextureData, primarySize) == 0x10 &&
-     offsetof(FrontEndPendingTextureData, secondaryData) == 0x1c &&
-     offsetof(FrontEndPendingTextureData, secondarySize) == 0x28) ? 1 : -1];
-typedef char SceneSelectionAssetFlagsAt6120[
-    (offsetof(SceneSelectControllerView, flags) == 0x6120) ? 1 : -1];
-typedef char SceneSelectionAssetStateHistoryAt63B0[
-    (offsetof(SceneSelectControllerView, stateHistory) == 0x63b0) ? 1 : -1];
-typedef char SceneSelectionAssetPendingCountAt63CC[
-    (offsetof(SceneSelectControllerView, pendingTextures) == 0x63cc) ? 1 : -1];
 
 struct SceneSelectionAssetLoadLocals
 {
@@ -34,7 +17,7 @@ struct SceneSelectionAssetLoadLocals
     u8 *primaryData;
     i32 i;
     char facePath[256];
-    SceneSelectControllerView *view;
+    FrontEndControllerView *view;
     i32 queueValue;
 };
 
@@ -143,7 +126,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
 {
     SceneSelectionAssetLoadLocals locals;
     locals.view =
-        static_cast<SceneSelectControllerView *>(g_ActiveMenuController);
+        static_cast<FrontEndControllerView *>(g_ActiveMenuController);
 
     while (true)
     {
@@ -342,5 +325,3 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

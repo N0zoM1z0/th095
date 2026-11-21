@@ -2763,15 +2763,13 @@ def check_front_end_flags_owner(
     }
     for name, markers in consumers.items():
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if name == "SceneSelectAssets.cpp":
-            if "SceneSelectControllerView *view;" not in body:
-                fail("asset worker lost its actual controller receiver")
-        else:
-            owner = body
-            if name in ("FrontEndLifecycle.cpp", "SceneControllerDraw.cpp") and '#include "FrontEndController.hpp"' in body:
-                owner = (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
-            if "FrontEndControllerFlagBits flagBits;" not in owner:
-                fail(f"{name} lost shared FrontEnd flag-bit storage")
+        owner = body
+        if name == "SceneSelectAssets.cpp" and "FrontEndControllerView *view;" not in body:
+            fail("asset worker lost its actual controller receiver")
+        if '#include "FrontEndController.hpp"' in body:
+            owner = (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
+        if "FrontEndControllerFlagBits flagBits;" not in owner:
+            fail(f"{name} lost shared FrontEnd flag-bit storage")
         for marker in markers:
             if marker not in body:
                 fail(f"{name} lost a named FrontEnd flag producer/consumer: {marker}")
@@ -2827,7 +2825,7 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
         for field, offset in (("stateHistory", "63b0"), ("pendingTextures", "63cc")):
             if f"offsetof(SceneSelectControllerView, {field}) == 0x{offset}" not in source:
                 fail(f"{name} lost the {field} offset assertion")
-        if "SceneStateHistoryView stateHistory;" not in owner:
+        if "SceneStateHistory stateHistory;" not in owner:
             fail(f"{name} lost its post-queue history owner")
         if "FrontEndPendingTextureData pendingTextures;" not in owner:
             fail(f"{name} lost its shared pending-texture owner")
@@ -2856,7 +2854,7 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
         "WriteSceneQueueWord32(this->selectionQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
         "WriteSceneQueueWord32(this->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
         "this->pendingTextures.count = 0;",
-        "sceneMenu->stateHistory.count = 0;",
+        "this->stateHistory.count = 0;",
         "this->currentDisplayState = -1;",
     )
     positions = [controller.find(marker) for marker in sequence]
@@ -2949,11 +2947,10 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
     for name in ("SceneSelectController.cpp", "SceneSelectControllerExact.inl"):
         if '#include "ScenePreviewDataQueue.inl"' not in (SRC / name).read_text(encoding="utf-8"):
             fail(f"{name} lost the shared address-word Pop")
-    for name in ("SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl"):
-        source = (SRC / name).read_text(encoding="utf-8")
-        for fragment in ("ScenePreviewDataPublish.inl", "ScenePreviewDataPublishNull.inl"):
-            if f'#include "{fragment}"' not in source:
-                fail(f"{name} lost shared native address publication")
+    source = (SRC / "SceneSelectAssets.cpp").read_text(encoding="utf-8")
+    for fragment in ("ScenePreviewDataPublish.inl", "ScenePreviewDataPublishNull.inl"):
+        if f'#include "{fragment}"' not in source:
+            fail("asset worker lost shared native address publication")
     publish = (SRC / "ScenePreviewDataPublish.inl").read_text(encoding="utf-8")
     if "reinterpret_cast<uintptr_t>(*value)" not in publish:
         fail("preview address publication truncates its file buffer")
@@ -2992,7 +2989,7 @@ def check_scene_queue_word_access(overrides: dict[str, str] | None = None) -> No
                      r"CopySceneQueueWord32|CopySceneQueueAddressWord)\s*\(")
     for name in ("SceneValueQueue.hpp", "SceneValueQueue.inl", "ScenePreviewDataQueue.hpp",
                  "ScenePreviewDataQueue.inl", "ScenePreviewDataPublish.inl", "ScenePreviewDataPublishNull.inl",
-                 "SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl", "SceneSelectController.cpp",
+                 "SceneSelectAssets.cpp", "SceneSelectController.cpp",
                  "SceneSelectControllerExact.inl", "SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl",
                  "FrontEndController.cpp"):
         text = source(name)
@@ -3315,18 +3312,17 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
         ("ReplayBrowser.cpp", 1), ("ReplayBrowserExact.inl", 1),
         ("PhotoGameTask.cpp", 2), ("PhotoGameTaskExact.inl", 2),
         ("FrontEndLifecycle.cpp", 2),
-        ("SceneSelectAssets.cpp", 1), ("SceneSelectAssetsExact.inl", 1),
+        ("SceneSelectAssets.cpp", 1),
     ):
         if re.sub(r"\s+", "", source(name)).count(completion) != count:
             fail(f"{name} lost ordered canonical primary-worker completion stores")
-    for name in ("SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl"):
-        text = source(name)
-        marker = "static __forceinline i32 SceneSelectionAssetsExitRequested()"
-        if marker not in text:
-            fail(f"{name} lost the exit-request snapshot")
-        body = braced_body_after(text, text.index(marker), marker)
-        if re.sub(r"\s+", "", body) != "i32value;ReadWorkerSignal(value,g_Supervisor.replayScanWorker.exitSignal);returnvalue;":
-            fail(f"{name} restored an alias or wrong exit-request field")
+    text = source("SceneSelectAssets.cpp")
+    marker = "static __forceinline i32 SceneSelectionAssetsExitRequested()"
+    if marker not in text:
+        fail("asset worker lost the exit-request snapshot")
+    body = braced_body_after(text, text.index(marker), marker)
+    if re.sub(r"\s+", "", body) != "i32value;ReadWorkerSignal(value,g_Supervisor.replayScanWorker.exitSignal);returnvalue;":
+        fail("asset worker restored an alias or wrong exit-request field")
     text = source("FrontEndController.cpp")
     marker = "static __forceinline i32 PrimaryWorkerActiveSnapshot()"
     if marker not in text:
@@ -3340,7 +3336,7 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
     read = re.compile(r"ReadWorkerSignal\(\s*[\w.]+\s*,\s*" + word + r"\s*\)")
     write = re.compile(r"WriteWorkerSignal\(\s*" + word + r"\s*,\s*[01]\s*\)")
     for name in ("ReplayScanWorkerBehavior.inl", "Main.cpp", "MainExact.inl",
-                 "AnmPreload.cpp", "SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl",
+                 "AnmPreload.cpp", "SceneSelectAssets.cpp",
                  "ReplayBrowser.cpp", "ReplayBrowserExact.inl", "HelpMenu.cpp", "HelpMenuExact.inl",
                  "PhotoGameTask.cpp", "PhotoGameTaskExact.inl", "FrontEndController.cpp", "FrontEndLifecycle.cpp"):
         rest = write.sub("", read.sub("", source(name)))
@@ -3387,19 +3383,17 @@ def check_scene_asset_wait_protocol(cancel_text: str | None = None) -> None:
     '''
     if re.sub(r"\s+", "", wait) != re.sub(r"\s+", "", expected_wait):
         fail("preview wait changed queue/sleep/cancellation order")
-    for name, receiver in (("SceneSelectAssets.cpp", "g_Supervisor"),
-                           ("SceneSelectAssetsExact.inl", "g_SceneSupervisor")):
-        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if "SceneSelectionAssetView" in source or "SceneSelectControllerView *view;" not in source:
-            fail(f"{name} restored an asset-worker controller projection")
-        if f"return {receiver}.flags.receivedCloseMsg;" not in source:
-            fail(f"{name} lost its typed Supervisor close flag")
-        if source.count('#include "ScenePreviewDataWait.inl"') != 2:
-            fail(f"{name} lost the shared positive/negative preview wait")
-        if source.count('#include "SceneSelectionAssetWaitCancellation.inl"') != 2:
-            fail(f"{name} lost shared Best Shot cancellation checks")
-        if "reinterpret_cast<u32 *>" in source:
-            fail(f"{name} restored a raw close-flag projection")
+    body = source_without_comments((SRC / "SceneSelectAssets.cpp").read_text(encoding="utf-8"))
+    if "FrontEndControllerView *view;" not in body:
+        fail("asset worker lost its controller owner")
+    if "return g_Supervisor.flags.receivedCloseMsg;" not in body:
+        fail("asset worker lost the typed Supervisor close flag")
+    if body.count('#include "ScenePreviewDataWait.inl"') != 2:
+        fail("asset worker lost the shared positive/negative preview wait")
+    if body.count('#include "SceneSelectionAssetWaitCancellation.inl"') != 2:
+        fail("asset worker lost shared Best Shot cancellation checks")
+    if "reinterpret_cast<u32 *>" in body:
+        fail("asset worker restored a raw close-flag projection")
 
 
 def check_front_end_pending_texture_owner(header_text: str | None = None) -> None:
@@ -3427,16 +3421,16 @@ def check_front_end_pending_texture_owner(header_text: str | None = None) -> Non
             fail(f"{name} restored a partial pending-texture declaration or access")
         if "offsetof(FrontEndPendingTextureData, primaryData) == 0x04" not in body:
             fail(f"{name} lost its target pointer-layout evidence")
-    for name in ("SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl"):
-        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if "SceneSelectControllerView *view;" not in body:
-            fail(f"{name} lost its actual pending-data receiver")
-        if "offsetof(SceneSelectControllerView, pendingTextures) == 0x63cc" not in body:
-            fail(f"{name} lost its controller/pending-data layout evidence")
-        if re.search(r"reinterpret_cast<i32>\s*\(\s*FileSystem::OpenFile", body):
-            fail(f"{name} restored pointer truncation at pending publication")
-        if "->pendingTextures.count++;" not in body:
-            fail(f"{name} lost pending-data publication")
+    body = source_without_comments((SRC / "SceneSelectAssets.cpp").read_text(encoding="utf-8"))
+    owner = (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
+    if "FrontEndControllerView *view;" not in body:
+        fail("asset worker lost its actual pending-data receiver")
+    if "offsetof(FrontEndControllerView, pendingTextures) == 0x63cc" not in owner:
+        fail("asset worker lost its controller/pending-data layout evidence")
+    if re.search(r"reinterpret_cast<i32>\s*\(\s*FileSystem::OpenFile", body):
+        fail("asset worker restored pointer truncation at pending publication")
+    if "->pendingTextures.count++;" not in body:
+        fail("asset worker lost pending-data publication")
     for name in ("SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl"):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         if body.count('#include "FrontEndPendingTextureAdvance.inl"') != 1:

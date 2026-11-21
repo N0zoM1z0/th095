@@ -19897,3 +19897,24 @@ The original and both rebuilt layouts pass the title selection, paired
 VM update, and three-entry initialization fixtures, plus the photo-task
 handoff and title callback fixtures. See
 `.analysis/pi/front-end-update-fields/`.
+
+### SEM-481 — share the scene asset worker
+
+`LoadSceneSelectionAssets` uses the allocated `FrontEndControllerView`
+for request queues, scene display history, and pending textures. It reads
+the active controller once on entry. Both builds use the canonical
+`Supervisor` close flag, worker signals, and critical-section lane 4.
+The main-menu reset uses the allocated history member. Scene Select's
+display-state producer and remaining overlays use the same history type.
+
+All 102 affected strict comparisons pass across 15 translation units.
+The normal worker's full 3,070-byte extent and 115 relocation targets
+agree with retail. It moves from `0x00442CC0` to `0x004170E0` when
+linked in reverse object order.
+
+Eighteen cases agree across the original and both rebuilt layouts with
+file opens and waits stubbed. They cover the active-controller snapshot,
+face-history priority and shift, Best Shot results, and locked and
+unlocked previews. Each cancellation source releases inner waits before
+publication, and completion restores the lock depth and sets the worker
+signals. See `.analysis/pi/scene-assets-owner/`.

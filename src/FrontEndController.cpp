@@ -640,7 +640,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
             WriteSceneQueueWord32(this->selectionQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);
             WriteSceneQueueWord32(this->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);
             this->pendingTextures.count = 0;
-            sceneMenu->stateHistory.count = 0;
+            this->stateHistory.count = 0;
             this->currentDisplayState = -1;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }

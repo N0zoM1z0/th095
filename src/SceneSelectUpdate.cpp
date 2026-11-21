@@ -84,7 +84,7 @@ struct SceneSelectUpdateView
     SceneValueQueue groupPreviewQueue;
     SceneValueQueue scenePreviewQueue;
     SceneValueQueue loadedGroupQueue;
-    SceneStateHistoryView stateHistory;
+    SceneStateHistory stateHistory;
     u8 unknown63c0[0x0c];
     FrontEndPendingTextureData pendingTextures;
 };

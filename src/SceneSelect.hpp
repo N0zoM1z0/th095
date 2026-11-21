@@ -35,12 +35,6 @@ struct SceneGroupCursorView
     u8 unknown004[0xd4];
 };
 
-struct SceneStateHistoryView
-{
-    i32 values[3];
-    i32 count;
-};
-
 typedef AnmLoadedSprite SceneLoadedSpriteView;
 typedef AnmVm SceneAnmVmView;
 typedef AnmManager SceneAnmManagerView;
@@ -147,7 +141,7 @@ struct SceneSelectControllerView
     SceneValueQueue groupPreviewQueue;
     SceneValueQueue scenePreviewQueue;
     SceneValueQueue loadedGroupQueue;
-    SceneStateHistoryView stateHistory;
+    SceneStateHistory stateHistory;
     u8 unknown63c0[0x0c];
     FrontEndPendingTextureData pendingTextures;
 
