@@ -144,7 +144,7 @@ ChainCallbackResult FrontEndControllerView::UpdateReplayBrowser()
             if (this->replays[replayIndex] == NULL ||
                 this->replays[replayIndex]->activeInputData == NULL)
             {
-                g_SoundPlayer.PlaySoundByIdx(SOUND_DAMAGE_LOW_HEALTH, 0);
+                g_SoundPlayer.PlaySoundByIdx(SOUND_INVALID, 0);
             }
             else
             {

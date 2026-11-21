@@ -325,7 +325,7 @@ static __forceinline void InitializeGameReplayCursorPhase(
 
 void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
 {
-    g_SoundPlayer.PlaySoundByIdx(SOUND_20, 0);
+    g_SoundPlayer.PlaySoundByIdx(SOUND_PAUSE, 0);
     resultScreen->state = RESULT_SCREEN_GAME_RESULT_MENU;
     FrontEndResetTimer(&resultScreen->stateTimer);
     resultScreen->savedGameSpeed = g_AnmGameSpeed;

@@ -163,13 +163,13 @@ i32 PhotoGameTaskView::Update()
             locals.previousSecond !=
                 static_cast<i32>(this->completion.timer) / 60)
         {
-            g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x24), 0);
+            g_SoundPlayer.PlaySoundByIdx(SOUND_TIMEOUT_URGENT, 0);
         }
         else if (static_cast<i32>(this->completion.timer) / 60 <= 10 &&
                  locals.previousSecond !=
                      static_cast<i32>(this->completion.timer) / 60)
         {
-            g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x1b), 0);
+            g_SoundPlayer.PlaySoundByIdx(SOUND_TIMEOUT, 0);
         }
 
         if (this->completion.timer <= 0)

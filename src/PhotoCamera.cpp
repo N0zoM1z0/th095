@@ -424,7 +424,7 @@ u32 PhotoCameraState::TakePhoto()
     PhotoSoundPlayer()->StopSoundByIdx(SOUND_CAMERA_FOCUS);
     if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
     {
-        PhotoSoundPlayer()->PlaySoundByIdx(static_cast<SoundIdx>(0x29), 0);
+        PhotoSoundPlayer()->PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
     }
     return this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE;
 }
@@ -1369,7 +1369,7 @@ cameraActive:
                 if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
                 {
                     PhotoSoundPlayer()->PlaySoundPositionedByIdx(
-                        static_cast<SoundIdx>(0x21),
+                        SOUND_PHOTO_ACCEPTED,
                         camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;
@@ -1385,7 +1385,7 @@ cameraActive:
                 if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
                 {
                     PhotoSoundPlayer()->PlaySoundPositionedByIdx(
-                        static_cast<SoundIdx>(0x25),
+                        SOUND_INVALID,
                         camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;

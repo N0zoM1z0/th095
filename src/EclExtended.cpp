@@ -63,7 +63,7 @@ void __fastcall SpawnDeathPhotoVms(
     g_PhotoBulletManager->bulletAnm->CreateVmAtWorld(0x123, &enemy->position);
     for (i32 i = 0; i < 32; ++i)
         g_PhotoBulletManager->bulletAnm->CreateVmAtWorld(0x122, &enemy->position);
-    ::th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x12, 0);
+    ::th095::g_SoundPlayer.PlaySoundByIdx(SOUND_TOTAL_BOSS_DEATH, 0);
     g_AnmGameSpeed = 0.25f;
 }
 
@@ -177,7 +177,7 @@ void __fastcall EnablePhotoTransition(
         g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 2;
     AnmManager::ExecuteScript(secondVm);
-    ::th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x26, 0);
+    ::th095::g_SoundPlayer.PlaySoundByIdx(SOUND_PHOTO_TRANSITION_START, 0);
     g_AnmGameSpeed = 1.0f;
 }
 
@@ -364,7 +364,7 @@ void __fastcall RunPhotoTransition(
             g_Background->spellBackgroundVmIds[1].value);
         locals.secondStartVm->pendingInterrupt = 2;
         AnmManager::ExecuteScript(locals.secondStartVm);
-        ::th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x26, 0);
+        ::th095::g_SoundPlayer.PlaySoundByIdx(SOUND_PHOTO_TRANSITION_START, 0);
         g_AnmGameSpeed = 1.0f;
         enemy->activeEclContext->scriptState.extraIntVariables[2] = 120;
 

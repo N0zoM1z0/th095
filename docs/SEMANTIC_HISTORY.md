@@ -20434,3 +20434,20 @@ byte. See `.analysis/pi/photo-item-share/`.
 The same table exposes another inherited name in ReplayBrowser. The
 missing or unloaded replay branch at 0x0044E21C pushes 0x25. Its buffer
 is `se_invalid.wav`, currently named `SOUND_DAMAGE_LOW_HEALTH`.
+
+### SEM-505 — bind countdown and feedback sounds to TH095 commands
+
+The replay browser and the camera both use command 0x25 for invalid
+feedback. The camera pairs it with command 0x21 for an accepted photo.
+The game task uses 0x1B for the countdown’s ten-second tier and 0x24
+for its five-second tier. The result menu plays 0x20, and both ECL
+photo-transition entry paths use 0x26. The enum now names these
+commands from the verified callers and the retail buffer table.
+The old labels without a verified role use numeric names.
+
+All 598 affected strict comparisons pass. The object tables and both
+links retain all 47 metadata records and all 37 filename pointers.
+The original and both links agree on 22 countdown, 40 camera feedback,
+two transition and 22 replay-browser cases. Both new links have the
+same mapped sections as their preceding images. See
+`.analysis/pi/sound-command-names/`.
