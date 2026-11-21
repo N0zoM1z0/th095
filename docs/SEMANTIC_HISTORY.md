@@ -19593,3 +19593,19 @@ layouts. The fixture exercises the real command queue for preload,
 play, stop and timed fade, including disabled and MIDI modes. Both
 layouts match retail for the four fade callbacks and the null stream.
 See `.analysis/pi/main-sound-owner/`.
+
+### SEM-468 — use the Supervisor fields in SoundPlayer
+
+Both profiles read Supervisor's window and configuration directly.
+The ten relocations use the real base with addends +0x48 for the
+thread window, +0x1C9 for music mode, +0x1CA for SFX enable and +0x1E0
+for the option word. The preload checks still extract bit 4.
+
+All 27 exact comparisons pass. The normal object matches the same
+extents and 277 relocations. The ten field references follow Supervisor
+in both links, and each link keeps its previous mapped section bytes.
+The runtime probe varies preload, music mode and the SFX gate while
+seeding the old view's offsets with different values. It checks WAV
+pause and unpause, file-backed and memory-backed BGM calls, and both
+thread window arguments with Windows and DirectSound calls stubbed.
+See `.analysis/pi/sound-supervisor-owner/`.

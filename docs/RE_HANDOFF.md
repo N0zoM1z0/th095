@@ -181,6 +181,8 @@ cursor through the canonical context field.
 SEM-466 uses the canonical PbgArchive at Main startup and shutdown.
 SEM-467 shares SoundPlayer across both Main builds, including the
 BGM queue and per-frame fade update.
+SEM-468 removes the legacy Supervisor view from SoundPlayer and
+binds both profiles to its real audio settings and window.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
