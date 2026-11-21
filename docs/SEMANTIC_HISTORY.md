@@ -20694,3 +20694,18 @@ from normal COFF. Retail and both link orders agree on 392 fade
 transitions and 16 queued fade-out cases with simulated DirectSound
 callbacks. Both links retain their mapped bytes. Evidence is under
 `.analysis/pi/sound-fade-shared/`.
+
+### SEM-520 — retire the inherited enemy and bullet layouts
+
+TH095 dispatch publishes the shot descriptor at compact enemy `+0x298C`.
+The bullet spawner and child patterns consume that same 0x210-byte
+type. The TH08-shaped headers described a 481-slot manager and a
+different transform protocol. The remaining compiled includers only used
+the compact types, so both inherited definitions and three build
+selectors were removed. The legacy Player declaration still carries its
+own timeline member and an opaque enemy pointer.
+
+All four affected exact units pass. The regular and reversed links
+retain their mapped bytes, and the legacy Player header compiles on
+its own in both profiles. The build and link evidence is under
+`.analysis/pi/retire-legacy-enemy-bullet/`.

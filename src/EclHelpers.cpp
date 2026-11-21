@@ -1,4 +1,3 @@
-#include "EnemyManager.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
 #include "PhotoEnemyLayout.hpp"

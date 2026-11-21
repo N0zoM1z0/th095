@@ -1,4 +1,3 @@
-#include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "ecl/EclManager.hpp"
 #include "PhotoEnemyManagerLayout.hpp"

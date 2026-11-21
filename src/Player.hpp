@@ -1,16 +1,27 @@
 #pragma once
 
+#include "AnmManager.hpp"
 #include "Global.hpp"
-#include "Supervisor.hpp"
-#include "ecl/AnmManagerEclView.hpp"
-#include "EnemyManager.hpp"
+#include "ZunTimer.hpp"
 
 namespace th095
 {
 
 struct AnmLoaded;
 struct Effect;
+struct EclTimelineInstruction;
+struct Enemy;
 struct PlayerShotDescriptor;
+
+// Layout used by the inherited Player declaration below.
+struct EclTimeline
+{
+    ZunTimer timer;
+    EclTimelineInstruction *instruction;
+    EclTimeline();
+    void Run();
+};
+C_ASSERT(sizeof(EclTimeline) == 0x10);
 
 struct PlayerShotPowerLevel
 {

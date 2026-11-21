@@ -3396,12 +3396,6 @@ def check_photo_enemy_owner() -> None:
     if "alternateEnemyAnm" in manager or "secondaryEnemyAnm" in manager:
         fail("EnemyInf +0x4DFC was named without producer/lifetime proof")
 
-    legacy = (SRC / "EnemyManager.hpp").read_text(encoding="utf-8")
-    if "Legacy TH08-shaped Enemy/ECL compatibility ABI" not in legacy:
-        fail("EnemyManager.hpp must state that its TH08-shaped manager is not TH095 EnemyInf")
-    if "PhotoEnemyManager.hpp" not in legacy:
-        fail("EnemyManager.hpp must route normal TH095 ownership to PhotoEnemyManager.hpp")
-
     direct_consumers = (
         SRC / "EnemyManagerUpdate.cpp",
         SRC / "EnemyManagerTask.cpp",

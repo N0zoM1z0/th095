@@ -108,7 +108,8 @@ control words. SEM-428 puts the animation updater and six script numbers
 on the compact enemy. The second ANM field has its observed pointer type
 and keeps its unknown name. SEM-429 replaces the remaining compact-enemy
 offset macros with fields and shares the POD handle used by ECL spawns
-and the retained VM slots. The legacy `Enemy *` entry points remain.
+and the retained VM slots. SEM-520 retires the unused TH08 Enemy and
+Bullet declarations after the runtime migrated to the compact layouts.
 SEM-430 puts the EnemyInf factory and chain callbacks on the canonical
 manager and uses its typed pointer in both photo task profiles. SEM-431
 shares the stage score multiplier between opcode 149 and camera scoring
