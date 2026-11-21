@@ -58,8 +58,6 @@ struct PhotoStageCaptureLocals
     IDirect3DSurface8 *surface;
 };
 
-DIFFABLE_STATIC(u8, g_PhotoCaptureCountdown);
-
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 // VC7.1 preserves the camera-limit read temporary through this inline call.
@@ -603,7 +601,8 @@ i32 PhotoStageStateView::Update()
                     g_AnmManager, this->capture.slot,
                     readByteCountLocal02, right, top, bottom);
 
-                g_PhotoCaptureCountdown = 99;
+                // The capture texture needs a draw even when frameskip is enabled.
+                g_GameWindow.framesSinceRedraw = 99;
                 g_RuntimeGlobalStateOwner->resetFpsSample = 1;
                 this->flags &= ~PHOTO_STAGE_WAITING_FOR_TEXTURE;
             }

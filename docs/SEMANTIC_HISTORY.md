@@ -20548,3 +20548,20 @@ at their linked destinations in both orders. PlayerInf publication moves
 from `0x004D6574` to `0x004DBDDC`. Both layouts agree with retail on
 576 operand reads and 24 float lvalue cases, including writing a coordinate
 and reading it back. Evidence is under `.analysis/pi/ecl-player-operands/`.
+
+### SEM-511 — let photo capture force the window redraw
+
+In the original, WinMain stores -4 at `0x004C45F8` at `0x0042040C`.
+PhotoStage stores 99 at that same address at `0x0042B0F2`. The byte is
+`GameWindow::framesSinceRedraw` at +0x10. Render runs the calc chain,
+increments the byte, and compares its signed value with frameskip plus
+one at `0x00420852..0x00420874`. It resets the byte to zero after a draw.
+PhotoStage now updates the window field before publishing the FPS sample
+reset, so Render sees the capture request's redraw on the same tick.
+
+The old links put the store in a separate byte and left the real counter
+unchanged. The corrected links relocate the store to GameWindow +0x10.
+All six PhotoStage exact units pass with the original byte destination.
+The baseline and corrected fixtures execute the capture store, WinMain
+initialization and Render's draw decision with 56 counter/frameskip cases.
+See `.analysis/pi/photo-capture-redraw/`.

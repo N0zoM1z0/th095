@@ -10390,7 +10390,7 @@ relocations = [
   { offset = 0x274, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
   { offset = 0x28B, type = "DIR32", symbol = "__real@43e80000", target = 0x0049663C },
   { offset = 0x2D2, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
-  { offset = 0x394, type = "DIR32", symbol = "?g_PhotoCaptureCountdown@th095@@3EA", target = 0x004C45F8 },
+  { offset = 0x394, type = "DIR32", symbol = "?g_GameWindow@th095@@3UGameWindow@1@A", target = 0x004C45E8, addend = 0x10 },
   { offset = 0x39A, type = "DIR32", symbol = "?g_RuntimeGlobalStateOwner@th095@@3PAUPhotoGameTaskView@1@A", target = 0x004BDEC8 },
   { offset = 0x3AC, type = "DIR32", symbol = "?g_RuntimeGlobalStateOwner@th095@@3PAUPhotoGameTaskView@1@A", target = 0x004BDEC8 },
   { offset = 0x6D9, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },

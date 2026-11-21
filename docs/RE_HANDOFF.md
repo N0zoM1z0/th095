@@ -268,6 +268,8 @@ uses the controller masks, and the death transition calls the shared
 ANM and SoundPlayer methods.
 SEM-507 gives SHOT a 32-bit descriptor field and preserves its in-place
 rebase and signed interval scan.
+SEM-511 binds photo capture to the window's signed redraw counter.
+The same Render tick then draws the pending capture with frameskip enabled.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
