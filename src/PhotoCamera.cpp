@@ -807,11 +807,11 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
             continue;
         }
         if (g_PhotoEnemyManager->photoTargets[locals.enemyIndex]
-                    ->hiddenFromDrawGroups != 0 ||
+                    ->control.hiddenFromDrawGroups != 0 ||
             ((g_PhotoEnemyManager->photoTargets[locals.enemyIndex]
                     ->flags1 >> 5) & 1) != 0 ||
             g_PhotoEnemyManager->photoTargets[locals.enemyIndex]
-                    ->showPhotoMarker != 0)
+                    ->secondaryControl.showPhotoMarker != 0)
         {
             continue;
         }

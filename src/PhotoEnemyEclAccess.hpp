@@ -14,8 +14,6 @@ enum PhotoEnemyEclOperandOffset
 {
     PHOTO_ENEMY_ECL_VM_ROTATION_Z_OFFSET = 0x28,
     PHOTO_ENEMY_ECL_ANM_HANDLES_OFFSET = 0x2d4,
-    PHOTO_ENEMY_ECL_CONTROL_OFFSET = 0x2bf4,
-    PHOTO_ENEMY_ECL_SECONDARY_CONTROL_OFFSET = 0x2bf8,
     PHOTO_ENEMY_ECL_PHOTO_MARKER_TIMER_OFFSET = 0x2bfc,
     PHOTO_ENEMY_ECL_DRAW_GROUP_OFFSET = 0x2c0b,
     PHOTO_ENEMY_ECL_SPECIAL_ANM_SCRIPT_OFFSET = 0x2c18,
@@ -47,8 +45,6 @@ struct PhotoEnemyTrailConfig
 
 #define TH095_PHOTO_ENEMY_I32(owner, offset) \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))
-#define TH095_PHOTO_ENEMY_U32(owner, offset) \
-    (*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 #define TH095_PHOTO_ENEMY_I16(owner, offset) \
     (*reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 #define TH095_PHOTO_ENEMY_I8(owner, offset) \
@@ -72,19 +68,6 @@ struct PhotoEnemyTrailConfig
         (owner), \
         th095::PHOTO_ENEMY_ECL_ANM_HANDLES_OFFSET + sizeof(i32) * (index), \
         type)
-#define TH095_ECL_CONTROL_WORD(owner) \
-    TH095_PHOTO_ENEMY_U32((owner), th095::PHOTO_ENEMY_ECL_CONTROL_OFFSET)
-#define TH095_ECL_CONTROL_BITS(owner) \
-    TH095_PHOTO_ENEMY_OBJECT( \
-        (owner), th095::PHOTO_ENEMY_ECL_CONTROL_OFFSET, \
-        th095::PhotoEnemyControlBits)
-#define TH095_ECL_SECONDARY_CONTROL_WORD(owner) \
-    TH095_PHOTO_ENEMY_U32( \
-        (owner), th095::PHOTO_ENEMY_ECL_SECONDARY_CONTROL_OFFSET)
-#define TH095_ECL_SECONDARY_CONTROL_BITS(owner) \
-    TH095_PHOTO_ENEMY_OBJECT( \
-        (owner), th095::PHOTO_ENEMY_ECL_SECONDARY_CONTROL_OFFSET, \
-        th095::PhotoEnemySecondaryControlBits)
 #define TH095_ECL_PHOTO_MARKER_TIMER(owner) \
     TH095_PHOTO_ENEMY_OBJECT( \
         (owner), th095::PHOTO_ENEMY_ECL_PHOTO_MARKER_TIMER_OFFSET, ZunTimer)

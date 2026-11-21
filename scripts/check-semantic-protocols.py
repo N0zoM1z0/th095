@@ -3447,7 +3447,8 @@ def check_photo_enemy_owner() -> None:
         "offsetof(PhotoEnemyView, eclSchedule) == 0x2c54",
         "offsetof(PhotoEnemyView, unknown2c50) == 0x2c50",
         "PhotoEnemyFlagsAt2BF4",
-        "PHOTO_ENEMY_ECL_CONTROL_OFFSET",
+        "offsetof(PhotoEnemyView, flags1) == 0x2bf4",
+        "offsetof(PhotoEnemyView, flags2) == 0x2bf8",
         "PhotoEnemyChildEclBlocksAt2CAC",
         "offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac",
         "PhotoEnemyAttachedVmAt4CBC",
@@ -3589,9 +3590,9 @@ def check_photo_enemy_owner() -> None:
         if retired in extended:
             fail(f"EclExtended restored raw compact-enemy control access: {retired}")
     for fact in (
-        "TH095_ECL_CONTROL_BITS(enemy).movementEasing",
+        "reinterpret_cast<PhotoEnemyView *>(enemy)->control.movementEasing",
         "PHOTO_ENEMY_EASING_OUT_QUADRATIC",
-        "TH095_ECL_CONTROL_BITS(enemy).movementMode",
+        "reinterpret_cast<PhotoEnemyView *>(enemy)->control.movementMode",
         "PHOTO_ENEMY_MOVEMENT_INTERPOLATED",
     ):
         if fact not in extended:
@@ -3648,21 +3649,6 @@ def check_photo_enemy_owner() -> None:
         float_lvalue,
     ):
         fail("ResolveFloatLValue restored a legacy Enemy compact-field access")
-
-    required_operand_offsets = (
-        "PHOTO_ENEMY_ECL_CONTROL_OFFSET = 0x2bf4",
-    )
-    for fact in required_operand_offsets:
-        if fact not in operand_access:
-            fail(f"PhotoEnemy ECL operand access lost canonical offset: {fact}")
-
-    compatibility = (SRC / "ecl" / "EnemyEclRuntimeView.hpp").read_text(
-        encoding="utf-8"
-    )
-    if re.search(r"\bstruct\s+EnemyEclRuntimeView\s*\{", compatibility):
-        fail("EnemyEclRuntimeView.hpp must not restore a duplicate enemy layout")
-    if '#include "../PhotoEnemyEclAccess.hpp"' not in compatibility:
-        fail("EnemyEclRuntimeView.hpp must route through shared compact access")
 
     required_emission_adapters = (
         SRC / "EclHelpersPhotoEnemyEmission.hpp",
@@ -3725,8 +3711,8 @@ def check_photo_enemy_owner() -> None:
         "g_PhotoEnemyManager->photoTargets",
         "reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames",
         "reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks",
-        "TH095_ENEMY_ECL_CONTROL_BITS",
-        "TH095_ENEMY_ECL_SECONDARY_BITS",
+        "reinterpret_cast<PhotoEnemyView *>(enemy)->control",
+        "reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl",
         "TH095_ECL_PHOTO_PULSE_TIMER",
     ):
         if marker not in run_surfaces:

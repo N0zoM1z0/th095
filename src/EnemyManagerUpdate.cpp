@@ -445,7 +445,7 @@ void PhotoEnemyTimelineView::Run()
                     g_PhotoEnemyManager->timelineEnemySlots[
                         reinterpret_cast<i32 *>(
                             reinterpret_cast<u8 *>(this->instruction) + 8)[0]]
-                            ->active != 0)
+                            ->control.active != 0)
                 {
                     this->timer.Decrement(1);
                     goto finish;
@@ -487,7 +487,7 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
     enemy = &this->enemyPool[0];
     for (enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
     {
-        if (enemy->active != 0)
+        if (enemy->control.active != 0)
         {
             continue;
         }
@@ -495,7 +495,7 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
         *reinterpret_cast<EnemySpawnCopy *>(enemy) =
             *reinterpret_cast<const EnemySpawnCopy *>(this);
         enemy->enemyIndex = enemyIndex;
-        enemy->mirrorMovementX = mirrorMovementX;
+        enemy->control.mirrorMovementX = mirrorMovementX;
         if (life >= 0)
         {
             enemy->life = life;
@@ -544,7 +544,7 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
     enemy = &this->enemyPool[0];
     for (enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
     {
-        if (enemy->active != 0)
+        if (enemy->control.active != 0)
         {
             continue;
         }
@@ -654,19 +654,19 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
          enemyIndex < 128;
          ++enemyIndex, ++enemy)
     {
-        if (enemy->active == 0)
+        if (enemy->control.active == 0)
         {
             continue;
         }
 
-        if (enemy->lifecycleState != 0)
+        if (enemy->control.lifecycleState != 0)
         {
-            if (enemy->lifecycleState >= 2)
+            if (enemy->control.lifecycleState >= 2)
             {
                 enemy->Deactivate();
                 continue;
             }
-            enemy->lifecycleState++;
+            enemy->control.lifecycleState++;
             goto enqueueEnemy;
         }
 
@@ -683,7 +683,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
 
         if (GetPhotoEnemyAnmVmIdValue(
                 reinterpret_cast<AnmVmId *>(&enemy->attachedVmId)) != 0 &&
-            enemy->freezeAttachedVm == 0)
+            enemy->secondaryControl.freezeAttachedVm == 0)
         {
             struct AttachedPositions
             {
@@ -738,7 +738,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
             }
         }
 
-        if (enemy->showPhotoMarker != 0 && enemy->photoTarget != 0)
+        if (enemy->secondaryControl.showPhotoMarker != 0 && enemy->control.photoTarget != 0)
         {
             if (IsPhotoEnemyAnmVmIdNull(
                     reinterpret_cast<AnmVmId *>(
@@ -770,7 +770,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                     &enemy->photoMarkerVmId));
         }
 
-        if (enemy->skipOffscreenCheck == 0)
+        if (enemy->control.skipOffscreenCheck == 0)
         {
             f32 spriteWidth;
             f32 spriteHeight;
@@ -790,7 +790,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
             if (IsPhotoEnemyOutsidePlayfield(
                     &enemy->position, spriteWidth, spriteHeight))
             {
-                if (enemy->hasEnteredPlayfield != 0)
+                if (enemy->control.hasEnteredPlayfield != 0)
                 {
                     enemy->Deactivate();
                     continue;
@@ -798,11 +798,11 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
             }
             else
             {
-                enemy->hasEnteredPlayfield = 1;
+                enemy->control.hasEnteredPlayfield = 1;
             }
         }
 
-        if (enemy->collidable != 0)
+        if (enemy->control.collidable != 0)
         {
             g_RuntimePlayerOwner->CheckBulletCollision(
                 reinterpret_cast<Float3 *>(&enemy->position),
@@ -811,7 +811,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
         AnmManager::ExecuteScript(&enemy->vm);
 
     enqueueEnemy:
-        if (enemy->hiddenFromDrawGroups == 0)
+        if (enemy->control.hiddenFromDrawGroups == 0)
         {
             if (enemyManager->drawGroupHeads[enemy->drawGroup] != NULL)
             {
@@ -837,7 +837,7 @@ void PhotoEnemyView::IntegrateMovement()
     this->positionDelta = this->position - this->previousPosition;
     this->previousPosition = this->position;
 
-    if (this->mirrorMovementX == 0)
+    if (this->control.mirrorMovementX == 0)
     {
         this->position.x += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
     }
@@ -851,7 +851,7 @@ void PhotoEnemyView::IntegrateMovement()
 
 void PhotoEnemyView::ClampPosition()
 {
-    if (this->clampToMovementBounds != 0)
+    if (this->control.clampToMovementBounds != 0)
     {
         if (this->position.x < this->movementBounds.lower.x)
         {
@@ -875,12 +875,12 @@ void PhotoEnemyView::ClampPosition()
 
 void PhotoEnemyView::UpdatePhotoMarkerPulse()
 {
-    if (this->showPhotoMarker != 0)
+    if (this->secondaryControl.showPhotoMarker != 0)
     {
         this->photoMarkerPulseTimer.Decrement(1);
         if (this->photoMarkerPulseTimer <= 0)
         {
-            this->showPhotoMarker = 0;
+            this->secondaryControl.showPhotoMarker = 0;
         }
     }
 }
@@ -897,7 +897,7 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargets(
 {
     for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex)
     {
-        if (enemyManager->enemyPool[enemyIndex].photoTarget == 0)
+        if (enemyManager->enemyPool[enemyIndex].control.photoTarget == 0)
         {
             enemyManager->enemyPool[enemyIndex].Deactivate();
         }
@@ -921,7 +921,7 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
 {
     for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex)
     {
-        if (enemyManager->enemyPool[enemyIndex].photoTarget == 0)
+        if (enemyManager->enemyPool[enemyIndex].control.photoTarget == 0)
         {
             enemyManager->enemyPool[enemyIndex].Deactivate();
         }

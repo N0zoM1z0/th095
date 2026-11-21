@@ -19,9 +19,9 @@ static __forceinline i32 &TargetEnemyLife(Enemy *enemy)
     return reinterpret_cast<PhotoEnemyView *>(enemy)->life;
 }
 #define TargetEnemyMirrorMovementX(enemy) \
-    (reinterpret_cast<PhotoEnemyView *>(enemy)->mirrorMovementX)
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->control.mirrorMovementX)
 #define TargetEnemyAlternateAnmBank(enemy) \
-    (reinterpret_cast<PhotoEnemyView *>(enemy)->alternateAnmBank)
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->control.alternateAnmBank)
 static __forceinline u8 &TargetEnemyAnmDirection(Enemy *enemy)
 {
     return reinterpret_cast<PhotoEnemyView *>(enemy)->anmDirection;

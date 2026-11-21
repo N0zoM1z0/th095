@@ -658,9 +658,9 @@ void __fastcall RunPhotoTransition(
         locals.movementTimer->subFrame = 60.0f;
         locals.movementTimer->previous = -999999;
 
-        TH095_ECL_CONTROL_BITS(enemy).movementEasing =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->control.movementEasing =
             PHOTO_ENEMY_EASING_OUT_QUADRATIC;
-        TH095_ECL_CONTROL_BITS(enemy).movementMode =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->control.movementMode =
             PHOTO_ENEMY_MOVEMENT_INTERPOLATED;
 
         locals.zeroVelocity.x = 0.0f;

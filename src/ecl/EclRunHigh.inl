@@ -163,11 +163,11 @@ inline i32 Th095PreserveI32(i32 value)
         (enemy), th095::PHOTO_ENEMY_ECL_ANM_HANDLES_OFFSET + \
             sizeof(i32) * (slot))
 #define TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) \
-    (TH095_ENEMY_ECL_SECONDARY_BITS(enemy).showPhotoMarker)
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl.showPhotoMarker)
 #define TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) \
     TH095_ECL_PHOTO_MARKER_TIMER(enemy)
 #define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
-    (TH095_ENEMY_ECL_SECONDARY_BITS(enemy).freezeAttachedVm)
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl.freezeAttachedVm)
 #define TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy) \
     TH095_ECL_ATTACHED_VM((enemy), PhotoAnmHandle)
 #define TH095_ENEMY_PHOTO_PULSE_HANDLE(enemy) \

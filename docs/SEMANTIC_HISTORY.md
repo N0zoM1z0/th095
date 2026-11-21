@@ -18728,3 +18728,18 @@ normal links move the two helpers and their calls follow them. The 378
 focused retail comparisons cover 56 new cases for literal and indirect
 bound operands, reversed limits, clamp toggles and edge steering with and
 without timed displacement. See `.analysis/pi/ecl-movement-bounds/`.
+
+### SEM-427 — use canonical enemy control words
+
+Both compact enemy control words now use their named bitfield declarations
+throughout ECL, update, movement, capture and photo drawing. This removes
+the duplicate bitfield layouts and the offset-based ECL control bridge.
+Word-level operations access the integer member of the same union.
+
+All 167 affected exact units pass. The 528 state and interpreter
+comparisons include 144 opcode flag cases and six marker-timer cases.
+They preserve unrelated bits and verify the separate visibility and
+duration operands of opcode 143. The 74 capture and drop comparisons
+also agree across retail and both normal link orders. The game-object
+link comparison passes for 11,474 code references and 639 initialized
+data references. See `.analysis/pi/ecl-enemy-flags/`.

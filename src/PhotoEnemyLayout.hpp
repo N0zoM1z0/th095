@@ -125,41 +125,11 @@ struct PhotoEnemyView
     {
         u32 flags1;                        // +0x2bf4
         PhotoEnemyControlBits control;
-        struct
-        {
-            u32 active : 1;
-            u32 photoTarget : 1;
-            u32 collidable : 1;
-            u32 unknownFlags003 : 1;
-            u32 hiddenFromDrawGroups : 1;
-            u32 unknownFlags005 : 3;
-            u32 lifecycleState : 2;
-            u32 movementMode : 2;
-            u32 movementEasing : 3;
-            u32 deferShotInstruction : 1;
-            u32 mirrorMovementX : 1;
-            u32 clampToMovementBounds : 1;
-            u32 unknownFlags018 : 4;
-            u32 hasEnteredPlayfield : 1;
-            u32 unknownFlags023 : 1;
-            u32 suppressEclCallStack : 1;
-            u32 unknownFlags025 : 1;
-            u32 skipOffscreenCheck : 1;
-            u32 unknownFlags027 : 4;
-            u32 alternateAnmBank : 1;
-        };
     };
     union
     {
         u32 flags2;                        // +0x2bf8
         PhotoEnemySecondaryControlBits secondaryControl;
-        struct
-        {
-            u32 unknownFlags2_000 : 6;
-            u32 showPhotoMarker : 1;
-            u32 freezeAttachedVm : 1;
-            u32 unknownFlags2_008 : 24;
-        };
     };
     ZunTimer photoMarkerPulseTimer;        // +0x2bfc
     u8 unknown2c08[2];
@@ -285,9 +255,8 @@ typedef char PhotoEnemyEclScheduleAt2C54[
 typedef char PhotoEnemyUnknownAt2C50[
     (offsetof(PhotoEnemyView, unknown2c50) == 0x2c50) ? 1 : -1];
 typedef char PhotoEnemyFlagsAt2BF4[
-    (offsetof(PhotoEnemyView, flags1) == PHOTO_ENEMY_ECL_CONTROL_OFFSET &&
-     offsetof(PhotoEnemyView, flags2) ==
-         PHOTO_ENEMY_ECL_SECONDARY_CONTROL_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, flags1) == 0x2bf4 &&
+     offsetof(PhotoEnemyView, flags2) == 0x2bf8) ? 1 : -1];
 typedef char PhotoEnemyPhotoMarkerAt2BFC[
     (offsetof(PhotoEnemyView, photoMarkerPulseTimer) ==
          PHOTO_ENEMY_ECL_PHOTO_MARKER_TIMER_OFFSET) ? 1 : -1];

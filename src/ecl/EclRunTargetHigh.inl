@@ -136,7 +136,7 @@ enter_subroutine:
         enemy->activeEclContext->currentInstr =
             reinterpret_cast<EclRawInstruction *>(
                 reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
-        if (((TH095_RUN_ECL_CONTROL_WORD(enemy)
+        if (((reinterpret_cast<PhotoEnemyView *>(enemy)->flags1
               >> 24) & 1U) == 0)
         {
             memcpy(enemy->activeEclCallStack + enemy->activeEclCallStackDepth,
@@ -212,7 +212,7 @@ enter_subroutine:
     }
 
     case 120:
-        TH095_ENEMY_ECL_CONTROL_BITS(enemy).unknown023 =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->control.unknown023 =
             reinterpret_cast<u8 *>(instruction->operands)[0];
         break;
 
@@ -302,7 +302,7 @@ enter_subroutine:
         break;
 
     case 126:
-        TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->control.suppressEclCallStack =
             reinterpret_cast<u8 *>(instruction->operands)[0];
         break;
 
@@ -315,7 +315,7 @@ enter_subroutine:
     }
 
     case 130:
-        TH095_ENEMY_ECL_CONTROL_BITS(enemy).unknown007 =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->control.unknown007 =
             reinterpret_cast<u8 *>(instruction->operands)[0];
         TH095_TARGET_ENEMY_DRAW_GROUP(enemy) = 2;
         break;
@@ -387,7 +387,7 @@ enter_subroutine:
         break;
 
     case 138:
-        TH095_ENEMY_ECL_CONTROL_BITS(enemy).unknown028 =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->control.unknown028 =
             TH08_ECL_READ_I(ctx, 0);
         break;
 
@@ -403,7 +403,7 @@ enter_subroutine:
         break;
 
     case 140:
-        TH095_ENEMY_ECL_SECONDARY_BITS(enemy).unknown005 =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl.unknown005 =
             TH08_ECL_READ_I(ctx, 0);
         break;
 

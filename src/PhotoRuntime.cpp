@@ -44,15 +44,15 @@ int PhotoEnemyManagerView::CountPhotoTargets(
 
     for (locals.i = 0; locals.i < 128; ++locals.i, ++locals.enemy)
     {
-        if (locals.enemy->active == 0)
+        if (locals.enemy->control.active == 0)
             continue;
-        if (locals.enemy->photoTarget != 0)
+        if (locals.enemy->control.photoTarget != 0)
             continue;
-        if (locals.enemy->lifecycleState != 0)
+        if (locals.enemy->control.lifecycleState != 0)
             continue;
-        if (locals.enemy->hiddenFromDrawGroups != 0 ||
+        if (locals.enemy->control.hiddenFromDrawGroups != 0 ||
             ((locals.enemy->flags1 >> 5) & 1U) != 0 ||
-            locals.enemy->showPhotoMarker != 0)
+            locals.enemy->secondaryControl.showPhotoMarker != 0)
             continue;
 
         locals.enemyMinimum =
@@ -70,7 +70,7 @@ int PhotoEnemyManagerView::CountPhotoTargets(
 
         if (locals.enemy->photoCaptureEclSubroutineId < 0)
         {
-            locals.enemy->lifecycleState = 1;
+            locals.enemy->control.lifecycleState = 1;
         }
         else
         {

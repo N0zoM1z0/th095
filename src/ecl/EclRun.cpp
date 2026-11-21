@@ -3,7 +3,7 @@
 #include "../ZunBool.hpp"
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
-#include "EnemyEclRuntimeView.hpp"
+#include "../PhotoEnemyEclAccess.hpp"
 #include "Gui.hpp"
 #include "BulletManager.hpp"
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)

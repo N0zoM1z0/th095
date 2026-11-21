@@ -41,8 +41,8 @@ void __fastcall StartTimedPolarDisplacement(
     enemy->movementTimer =
         (enemy->movementDuration =
              DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 0));
-    enemy->movementEasing = DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 1);
-    enemy->movementMode = PHOTO_ENEMY_MOVEMENT_INTERPOLATED;
+    enemy->control.movementEasing = DEP_READ_INT(reinterpret_cast<Enemy *>(enemy), instruction, 1);
+    enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_INTERPOLATED;
 }
 
 // FUNCTION: TH095 0x00412200; TH08 0x00422020 is the source-shape oracle.
@@ -93,7 +93,7 @@ void __fastcall BeginBoundaryAwareMove(
     {
         enemy->movementAngle = angle;
         enemy->speed = DEP_READ_FLOAT(reinterpret_cast<Enemy *>(enemy), instruction, 2);
-        enemy->movementMode = PHOTO_ENEMY_MOVEMENT_POLAR;
+        enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_POLAR;
         enemy->movementDuration = 0;
         enemy->movementTimer = 0;
     }
@@ -242,7 +242,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
     enemy->activeEclContext->currentInstr =
         reinterpret_cast<EclRawInstruction *>(reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
 
-    if (reinterpret_cast<PhotoEnemyView *>(enemy)->suppressEclCallStack == 0)
+    if (reinterpret_cast<PhotoEnemyView *>(enemy)->control.suppressEclCallStack == 0)
     {
         enemy->activeEclCallStack[enemy->activeEclCallStackDepth] =
             *enemy->activeEclContext;
@@ -255,7 +255,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
     enemy->activeEclContext->scriptState.callParameters =
         g_PhotoEnemyManager->eclManager->callParameters;
 
-    if (reinterpret_cast<PhotoEnemyView *>(enemy)->suppressEclCallStack == 0 &&
+    if (reinterpret_cast<PhotoEnemyView *>(enemy)->control.suppressEclCallStack == 0 &&
         enemy->activeEclCallStackDepth < 15)
     {
         ++enemy->activeEclCallStackDepth;
@@ -267,7 +267,7 @@ int __fastcall PopEclContext(Enemy *enemy, EclRawInstruction *instruction)
 {
     i32 contextIndex;
 
-    if (reinterpret_cast<PhotoEnemyView *>(enemy)->suppressEclCallStack != 0)
+    if (reinterpret_cast<PhotoEnemyView *>(enemy)->control.suppressEclCallStack != 0)
         utils::DebugPrint("error : no Stack Ret\r\n");
 
     --enemy->activeEclCallStackDepth;
