@@ -20349,3 +20349,25 @@ link orders resolve 6,507 code and 137 initialized-data references.
 The original and both links agree on construction order, null and
 non-null Background release, 176 subsystem cases, 80 HUD cases, 384
 loader cases and 540 update cases. See `.analysis/pi/photo-task-share/`.
+
+### SEM-501 — share photo card ownership and capture comments
+
+CardInf now uses the same 0x68 declaration and implementation in both
+builds. Its two VM slots use the trivial `PhotoAnmVmId` storage. Using
+the canonical `AnmLoaded::CreateVmAtWorld` call and the existing
+four-byte handle assignment idiom preserves the two return slots in the
+226-byte initializer. The loaded resources come from
+`AsciiManager::asciiAnm` and `Supervisor::textAnm`.
+
+The constructor publishes `g_PhotoCardInfo`. The scripted session
+reference in EnemyInf is cleared after Show, while the card stays
+published through its finishing animation. PhotoStage reads the
+published card's text for the photo and eligible Best Shot record in
+both builds.
+
+All 27 affected strict comparisons pass. The normal object matches all
+10 CardInf extents and relocation destinations. Both link orders
+resolve 1,404 code and four initialized-data references in the affected
+objects. The original and both links agree on the card lifecycle, 192
+update cases, 16 capture comment cases and three scripted session cases.
+See `.analysis/pi/photo-card-owner/`.

@@ -39,15 +39,13 @@
 1	src/PhotoCamera.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
-1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
-2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD
 1	src/PhotoFront.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoGame.cpp	#if defined(DIFFBUILD)
 1	src/PhotoGame.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoItemManager.cpp	#ifdef TH095_MATCH_EXACT
-2	src/PhotoStage.cpp	#ifdef DIFFBUILD
+1	src/PhotoStage.cpp	#ifdef DIFFBUILD
 1	src/PhotoStage.cpp	#ifdef TH095_MATCH_EXACT
-2	src/PhotoStage.cpp	#ifndef DIFFBUILD
+1	src/PhotoStage.cpp	#ifndef DIFFBUILD
 1	src/ReplayBrowser.cpp	#ifndef DIFFBUILD
 1	src/ReplayScanWorker.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT

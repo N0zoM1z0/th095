@@ -422,7 +422,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("PHOTO_CARD_INFO_STATE_FINISHING = 1", header)
         stage = (ROOT / "src" / "PhotoStage.cpp").read_text(encoding="utf-8")
         self.assertNotIn("PhotoStageRuntimeView", stage)
-        self.assertIn("TH095_PHOTO_STAGE_CARD_INFO->text", stage)
+        self.assertIn("g_PhotoCardInfo->text", stage)
 
     def test_photo_camera_state_guard_accepts_shared_layout(self) -> None:
         GUARD.check_photo_camera_state_owner()

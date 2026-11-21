@@ -34,12 +34,6 @@ enum PhotoStageFlags
 
 typedef AnmLoaded PhotoStageAnmLoadedView;
 
-#ifdef DIFFBUILD
-extern PhotoCardInfoView *g_PhotoStageRuntime;
-#define TH095_PHOTO_STAGE_CARD_INFO g_PhotoStageRuntime
-
-#endif
-
 struct PhotoStageSaveLocals
 {
     f32 entryX;
@@ -66,10 +60,6 @@ typedef char PhotoStageScoreEntryTailSizeIs48[
      0x48)
         ? 1
         : -1];
-
-#ifndef DIFFBUILD
-#define TH095_PHOTO_STAGE_CARD_INFO g_PhotoCardInfo
-#endif
 
 // Target 0x004C45F8 is an independent zero-initialized byte published when a
 // captured texture becomes ready.
@@ -817,11 +807,11 @@ i32 PhotoStageStateView::Update()
                         this->capture.width;
                     this->slots[this->capture.slot].height =
                         this->capture.height;
-                    if (TH095_PHOTO_STAGE_CARD_INFO != NULL)
+                    if (g_PhotoCardInfo != NULL)
                     {
                         strcpy(
                             this->slots[this->capture.slot].comment,
-                            TH095_PHOTO_STAGE_CARD_INFO->text);
+                            g_PhotoCardInfo->text);
                     }
                     else
                     {
@@ -887,13 +877,13 @@ i32 PhotoStageStateView::Update()
                         GetPhotoStageScoreEntry(
                             g_RuntimeGlobalStateOwner->bestShotIndex)->captureTime =
                             this->slots[this->capture.slot].timestamp;
-                        if (TH095_PHOTO_STAGE_CARD_INFO != NULL)
+                        if (g_PhotoCardInfo != NULL)
                         {
                             strcpy(
                                 GetPhotoStageBestShotRecord(
                                     g_RuntimeGlobalStateOwner->bestShotIndex)
                                     ->comment,
-                                TH095_PHOTO_STAGE_CARD_INFO->text);
+                                g_PhotoCardInfo->text);
                         }
                         else
                         {

@@ -1,8 +1,9 @@
 #ifndef TH095_PHOTO_CARD_INFO_HPP
 #define TH095_PHOTO_CARD_INFO_HPP
 
-#include "AnmVmId.hpp"
+#include "PhotoAnmVmId.hpp"
 #include "ZunTimer.hpp"
+#include "diffbuild.hpp"
 
 #include <stddef.h>
 
@@ -18,13 +19,13 @@ enum PhotoCardInfoState
 };
 
 // Canonical 0x68 CardInf allocation published through target 0x004BDD9C.
-// EnemyInf +0x26AE28 is only an ECL-held session handle to this object; it is
-// not CardInf storage and does not own the object's post-Show lifetime.
+// EnemyInf tracks the scripted session separately. The card stays
+// published through its finishing animation and clears the slot at teardown.
 struct PhotoCardInfoView
 {
     i32 unknown000;                 // +0x00
-    AnmVmId backgroundVmId;         // +0x04
-    AnmVmId textVmId;               // +0x08
+    PhotoAnmVmId backgroundVmId;         // +0x04
+    PhotoAnmVmId textVmId;               // +0x08
     PhotoCardInfoState state;       // +0x0c
     ZunTimer timer;                 // +0x10
     u32 savedScreenFadeColor;       // +0x1c
@@ -60,7 +61,7 @@ typedef char PhotoCardInfoChainsAt60[
     (offsetof(PhotoCardInfoView, calcChain) == 0x60 &&
      offsetof(PhotoCardInfoView, drawChain) == 0x64) ? 1 : -1];
 
-extern PhotoCardInfoView *g_PhotoCardInfo;
+DIFFABLE_EXTERN(PhotoCardInfoView *, g_PhotoCardInfo);
 
 } // namespace th095
 

@@ -1,15 +1,11 @@
-#ifdef TH095_MATCH_EXACT
-#include "PhotoCardInfoExact.inl"
-#else
 #include "AnmManager.hpp"
-#include "AnmVmId.hpp"
 #include "AsciiManager.hpp"
-#include "GameplayGlobals.hpp"
-#include "PhotoGameTask.hpp"
+#include "PhotoCardInfo.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoGamePlayer.hpp"
-#include "Main.hpp"
-#include "PhotoCardInfo.hpp"
+#include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
+#include "AnmVmId.hpp"
 #include "utils.hpp"
 
 #include <string.h>
@@ -17,20 +13,7 @@
 namespace th095
 {
 
-#ifndef DIFFBUILD
-PhotoCardInfoView *g_PhotoCardInfo = NULL;
-#endif
-extern AnmLoaded *g_PhotoCardBackgroundAnm;
-extern AnmLoaded *g_PhotoCardUiAnm;
-
-#ifndef DIFFBUILD
-// The canonical exact unit and target Initialize instructions identify these
-// previously unmapped production views: 0x004B2020 is
-// g_AsciiManager.asciiAnm, while 0x004C4AAC is g_Supervisor.textAnm.  Reuse
-// those loaded-ANM lifecycles instead of introducing independent pointers.
-#define g_PhotoCardBackgroundAnm (g_AsciiManager.asciiAnm)
-#define g_PhotoCardUiAnm (g_Supervisor.textAnm)
-#endif
+DIFFABLE_STATIC(PhotoCardInfoView *, g_PhotoCardInfo);
 
 static __forceinline void CreatePhotoCardBackgroundVm(
     PhotoCardInfoView *cardInfo)
@@ -39,8 +22,8 @@ static __forceinline void CreatePhotoCardBackgroundVm(
     position.x = 0.0f;
     position.y = 0.0f;
     position.z = 0.0f;
-    cardInfo->backgroundVmId =
-        g_PhotoCardBackgroundAnm->CreateVmAtWorld(1, &position);
+    *reinterpret_cast<AnmVmId *>(&cardInfo->backgroundVmId) =
+        g_AsciiManager.asciiAnm->CreateVmAtWorld(1, &position);
 }
 
 static __forceinline void CreatePhotoCardTextVm(
@@ -50,8 +33,8 @@ static __forceinline void CreatePhotoCardTextVm(
     position.x = 0.0f;
     position.y = 0.0f;
     position.z = 0.0f;
-    cardInfo->textVmId =
-        g_PhotoCardUiAnm->CreateVmAtWorld(0x1e, &position);
+    *reinterpret_cast<AnmVmId *>(&cardInfo->textVmId) =
+        g_Supervisor.textAnm->CreateVmAtWorld(0x1e, &position);
 }
 
 // FUNCTION: TH095 0x00408610.
@@ -74,7 +57,8 @@ i32 PhotoCardInfoView::Initialize(char *encodedText)
     CreatePhotoCardTextVm(this);
 
     g_AnmManager->DrawTextRight(
-        g_AnmManager->GetVm(this->textVmId),
+        g_AnmManager->GetVm(
+            *reinterpret_cast<AnmVmId *>(&this->textVmId)),
         0xffffff, 0, this->text);
     this->savedScreenFadeColor = g_Supervisor.backbufferClearColor;
     return 0;
@@ -86,16 +70,20 @@ PhotoCardInfoView::~PhotoCardInfoView()
     utils::DebugPrint("shutdown CardInf\n");
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    g_AnmManager->MarkVmForDeletion(this->backgroundVmId);
-    g_AnmManager->MarkVmForDeletion(this->textVmId);
+    g_AnmManager->MarkVmForDeletion(
+        *reinterpret_cast<AnmVmId *>(&this->backgroundVmId));
+    g_AnmManager->MarkVmForDeletion(
+        *reinterpret_cast<AnmVmId *>(&this->textVmId));
     g_PhotoCardInfo = NULL;
 }
 
 // FUNCTION: TH095 0x004087D0.
 i32 PhotoCardInfoView::Show()
 {
-    g_AnmManager->SetInterrupt(this->backgroundVmId, 1);
-    g_AnmManager->SetInterrupt(this->textVmId, 1);
+    g_AnmManager->SetInterrupt(
+        *reinterpret_cast<AnmVmId *>(&this->backgroundVmId), 1);
+    g_AnmManager->SetInterrupt(
+        *reinterpret_cast<AnmVmId *>(&this->textVmId), 1);
     this->state = PHOTO_CARD_INFO_STATE_FINISHING;
     this->timer = 0;
     g_Supervisor.backbufferClearColor = this->savedScreenFadeColor;
@@ -160,8 +148,7 @@ i32 PhotoCardInfoView::Update()
         break;
     }
 
-    if (this->state != PHOTO_CARD_INFO_STATE_FINISHING &&
-        this->timer >= 0x3c)
+    if (this->state != PHOTO_CARD_INFO_STATE_FINISHING && this->timer >= 0x3c)
     {
         if (g_Supervisor.backbufferClearColor != 0)
         {
@@ -173,27 +160,35 @@ i32 PhotoCardInfoView::Update()
     i32 alpha = 0xff;
     if (g_PhotoStageState->firstCaptureFrame != 0)
     {
-        if (g_AnmManager->GetVm(this->backgroundVmId) != NULL)
+        if (g_AnmManager->GetVm(
+                *reinterpret_cast<AnmVmId *>(&this->backgroundVmId)) != NULL)
         {
-            g_AnmManager->GetVm(this->backgroundVmId)
+            g_AnmManager->GetVm(
+                *reinterpret_cast<AnmVmId *>(&this->backgroundVmId))
                 ->flagsWord &= ~2u;
         }
-        if (g_AnmManager->GetVm(this->textVmId) != NULL)
+        if (g_AnmManager->GetVm(
+                *reinterpret_cast<AnmVmId *>(&this->textVmId)) != NULL)
         {
-            g_AnmManager->GetVm(this->textVmId)
+            g_AnmManager->GetVm(
+                *reinterpret_cast<AnmVmId *>(&this->textVmId))
                 ->flagsWord &= ~2u;
         }
     }
     else
     {
-        if (g_AnmManager->GetVm(this->backgroundVmId) != NULL)
+        if (g_AnmManager->GetVm(
+                *reinterpret_cast<AnmVmId *>(&this->backgroundVmId)) != NULL)
         {
-            g_AnmManager->GetVm(this->backgroundVmId)
+            g_AnmManager->GetVm(
+                *reinterpret_cast<AnmVmId *>(&this->backgroundVmId))
                 ->flagsWord |= 2;
         }
-        if (g_AnmManager->GetVm(this->textVmId) != NULL)
+        if (g_AnmManager->GetVm(
+                *reinterpret_cast<AnmVmId *>(&this->textVmId)) != NULL)
         {
-            g_AnmManager->GetVm(this->textVmId)
+            g_AnmManager->GetVm(
+                *reinterpret_cast<AnmVmId *>(&this->textVmId))
                 ->flagsWord |= 2;
         }
 
@@ -209,14 +204,18 @@ i32 PhotoCardInfoView::Update()
         }
     }
 
-    if (g_AnmManager->GetVm(this->backgroundVmId) != NULL)
+    if (g_AnmManager->GetVm(
+            *reinterpret_cast<AnmVmId *>(&this->backgroundVmId)) != NULL)
     {
-        g_AnmManager->GetVm(this->backgroundVmId)
+        g_AnmManager->GetVm(
+            *reinterpret_cast<AnmVmId *>(&this->backgroundVmId))
             ->color1.a = alpha;
     }
-    if (g_AnmManager->GetVm(this->textVmId) != NULL)
+    if (g_AnmManager->GetVm(
+            *reinterpret_cast<AnmVmId *>(&this->textVmId)) != NULL)
     {
-        g_AnmManager->GetVm(this->textVmId)
+        g_AnmManager->GetVm(
+            *reinterpret_cast<AnmVmId *>(&this->textVmId))
             ->color1.a = alpha;
     }
     this->timer.Tick();
@@ -254,5 +253,3 @@ i32 __fastcall PhotoCardInfoView::OnDraw(PhotoCardInfoView *cardInfo)
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

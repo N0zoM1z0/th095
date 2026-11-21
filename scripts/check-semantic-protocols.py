@@ -3754,7 +3754,7 @@ def check_photo_card_info_owner() -> None:
         "offsetof(PhotoCardInfoView, text) == 0x20",
         "offsetof(PhotoCardInfoView, calcChain) == 0x60",
         "offsetof(PhotoCardInfoView, drawChain) == 0x64",
-        "extern PhotoCardInfoView *g_PhotoCardInfo",
+        "DIFFABLE_EXTERN(PhotoCardInfoView *, g_PhotoCardInfo)",
     )
     for fact in required_layout:
         if fact not in header:
@@ -3778,11 +3778,12 @@ def check_photo_card_info_owner() -> None:
         if re.search(r"\bstruct\s+PhotoCardInfoView\s*\{", text):
             fail(f"{path.relative_to(SRC)} restored a duplicate CardInf projection")
 
-    stage = (SRC / "PhotoStage.cpp").read_text(encoding="utf-8")
-    if "PhotoStageRuntimeView" in stage:
-        fail("PhotoStage restored the retired CardInf text projection")
-    if "TH095_PHOTO_STAGE_CARD_INFO->text" not in stage:
-        fail("PhotoStage lost canonical CardInf text access")
+    for name in ("PhotoStage.cpp", "PhotoStageExact.inl"):
+        stage = (SRC / name).read_text(encoding="utf-8")
+        if "PhotoStageRuntimeView" in stage:
+            fail(f"{name} restored the retired CardInf text projection")
+        if "g_PhotoCardInfo->text" not in stage:
+            fail(f"{name} lost canonical CardInf text access")
 
     enemy_manager = (SRC / "PhotoEnemyManagerLayout.hpp").read_text(encoding="utf-8")
     if "PhotoCardInfoView *eclPhotoCardSession" not in enemy_manager:

@@ -251,6 +251,8 @@ and their lock lifetime.
 SEM-500 shares the photo task implementation, including its configuration
 construction and subsystem lifetimes. The authored ledger includes the
 95-byte Background destroy wrapper used by task teardown.
+SEM-501 shares CardInf's layout and code. The animation owners, scripted
+session and PhotoStage comment readers bind to the canonical declarations.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

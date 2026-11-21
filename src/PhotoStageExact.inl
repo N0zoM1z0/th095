@@ -1,4 +1,5 @@
 #include "PhotoStage.hpp"
+#include "PhotoCardInfo.hpp"
 #include "PhotoFront.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "PhotoBulletManager.hpp"
@@ -58,12 +59,6 @@ struct PhotoStageAnmVmEmission
     void SetPosition(i32 id, Float3 *position);
 };
 
-struct PhotoStageRuntimeView
-{
-    u8 unknown000[0x20];
-    char comment[1];
-};
-
 struct PhotoStageSaveLocals
 {
     f32 entryX;
@@ -86,7 +81,6 @@ struct PhotoStageCaptureLocals
 };
 
 
-extern PhotoStageRuntimeView *g_PhotoStageRuntime;
 extern u8 g_PhotoCaptureCountdown;
 extern f64 g_PhotoLagNumerator;
 extern f64 g_PhotoLagDenominator;
@@ -816,11 +810,11 @@ i32 PhotoStageStateView::Update()
                         this->capture.width;
                     this->slots[this->capture.slot].height =
                         this->capture.height;
-                    if (g_PhotoStageRuntime != NULL)
+                    if (g_PhotoCardInfo != NULL)
                     {
                         strcpy(
                             this->slots[this->capture.slot].comment,
-                            g_PhotoStageRuntime->comment);
+                            g_PhotoCardInfo->text);
                     }
                     else
                     {
@@ -886,13 +880,13 @@ i32 PhotoStageStateView::Update()
                         GetPhotoStageScoreEntry(
                             g_RuntimeGlobalStateOwner->bestShotIndex)->captureTime =
                             this->slots[this->capture.slot].timestamp;
-                        if (g_PhotoStageRuntime != NULL)
+                        if (g_PhotoCardInfo != NULL)
                         {
                             strcpy(
                                 GetPhotoStageBestShotRecord(
                                     g_RuntimeGlobalStateOwner->bestShotIndex)
                                     ->comment,
-                                g_PhotoStageRuntime->comment);
+                                g_PhotoCardInfo->text);
                         }
                         else
                         {
