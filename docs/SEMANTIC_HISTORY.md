@@ -18983,3 +18983,21 @@ ANM visual fixtures. Both Wine links reach the end of `demo/demo0.rpy` with
 at all 2,712 input indices. The sampled stage timer differs by at most
 one tick from retail. The probe and checks are under
 `.analysis/pi/ecl-core-owners/`.
+
+### SEM-439 — share the ECL extension Background and Player owners
+
+The extended callbacks read both spell VM handles from the same 0x201C
+Background object that creates and retires them. The proximity callback
+uses the PlayerInf position and movement scale. The transition reads the
+embedded camera's mode and viewfinder and calls its CountPhotoTargets
+method directly. Both builds use the canonical types and symbols.
+
+All 22 affected exact comparisons pass with unchanged instruction bytes,
+extents and destinations. Both link orders resolve the 18 Background
+references, 11 PlayerInf references and the camera call at their moved
+addresses. The original and both links agree on two spell lifecycle
+cases and 14 proximity and marker cases, including both distance
+thresholds and a missing marker VM. The transition and extension
+dispatch fixtures also pass. Both normal images match the mapped
+sections of the SEM-438 replay images. See
+`.analysis/pi/ecl-extended-background/`.

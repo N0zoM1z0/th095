@@ -216,7 +216,8 @@ evidence, and the short handoff take precedence.
 and lifetime evidence established one 0x201C TH095 owner; the former behavior
 blob, state/draw projections, photo method stubs, ECL handle view, and normal
 method-only ECL interface were retired. Normal behavior, lifecycle, photo,
-ANM draw, `EclExtended`, and `EclRun` now consume `Background.hpp`.
+and ANM draw consume `Background.hpp`. Both profiles of `EclExtended` and
+`RunEcl` now use the same header.
 
 RunEcl switched to the canonical declaration in both profiles once its
 legacy ANM, Player and dispatcher includes were removed. The shared

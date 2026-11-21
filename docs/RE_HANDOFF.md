@@ -123,7 +123,8 @@ through the canonical CardInf session handle and lifecycle methods.
 SEM-438 uses the full Background, PlayerInf and ANM declarations in
 RunEcl. All six aiming calls pass the PlayerInf root, and opcode 141
 writes the canonical camera limit. The ANM spawn, lookup and deletion
-call adapters remain.
+call adapters remain. SEM-439 uses the full Background and PlayerInf
+owners in EclExtended, including the embedded camera count call.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

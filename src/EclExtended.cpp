@@ -1,18 +1,14 @@
-// Establish the TH095 Supervisor declarations before the legacy ECL headers.
 #include "PhotoGameTask.hpp"
 #include "ZunBool.hpp"
-#include "EnemyManager.hpp"
+#include "Background.hpp"
+#include "PhotoEnemyLayout.hpp"
 #include "GameplayGlobals.hpp"
-#include "PhotoPlayerRuntime.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "PhotoEnemyControl.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #include "PhotoBulletManagerLayout.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "Background.hpp"
-#include "PhotoCamera.hpp"
-#endif
 #ifndef DIFFBUILD
 #include "ScreenEffect.hpp"
 #endif
@@ -32,10 +28,6 @@ static __forceinline AnmManager *EclExtendedCanonicalAnmManager()
     return g_AnmManager;
 }
 #endif
-#ifndef TH095_MATCH_EXACT
-struct Background;
-extern Background *g_Background;
-#endif
 
 namespace EclExtended
 {
@@ -47,27 +39,6 @@ namespace EclExtended
 // handle or loaded-ANM representation.
 typedef AnmVmId ExtendedVmHandle;
 typedef AnmLoaded ExtendedAnmSpawner;
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#include "ecl/EclExtendedPlayerEmission.inl"
-#else
-#define TH095_EXT_PLAYER_TYPE ::th095::PhotoPlayerRuntimeView
-#define TH095_EXT_PLAYER_STORAGE(player) (player)
-#define TH095_EXT_CAMERA_METHOD(camera) \
-    reinterpret_cast<::th095::PhotoCameraState *>(&(camera))
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-// Exact-emission adapter only.  Normal reconstruction code accesses the
-// canonical 0x201C Background owner declared in Background.hpp.
-struct EclExactBackgroundHandleEmission
-{
-    u8 unknown0000[0x1fe4];
-    i32 spellBackgroundVmIds[2];
-};
-typedef char EclExactBackgroundSpellVmIdsAt1FE4[
-    (offsetof(EclExactBackgroundHandleEmission, spellBackgroundVmIds) == 0x1fe4) ? 1 : -1];
 #endif
 
 #ifdef DIFFBUILD
@@ -127,15 +98,9 @@ typedef char ExtendedPhotoEffectNodeVmAt98[(offsetof(ExtendedPhotoEffectNode, vm
 typedef char ExtendedPhotoEffectNodeFlagsAt58C[(offsetof(ExtendedPhotoEffectNode, flags) == 0x58c) ? 1 : -1];
 
 #ifdef DIFFBUILD
-#define TH095_EXT_COUNT_PHOTO_TARGETS(camera, distance, rate) \
-    TH095_EXT_CAMERA_METHOD(camera)->CountPhotoTargets( \
-        (distance), (rate))
 #define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
     PhotoToScreen((output), (position))
 #else
-#define TH095_EXT_COUNT_PHOTO_TARGETS(camera, distance, rate) \
-    TH095_EXT_CAMERA_METHOD(camera)->CountPhotoTargets( \
-        (distance), (rate))
 #define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
     ::th095::PhotoToScreen((output), (position))
 #endif
@@ -149,26 +114,6 @@ typedef ::th095::PhotoBulletView ExtendedBulletView;
 #ifdef DIFFBUILD
 extern AnmManagerLookupView *g_AnmManager;
 #endif
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-extern u8 *g_Background;
-#endif
-
-#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-static __forceinline u8 *ExtendedBackgroundOwner()
-{
-    return reinterpret_cast<u8 *>(::th095::g_Background);
-}
-#define g_Background ExtendedBackgroundOwner()
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_EXT_BACKGROUND_VM_ID(index) \
-    (reinterpret_cast<EclExactBackgroundHandleEmission *>(g_Background)->spellBackgroundVmIds[(index)])
-#else
-#define TH095_EXT_BACKGROUND_VM_ID(index) \
-    (::th095::g_Background->spellBackgroundVmIds[(index)].value)
-#endif
-
 #ifdef DIFFBUILD
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 #define TH095_EXTENDED_SCRIPT_BASE GetPhotoBulletScriptBase
@@ -263,10 +208,6 @@ extern u32 g_PhotoScreenFadeColor;
 #endif
 #define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer
 
-#ifndef DIFFBUILD
-#define g_Player \
-    reinterpret_cast<TH095_EXT_PLAYER_TYPE *>(::th095::g_RuntimePlayerOwner)
-#endif
 #ifdef DIFFBUILD
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 i32 __fastcall DispatchExtendedValue(
@@ -298,16 +239,16 @@ void __fastcall UpdatePlayerProximityAndMarker(
 
     locals.enemyPosition = &enemy->position;
     locals.playerPosition =
-        &TH095_EXT_PLAYER_STORAGE(g_Player)->playerPosition;
+        &g_RuntimePlayerOwner->playerPosition;
     locals.distanceSquared =
         (locals.playerPosition->y - locals.enemyPosition->y) *
             (locals.playerPosition->y - locals.enemyPosition->y) +
         (locals.playerPosition->x - locals.enemyPosition->x) *
             (locals.playerPosition->x - locals.enemyPosition->x);
     if (locals.distanceSquared < 1024.0f)
-        TH095_EXT_PLAYER_STORAGE(g_Player)->movementScale = 0.25f;
+        g_RuntimePlayerOwner->movementScale = 0.25f;
     else if (locals.distanceSquared < 4096.0f)
-        TH095_EXT_PLAYER_STORAGE(g_Player)->movementScale =
+        g_RuntimePlayerOwner->movementScale =
             (locals.distanceSquared - 1024.0f) / 3072.0f * 0.75f + 0.25f;
 
     locals.vm = TH095_EXT_ANM_GET_VM(
@@ -353,10 +294,10 @@ void __fastcall SetBackgroundVmsState2(
     AnmVm *secondVm;
     AnmVm *firstVm;
     firstVm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(0));
+        g_Background->spellBackgroundVmIds[0].value);
     firstVm->pendingInterrupt = 2;
     secondVm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(1));
+        g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 2;
 }
 
@@ -367,10 +308,10 @@ void __fastcall SetBackgroundVmsState3(
     AnmVm *secondVm;
     AnmVm *firstVm;
     firstVm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(0));
+        g_Background->spellBackgroundVmIds[0].value);
     firstVm->pendingInterrupt = 3;
     secondVm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(1));
+        g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 3;
     TH095_ECL_EXT_GAME_SPEED = 1.0f;
 }
@@ -397,11 +338,11 @@ void __fastcall EnablePhotoTransition(
     AnmVm *firstVm;
     g_RuntimeGlobalStateOwner->photoTransitionActive = 1;
     firstVm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(0));
+        g_Background->spellBackgroundVmIds[0].value);
     firstVm->pendingInterrupt = 2;
     TH095_EXT_ANM_EXECUTE(firstVm);
     secondVm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(1));
+        g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 2;
     TH095_EXT_ANM_EXECUTE(secondVm);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
@@ -416,11 +357,11 @@ void __fastcall DisablePhotoTransition(
     AnmVm *firstVm;
     g_RuntimeGlobalStateOwner->photoTransitionActive = 0;
     firstVm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(0));
+        g_Background->spellBackgroundVmIds[0].value);
     firstVm->pendingInterrupt = 3;
     TH095_EXT_ANM_EXECUTE(firstVm);
     secondVm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(1));
+        g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 3;
     TH095_EXT_ANM_EXECUTE(secondVm);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
@@ -558,7 +499,7 @@ void __fastcall SpawnEnemyMarkerVm(
 }
 
 static __forceinline i32 ExtendedCameraIsCharging(
-    PhotoPlayerCameraRuntimeView *camera)
+    PhotoCameraState *camera)
 {
     return camera->mode == PHOTO_CAMERA_CHARGING;
 }
@@ -592,11 +533,11 @@ void __fastcall RunPhotoTransition(
         {
             g_RuntimeGlobalStateOwner->photoTransitionActive = 0;
             locals.firstEndVm = TH095_EXT_ANM_GET_VM(
-                TH095_EXT_BACKGROUND_VM_ID(0));
+                g_Background->spellBackgroundVmIds[0].value);
             locals.firstEndVm->pendingInterrupt = 3;
             TH095_EXT_ANM_EXECUTE(locals.firstEndVm);
             locals.secondEndVm = TH095_EXT_ANM_GET_VM(
-                TH095_EXT_BACKGROUND_VM_ID(1));
+                g_Background->spellBackgroundVmIds[1].value);
             locals.secondEndVm->pendingInterrupt = 3;
             TH095_EXT_ANM_EXECUTE(locals.secondEndVm);
             TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
@@ -606,35 +547,34 @@ void __fastcall RunPhotoTransition(
     if (!g_RuntimeGlobalStateOwner->photoTransitionActive &&
         enemy->activeEclContext->scriptState.extraIntVariables[2] == 0 &&
         ExtendedCameraIsCharging(
-            &TH095_EXT_PLAYER_STORAGE(g_Player)->camera) &&
-        TH095_EXT_COUNT_PHOTO_TARGETS(
-            TH095_EXT_PLAYER_STORAGE(g_Player)->camera, NULL, NULL) != 0)
+            &g_RuntimePlayerOwner->camera) &&
+        g_RuntimePlayerOwner->camera.CountPhotoTargets(NULL, NULL) != 0)
     {
         g_RuntimeGlobalStateOwner->photoTransitionActive = 1;
         locals.firstStartVm = TH095_EXT_ANM_GET_VM(
-            TH095_EXT_BACKGROUND_VM_ID(0));
+            g_Background->spellBackgroundVmIds[0].value);
         locals.firstStartVm->pendingInterrupt = 2;
         TH095_EXT_ANM_EXECUTE(locals.firstStartVm);
         locals.secondStartVm = TH095_EXT_ANM_GET_VM(
-            TH095_EXT_BACKGROUND_VM_ID(1));
+            g_Background->spellBackgroundVmIds[1].value);
         locals.secondStartVm->pendingInterrupt = 2;
         TH095_EXT_ANM_EXECUTE(locals.secondStartVm);
         TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
         TH095_ECL_EXT_GAME_SPEED = 1.0f;
         enemy->activeEclContext->scriptState.extraIntVariables[2] = 120;
 
-        if (TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x < 0.0f)
+        if (g_RuntimePlayerOwner->camera.viewfinderPosition.x < 0.0f)
             locals.targetX =
-                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderSize.x *
+                g_RuntimePlayerOwner->camera.viewfinderSize.x *
                     0.60000002f +
-                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x;
+                g_RuntimePlayerOwner->camera.viewfinderPosition.x;
         else
             locals.targetX =
-                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x -
-                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderSize.x *
+                g_RuntimePlayerOwner->camera.viewfinderPosition.x -
+                g_RuntimePlayerOwner->camera.viewfinderSize.x *
                     0.60000002f;
 
-        if (TH095_EXT_PLAYER_STORAGE(g_Player)->playerPosition.y <
+        if (g_RuntimePlayerOwner->playerPosition.y <
             enemy->position.y)
             locals.targetY =
                 TH095_ECL_EXT_RNG.GetRandomF32() * 64.0f + enemy->position.y;
@@ -804,7 +744,7 @@ static __forceinline void SetExtendedBackgroundVm0State2()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(0));
+        g_Background->spellBackgroundVmIds[0].value);
     vm->pendingInterrupt = 2;
 }
 
@@ -812,7 +752,7 @@ static __forceinline void SetExtendedBackgroundVm1State2()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(1));
+        g_Background->spellBackgroundVmIds[1].value);
     vm->pendingInterrupt = 2;
 }
 
@@ -820,7 +760,7 @@ static __forceinline void SetExtendedBackgroundVm0State3()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(0));
+        g_Background->spellBackgroundVmIds[0].value);
     vm->pendingInterrupt = 3;
 }
 
@@ -828,7 +768,7 @@ static __forceinline void SetExtendedBackgroundVm1State3()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        TH095_EXT_BACKGROUND_VM_ID(1));
+        g_Background->spellBackgroundVmIds[1].value);
     vm->pendingInterrupt = 3;
 }
 

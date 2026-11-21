@@ -358,6 +358,7 @@ def check_background_owner() -> None:
         "AnmDrawCore.cpp",
         "PhotoCamera.cpp",
         "PhotoGameTask.cpp",
+        "EclExtended.cpp",
     )
     for name in direct_consumers:
         text = (SRC / name).read_text(encoding="utf-8")
@@ -374,12 +375,11 @@ def check_background_owner() -> None:
         fail("AnmDrawCore.cpp must consume the canonical Background owner")
 
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
-    if '#include "Background.hpp"' not in extended:
-        fail("normal EclExtended must consume the canonical Background owner")
-    if "ExtendedBackgroundView" in extended:
-        fail("EclExtended must not restore the retired Background observation view")
-    if "::th095::g_Background->spellBackgroundVmIds[(index)].value" not in extended:
-        fail("normal EclExtended must read spell VM handles from canonical Background")
+    if any(name in extended for name in ("ExtendedBackgroundView", "EclExactBackgroundHandleEmission")):
+        fail("EclExtended restored a retired Background projection")
+    for index in (0, 1):
+        if f"g_Background->spellBackgroundVmIds[{index}].value" not in extended:
+            fail(f"EclExtended must read spell VM handle {index} from canonical Background")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if '#include "../Background.hpp"' not in ecl_run:
@@ -414,11 +414,10 @@ def check_ecl_extended_type_boundaries() -> None:
         "typedef AnmLoaded ExtendedAnmSpawner;",
         "typedef Float3 ExtendedVector;",
         "typedef ::th095::PhotoBulletView ExtendedBulletView;",
-        "#define TH095_EXT_PLAYER_TYPE ::th095::PhotoPlayerRuntimeView",
-        "#define TH095_EXT_PLAYER_STORAGE(player) (player)",
-        "reinterpret_cast<::th095::PhotoCameraState *>(&(camera))",
-        "TH095_EXT_PLAYER_STORAGE(g_Player)->playerPosition",
-        "TH095_EXT_PLAYER_STORAGE(g_Player)->movementScale",
+        '#include "PhotoGamePlayer.hpp"',
+        "g_RuntimePlayerOwner->playerPosition",
+        "g_RuntimePlayerOwner->movementScale",
+        "g_RuntimePlayerOwner->camera.CountPhotoTargets(",
         "camera->mode == PHOTO_CAMERA_CHARGING",
     )
     for binding in required_normal_bindings:
@@ -468,14 +467,6 @@ def check_ecl_extended_type_boundaries() -> None:
         ),
         "EclExtendedMathEmission.inl": ("struct ExtendedVector",),
         "EclExtendedBulletEmission.inl": ("struct ExtendedBulletView",),
-        "EclExtendedPlayerEmission.inl": (
-            "struct ExtendedPhotoCameraView",
-            "i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);",
-            "struct ExtendedPlayerView;",
-            "extern ExtendedPlayerView *g_Player;",
-            "reinterpret_cast<::th095::PhotoPlayerRuntimeView *>(player)",
-            "reinterpret_cast<ExtendedPhotoCameraView *>(&(camera))",
-        ),
     }
     for name, required_tokens in emission_requirements.items():
         text = (SRC / "ecl" / name).read_text(encoding="utf-8")
@@ -485,22 +476,8 @@ def check_ecl_extended_type_boundaries() -> None:
             if token not in text:
                 fail(f"{name} lost required exact-emission token: {token}")
 
-    player_emission = (
-        SRC / "ecl" / "EclExtendedPlayerEmission.inl"
-    ).read_text(encoding="utf-8")
-    for token in ("u8 unknown", "Float3 playerPosition", "f32 movementScale"):
-        if token in player_emission:
-            fail(f"EclExtended Player emission restored storage layout: {token}")
-
-    player_runtime = (SRC / "PhotoPlayerRuntime.hpp").read_text(encoding="utf-8")
-    for token in (
-        "PhotoCameraMode mode;",
-        "Float3 viewfinderPosition;",
-        "Float3 viewfinderSize;",
-        "f32 movementScale;",
-    ):
-        if token not in player_runtime:
-            fail(f"canonical Player runtime lost EclExtended field: {token}")
+    if (SRC / "ecl" / "EclExtendedPlayerEmission.inl").exists():
+        fail("retired EclExtendedPlayerEmission.inl must not be restored")
 
     camera_mode = (SRC / "PhotoCameraMode.hpp").read_text(encoding="utf-8")
     if "TH095_MATCH_EXACT" in camera_mode or "DIFFBUILD" in camera_mode:
@@ -4861,7 +4838,7 @@ def main() -> int:
     print("  CardInf: canonical profile-independent 0x68 owner")
     print("  PhotoCamera state: shared mode/handle/loaded-ANM/flags/focus representation")
     print("  PlayerInf runtime: profile-independent owner shared by PhotoCamera, PhotoStage, and ECL")
-    print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
+    print("  RunEcl and EclExtended camera access: canonical PlayerInf owner")
     print("  ECL resolvers: four compact-enemy entry points in both profiles")
     print("  straight photo effect: one profile-independent 0x28-byte packet owner")
     print("  rotating photo effect: one profile-independent 0x48-byte packet owner")
