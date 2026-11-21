@@ -7,6 +7,7 @@
 #include "PhotoGameTask.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoEnemyManager.hpp"
+#include "RuntimeAbi.hpp"
 #include "SceneData.hpp"
 #include "SupervisorViewportConfiguration.hpp"
 namespace th095
@@ -114,21 +115,6 @@ enum BackgroundInterpolationModeValue
     BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH = 0x0800,
 };
 
-#ifdef TH095_MATCH_EXACT
-struct BackgroundAnmSpawnerView
-{
-    AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
-};
-#endif
-
-#ifdef TH095_MATCH_EXACT
-#define TH095_BACKGROUND_CREATE_WORLD_VM(spawner, script, position) \
-    reinterpret_cast<BackgroundAnmSpawnerView *>(spawner)->CreateVm((script), (position))
-#else
-#define TH095_BACKGROUND_CREATE_WORLD_VM(spawner, script, position) \
-    (spawner)->CreateVmAtWorld((script), (position))
-#endif
-
 typedef char BackgroundSpellFrameCounterAt175C[
     (offsetof(Background, spellBackgroundFrameCounter) == 0x175c) ? 1 : -1];
 typedef char BackgroundStageScriptAtC[
@@ -165,17 +151,10 @@ typedef char BackgroundStageObjectInstanceSizeIs10[
     (sizeof(BackgroundStageObjectInstance) == 0x10) ? 1 : -1];
 
 DIFFABLE_STATIC(Background *, g_Background);
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-DIFFABLE_STATIC(u8 *, g_BackgroundStageDataCache);
-DIFFABLE_STATIC(i32, g_BackgroundStageDataSize);
-#define TH095_BACKGROUND_STAGE_DATA_CACHE g_BackgroundStageDataCache
-#define TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE g_BackgroundStageDataSize
-#else
+// The loader copies the retained source blob before rebasing its private stage data.
 DIFFABLE_STATIC(u8 *, g_OwnedBackgroundStageDataCache);
 DIFFABLE_STATIC(i32, g_BackgroundStageDataCacheSize);
-#define TH095_BACKGROUND_STAGE_DATA_CACHE g_OwnedBackgroundStageDataCache
-#define TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE g_BackgroundStageDataCacheSize
-#endif
+
 // These lvalue aliases refer to the one real Supervisor configuration in every
 // profile. Target camera writes at 0x004C4854/60/6C/78 and 0x004C4890/98/9C
 // are fields of viewportConfigurations[PLAYFIELD], not independent globals.
@@ -209,23 +188,6 @@ static inline i32 BackgroundEitherFlag(i32 first, i32 second)
 {
     return first | second;
 }
-
-// Two exact-facing Background error relocations retain historical proxy names
-// whose target callees have the opposite severity. Preserve those relocation
-// tokens for exact/DIFF objects while normal production follows the target's
-// diagnostic escalation: the inner ANM failure logs context and the outer
-// stage-load failure raises the fatal/message-box latch.
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_BACKGROUND_STAGE_DATA_FAILURE(message) \
-    g_GameErrorContext.Log(message)
-#define TH095_BACKGROUND_ANM_FAILURE(message) \
-    g_GameErrorContext.Fatal(message)
-#else
-#define TH095_BACKGROUND_STAGE_DATA_FAILURE(message) \
-    g_GameErrorContext.Fatal(message)
-#define TH095_BACKGROUND_ANM_FAILURE(message) \
-    g_GameErrorContext.Log(message)
-#endif
 
 // FUNCTION: TH095 0x00425AA0.
 #pragma var_order(eye, lookAt, this)
@@ -334,7 +296,7 @@ i32 Background::Initialize()
 {
     if (this->LoadStageData(g_SelectedScene->stageDataPath) != 0)
     {
-        TH095_BACKGROUND_STAGE_DATA_FAILURE(
+        g_GameErrorContext.Fatal(
             "\x83\x58\x83\x65\x81\x5b\x83\x57\x83\x66\x81\x5b"
             "\x83\x5e\x82\xaa\x93\xc7\x82\xdd\x8d\x9e\x82\xdf"
             "\x82\xdc\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b"
@@ -809,26 +771,26 @@ i32 Background::LoadStageDataInner(const char *path)
     i32 objectIndex;
     i32 vmIndex;
 
-    if (TH095_BACKGROUND_STAGE_DATA_CACHE == NULL)
+    if (g_OwnedBackgroundStageDataCache == NULL)
     {
-        TH095_BACKGROUND_STAGE_DATA_CACHE = FileSystem::OpenFile(
-            const_cast<char *>(path), &TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE, FALSE);
-        if (TH095_BACKGROUND_STAGE_DATA_CACHE == NULL)
+        g_OwnedBackgroundStageDataCache = FileSystem::OpenFile(
+            const_cast<char *>(path), &g_BackgroundStageDataCacheSize, FALSE);
+        if (g_OwnedBackgroundStageDataCache == NULL)
             return -1;
     }
 
-    i32 stageDataAllocationSize = TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE;
+    i32 stageDataAllocationSize = g_BackgroundStageDataCacheSize;
     background->stageData = reinterpret_cast<BackgroundStageHeader *>(
         malloc(stageDataAllocationSize));
     memcpy(
         background->stageData,
-        TH095_BACKGROUND_STAGE_DATA_CACHE,
-        TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE);
+        g_OwnedBackgroundStageDataCache,
+        g_BackgroundStageDataCacheSize);
 
     background->anm = g_AnmManager->PreloadAnm(4, background->stageData->anmPath);
     if (background->anm == NULL)
     {
-        TH095_BACKGROUND_ANM_FAILURE(
+        g_GameErrorContext.Log(
             "\x83\x58\x83\x65\x81\x5b\x83\x57\x83\x66\x81\x5b"
             "\x83\x5e\x82\xaa\x8c\xa9\x82\xc2\x82\xa9\x82\xe8"
             "\x82\xdc\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b"
@@ -843,10 +805,10 @@ i32 Background::LoadStageDataInner(const char *path)
     background->stageObjectInstances =
         reinterpret_cast<BackgroundStageObjectInstance *>(
             background->stageData->objectInstancesOffset +
-            reinterpret_cast<u32>(background->stageData));
+            reinterpret_cast<uintptr_t>(background->stageData));
     background->stageScript = reinterpret_cast<u8 *>(
         background->stageData->scriptOffset +
-        reinterpret_cast<u32>(background->stageData));
+        reinterpret_cast<uintptr_t>(background->stageData));
     for (objectIndex = 0;
          objectIndex < background->stageData->objectCount;
          objectIndex++)
@@ -854,7 +816,7 @@ i32 Background::LoadStageDataInner(const char *path)
         background->stageObjects[objectIndex] =
             reinterpret_cast<BackgroundStageObject *>(
                 reinterpret_cast<u32 *>(background->stageObjects)[objectIndex] +
-                reinterpret_cast<u32>(background->stageData));
+                reinterpret_cast<uintptr_t>(background->stageData));
     }
 
     // Semantic owner: stageVmAllocationSize; this backing identifier reproduces
@@ -890,9 +852,6 @@ i32 Background::LoadStageDataInner(const char *path)
     #undef background
     return 0;
 }
-
-#undef TH095_BACKGROUND_STAGE_DATA_FAILURE
-#undef TH095_BACKGROUND_ANM_FAILURE
 
 // FUNCTION: TH095 0x00403440. Variable-size stage-script interpreter and
 // TH095-specific photograph-mask/camera interpolation owner.
@@ -1377,14 +1336,12 @@ void Background::StartSpellBackground()
     this->spellBackgroundFrameCounter = 1;
     *reinterpret_cast<AnmVmId *>(
         &this->spellBackgroundVmIds[0]) =
-        TH095_BACKGROUND_CREATE_WORLD_VM(
-            g_PhotoEnemyManager->enemyAnm,
+        g_PhotoEnemyManager->enemyAnm->CreateVmAtWorld(
             0, &Float3(0.0f, 0.0f, 0.0f));
 
     *reinterpret_cast<AnmVmId *>(
         &this->spellBackgroundVmIds[1]) =
-        TH095_BACKGROUND_CREATE_WORLD_VM(
-            g_PhotoEnemyManager->enemyAnm,
+        g_PhotoEnemyManager->enemyAnm->CreateVmAtWorld(
             1, &Float3(0.0f, 0.0f, 0.0f));
 }
 

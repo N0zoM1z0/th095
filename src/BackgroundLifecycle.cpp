@@ -7,14 +7,6 @@
 namespace th095
 {
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-extern u8 *g_BackgroundStageDataCache;
-#define TH095_BACKGROUND_STAGE_DATA_CACHE g_BackgroundStageDataCache
-#else
-extern u8 *g_OwnedBackgroundStageDataCache;
-#define TH095_BACKGROUND_STAGE_DATA_CACHE g_OwnedBackgroundStageDataCache
-#endif
-
 static __forceinline void FreeBackgroundOwned(void *owned)
 {
     free(owned);
@@ -49,9 +41,9 @@ Background::~Background()
 
     if (g_Supervisor.flags.resultRestartActive == 0)
     {
-        if (TH095_BACKGROUND_STAGE_DATA_CACHE != NULL)
-            FreeBackgroundOwned(TH095_BACKGROUND_STAGE_DATA_CACHE);
-        TH095_BACKGROUND_STAGE_DATA_CACHE = NULL;
+        if (g_OwnedBackgroundStageDataCache != NULL)
+            FreeBackgroundOwned(g_OwnedBackgroundStageDataCache);
+        g_OwnedBackgroundStageDataCache = NULL;
     }
 
     if (stageObjectVms != NULL)

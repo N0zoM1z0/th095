@@ -45,8 +45,8 @@ address,name,module,confidence,evidence
 0x004BDD98,th095::g_PhotoBulletManager,BulletManager,exact,Canonical relocation equivalence class and target constructor/destructor publication lifecycle
 0x004BDDC0,th095::g_PhotoEnemyManager,EnemyManager,exact,Hash-attested constructor publication at 0x00414C4C and destructor clear at 0x00415658
 0x004BDDC4,th095::g_PhotoFrontManager,PhotoFront,exact,Hash-attested constructor publication at 0x004170CA and destructor clear at 0x004173CD
-0x004BDD8C,th095::g_BackgroundStageDataSize,Background,high,Hash-attested stage-data cache size used by LoadStageDataInner
-0x004BDD94,th095::g_BackgroundStageDataCache,Background,high,Hash-attested stage-data cache pointer used by LoadStageDataInner
+0x004BDD8C,th095::g_BackgroundStageDataCacheSize,Background,high,Hash-attested stage-data cache size used by LoadStageDataInner
+0x004BDD94,th095::g_OwnedBackgroundStageDataCache,Background,high,Hash-attested stage-data cache pointer used by LoadStageDataInner
 0x004C4854,th095::g_BackgroundCameraPosition,Background,high,Alias of Supervisor viewportConfigurations[0].cameraPosition; RunStageScript opcodes 2/3/10 and interpolation output
 0x004C4860,th095::g_BackgroundCameraLookAt,Background,high,Alias of Supervisor viewportConfigurations[0].cameraLookAtOffset; RunStageScript opcodes 4/5/11 and interpolation output
 0x004C486C,th095::g_BackgroundCameraUp,Background,exact,Alias of Supervisor viewportConfigurations[0].cameraUp; Initialize sets the vector and RunStageScript motion modes 2/3/4 update its components

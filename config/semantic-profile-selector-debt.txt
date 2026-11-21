@@ -7,9 +7,6 @@
 1	src/AnmPreload.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/AnmText.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AsciiManager.cpp	#ifdef TH095_MATCH_EXACT
-2	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-2	src/Background.cpp	#ifdef TH095_MATCH_EXACT
-1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/BulletManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/diffbuild.hpp	#ifdef DIFFBUILD

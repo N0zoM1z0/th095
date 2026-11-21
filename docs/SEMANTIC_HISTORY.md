@@ -19496,3 +19496,25 @@ Retail and both normal links agree in 48 stage-script cases plus the
 photo-color pipeline. The cases exercise the timer jump, six easing
 curves, linear and Hermite endpoints, the camera-motion wraparound,
 and both stage VM commands. See `.analysis/pi/background-stage-protocol/`.
+
+### SEM-462 — share Background cache lifetime and resource calls
+
+Both Background translation units use the same stage-source cache.
+The loader rebases the object, instance and script addresses in its
+private copy, using `uintptr_t` for the address arithmetic. A result
+restart retains the original bytes for the replacement Background.
+A normal exit releases the source and private allocations.
+
+The stage loader calls Log when preload fails, and Initialize calls
+Fatal on the propagated error. The spell activation calls
+`AnmLoaded::CreateVmAtWorld` for both handles. The exact recipes use
+the canonical names at the same fourteen target relocation slots.
+
+All 22 exact comparisons pass. The two normal objects independently
+match the 22 extents with all 369 relocations. The fourteen affected
+references resolve in both links, including the cache pointer's move
+from 0x004D0F24 to 0x004DF3D8. The runtime fixture verifies the immutable
+source bytes, restart and normal teardown, both failure paths and two
+distinct spell handles. Direct byte-pointer addition changes the loader
+instructions and assigning the result's `value` changes the spawn
+instructions. See `.analysis/pi/background-shared-lifecycle/`.
