@@ -2221,6 +2221,14 @@ changes the instruction sequence. The plain bit test emits the baseline
 bytes and all 22 relocations. See
 `.analysis/controller-get-input/dispatch-and-history/`.
 
+Seven keyboard control-flow probes keep the 0x11C frame. The two
+DirectInput failure exits modeled on TH08's `Controller::GetInput`
+emit the baseline 2,655 bytes and all 22 relocations. Separating the
+backends or skipping disabled polling with a guard jump adds a jump.
+Combining both DirectInput failures into one acquisition emits 2,621 bytes.
+The existing source remains the closest observed form. See
+`.analysis/controller-get-input/keyboard-control-flow/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
