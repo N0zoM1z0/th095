@@ -1,7 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoBulletManagerLayout.hpp"
-#include "PhotoEnemyEclAccess.hpp"
+#include "PhotoEnemyLayout.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
@@ -10,13 +10,9 @@ namespace th095
 {
 namespace EclRunHigh
 {
-static __forceinline PhotoBulletSpawnDescriptor *TargetShotDescriptor(Enemy *enemy)
-{
-    return TH095_ECL_BULLET_DESCRIPTOR(enemy, PhotoBulletSpawnDescriptor);
-}
 static __forceinline f32 &TargetMinimumDistanceSquared(Enemy *enemy)
 {
-    return TH095_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy);
+    return reinterpret_cast<PhotoEnemyView *>(enemy)->minimumPlayerDistanceSquared;
 }
 static __forceinline const Float3 &TargetPlayerPosition()
 {
@@ -31,7 +27,7 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclShotInstruction *instru
     i32 packed;
 
     args = &instruction->operands;
-    descriptor = TargetShotDescriptor(enemy);
+    descriptor = &reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor;
 
     // Preserve the TH08-ancestral nested early-return source shape.
     if (TargetMinimumDistanceSquared(enemy) > 0.0f)

@@ -5,8 +5,6 @@
     TH095_ECL_PHOTO_CAPTURE_SUBROUTINE(enemy)
 #define TH095_TARGET_ENEMY_ECL_TIMER(enemy)                                 \
     TH095_ECL_TIMER(enemy)
-#define TH095_TARGET_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy)                  \
-    TH095_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy)
 
 #define TH095_TARGET_ENEMY_DRAW_GROUP(enemy)                                \
     TH095_ECL_DRAW_GROUP(enemy)
@@ -38,17 +36,17 @@
 
     case 101:
     {
-        BulletTransformRecord *slot = TH095_ECL_BULLET_TRANSFORM(
-            enemy, TH08_ECL_READ_I(ctx, 0), BulletTransformRecord);
+        PhotoBulletTransformRecord *slot =
+            &reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.transforms[TH08_ECL_READ_I(ctx, 0)];
         slot->kind = TH08_ECL_READ_I(ctx, 1);
         slot->allowWhileActive = TH08_ECL_READ_I(ctx, 2);
-        slot->payload.raw.int0 = TH08_ECL_READ_I(ctx, 3);
-        slot->payload.raw.int1 = TH08_ECL_READ_I(ctx, 4);
-        slot->payload.raw.float0 =
+        slot->payload.int0 = TH08_ECL_READ_I(ctx, 3);
+        slot->payload.int1 = TH08_ECL_READ_I(ctx, 4);
+        slot->payload.float0 =
             (instruction->operandFlags & (1U << 5))
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[5])
                 : instruction->operands[5].asFloat;
-        slot->payload.raw.float1 =
+        slot->payload.float1 =
             (instruction->operandFlags & (1U << 6))
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[6])
                 : instruction->operands[6].asFloat;
@@ -80,10 +78,10 @@
 
     case 99:
         reinterpret_cast<Float3 &>(
-            TH095_ECL_BULLET_DESCRIPTOR(enemy, PhotoBulletSpawnDescriptor)->position) =
+            reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.position) =
                 reinterpret_cast<PhotoEnemyView *>(enemy)->position + enemy->shootOffset;
         g_PhotoBulletManager->SpawnBulletPattern(
-            TH095_ECL_BULLET_DESCRIPTOR(enemy, PhotoBulletSpawnDescriptor));
+            &reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor);
         break;
 
     case 100:
@@ -296,16 +294,16 @@ enter_subroutine:
     case 103:
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
-            TH095_ECL_BULLET_SPAWN_SOUND(enemy) = TH08_ECL_READ_I(ctx, 0);
-            TH095_ECL_BULLET_TRANSFORM_FLAGS(enemy) |=
-                BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
+            reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.spawnSound = TH08_ECL_READ_I(ctx, 0);
+            reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.transformFlags |=
+                PHOTO_BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
         }
         else
         {
-            TH095_ECL_BULLET_TRANSFORM_FLAGS(enemy) &=
-                ~BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
+            reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.transformFlags &=
+                ~PHOTO_BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
         }
-        TH095_ECL_BULLET_TRANSFORM_SOUND(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.transformSound =
             TH08_ECL_READ_I(ctx, 1);
         break;
 
@@ -400,10 +398,10 @@ enter_subroutine:
         break;
 
     case 82:
-        TH095_TARGET_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->minimumPlayerDistanceSquared =
             TH08_ECL_READ_F_RAWARG(ctx, 0);
-        TH095_TARGET_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy) *=
-            TH095_TARGET_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy);
+        reinterpret_cast<PhotoEnemyView *>(enemy)->minimumPlayerDistanceSquared *=
+            reinterpret_cast<PhotoEnemyView *>(enemy)->minimumPlayerDistanceSquared;
         break;
 
     case 139:

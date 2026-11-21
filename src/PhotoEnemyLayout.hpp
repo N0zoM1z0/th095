@@ -246,20 +246,15 @@ typedef char PhotoEnemyShotCadenceAt2B9C[
      offsetof(PhotoEnemyView, shootIntervalFrames) == 0x2bc8 &&
      offsetof(PhotoEnemyView, shootIntervalTimer) == 0x2bcc) ? 1 : -1];
 typedef char PhotoEnemyBulletDescriptorAt298C[
-    (offsetof(PhotoEnemyView, bulletSpawnDescriptor) ==
-         PHOTO_ENEMY_ECL_BULLET_DESCRIPTOR_OFFSET &&
+    (offsetof(PhotoEnemyView, bulletSpawnDescriptor) == 0x298c &&
      offsetof(PhotoEnemyView, bulletSpawnDescriptor) +
-         offsetof(PhotoBulletSpawnDescriptor, transforms) ==
-         PHOTO_ENEMY_ECL_BULLET_TRANSFORMS_OFFSET &&
+         offsetof(PhotoBulletSpawnDescriptor, transforms) == 0x29ac &&
      offsetof(PhotoEnemyView, bulletSpawnDescriptor) +
-         offsetof(PhotoBulletSpawnDescriptor, transformFlags) ==
-         PHOTO_ENEMY_ECL_BULLET_TRANSFORM_FLAGS_OFFSET &&
+         offsetof(PhotoBulletSpawnDescriptor, transformFlags) == 0x2b88 &&
      offsetof(PhotoEnemyView, bulletSpawnDescriptor) +
-         offsetof(PhotoBulletSpawnDescriptor, spawnSound) ==
-         PHOTO_ENEMY_ECL_BULLET_SPAWN_SOUND_OFFSET &&
+         offsetof(PhotoBulletSpawnDescriptor, spawnSound) == 0x2b8c &&
      offsetof(PhotoEnemyView, bulletSpawnDescriptor) +
-         offsetof(PhotoBulletSpawnDescriptor, transformSound) ==
-         PHOTO_ENEMY_ECL_BULLET_TRANSFORM_SOUND_OFFSET) ? 1 : -1];
+         offsetof(PhotoBulletSpawnDescriptor, transformSound) == 0x2b90) ? 1 : -1];
 typedef char PhotoEnemyPhotoTargetSlotAt2BE5[
     (offsetof(PhotoEnemyView, photoTargetSlot) ==
         PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET) ? 1 : -1];
@@ -304,8 +299,7 @@ typedef char PhotoEnemyPhotoPulseAt2C1C[
 typedef char PhotoEnemyMovementBoundsAt2C3C[
     (offsetof(PhotoEnemyView, movementBoundsMin) ==
          PHOTO_ENEMY_ECL_MOVEMENT_BOUNDS_OFFSET &&
-     offsetof(PhotoEnemyView, minimumPlayerDistanceSquared) ==
-         PHOTO_ENEMY_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED_OFFSET) ? 1 : -1];
+     offsetof(PhotoEnemyView, minimumPlayerDistanceSquared) == 0x2c4c) ? 1 : -1];
 typedef char PhotoEnemyPendingCallbackFrameAt2CA4[
     (offsetof(PhotoEnemyView, pendingCallbackFrame) ==
          PHOTO_ENEMY_ECL_PENDING_CALLBACK_FRAME_OFFSET) ? 1 : -1];

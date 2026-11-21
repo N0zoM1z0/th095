@@ -18665,3 +18665,16 @@ retail comparisons agree in both layouts. The cases cover the nine shot
 opcodes, disabled cadence, fractional ticks and indirect selectors changed
 after saving the record. The game-object section comparison also passes
 in both links. See `.analysis/pi/ecl-deferred-shot/`.
+
+### SEM-423 — route ECL shot controls through the bullet descriptor
+
+Opcodes 99, 101 and 103 access the compact enemy's descriptor, using its
+typed transform entries and sound fields. Opcode 82 writes the same
+squared-distance field that the shot dispatcher tests. The direct C++
+field access preserves the retail x87 instruction order.
+
+All 167 affected exact units pass. Both dispatch call sites follow the
+moved method in the reordered link. The 329 focused retail comparisons
+include 36 new cases for transform writes, spawn-sound enable and disable,
+and squared XY distance. All agree in both current layouts. See
+`.analysis/pi/ecl-bullet-descriptor/`.

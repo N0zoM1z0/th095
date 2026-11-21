@@ -172,12 +172,12 @@ copies under `build/position-independence/`.
 
 ## Linked library objects
 
-The maps name 270 archive members from the pinned VC7.1 CRT and SDK. The
-final comparison pairs 1,649 code and all 1,953 initialized-data sections.
-All 7,748 code references and 1,007 initialized-data references resolve
-to the COFF symbol and addend in both normal link orders. Of these, 7,498
-code references and all 1,007 initialized-data references follow a moved
-destination. Five input code sections have zero relocation slots. Four
+The SEM-423 maps name 270 archive members from the pinned VC7.1 CRT and
+SDK. The current comparison pairs 1,649 code and all 1,953 initialized-data
+sections. All 7,748 code references and 1,007 initialized-data references
+resolve to the COFF symbol and addend in both normal link orders. Of these,
+7,391 code references and all 1,007 initialized-data references follow a
+moved destination. Five input code sections have zero relocation slots. Four
 are duplicate COMDATs whose definitions come from the game objects. The
 regular link folds the one-byte PNG warning stub into a body from another
 D3DX member. Both PEs retain the same return instruction for the symbol.
@@ -198,7 +198,10 @@ mapped sections have identical RVAs, sizes, flags and bytes in the diagnostic
 and corresponding normal PE. Swapping the two recovered addresses triggers
 16 comparison failures across the pair. The local recipes are
 `.analysis/pi/link-library-pdb.py`, `.analysis/pi/link-library-public-probe.py`
-and `.analysis/pi/library-pdb-anchors.py`.
+and `.analysis/pi/library-pdb-anchors.py`. The SEM-423 outputs are under
+`.analysis/pi/ecl-bullet-descriptor/`. The current pair retains the same
+172 import identities from nine DLLs, with 127 initial address-table slots
+moving.
 
 A literal sweep of the 270 linked archive members found two code immediates
 in the retail image range. One controls DDS flags and the other masks CPU

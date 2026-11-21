@@ -44,11 +44,6 @@ enum PhotoEnemyEclOperandOffset
     PHOTO_ENEMY_ECL_SCORE_OFFSET = 0x2964,
     PHOTO_ENEMY_ECL_TIMER_OFFSET = 0x296c,
     PHOTO_ENEMY_ECL_TIMER_CURRENT_OFFSET = 0x2974,
-    PHOTO_ENEMY_ECL_BULLET_DESCRIPTOR_OFFSET = 0x298c,
-    PHOTO_ENEMY_ECL_BULLET_TRANSFORMS_OFFSET = 0x29ac,
-    PHOTO_ENEMY_ECL_BULLET_TRANSFORM_FLAGS_OFFSET = 0x2b88,
-    PHOTO_ENEMY_ECL_BULLET_SPAWN_SOUND_OFFSET = 0x2b8c,
-    PHOTO_ENEMY_ECL_BULLET_TRANSFORM_SOUND_OFFSET = 0x2b90,
     PHOTO_ENEMY_ECL_ITEM_DROP_TYPE_OFFSET = 0x2bd8,
     PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET = 0x2be5,
     PHOTO_ENEMY_ECL_CONTROL_OFFSET = 0x2bf4,
@@ -61,7 +56,6 @@ enum PhotoEnemyEclOperandOffset
     PHOTO_ENEMY_ECL_PHOTO_PULSE_TIMER_OFFSET = 0x2c24,
     PHOTO_ENEMY_ECL_PHOTO_PULSE_DURATION_TIMER_OFFSET = 0x2c30,
     PHOTO_ENEMY_ECL_MOVEMENT_BOUNDS_OFFSET = 0x2c3c,
-    PHOTO_ENEMY_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED_OFFSET = 0x2c4c,
     PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET = 0x2c50,
     PHOTO_ENEMY_ECL_SCHEDULE_OFFSET = 0x2c54,
     PHOTO_ENEMY_ECL_PENDING_CALLBACK_FRAME_OFFSET = 0x2ca4,
@@ -147,24 +141,6 @@ enum PhotoEnemyEclOperandRuntimeOffset
     TH095_PHOTO_ENEMY_I32((owner), th095::PHOTO_ENEMY_ECL_SCORE_OFFSET)
 #define TH095_ECL_ITEM_DROP_TYPE(owner) \
     TH095_PHOTO_ENEMY_I32((owner), th095::PHOTO_ENEMY_ECL_ITEM_DROP_TYPE_OFFSET)
-#define TH095_ECL_BULLET_DESCRIPTOR(owner, type) \
-    TH095_PHOTO_ENEMY_OBJECT_PTR( \
-        (owner), th095::PHOTO_ENEMY_ECL_BULLET_DESCRIPTOR_OFFSET, type)
-#define TH095_ECL_BULLET_TRANSFORM(owner, index, type) \
-    TH095_PHOTO_ENEMY_OBJECT_PTR( \
-        (owner), \
-        th095::PHOTO_ENEMY_ECL_BULLET_TRANSFORMS_OFFSET + \
-            sizeof(type) * (index), \
-        type)
-#define TH095_ECL_BULLET_TRANSFORM_FLAGS(owner) \
-    TH095_PHOTO_ENEMY_U32( \
-        (owner), th095::PHOTO_ENEMY_ECL_BULLET_TRANSFORM_FLAGS_OFFSET)
-#define TH095_ECL_BULLET_SPAWN_SOUND(owner) \
-    TH095_PHOTO_ENEMY_I32( \
-        (owner), th095::PHOTO_ENEMY_ECL_BULLET_SPAWN_SOUND_OFFSET)
-#define TH095_ECL_BULLET_TRANSFORM_SOUND(owner) \
-    TH095_PHOTO_ENEMY_I32( \
-        (owner), th095::PHOTO_ENEMY_ECL_BULLET_TRANSFORM_SOUND_OFFSET)
 #define TH095_ECL_CONTROL_WORD(owner) \
     TH095_PHOTO_ENEMY_U32((owner), th095::PHOTO_ENEMY_ECL_CONTROL_OFFSET)
 #define TH095_ECL_CONTROL_BITS(owner) \
@@ -201,13 +177,6 @@ enum PhotoEnemyEclOperandRuntimeOffset
 #define TH095_ECL_MOVEMENT_BOUNDS(owner, type) \
     TH095_PHOTO_ENEMY_OBJECT( \
         (owner), th095::PHOTO_ENEMY_ECL_MOVEMENT_BOUNDS_OFFSET, type)
-// Keep the dereference itself unparenthesized.  In RunEcl opcode 82, VC7.1
-// otherwise schedules the second owner load between x87 fld/fmul; this source
-// shape reproduces the target's two owner loads before the x87 pair.  The
-// canonical PhotoEnemyView assertion independently pins the literal offset.
-#define TH095_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED(owner) \
-    *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(owner) + \
-                             th095::PHOTO_ENEMY_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED_OFFSET)
 #define TH095_ECL_SCHEDULE(owner) \
     TH095_PHOTO_ENEMY_OBJECT( \
         (owner), th095::PHOTO_ENEMY_ECL_SCHEDULE_OFFSET, \
