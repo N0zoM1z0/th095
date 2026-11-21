@@ -180,20 +180,19 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
         enemy->trailSamples[i].position.x = -999.0f;
     }
 
-    enemy->flags1 |= 0x00000001;
+    enemy->control.active = 1;
     enemy->eclTimer = 0;
-    enemy->flags1 &= ~0x00400000;
+    enemy->control.hasEnteredPlayfield = 0;
     enemy->collisionSize = Float3(24.0f, 24.0f, 24.0f);
-    *reinterpret_cast<Float3 *>(&enemy->velocity) =
-        Float3(0.0f, 0.0f, 0.0f);
+    enemy->velocity = Float3(0.0f, 0.0f, 0.0f);
     enemy->angularVelocity = 0.0f;
     enemy->movementAngle = 0.0f;
     enemy->acceleration = 0.0f;
     enemy->speed = 0.0f;
-    enemy->flags1 &= ~0x00000c00;
-    enemy->flags1 &= ~0x00008000;
-    enemy->flags1 &= ~0x00010000;
-    enemy->flags1 &= ~0x00000002;
+    enemy->control.movementMode = PHOTO_ENEMY_MOVEMENT_VELOCITY;
+    enemy->control.deferShotInstruction = 0;
+    enemy->control.mirrorMovementX = 0;
+    enemy->control.photoTarget = 0;
     enemy->activeEclCallStackDepth = 0;
     enemy->life = 1;
     enemy->score = 100;
@@ -203,22 +202,22 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
     enemy->anmScripts.moveLeft = -1;
     enemy->anmScripts.moveRight = -1;
     enemy->anmScripts.idleInitial = -1;
-    enemy->flags1 &= ~0x00000004;
+    enemy->control.collidable = 0;
     enemy->flags1 |= 0x00000008;
-    enemy->flags1 &= ~0x00000010;
+    enemy->control.hiddenFromDrawGroups = 0;
     enemy->flags1 |= 0x00000040;
     enemy->flags1 &= ~0x00000080;
-    enemy->flags1 |= 0x04000000;
+    enemy->control.skipOffscreenCheck = 1;
     enemy->flags1 &= ~0x001c0000;
     enemy->photoCaptureEclSubroutineId = -1;
-    enemy->flags1 &= ~PHOTO_ENEMY_CLAMP_TO_MOVEMENT_BOUNDS_MASK;
+    enemy->control.clampToMovementBounds = 0;
     enemy->pendingEclSubroutineIndex = -1;
     for (i = 0; i < PHOTO_ENEMY_SCHEDULE_SLOT_COUNT; ++i)
     {
         enemy->eclSchedule.photoIndices[i] = PHOTO_ENEMY_SCHEDULE_INACTIVE;
     }
     enemy->pendingCallbackFrame = -1;
-    reinterpret_cast<u8 *>(enemy)[0x2be6] = 0;
+    enemy->unknown2be6[0] = 0;
     enemy->flags1 &= ~0x00800000;
     enemy->bulletSpawnDescriptor.spawnSound = 7;
     enemy->bulletSpawnDescriptor.transformSound = 24;

@@ -20565,3 +20565,16 @@ All six PhotoStage exact units pass with the original byte destination.
 The baseline and corrected fixtures execute the capture store, WinMain
 initialization and Render's draw decision with 56 counter/frameskip cases.
 See `.analysis/pi/photo-capture-redraw/`.
+
+### SEM-512 — initialize enemy templates through their declared fields
+
+The template constructor now writes the existing control bitfields and
+velocity member directly. The byte cleared at `0x00414FB5` is the first
+byte of the existing `unknown2be6` storage. A scan of the retail code
+finds the constructor store as its only direct displacement reference, so
+its purpose remains unknown.
+
+All 22 EnemyManagerUpdate exact units pass. Executing the constructor on
+dirty memory produces the same 2,534,960-byte EnemyInf state in retail
+and both normal links. The two links also retain their previous mapped
+bytes. See `.analysis/pi/enemy-template-fields/`.
