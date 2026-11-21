@@ -26,11 +26,6 @@ struct FrontEndControllerView
     void Destroy();
 };
 
-struct SupervisorSoundPlayerView
-{
-    void UpdateFades();
-};
-
 struct SupervisorAnmManagerView
 {
     u32 mixColor;                              // +0x0000
@@ -75,7 +70,6 @@ struct SupervisorAnmManagerView
     void InvalidateDrawPath() { this->cachedDrawPath = ANM_DRAW_PATH_INVALIDATED; }
 };
 
-extern SupervisorSoundPlayerView g_SupervisorSoundPlayer;
 extern SupervisorAnmManagerView *g_SupervisorAnmManager;
 
 struct TextHelperView
@@ -1046,7 +1040,7 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
             return 4;
     }
 
-    g_SupervisorSoundPlayer.UpdateFades();
+    g_SoundPlayer.UpdateFades();
     Controller::GetInput(0);
 
     g_SupervisorAnmManager->ClearSprite();
@@ -1661,7 +1655,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
     g_AnmManager->ReleaseAnm(2);
     g_AnmManager->ReleaseSurface(8);
     AsciiManager::CutChain();
-    g_SoundPlayer.QueueCommand(4, 0, "dummy");
+    g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
     TextHelperView::ReleaseTextBuffer();
 
     if (((Supervisor *)arg)->keyboard != NULL)
@@ -1880,7 +1874,7 @@ void GameConfiguration::Initialize()
     this->version = 0x95001;
     this->padXAxis = 600;
     this->padYAxis = 600;
-    this->musicMode = 1;
+    this->musicMode = GAME_MUSIC_MODE_WAV;
     this->playSounds = 1;
     this->windowed = 0;
     this->frameskipConfig = 0;
@@ -1928,11 +1922,11 @@ i32 Supervisor::LoadConfig(char *configFile)
         {
             ReadFile(bgmHandle, bgmBuffer, 16, &bytesRead, NULL);
             CloseHandle(bgmHandle);
-            g_Supervisor.config.musicMode = 1;
+            g_Supervisor.config.musicMode = GAME_MUSIC_MODE_WAV;
         }
         else
         {
-            g_Supervisor.config.musicMode = 2;
+            g_Supervisor.config.musicMode = GAME_MUSIC_MODE_MIDI;
             utils::DebugPrint(
                 "\x77\x61\x76\x65\x20\x83\x66\x81\x5b\x83\x5e\x82\xaa\x96\xb3\x82\xa2"
                 "\x82\xcc\x82\xc5\x81\x41\x6d\x69\x64\x69\x20\x82\xc9\x82\xb5\x82\xdc"
@@ -1943,7 +1937,7 @@ i32 Supervisor::LoadConfig(char *configFile)
     {
         g_Supervisor.config = *(GameConfiguration *)configFileBuffer;
         free(configFileBuffer);
-        if (g_Supervisor.config.colorMode16bit >= 2 || g_Supervisor.config.musicMode >= 3 ||
+        if (g_Supervisor.config.colorMode16bit >= 2 || g_Supervisor.config.musicMode >= GAME_MUSIC_MODE_COUNT ||
             g_Supervisor.config.playSounds >= 2 || g_Supervisor.config.windowed >= 2 ||
             g_Supervisor.config.frameskipConfig >= 3 || g_Supervisor.config.effectQuality >= 3 ||
             g_Supervisor.config.version != 0x95001 || fileSize != sizeof(GameConfiguration))
@@ -2037,20 +2031,20 @@ i32 Supervisor::LoadMusic(i32 preloadSlot, char *path)
 #define wavPath locals.wavPath
 #define extension locals.extension
 
-    if (g_Supervisor.config.musicMode == 2)
+    if (g_Supervisor.config.musicMode == GAME_MUSIC_MODE_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
             g_Supervisor.midiOutput->ReadFileData(preloadSlot, path);
         return 0;
     }
-    else if (g_Supervisor.config.musicMode == 1)
+    else if (g_Supervisor.config.musicMode == GAME_MUSIC_MODE_WAV)
     {
         strcpy(wavPath, path);
         extension = strrchr(wavPath, '.');
         extension[1] = 'w';
         extension[2] = 'a';
         extension[3] = 'v';
-        g_SoundPlayer.QueueCommand(1, preloadSlot, wavPath);
+        g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_PRELOAD_BGM, preloadSlot, wavPath);
     }
 #undef wavPath
 #undef extension
@@ -2062,7 +2056,7 @@ i32 Supervisor::PlayMusic(i32 musicIndex, i32 unused)
 {
     MidiOutput *midiOutput;
 
-    if (g_Supervisor.config.musicMode == 2)
+    if (g_Supervisor.config.musicMode == GAME_MUSIC_MODE_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
         {
@@ -2073,11 +2067,11 @@ i32 Supervisor::PlayMusic(i32 musicIndex, i32 unused)
         }
         return 0;
     }
-    else if (g_Supervisor.config.musicMode == 1)
+    else if (g_Supervisor.config.musicMode == GAME_MUSIC_MODE_WAV)
     {
         if (g_Supervisor.config.options.preloadMusic)
-            g_SoundPlayer.QueueCommand(4, 0, "dummy");
-        g_SoundPlayer.QueueCommand(2, musicIndex, "dummy");
+            g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
+        g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_LOAD_BGM, musicIndex, "dummy");
     }
     return 0;
 }
@@ -2085,17 +2079,17 @@ i32 Supervisor::PlayMusic(i32 musicIndex, i32 unused)
 // FUNCTION: TH095 0x00425390.
 i32 Supervisor::StopAudio()
 {
-    if (g_Supervisor.config.musicMode == 2)
+    if (g_Supervisor.config.musicMode == GAME_MUSIC_MODE_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
             g_Supervisor.midiOutput->StopPlayback();
     }
-    else if (g_Supervisor.config.musicMode == 1)
+    else if (g_Supervisor.config.musicMode == GAME_MUSIC_MODE_WAV)
     {
         if (g_Supervisor.config.options.preloadMusic)
-            g_SoundPlayer.QueueCommand(4, 0, "dummy");
+            g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
         else
-            g_SoundPlayer.QueueCommand(3, 0, "dummy");
+            g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_STOP_BGM, 0, "dummy");
     }
     else
     {
@@ -2109,13 +2103,13 @@ i32 Supervisor::FadeOutMusic(f32 durationSeconds)
 {
     f32 fadeTime;
 
-    if (g_Supervisor.config.musicMode == 2)
+    if (g_Supervisor.config.musicMode == GAME_MUSIC_MODE_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
             g_Supervisor.midiOutput->SetFadeOut(
                 (u32)(1000.0f * durationSeconds));
     }
-    else if (g_Supervisor.config.musicMode == 1)
+    else if (g_Supervisor.config.musicMode == GAME_MUSIC_MODE_WAV)
     {
         if (g_AnmGameSpeed == 0.0f)
             fadeTime = durationSeconds;
@@ -2123,7 +2117,7 @@ i32 Supervisor::FadeOutMusic(f32 durationSeconds)
             fadeTime = durationSeconds;
         else
             fadeTime = durationSeconds / g_AnmGameSpeed;
-        g_SoundPlayer.QueueCommand(5, (i32)fadeTime, "");
+        g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_FADE_OUT, (i32)fadeTime, "");
     }
     else
     {

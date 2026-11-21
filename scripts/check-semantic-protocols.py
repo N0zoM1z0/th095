@@ -790,6 +790,14 @@ def check_sound_player_consumer_owners() -> None:
             fail(f"SoundPlayer lost canonical lifecycle field: {name}")
         if f"offsetof(SoundPlayer, {name}) == {offset}" not in header:
             fail(f"SoundPlayer lost lifecycle offset assertion: {name}")
+    main_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+    if '#include "SoundPlayer.hpp"' not in main_header:
+        fail("MainExact.hpp lost the canonical SoundPlayer")
+    if re.search(r"\bstruct\s+SoundPlayer\b|SupervisorSoundPlayerView", main_header + main_body):
+        fail("MainExact restored a separate SoundPlayer declaration")
+    if re.search(r"g_SoundPlayer\.QueueCommand\(\s*\d", main_body):
+        fail("MainExact restored a numeric BGM command")
     implementation = (SRC / "SoundPlayer.cpp").read_text(encoding="utf-8")
     for retired in (
         "workerThreadHandle",

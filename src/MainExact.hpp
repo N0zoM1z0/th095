@@ -21,6 +21,7 @@
 #include "ReplayScanWorker.hpp"
 #include "ScreenEffect.hpp"
 #include "ScreenshotBitmapFileHeader.hpp"
+#include "SoundPlayer.hpp"
 #include "SupervisorFlags.hpp"
 #include "SupervisorFogState.hpp"
 #include "SupervisorFpsState.hpp"
@@ -43,24 +44,6 @@ struct DummyMidiTimer;
 // Supervisor storage/API is declared once in SupervisorRuntime.hpp.
 
 
-struct SoundPlayer
-{
-    i32 Initialize(HWND window);
-    void RequestThreadStop();
-    void JoinThread();
-    i32 Release();
-    i32 ProcessQueues();
-    i32 LoadFmt(char *path);
-    void QueueCommand(i32 opcode, i32 argument, char *path);
-
-    u8 unknown000[0x52c4];
-    i32 bgmVolume;                           // +0x52c4
-    i32 sfxVolume;                           // +0x52c8
-    i32 unconsumedBgmAttenuation;            // +0x52cc
-};
-
-typedef char MainSoundPlayerBgmVolumeAt52C4[(offsetof(SoundPlayer, bgmVolume) == 0x52c4) ? 1 : -1];
-
 namespace utils
 {
 void DebugPrint(char *format, ...);
@@ -68,7 +51,6 @@ void DebugPrint(char *format, ...);
 
 extern GameWindow g_GameWindow;
 extern Supervisor g_Supervisor;
-extern SoundPlayer g_SoundPlayer;
 extern AnmManager *g_AnmManager;
 extern u16 g_PressedButtons;
 extern char g_WindowTitle[];

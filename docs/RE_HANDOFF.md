@@ -179,6 +179,8 @@ static-member view and duplicate declarations.
 SEM-465 shares GameErrorContext with MainExact. WinMain resets the
 cursor through the canonical context field.
 SEM-466 uses the canonical PbgArchive at Main startup and shutdown.
+SEM-467 shares SoundPlayer across both Main builds, including the
+BGM queue and per-frame fade update.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

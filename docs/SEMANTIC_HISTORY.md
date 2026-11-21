@@ -19577,3 +19577,19 @@ their symbols too. The fixture covers the version check's success and
 error paths with archive I/O stubbed. It executes the real Release
 method from the shutdown call site for empty and owned filenames.
 See `.analysis/pi/main-archive-owner/`.
+
+### SEM-467 — use one SoundPlayer for Main lifecycle and music
+
+Main and MainExact use the same SoundPlayer class, global and result
+types. The frame callback calls UpdateFades on that object. The exact
+Main source names the WAV and MIDI modes and all BGM commands it
+publishes. The comparison now spells out the six member addends used
+when startup publishes or reads the volume fields.
+
+All 48 Main comparisons pass. Each normal PE's four mapped sections
+match its pre-change layout byte for byte. The 38 sound references in
+Main follow the object, member addends and callable symbols in both
+layouts. The fixture exercises the real command queue for preload,
+play, stop and timed fade, including disabled and MIDI modes. Both
+layouts match retail for the four fade callbacks and the null stream.
+See `.analysis/pi/main-sound-owner/`.
