@@ -94,10 +94,10 @@ f32 Enemy::ResolveFloat(f32 operand)
     case TH095_ECL_RANDOM_SELECTOR(0x2723, ECL_RANDOM_F32_SIGNED): return g_Rng.GetRandomF32Signed();
     case 0x2751: return g_Rng.GetRandomF32() * 6.2831855f - 3.1415927f;
 
-    case 0x2731: return (f32)TH095_ECL_TIMER_CURRENT(this);
-    case 0x2733: return (f32)TH095_ECL_ENEMY_LIFE(this);
-    case 0x275b: return (f32)TH095_ECL_ITEM_DROP_TYPE(this);
-    case 0x275c: return (f32)TH095_ECL_ENEMY_SCORE(this);
+    case EclOperands::ECL_ENEMY_TIMER: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->eclTimer.current;
+    case EclOperands::ECL_ENEMY_LIFE: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->life;
+    case EclOperands::ECL_ENEMY_ITEM_DROP_TYPE: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->itemDropType;
+    case EclOperands::ECL_ENEMY_SCORE: return (f32)reinterpret_cast<PhotoEnemyView *>(this)->score;
 
     case EclOperands::ECL_MANAGER_PARAMETER_INT0: return (f32)g_PhotoEnemyManager->eclManager->callParameters.ints[0];
     case EclOperands::ECL_MANAGER_PARAMETER_INT1: return (f32)g_PhotoEnemyManager->eclManager->callParameters.ints[1];
@@ -182,10 +182,6 @@ f32 Enemy::ResolveFloat(f32 operand)
 #undef TH095_ECL_FLOAT_PLAYER_POSITION
 #undef TH095_ECL_PHOTO_TARGET_SLOT
 #undef TH095_PHOTO_ENEMY_U8
-#undef TH095_ECL_ITEM_DROP_TYPE
-#undef TH095_ECL_ENEMY_SCORE
-#undef TH095_ECL_TIMER_CURRENT
-#undef TH095_ECL_ENEMY_LIFE
 #undef TH095_PHOTO_ENEMY_I32
 
 } // namespace th095

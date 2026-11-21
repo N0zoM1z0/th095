@@ -1,11 +1,5 @@
 // TH095 target-order high opcode body.  This file is included lexically
 // inside PhotoEnemyEclManagerView::RunEcl so VC7 owns one shared frame and jump table.
-#define TH095_TARGET_ENEMY_LIFE(enemy) TH095_ECL_ENEMY_LIFE(enemy)
-#define TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy)                 \
-    TH095_ECL_PHOTO_CAPTURE_SUBROUTINE(enemy)
-#define TH095_TARGET_ENEMY_ECL_TIMER(enemy)                                 \
-    TH095_ECL_TIMER(enemy)
-
 #define TH095_TARGET_ENEMY_DRAW_GROUP(enemy)                                \
     TH095_ECL_DRAW_GROUP(enemy)
 
@@ -21,7 +15,7 @@
     case 92:
     case 93:
     case 94:
-        if (TH095_TARGET_ENEMY_LIFE(enemy) <= 0)
+        if (reinterpret_cast<PhotoEnemyView *>(enemy)->life <= 0)
             break;
         if (((reinterpret_cast<PhotoEnemyView *>(enemy)->flags1
               >> PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_SHIFT) & 1U) != 0)
@@ -124,7 +118,7 @@
         break;
 
     case 112:
-        TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->photoCaptureEclSubroutineId =
             *reinterpret_cast<i16 *>(instruction->operands);
         break;
 
@@ -158,9 +152,9 @@ enter_subroutine:
         goto restart_context;
 
     case 113:
-        TH095_ECL_ENEMY_PHASE_STARTING_LIFE(enemy) =
-            TH095_TARGET_ENEMY_LIFE(enemy) =
-                TH095_ECL_ENEMY_MAXIMUM_LIFE(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->phaseStartingLife =
+            reinterpret_cast<PhotoEnemyView *>(enemy)->life =
+                reinterpret_cast<PhotoEnemyView *>(enemy)->maximumLife =
                     TH08_ECL_READ_I(ctx, 0);
         break;
 
@@ -181,10 +175,10 @@ enter_subroutine:
 
     case 116:
     {
-        TH095_ECL_PENDING_CALLBACK_FRAME(enemy) = TH08_ECL_READ_I(ctx, 0);
-        TH095_ECL_PENDING_CALLBACK_SUBROUTINE(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->pendingCallbackFrame = TH08_ECL_READ_I(ctx, 0);
+        reinterpret_cast<PhotoEnemyView *>(enemy)->unknown2ca8 =
             TH08_ECL_READ_I(ctx, 1);
-        InitializeEclTargetTimer(&TH095_TARGET_ENEMY_ECL_TIMER(enemy));
+        InitializeEclTargetTimer(&reinterpret_cast<PhotoEnemyView *>(enemy)->eclTimer);
         break;
     }
 
@@ -245,7 +239,7 @@ enter_subroutine:
         break;
 
     case 83:
-        if (TH095_TARGET_ENEMY_LIFE(enemy) > 0)
+        if (reinterpret_cast<PhotoEnemyView *>(enemy)->life > 0)
         {
             g_PhotoEnemyManager->SpawnWithContext(
                 TH08_ECL_RAW_I(ctx, 0),
@@ -256,7 +250,7 @@ enter_subroutine:
         break;
 
     case 84:
-        if (TH095_TARGET_ENEMY_LIFE(enemy) > 0)
+        if (reinterpret_cast<PhotoEnemyView *>(enemy)->life > 0)
         {
             SpawnPacketSmall packet;
             PhotoEnemyView *spawned;
@@ -314,9 +308,9 @@ enter_subroutine:
 
     case 128:
     {
-        TH095_ECL_PENDING_CALLBACK_SUBROUTINE(enemy) =
-            TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy);
-        InitializeEclTargetTimer(&TH095_TARGET_ENEMY_ECL_TIMER(enemy));
+        reinterpret_cast<PhotoEnemyView *>(enemy)->unknown2ca8 =
+            reinterpret_cast<PhotoEnemyView *>(enemy)->photoCaptureEclSubroutineId;
+        InitializeEclTargetTimer(&reinterpret_cast<PhotoEnemyView *>(enemy)->eclTimer);
         break;
     }
 
@@ -405,7 +399,7 @@ enter_subroutine:
         break;
 
     case 139:
-        TH095_ECL_ENEMY_PHASE_STARTING_LIFE(enemy) = TH08_ECL_READ_I(ctx, 0);
+        reinterpret_cast<PhotoEnemyView *>(enemy)->phaseStartingLife = TH08_ECL_READ_I(ctx, 0);
         break;
 
     case 140:
@@ -487,6 +481,3 @@ enter_subroutine:
     }
 
 #include "EclRunTargetPhoto.inl"
-
-#undef TH095_TARGET_ENEMY_LIFE
-#undef TH095_TARGET_ENEMY_ECL_TIMER

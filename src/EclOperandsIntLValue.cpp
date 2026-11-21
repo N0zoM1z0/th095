@@ -41,10 +41,10 @@ i32 *__fastcall ResolveIntLValue(
     case 0x2726: return &enemy->activeEclContext->scriptState.extraIntVariables[2];
     case 0x2727: return &enemy->activeEclContext->scriptState.extraIntVariables[3];
 
-    case 0x2731: return &TH095_ECL_TIMER_CURRENT(enemy);
-    case 0x2733: return &TH095_ECL_ENEMY_LIFE(enemy);
-    case 0x275b: return &TH095_ECL_ITEM_DROP_TYPE(enemy);
-    case 0x275c: return &TH095_ECL_ENEMY_SCORE(enemy);
+    case ECL_ENEMY_TIMER: return &reinterpret_cast<PhotoEnemyView *>(enemy)->eclTimer.current;
+    case ECL_ENEMY_LIFE: return &reinterpret_cast<PhotoEnemyView *>(enemy)->life;
+    case ECL_ENEMY_ITEM_DROP_TYPE: return &reinterpret_cast<PhotoEnemyView *>(enemy)->itemDropType;
+    case ECL_ENEMY_SCORE: return &reinterpret_cast<PhotoEnemyView *>(enemy)->score;
 
     case ECL_MANAGER_PARAMETER_INT0: return &g_PhotoEnemyManager->eclManager->callParameters.ints[0];
     case ECL_MANAGER_PARAMETER_INT1: return &g_PhotoEnemyManager->eclManager->callParameters.ints[1];
@@ -57,10 +57,6 @@ i32 *__fastcall ResolveIntLValue(
 } // namespace EclOperands
 
 #undef TH095_ECL_PHOTO_TARGET_SLOT
-#undef TH095_ECL_ITEM_DROP_TYPE
-#undef TH095_ECL_ENEMY_SCORE
-#undef TH095_ECL_TIMER_CURRENT
-#undef TH095_ECL_ENEMY_LIFE
 #undef TH095_PHOTO_ENEMY_U8
 #undef TH095_PHOTO_ENEMY_I32
 

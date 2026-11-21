@@ -159,7 +159,7 @@ struct PhotoEnemyView
     u8 unknown2c50[4];
     PhotoEnemyEclSchedule eclSchedule;     // +0x2c54
     i32 pendingCallbackFrame;              // +0x2ca4
-    u8 unknown2ca8[4];
+    i32 unknown2ca8;                       // +0x2ca8
     EnemyChildEclBlock *childEclBlocks[16]; // +0x2cac
     PhotoEnemyTrailSampleView trailSamples[96]; // +0x2cec
     AnmVertex trailVertices[194]; // +0x376c
@@ -208,8 +208,7 @@ typedef char PhotoEnemyMainEclScriptStateAt2F4[
 typedef char PhotoEnemyActiveEclContextAt280C[
     (offsetof(PhotoEnemyView, activeEclContext) == 0x280c) ? 1 : -1];
 typedef char PhotoEnemyPhotoCaptureSubroutineAt285A[
-    (offsetof(PhotoEnemyView, photoCaptureEclSubroutineId) ==
-     PHOTO_ENEMY_ECL_PHOTO_CAPTURE_SUBROUTINE_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, photoCaptureEclSubroutineId) == 0x285a) ? 1 : -1];
 typedef char PhotoEnemyPositionAt28A0[
     (offsetof(PhotoEnemyView, position) == 0x28a0)
         ? 1 : -1];
@@ -227,20 +226,17 @@ typedef char PhotoEnemyMovementInterpolationAt2930[
     (offsetof(PhotoEnemyView, movementInterpolationDelta) == 0x2930 &&
      offsetof(PhotoEnemyView, movementInterpolationOrigin) == 0x293c) ? 1 : -1];
 typedef char PhotoEnemyLifeAt2958[
-    (offsetof(PhotoEnemyView, life) == PHOTO_ENEMY_ECL_LIFE_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, life) == 0x2958) ? 1 : -1];
 typedef char PhotoEnemyLifeSequenceAt2958[
-    (offsetof(PhotoEnemyView, maximumLife) ==
-         PHOTO_ENEMY_ECL_MAXIMUM_LIFE_OFFSET &&
-     offsetof(PhotoEnemyView, phaseStartingLife) ==
-         PHOTO_ENEMY_ECL_PHASE_STARTING_LIFE_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, maximumLife) == 0x295c &&
+     offsetof(PhotoEnemyView, phaseStartingLife) == 0x2960) ? 1 : -1];
 typedef char PhotoEnemyScoreAt2964[
-    (offsetof(PhotoEnemyView, score) == PHOTO_ENEMY_ECL_SCORE_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, score) == 0x2964) ? 1 : -1];
 typedef char PhotoEnemyEclTimerAt296C[
-    (offsetof(PhotoEnemyView, eclTimer) == PHOTO_ENEMY_ECL_TIMER_OFFSET)
+    (offsetof(PhotoEnemyView, eclTimer) == 0x296c)
         ? 1 : -1];
 typedef char PhotoEnemyEclTimerCurrentAt2974[
-    (offsetof(PhotoEnemyView, eclTimer) + offsetof(ZunTimer, current) ==
-        PHOTO_ENEMY_ECL_TIMER_CURRENT_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, eclTimer) + offsetof(ZunTimer, current) == 0x2974) ? 1 : -1];
 typedef char PhotoEnemyShotCadenceAt2B9C[
     (offsetof(PhotoEnemyView, pendingShotInstruction) == 0x2b9c &&
      offsetof(PhotoEnemyView, shootIntervalFrames) == 0x2bc8 &&
@@ -259,8 +255,7 @@ typedef char PhotoEnemyPhotoTargetSlotAt2BE5[
     (offsetof(PhotoEnemyView, photoTargetSlot) ==
         PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyItemDropTypeAt2BD8[
-    (offsetof(PhotoEnemyView, itemDropType) ==
-        PHOTO_ENEMY_ECL_ITEM_DROP_TYPE_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, itemDropType) == 0x2bd8) ? 1 : -1];
 typedef char PhotoEnemyEclScheduleAt2C54[
     (offsetof(PhotoEnemyView, eclSchedule) ==
          PHOTO_ENEMY_ECL_SCHEDULE_OFFSET &&
@@ -301,8 +296,8 @@ typedef char PhotoEnemyMovementBoundsAt2C3C[
          PHOTO_ENEMY_ECL_MOVEMENT_BOUNDS_OFFSET &&
      offsetof(PhotoEnemyView, minimumPlayerDistanceSquared) == 0x2c4c) ? 1 : -1];
 typedef char PhotoEnemyPendingCallbackFrameAt2CA4[
-    (offsetof(PhotoEnemyView, pendingCallbackFrame) ==
-         PHOTO_ENEMY_ECL_PENDING_CALLBACK_FRAME_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, pendingCallbackFrame) == 0x2ca4 &&
+     offsetof(PhotoEnemyView, unknown2ca8) == 0x2ca8) ? 1 : -1];
 typedef char PhotoEnemyTrailSamplesAt2CEC[
     (offsetof(PhotoEnemyView, trailSamples) == 0x2cec) ? 1 : -1];
 typedef char PhotoEnemyTrailVerticesAt376C[

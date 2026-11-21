@@ -63,6 +63,14 @@ enum EclEnemyMovementSelector
     ECL_ENEMY_INTERPOLATION_DELTA_Z = 0x2750,
 };
 
+enum EclEnemyStateSelector
+{
+    ECL_ENEMY_TIMER = 0x2731,
+    ECL_ENEMY_LIFE = 0x2733,
+    ECL_ENEMY_ITEM_DROP_TYPE = 0x275b,
+    ECL_ENEMY_SCORE = 0x275c,
+};
+
 i32 __fastcall ResolveInt(Enemy *enemy, i32 operand);
 i32 *__fastcall ResolveIntLValue(Enemy *enemy, i32 *operand, u16 flags, i32 flagIndex);
 f32 *__fastcall ResolveFloatLValue(Enemy *enemy, f32 *operand, u16 flags, i32 flagIndex);

@@ -18678,3 +18678,22 @@ moved method in the reordered link. The 329 focused retail comparisons
 include 36 new cases for transform writes, spawn-sound enable and disable,
 and squared XY distance. All agree in both current layouts. See
 `.analysis/pi/ecl-bullet-descriptor/`.
+
+### SEM-424 — bind ECL enemy state to the compact layout
+
+Both readers and the integer lvalue resolver use the compact enemy's
+life, score, drop type and current ECL timer fields. The float lvalue
+resolver leaves these selectors pointing at the inline operand. Opcode
+113 initializes all three life fields, and opcode 139 changes only the
+phase starting life.
+
+Opcodes 116 and 128 reset the same enemy timer while staging callback
+values. Opcode 128 sign-extends the photo-capture subroutine id into the
+word at +0x2CA8. The direct-displacement scan found only stores to +0x2CA4
+and +0x2CA8, so the latter keeps its unknown field name and now has the
+observed 32-bit type.
+
+All 167 affected exact units pass. The 308 focused retail comparisons
+include 48 new operand and opcode cases and agree in both normal link
+orders. The current game-object link comparison also passes. See
+`.analysis/pi/ecl-enemy-state/`.

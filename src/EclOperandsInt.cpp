@@ -99,8 +99,8 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case TH095_ECL_RANDOM_SELECTOR(0x2722, ECL_RANDOM_I32): return (i32)g_Rng.GetRandomU32();
     case TH095_ECL_RANDOM_SELECTOR(0x2723, ECL_RANDOM_F32_SIGNED): return (i32)g_Rng.GetRandomF32Signed();
 
-    case 0x2731: return TH095_ECL_TIMER_CURRENT(enemy);
-    case 0x2733: return TH095_ECL_ENEMY_LIFE(enemy);
+    case ECL_ENEMY_TIMER: return reinterpret_cast<PhotoEnemyView *>(enemy)->eclTimer.current;
+    case ECL_ENEMY_LIFE: return reinterpret_cast<PhotoEnemyView *>(enemy)->life;
     case 0x275d: return (i32)enemy->activeEclContext->scriptState.extraFloatVariables[0];
     case 0x275e: return (i32)enemy->activeEclContext->scriptState.extraFloatVariables[1];
     case 0x275f: return (i32)enemy->activeEclContext->scriptState.extraFloatVariables[2];
@@ -155,8 +155,8 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2752: return TH095_PHOTO_ENEMY_I32(
         enemy, PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET);
     case 0x2753: return TH095_ECL_PHOTO_TARGET_SLOT(enemy);
-    case 0x275b: return TH095_ECL_ITEM_DROP_TYPE(enemy);
-    case 0x275c: return TH095_ECL_ENEMY_SCORE(enemy);
+    case ECL_ENEMY_ITEM_DROP_TYPE: return reinterpret_cast<PhotoEnemyView *>(enemy)->itemDropType;
+    case ECL_ENEMY_SCORE: return reinterpret_cast<PhotoEnemyView *>(enemy)->score;
 
     case 0x2730:
         return (i32)TH095_ECL_INT_PLAYER_ANGLE(&enemy->worldPosition);
@@ -182,10 +182,6 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PLAYER_POSITION
 #undef TH095_ECL_PHOTO_TARGET_SLOT
 #undef TH095_PHOTO_ENEMY_U8
-#undef TH095_ECL_ITEM_DROP_TYPE
-#undef TH095_ECL_ENEMY_SCORE
-#undef TH095_ECL_TIMER_CURRENT
-#undef TH095_ECL_ENEMY_LIFE
 #undef TH095_PHOTO_ENEMY_I32
 
 } // namespace th095

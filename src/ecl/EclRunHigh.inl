@@ -158,8 +158,6 @@ inline i32 Th095PreserveI32(i32 value)
     return *reinterpret_cast<volatile i32 *>(&value);
 }
 
-#define TH095_ENEMY_LIFE(enemy) \
-    TH095_ECL_ENEMY_LIFE(enemy)
 #define TH095_ENEMY_ANM_HANDLE_SLOT(enemy, slot) \
     TH095_PHOTO_ENEMY_I32( \
         (enemy), th095::PHOTO_ENEMY_ECL_ANM_HANDLES_OFFSET + \

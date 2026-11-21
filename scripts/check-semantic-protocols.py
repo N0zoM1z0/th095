@@ -3438,7 +3438,11 @@ def check_photo_enemy_owner() -> None:
         "PhotoEnemyMovementAt2900",
         "offsetof(PhotoEnemyView, movementAngle) == 0x2900",
         "offsetof(PhotoEnemyView, speed) == 0x2914",
-        "offsetof(PhotoEnemyView, life) == PHOTO_ENEMY_ECL_LIFE_OFFSET",
+        "offsetof(PhotoEnemyView, life) == 0x2958",
+        "offsetof(PhotoEnemyView, score) == 0x2964",
+        "offsetof(PhotoEnemyView, eclTimer) == 0x296c",
+        "PhotoEnemyEclTimerCurrentAt2974",
+        "offsetof(PhotoEnemyView, itemDropType) == 0x2bd8",
         "PhotoEnemyFlagsAt2BF4",
         "PHOTO_ENEMY_ECL_CONTROL_OFFSET",
         "PhotoEnemyChildEclBlocksAt2CAC",
@@ -3643,10 +3647,6 @@ def check_photo_enemy_owner() -> None:
         fail("ResolveFloatLValue restored a legacy Enemy compact-field access")
 
     required_operand_offsets = (
-        "PHOTO_ENEMY_ECL_LIFE_OFFSET = 0x2958",
-        "PHOTO_ENEMY_ECL_SCORE_OFFSET = 0x2964",
-        "PHOTO_ENEMY_ECL_TIMER_CURRENT_OFFSET = 0x2974",
-        "PHOTO_ENEMY_ECL_ITEM_DROP_TYPE_OFFSET = 0x2bd8",
         "PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET = 0x2be5",
         "PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET = 0x2c50",
         "PHOTO_ENEMY_ECL_SCHEDULE_OFFSET = 0x2c54",
