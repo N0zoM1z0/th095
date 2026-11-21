@@ -2334,20 +2334,20 @@ def check_front_end_timer_owner() -> None:
     path = SRC / "FrontEndController.cpp"
     text = source_without_comments(path.read_text(encoding="utf-8"))
 
-    if text.count("typedef ZunTimer FrontEndControllerTimer;") != 1:
-        fail("FrontEnd controller lost its single canonical ZunTimer alias")
-    if "ResultScreenTimer" in text:
-        fail("FrontEnd controller restored its ResultScreenTimer projection")
-    for declaration in (
-        "FrontEndControllerTimer stateTimer;",
-        "FrontEndControllerTimer animationTimer;",
-    ):
-        if text.count(declaration) != 1:
+    header = source_without_comments(
+        (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
+    )
+    if any(name in text or name in header for name in (
+        "FrontEndControllerUpdateView", "FrontEndTimerView", "ResultScreenTimer",
+    )):
+        fail("FrontEnd controller restored a duplicate timer or update view")
+    for declaration in ("ZunTimer stateTimer;", "ZunTimer animationTimer;"):
+        if header.count(declaration) != 1:
             fail(f"FrontEnd controller timer declaration drifted: {declaration}")
 
     reset_body = function_body(
         path,
-        "static __forceinline void FrontEndResetTimer(FrontEndControllerTimer *timer)",
+        "static __forceinline void FrontEndResetTimer(ZunTimer *timer)",
     )
     reset_statements = (
         "timer->current = 0;",
@@ -2359,13 +2359,13 @@ def check_front_end_timer_owner() -> None:
         fail("FrontEnd timer reset helper lost a target-observed store")
     if reset_positions != sorted(reset_positions):
         fail("FrontEnd timer reset helper lost target-observed store order")
-    if text.count("FrontEndResetTimer(&view->stateTimer);") != 11:
+    if text.count("FrontEndResetTimer(&this->stateTimer);") != 11:
         fail("FrontEnd state-timer reset consumers drifted from the shared helper")
     if ".stateTimer.Reset()" in text:
         fail("FrontEnd controller restored profile-sensitive ZunTimer::Reset calls")
-    if text.count("view->stateTimer.Tick();") != 1:
+    if text.count("this->stateTimer.Tick();") != 1:
         fail("FrontEnd state timer lost its canonical Tick consumer")
-    if text.count("view->animationTimer.Tick();") != 1:
+    if text.count("this->animationTimer.Tick();") != 1:
         fail("FrontEnd animation timer lost its canonical Tick consumer")
 
 
@@ -2557,8 +2557,7 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
         (
             "FrontEndController.cpp",
             (
-                "offsetof(FrontEndControllerUpdateView, transitionVm) == 0x6100",
-                "view->transitionVm.SetInterrupt(1);",
+                "sceneMenu->transitionVm.SetInterrupt(1);",
             ),
         ),
         (
@@ -2597,7 +2596,7 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
             if marker not in body:
                 fail(f"{name} lost a transition-VM producer/consumer: {marker}")
         if name == "FrontEndController.cpp" and body.count(
-            "view->transitionVm = view->transitionAnm->CreateVm(0, 7);"
+            "sceneMenu->transitionVm = this->transitionAnm->CreateVm(0, 7);"
         ) != 3:
             fail("FrontEnd coordinator lost one of three transition-VM creations")
     for name in (
@@ -2645,13 +2644,16 @@ def check_front_end_requested_state_owner(
         if controller_text is not None
         else controller_path.read_text(encoding="utf-8")
     )
-    if controller.count("FrontEndRequestedState requestedState;") != 1:
+    owner = source_without_comments(
+        (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
+    )
+    if owner.count("FrontEndRequestedState requestedState;") != 1:
         fail("FrontEnd coordinator lost its shared requested-state type")
-    if "i32 requestedState;" in controller:
+    if "i32 requestedState;" in controller or "i32 requestedState;" in owner:
         fail("FrontEnd coordinator restored integer requested-state storage")
     if "TH095_FRONT_END_REQUESTED_STATE_" in controller:
         fail("FrontEnd coordinator restored selected requested-state aliases")
-    if "switch (view->requestedState)" not in controller:
+    if "switch (this->requestedState)" not in controller:
         fail("FrontEnd coordinator lost its requested-state dispatcher")
     for name, _ in expected:
         if f"case {name}:" not in controller:
@@ -2660,7 +2662,7 @@ def check_front_end_requested_state_owner(
         "MAIN_MENU", "SCENE_SELECT", "REPLAY_BROWSER", "EXIT",
         "START_REPLAY", "OPTIONS", "MUSIC_ROOM", "HELP",
     ):
-        if f"view->requestedState = FRONT_END_REQUESTED_STATE_{name};" not in controller:
+        if f"this->requestedState = FRONT_END_REQUESTED_STATE_{name};" not in controller:
             fail(f"FrontEnd coordinator lost named publication for {name}")
 
     for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
@@ -2733,13 +2735,16 @@ def check_front_end_flags_owner(
         if controller_text is not None
         else (SRC / "FrontEndController.cpp").read_text(encoding="utf-8")
     )
-    if controller.count("FrontEndControllerFlagBits flagBits;") != 1:
+    owner = source_without_comments(
+        (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
+    )
+    if owner.count("FrontEndControllerFlagBits flagBits;") != 1:
         fail("FrontEnd coordinator lost its shared flag-bit field")
-    if controller.count("view->flagBits.titleLoadFailed") != 1:
+    if controller.count("this->flagBits.titleLoadFailed") != 1:
         fail("FrontEnd coordinator lost its named load-failure consumer")
-    if "view->titleLoadFailed" in controller or "unknownFlags2" in controller:
+    if "this->titleLoadFailed" in controller or "unknownFlags2" in controller:
         fail("FrontEnd coordinator restored its selected local bitfield")
-    if "offsetof(FrontEndControllerUpdateView, flags) == 0x6120" not in controller:
+    if "offsetof(FrontEndControllerView, flagBits) == 0x6120" not in owner:
         fail("FrontEnd coordinator lost its flag-word offset assertion")
 
     consumers = {
@@ -2851,7 +2856,7 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
         "WriteSceneQueueWord32(this->selectionQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
         "WriteSceneQueueWord32(this->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
         "this->pendingTextures.count = 0;",
-        "this->stateHistory.count = 0;",
+        "sceneMenu->stateHistory.count = 0;",
         "this->currentDisplayState = -1;",
     )
     positions = [controller.find(marker) for marker in sequence]

@@ -7,6 +7,7 @@
 #include "SceneData.hpp"
 #include "ScenePreviewDataQueue.hpp"
 #include "SceneValueQueue.hpp"
+#include "ZunTimer.hpp"
 
 namespace th095
 {
@@ -21,26 +22,12 @@ enum FrontEndEntryMode
     FRONT_END_ENTRY_REPLAY_BROWSER = 2,
 };
 
-struct FrontEndTimerView
-{
-    i32 previous;
-    f32 subFrame;
-    i32 current;
-
-    FrontEndTimerView()
-    {
-        this->current = 0;
-        this->previous = -999999;
-        this->subFrame = 0.0f;
-    }
-};
-
 struct FrontEndControllerView
 {
     AnmLoaded *sceneAnm;
     AnmLoaded *transitionAnm;
-    FrontEndTimerView stateTimer;
-    FrontEndTimerView transitionTimer;
+    ZunTimer stateTimer;
+    ZunTimer animationTimer;
     ResultScreenReplayCursor groupCursor;
     ResultScreenReplayCursor secondaryCursor;
     ResultScreenReplayCursor sceneCursors[12];
@@ -54,7 +41,9 @@ struct FrontEndControllerView
     ReplayManager *replays[80];
     u8 unknown0fe8[0x14];
     void *replayListData;
-    u8 unknown1000[0x5110];
+    u8 unknown1000[0x5108];
+    i32 transitionReady;
+    i32 state;
     FrontEndRequestedState requestedState;
     u8 unknown6114[0x0c];
     FrontEndControllerFlagBits flagBits;
@@ -81,6 +70,9 @@ struct FrontEndControllerView
     static void __fastcall LoadThread(void *unused);
     static FrontEndControllerView *__fastcall Create(i32 entryMode);
     void Destroy();
+    ChainCallbackResult Update();
+    ChainCallbackResult UpdateMainMenu();
+    static ChainCallbackResult __fastcall OnUpdate(void *controller);
     ChainCallbackResult Draw();
     static ChainCallbackResult __fastcall OnDraw(void *controller);
 };
@@ -112,6 +104,12 @@ typedef char FrontEndLifecycleGroupDataQueueAt61B8[
         : -1];
 typedef char FrontEndControllerSelectedScoreAtBF0[
     (offsetof(FrontEndControllerView, selectedScoreEntryIndex) == 0xbf0) ? 1 : -1];
+typedef char FrontEndControllerUpdateFields[
+    (offsetof(FrontEndControllerView, stateTimer) == 0x08 &&
+     offsetof(FrontEndControllerView, animationTimer) == 0x14 &&
+     offsetof(FrontEndControllerView, groupCursor) == 0x20 &&
+     offsetof(FrontEndControllerView, transitionReady) == 0x6108 &&
+     offsetof(FrontEndControllerView, state) == 0x610c) ? 1 : -1];
 typedef char FrontEndControllerRequestedStateAt6110[
     (offsetof(FrontEndControllerView, requestedState) == 0x6110) ? 1 : -1];
 typedef char FrontEndLifecycleFlagsAt6120[

@@ -19873,3 +19873,27 @@ row, and the acquisition and release count. It stubs the CRT calendar
 result and the ASCII drawing calls. A native fixture checks signed
 32-to-64-bit time conversion with a distinct following score field.
 See `.analysis/pi/front-end-draw-owner/`.
+
+### SEM-480 — update the allocated front-end controller
+
+The title factory registers `FrontEndControllerView::OnUpdate`. The
+update and main-menu methods read the allocated controller's two
+`ZunTimer` members, cursor, entry mode, flags, and state directly. The
+transition readiness word at `+0x6108` and local state at `+0x610C` have
+layout assertions. Scene Select still supplies the VM handle overlay and
+scene history. The normal callback retains its pending-load guard and
+forwards failure to the update method.
+
+All 92 affected strict comparisons pass across 14 translation units.
+Giving the Scene Select overlay a local pointer changes the pinned
+compiler's update extent from `0xBC1` to `0xB3E`. The two callers expand
+the cast where they use the overlay. Both normal link orders preserve
+the previous instruction bytes outside relocation operands for the
+migrated methods, title factory, constructor, and draw. Update moves
+from `0x0041CEC0` to `0x0043B650`. The link audit verifies 11,439 code
+references and 639 initialized-data references in both orders.
+
+The original and both rebuilt layouts pass the title selection, paired
+VM update, and three-entry initialization fixtures, plus the photo-task
+handoff and title callback fixtures. See
+`.analysis/pi/front-end-update-fields/`.

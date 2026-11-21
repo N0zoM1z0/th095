@@ -61,7 +61,7 @@ mutating the wrong texture atlas.
 
 ## Switch-table comparison blind spot
 
-`SceneSelectControllerView::UpdateMainMenu @ 0x00446A50` demonstrates that a
+`FrontEndControllerView::UpdateMainMenu @ 0x00446A50` demonstrates that a
 relocation-normalized object comparison is not sufficient when two private
 labels have the same relocation type but different semantic destinations. The
 target emits the state-7 block before state 8, but routes menu row 2 to state 8

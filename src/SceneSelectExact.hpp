@@ -205,12 +205,9 @@ struct SceneSelectControllerView
     void RefreshSceneSelection(i32 unused);
     void BuildScenePreviewText();
     void UpdateSelectedSceneDetails();
-    ChainCallbackResult Update();
-    ChainCallbackResult UpdateMainMenu();
     ChainCallbackResult UpdateSceneSelect();
     void CloseMainMenu();
     void UpdateMainMenuSelection();
-    static ChainCallbackResult __fastcall OnUpdate(void *controller);
     void SetDetailDigitSprite(i32 vmIndex, i32 spriteIndex);
     void ShowDetailDigit(i32 vmIndex);
     void HideDetailDigit(i32 vmIndex);

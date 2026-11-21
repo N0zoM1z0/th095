@@ -208,7 +208,7 @@ FrontEndControllerView *__fastcall FrontEndControllerView::Create(i32 mode)
     controller->flagBits.titleLoadIncomplete = 1;
     controller->entryMode = mode;
 
-    elem = g_Chain.CreateElem(SceneSelectControllerView::OnUpdate);
+    elem = g_Chain.CreateElem(FrontEndControllerView::OnUpdate);
     elem->arg = controller;
     g_Chain.AddToCalcChain(elem, 4);
     controller->calcChain = elem;

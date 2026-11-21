@@ -1,14 +1,15 @@
+#include "FrontEndController.hpp"
+
 #ifdef TH095_MATCH_EXACT
 #include "SceneControllerDrawExact.inl"
 #else
-#include "SceneSelect.hpp"
 
 namespace th095
 {
 
-ChainCallbackResult __fastcall SceneSelectControllerView::OnUpdate(void *argument)
+ChainCallbackResult __fastcall FrontEndControllerView::OnUpdate(void *argument)
 {
-    SceneSelectControllerView *controller = static_cast<SceneSelectControllerView *>(argument);
+    FrontEndControllerView *controller = static_cast<FrontEndControllerView *>(argument);
     // The loading worker sets the failure bit without clearing the pending bit.
     // Update handles that failure before using the title resources.
     if (controller->flagBits.titleLoadIncomplete && !controller->flagBits.titleLoadFailed)
@@ -23,7 +24,6 @@ ChainCallbackResult __fastcall SceneSelectControllerView::OnUpdate(void *argumen
 #endif // TH095_MATCH_EXACT
 
 #include "AsciiManager.hpp"
-#include "FrontEndController.hpp"
 #include "Main.hpp"
 #include "ReplayManager.hpp"
 #include "ScoreData.hpp"

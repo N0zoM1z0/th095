@@ -1019,9 +1019,11 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(
             encoding="utf-8"
         )
-        self.assertIn("typedef ZunTimer FrontEndControllerTimer;", source)
+        owner = (ROOT / "src" / "FrontEndController.hpp").read_text(encoding="utf-8")
+        self.assertIn("ZunTimer stateTimer;", owner)
+        self.assertIn("ZunTimer animationTimer;", owner)
         self.assertNotIn("ResultScreenTimer", source)
-        self.assertEqual(source.count("FrontEndResetTimer(&view->stateTimer);"), 11)
+        self.assertEqual(source.count("FrontEndResetTimer(&this->stateTimer);"), 11)
         self.assertLess(
             source.index("timer->current = 0;"),
             source.index("timer->subFrame = 0.0f;"),
@@ -1119,8 +1121,8 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         substitutions = (
             ("case FRONT_END_REQUESTED_STATE_MUSIC_ROOM:", "case 8:"),
             (
-                "view->requestedState = FRONT_END_REQUESTED_STATE_MUSIC_ROOM;",
-                "view->requestedState = 8;",
+                "this->requestedState = FRONT_END_REQUESTED_STATE_MUSIC_ROOM;",
+                "this->requestedState = 8;",
             ),
         )
         for named, raw in substitutions:
@@ -1136,9 +1138,9 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(
             encoding="utf-8"
         )
-        named = "view->flagBits.titleLoadFailed"
+        named = "this->flagBits.titleLoadFailed"
         self.assertIn(named, source)
-        changed = source.replace(named, "view->flags & 2", 1)
+        changed = source.replace(named, "this->flags & 2", 1)
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 GUARD.check_front_end_flags_owner(changed)
