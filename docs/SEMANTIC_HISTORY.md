@@ -19229,3 +19229,33 @@ instruction bytes in each normal image. Both images complete all 2,712
 demo0 indices with the ten gameplay fields matching retail. The timer
 starts one index earlier in the regular link and one index later in
 the reordered link. See `.analysis/pi/ecl-bullet-owner/`.
+
+### SEM-450 — call the canonical ANM methods from ECL
+
+ECL uses the loaded ANM owners directly to create and initialize
+VMs. It calls AnmManager::ExecuteScript and the bullet script-base
+function on their canonical declarations. Enemy markers use one
+AnmVmId for both lookup and sprite selection.
+
+The marker factory writes the handle directly at EBP-4 when
+`markerHandle` is initialized from the return value. Assignment to
+an existing handle introduces a temporary and grows the body from
+164 to 185 bytes. Direct initialization with the name `handle`
+swaps the handle and VM pointer homes. The accepted source matches
+both homes and retires the explicit return-buffer projection.
+
+All 22 affected strict exact comparisons pass. The 23 changed
+method and helper identities retain their retail destinations and
+follow their canonical symbols in both normal links. Retail and
+both links agree on all 33 death-photo creates, 32 marker cases,
+89 bullet callback cases and 27 rotating-laser callback cases.
+Both links complete all 2,712 demo0 indices with the ten gameplay
+fields matching retail. The reordered timer starts one index later.
+The linked-library check resolves all 7,748 code and 1,007 data
+relocations. See `.analysis/pi/ecl-anm-methods/`.
+
+The direct four-byte manager lookup remains in the exact adapter.
+Six callback probes grow with all three typed conversions tested.
+In the two-handle background callback at 0x00413FC0, construction
+plus assignment or memcpy grows 92 bytes to 142. A direct value
+constructor emits 117 bytes. See `.analysis/pi/ecl-anm-lookup/`.

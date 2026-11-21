@@ -145,6 +145,10 @@ read-only texture format and pixel-stride tables with the SceneTexture
 uploader. SEM-449 puts all six ECL bullet scans on the canonical pool
 and preserves the original rotation bits during VM reinitialization.
 Callbacks 2–4 still use the separate VC7.1 reinitialization receivers.
+SEM-450 calls the canonical VM factory, initializer, interpreter and
+sprite methods from ECL. The enemy marker initializes its handle
+directly from the factory return. Manager lookup retains its exact
+four-byte argument adapter.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

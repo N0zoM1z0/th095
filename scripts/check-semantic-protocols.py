@@ -455,8 +455,6 @@ def check_ecl_type_boundaries() -> None:
 def check_ecl_extended_type_boundaries() -> None:
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
     required_normal_bindings = (
-        "typedef AnmVmId ExtendedVmHandle;",
-        "typedef AnmLoaded ExtendedAnmSpawner;",
         "typedef Float3 ExtendedVector;",
         '#include "PhotoGamePlayer.hpp"',
         "g_RuntimePlayerOwner->playerPosition",
@@ -505,11 +503,7 @@ def check_ecl_extended_type_boundaries() -> None:
             fail(f"EclExtended restored retired normal type debt: {token}")
 
     emission_requirements = {
-        "EclExtendedAnmEmission.inl": (
-            "struct AnmManagerLookupView",
-            "struct ExtendedVmHandle",
-            "struct ExtendedAnmSpawner",
-        ),
+        "EclExtendedAnmEmission.inl": ("struct AnmManagerLookupView",),
         "EclExtendedMathEmission.inl": ("struct ExtendedVector",),
         "EclExtendedBulletEmission.inl": ("struct ExtendedBulletView",),
     }
