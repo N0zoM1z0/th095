@@ -110,15 +110,12 @@
 #endif
 
 #define TH095_ECL_RESOLVE_FLOAT(enemy, operand) \
-    reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat((operand).asFloat)
+    (enemy)->ResolveFloat((operand).asFloat)
 
 #ifdef DIFFBUILD
-#define TH095_ECL_CLAMP_POSITION(enemy) (enemy)->ClampPosition()
 #define TH095_ECL_CONFIGURE_PHOTO_ANM(vm, work, value) \
     TH095_ECL_ANM_MANAGER->ConfigureEnemyPhotoAnm((vm), (work), (value))
 #else
-#define TH095_ECL_CLAMP_POSITION(enemy) \
-    reinterpret_cast<::th095::PhotoEnemyView *>(enemy)->ClampPosition()
 #define TH095_ECL_CONFIGURE_PHOTO_ANM(vm, work, value) \
     ::th095::g_AnmManager->InitializeHorizontalTextureStrip( \
         (vm), reinterpret_cast<::th095::AnmVertex *>(work), (value))
@@ -170,7 +167,7 @@ static __forceinline void InitializeEclTargetTimer(ZunTimer *timer)
 }
 
 // FUNCTION: TH095 0x00408E70; TH08 0x004184B0 is the adjacent source oracle.
-::ZunResult PhotoEnemyEclManagerView::RunEcl(Enemy *enemy)
+::ZunResult PhotoEnemyEclManagerView::RunEcl(PhotoEnemyView *enemy)
 {
     using namespace EclRunLow;
     using namespace EclRunHigh;
@@ -179,8 +176,8 @@ static __forceinline void InitializeEclTargetTimer(ZunTimer *timer)
     i32 activeChildContext = -1;
     i32 lhsInt;
 
-    enemy->activeEclCallStack = enemy->mainEclCallStackStorage;
-    enemy->activeEclContext = &enemy->mainEclContextStorage;
+    enemy->activeEclCallStack = enemy->eclCallStack;
+    enemy->activeEclContext = &enemy->mainEclContext;
     enemy->activeEclCallStackDepth = enemy->mainEclCallStackDepth;
 
 restart_context:
@@ -243,7 +240,7 @@ low_advance_instruction:
     // Target 0x0041E7F8..0x0041ECBD is part of RunEcl itself.  Keep the
     // complete frame tail lexical so VC7 can share RunEcl's locals and emit
     // the observed in-function easing switch and child-context back edge.
-    if (reinterpret_cast<PhotoEnemyView *>(enemy)->life > 0)
+    if (enemy->life > 0)
     {
         i32 i;
         f32 progress;
@@ -256,7 +253,8 @@ low_advance_instruction:
 
         if (enemy->activeEclContext->perFrameCallback)
             enemy->activeEclContext->perFrameCallback(
-                enemy, enemy->activeEclContext->perFrameInstruction);
+                reinterpret_cast<Enemy *>(enemy),
+                enemy->activeEclContext->perFrameInstruction);
 
         for (i = 0; i < 8; ++i, ++entry)
         {
@@ -289,7 +287,7 @@ low_advance_instruction:
                     break;
                 }
 
-                entry->callback(enemy, entry, progress);
+                entry->callback(reinterpret_cast<Enemy *>(enemy), entry, progress);
                 if (entry->timer >= entry->duration)
                     entry->callback = 0;
 
@@ -314,7 +312,7 @@ low_advance_instruction:
     if (activeChildContext == -1)
         enemy->mainEclCallStackDepth = enemy->activeEclCallStackDepth;
     else
-        reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[activeChildContext]->callStackDepth =
+        enemy->childEclBlocks[activeChildContext]->callStackDepth =
             enemy->activeEclCallStackDepth;
 
     enemy->activeEclContext->currentInstr = instruction;
@@ -323,10 +321,10 @@ low_advance_instruction:
 low_select_next_context:
     for (i32 next = activeChildContext + 1; next < 16; ++next)
     {
-        if (reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[next])
+        if (enemy->childEclBlocks[next])
         {
             EnemyChildEclBlock *childContext =
-                reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[next];
+                enemy->childEclBlocks[next];
             enemy->activeEclCallStack = childContext->callStack;
             enemy->activeEclContext = &childContext->eclContext;
             instruction = enemy->activeEclContext->currentInstr;
@@ -337,10 +335,10 @@ low_select_next_context:
         }
     }
 
-    enemy->activeEclCallStack = enemy->mainEclCallStackStorage;
-    enemy->activeEclContext = &enemy->mainEclContextStorage;
+    enemy->activeEclCallStack = enemy->eclCallStack;
+    enemy->activeEclContext = &enemy->mainEclContext;
     enemy->UpdateMovement();
-    reinterpret_cast<PhotoEnemyView *>(enemy)->UpdateShotAndAnm();
+    enemy->UpdateShotAndAnm();
 
     return ZUN_SUCCESS;
 }

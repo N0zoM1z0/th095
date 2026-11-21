@@ -11,7 +11,7 @@ namespace th095
 {
 
 struct EnemyEclContext;
-struct Enemy;
+struct PhotoEnemyView;
 
 struct PhotoEnemyEclFileView
 {
@@ -60,7 +60,7 @@ struct PhotoEnemyEclManagerView
     i32 Load(char *path);
     i32 InitializeContext(
         EnemyEclContext *context, i16 subroutineId);
-    ::ZunResult RunEcl(Enemy *enemy);
+    ::ZunResult RunEcl(PhotoEnemyView *enemy);
 };
 
 typedef char PhotoEnemyEclManagerSizeIs188[

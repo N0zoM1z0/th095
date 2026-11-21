@@ -9,23 +9,24 @@
     case 92:
     case 93:
     case 94:
-        if (reinterpret_cast<PhotoEnemyView *>(enemy)->life <= 0)
+        if (enemy->life <= 0)
             break;
-        if (((reinterpret_cast<PhotoEnemyView *>(enemy)->flags1
+        if (((enemy->flags1
               >> PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_SHIFT) & 1U) != 0)
         {
-            memcpy(&reinterpret_cast<PhotoEnemyView *>(enemy)->pendingShotInstruction,
+            memcpy(&enemy->pendingShotInstruction,
                    instruction, sizeof(EclShotInstruction));
             break;
         }
         DispatchShotInstruction(
-            enemy, reinterpret_cast<EclShotInstruction *>(instruction));
+            reinterpret_cast<Enemy *>(enemy),
+            reinterpret_cast<EclShotInstruction *>(instruction));
         break;
 
     case 101:
     {
         PhotoBulletTransformRecord *slot =
-            &reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.transforms[TH08_ECL_READ_I(ctx, 0)];
+            &enemy->bulletSpawnDescriptor.transforms[TH08_ECL_READ_I(ctx, 0)];
         slot->kind = TH08_ECL_READ_I(ctx, 1);
         slot->allowWhileActive = TH08_ECL_READ_I(ctx, 2);
         slot->payload.int0 = TH08_ECL_READ_I(ctx, 3);
@@ -42,34 +43,34 @@
     }
 
     case 95:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames = TH08_ECL_READ_I(ctx, 0);
-        if (reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames != 0)
-            InitializeEclTargetTimer(&reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalTimer);
+        enemy->shootIntervalFrames = TH08_ECL_READ_I(ctx, 0);
+        if (enemy->shootIntervalFrames != 0)
+            InitializeEclTargetTimer(&enemy->shootIntervalTimer);
         break;
 
     case 96:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames = TH08_ECL_READ_I(ctx, 0);
-        if (reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames != 0)
-            reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalTimer =
+        enemy->shootIntervalFrames = TH08_ECL_READ_I(ctx, 0);
+        if (enemy->shootIntervalFrames != 0)
+            enemy->shootIntervalTimer =
                 g_Rng.GetRandomU32InRange(
-                    reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames);
+                    enemy->shootIntervalFrames);
         break;
 
     case 97:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 |=
+        enemy->flags1 |=
             PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_MASK;
         break;
     case 98:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 &=
+        enemy->flags1 &=
             ~PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_MASK;
         break;
 
     case 99:
         reinterpret_cast<Float3 &>(
-            reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.position) =
-                reinterpret_cast<PhotoEnemyView *>(enemy)->position + enemy->shootOffset;
+            enemy->bulletSpawnDescriptor.position) =
+                enemy->position + enemy->shootOffset;
         g_PhotoBulletManager->SpawnBulletPattern(
-            &reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor);
+            &enemy->bulletSpawnDescriptor);
         break;
 
     case 100:
@@ -88,20 +89,20 @@
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
             g_PhotoEnemyManager->photoTargets[TH08_ECL_READ_I(ctx, 0)] =
-                reinterpret_cast<PhotoEnemyView *>(enemy);
-            reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 |= PHOTO_ENEMY_PHOTO_TARGET_MASK;
-            reinterpret_cast<PhotoEnemyView *>(enemy)->photoTargetSlot =
+                enemy;
+            enemy->flags1 |= PHOTO_ENEMY_PHOTO_TARGET_MASK;
+            enemy->photoTargetSlot =
                 static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
         }
         else
         {
-            g_PhotoEnemyManager->photoTargets[reinterpret_cast<PhotoEnemyView *>(enemy)->photoTargetSlot] = 0;
-            reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 &= ~PHOTO_ENEMY_PHOTO_TARGET_MASK;
+            g_PhotoEnemyManager->photoTargets[enemy->photoTargetSlot] = 0;
+            enemy->flags1 &= ~PHOTO_ENEMY_PHOTO_TARGET_MASK;
         }
         break;
 
     case 132:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->drawGroup =
+        enemy->drawGroup =
             static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
         break;
 
@@ -112,7 +113,7 @@
         break;
 
     case 112:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->photoCaptureEclSubroutineId =
+        enemy->photoCaptureEclSubroutineId =
             *reinterpret_cast<i16 *>(instruction->operands);
         break;
 
@@ -130,15 +131,15 @@ enter_subroutine:
         enemy->activeEclContext->currentInstr =
             reinterpret_cast<EclRawInstruction *>(
                 reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
-        if (((reinterpret_cast<PhotoEnemyView *>(enemy)->flags1
+        if (((enemy->flags1
               >> 24) & 1U) == 0)
         {
             memcpy(enemy->activeEclCallStack + enemy->activeEclCallStackDepth,
-                   &enemy->mainEclContextStorage,
-                   sizeof(enemy->mainEclContextStorage));
+                   &enemy->mainEclContext,
+                   sizeof(enemy->mainEclContext));
         }
         this->InitializeContext(
-            &enemy->mainEclContextStorage,
+            &enemy->mainEclContext,
             enemy->eclSubroutineIds[enemy->pendingEclSubroutineIndex]);
         if (enemy->activeEclCallStackDepth < 15)
             ++enemy->activeEclCallStackDepth;
@@ -146,9 +147,9 @@ enter_subroutine:
         goto restart_context;
 
     case 113:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->phaseStartingLife =
-            reinterpret_cast<PhotoEnemyView *>(enemy)->life =
-                reinterpret_cast<PhotoEnemyView *>(enemy)->maximumLife =
+        enemy->phaseStartingLife =
+            enemy->life =
+                enemy->maximumLife =
                     TH08_ECL_READ_I(ctx, 0);
         break;
 
@@ -161,44 +162,44 @@ enter_subroutine:
     }
 
     case 115:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->eclSchedule.photoIndices[TH08_ECL_READ_I(ctx, 0)] =
+        enemy->eclSchedule.photoIndices[TH08_ECL_READ_I(ctx, 0)] =
             TH08_ECL_READ_I(ctx, 1);
-        reinterpret_cast<PhotoEnemyView *>(enemy)->eclSchedule.calls[TH08_ECL_READ_I(ctx, 0)].rawValue =
+        enemy->eclSchedule.calls[TH08_ECL_READ_I(ctx, 0)].rawValue =
             TH08_ECL_READ_I(ctx, 2);
         break;
 
     case 116:
     {
-        reinterpret_cast<PhotoEnemyView *>(enemy)->pendingCallbackFrame = TH08_ECL_READ_I(ctx, 0);
-        reinterpret_cast<PhotoEnemyView *>(enemy)->unknown2ca8 =
+        enemy->pendingCallbackFrame = TH08_ECL_READ_I(ctx, 0);
+        enemy->unknown2ca8 =
             TH08_ECL_READ_I(ctx, 1);
-        InitializeEclTargetTimer(&reinterpret_cast<PhotoEnemyView *>(enemy)->eclTimer);
+        InitializeEclTargetTimer(&enemy->eclTimer);
         break;
     }
 
     case 117:
     {
         lhsInt = TH08_ECL_READ_I(ctx, 0);
-        if (reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt])
+        if (enemy->childEclBlocks[lhsInt])
             g_ZunMemory.Free(
-                reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]);
-        reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt] = 0;
+                enemy->childEclBlocks[lhsInt]);
+        enemy->childEclBlocks[lhsInt] = 0;
         if (TH08_ECL_READ_I(ctx, 1) >= 0)
         {
-            reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt] =
+            enemy->childEclBlocks[lhsInt] =
                 static_cast<EnemyChildEclBlock *>(
                     Th095Alloc(sizeof(EnemyChildEclBlock)));
-            if (reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt])
+            if (enemy->childEclBlocks[lhsInt])
             {
-                memset(reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt], 0,
+                memset(enemy->childEclBlocks[lhsInt], 0,
                        sizeof(EnemyChildEclBlock));
-                reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]->subId =
+                enemy->childEclBlocks[lhsInt]->subId =
                     TH08_ECL_READ_I(ctx, 1);
                 this->InitializeContext(
-                    &reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]->eclContext,
-                    reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]->subId);
+                    &enemy->childEclBlocks[lhsInt]->eclContext,
+                    enemy->childEclBlocks[lhsInt]->subId);
                 memcpy(
-                    &reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[lhsInt]->eclContext.scriptState,
+                    &enemy->childEclBlocks[lhsInt]->eclContext.scriptState,
                     &enemy->activeEclContext->scriptState, sizeof(EclScriptState));
             }
         }
@@ -206,12 +207,13 @@ enter_subroutine:
     }
 
     case 120:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->control.unknown023 =
+        enemy->control.unknown023 =
             reinterpret_cast<u8 *>(instruction->operands)[0];
         break;
 
     case 118:
-        g_Th095ExInsn[TH08_ECL_READ_I(ctx, 0)](enemy, instruction);
+        g_Th095ExInsn[TH08_ECL_READ_I(ctx, 0)](
+            reinterpret_cast<Enemy *>(enemy), instruction);
         break;
 
     case 119:
@@ -233,18 +235,18 @@ enter_subroutine:
         break;
 
     case 83:
-        if (reinterpret_cast<PhotoEnemyView *>(enemy)->life > 0)
+        if (enemy->life > 0)
         {
             g_PhotoEnemyManager->SpawnWithContext(
                 TH08_ECL_RAW_I(ctx, 0),
-                &reinterpret_cast<PhotoEnemyView *>(enemy)->position,
+                &enemy->position,
                 10, 0, 0,
                 &enemy->activeEclContext->scriptState);
         }
         break;
 
     case 84:
-        if (reinterpret_cast<PhotoEnemyView *>(enemy)->life > 0)
+        if (enemy->life > 0)
         {
             SpawnPacketSmall packet;
             PhotoEnemyView *spawned;
@@ -252,15 +254,15 @@ enter_subroutine:
                 Float3 position;
                 memcpy(&packet, instruction->operands, sizeof(packet));
                 position.x = (instruction->operandFlags & (1U << 1))
-                    ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(packet.position.x)
+                    ? enemy->ResolveFloat(packet.position.x)
                     : packet.position.x;
                 position.y = (instruction->operandFlags & (1U << 2))
-                    ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(packet.position.y)
+                    ? enemy->ResolveFloat(packet.position.y)
                     : packet.position.y;
                 position.z = (instruction->operandFlags & (1U << 3))
-                    ? reinterpret_cast<PhotoEnemyView *>(enemy)->ResolveFloat(packet.position.z)
+                    ? enemy->ResolveFloat(packet.position.z)
                     : packet.position.z;
-                position += reinterpret_cast<PhotoEnemyView *>(enemy)->position;
+                position += enemy->position;
                 spawned =
                 g_PhotoEnemyManager->SpawnWithContext(
                     packet.eclSubroutineId, &position, 10, 0, 0,
@@ -282,69 +284,69 @@ enter_subroutine:
     case 103:
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
-            reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.spawnSound = TH08_ECL_READ_I(ctx, 0);
-            reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.transformFlags |=
+            enemy->bulletSpawnDescriptor.spawnSound = TH08_ECL_READ_I(ctx, 0);
+            enemy->bulletSpawnDescriptor.transformFlags |=
                 PHOTO_BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
         }
         else
         {
-            reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.transformFlags &=
+            enemy->bulletSpawnDescriptor.transformFlags &=
                 ~PHOTO_BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
         }
-        reinterpret_cast<PhotoEnemyView *>(enemy)->bulletSpawnDescriptor.transformSound =
+        enemy->bulletSpawnDescriptor.transformSound =
             TH08_ECL_READ_I(ctx, 1);
         break;
 
     case 126:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->control.suppressEclCallStack =
+        enemy->control.suppressEclCallStack =
             reinterpret_cast<u8 *>(instruction->operands)[0];
         break;
 
     case 128:
     {
-        reinterpret_cast<PhotoEnemyView *>(enemy)->unknown2ca8 =
-            reinterpret_cast<PhotoEnemyView *>(enemy)->photoCaptureEclSubroutineId;
-        InitializeEclTargetTimer(&reinterpret_cast<PhotoEnemyView *>(enemy)->eclTimer);
+        enemy->unknown2ca8 =
+            enemy->photoCaptureEclSubroutineId;
+        InitializeEclTargetTimer(&enemy->eclTimer);
         break;
     }
 
     case 130:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->control.unknown007 =
+        enemy->control.unknown007 =
             reinterpret_cast<u8 *>(instruction->operands)[0];
-        reinterpret_cast<PhotoEnemyView *>(enemy)->drawGroup = 2;
+        enemy->drawGroup = 2;
         break;
 
     case 131:
     {
-        reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.flags =
+        enemy->trailConfig.flags =
             static_cast<u8>(TH08_ECL_RAW_I(ctx, 0));
-        reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.length =
+        enemy->trailConfig.length =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 1));
-        reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.unknown04 =
+        enemy->trailConfig.unknown04 =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 2));
-        reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.sampleStride =
+        enemy->trailConfig.sampleStride =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 3));
-        if ((reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.flags &
+        if ((enemy->trailConfig.flags &
              PHOTO_ENEMY_TRAIL_INITIALIZE_STRIP) != 0)
         {
             TH095_ECL_CONFIGURE_PHOTO_ANM(
                 &enemy->vm,
-                reinterpret_cast<PhotoEnemyView *>(enemy)->trailVertices,
-                (reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.length /
-                 reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.sampleStride) << 1);
+                enemy->trailVertices,
+                (enemy->trailConfig.length /
+                 enemy->trailConfig.sampleStride) << 1);
         }
         break;
     }
 
     case 133:
     {
-        reinterpret_cast<PhotoEnemyView *>(enemy)->timer4cac =
+        enemy->timer4cac =
             TH08_ECL_READ_I(ctx, 0);
         break;
     }
 
     case 135:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->vm.rotation.z =
+        enemy->vm.rotation.z =
             (instruction->operandFlags & 1U)
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[0])
                 : *reinterpret_cast<f32 *>(&instruction->operands[0].asInt);
@@ -379,23 +381,23 @@ enter_subroutine:
         break;
 
     case 138:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->control.unknown028 =
+        enemy->control.unknown028 =
             TH08_ECL_READ_I(ctx, 0);
         break;
 
     case 82:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->minimumPlayerDistanceSquared =
+        enemy->minimumPlayerDistanceSquared =
             TH08_ECL_READ_F_RAWARG(ctx, 0);
-        reinterpret_cast<PhotoEnemyView *>(enemy)->minimumPlayerDistanceSquared *=
-            reinterpret_cast<PhotoEnemyView *>(enemy)->minimumPlayerDistanceSquared;
+        enemy->minimumPlayerDistanceSquared *=
+            enemy->minimumPlayerDistanceSquared;
         break;
 
     case 139:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->phaseStartingLife = TH08_ECL_READ_I(ctx, 0);
+        enemy->phaseStartingLife = TH08_ECL_READ_I(ctx, 0);
         break;
 
     case 140:
-        reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl.unknown005 =
+        enemy->secondaryControl.unknown005 =
             TH08_ECL_READ_I(ctx, 0);
         break;
 
@@ -411,9 +413,9 @@ enter_subroutine:
 
     case 143:
     {
-        reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl.showPhotoMarker =
+        enemy->secondaryControl.showPhotoMarker =
             TH08_ECL_READ_I(ctx, 0);
-        reinterpret_cast<PhotoEnemyView *>(enemy)->photoMarkerPulseTimer =
+        enemy->photoMarkerPulseTimer =
             TH08_ECL_READ_I(ctx, 1);
         break;
     }
@@ -435,12 +437,12 @@ enter_subroutine:
         TH095_ECL_PHOTO_MODE_BEGIN();
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0xe), 0);
 
-        reinterpret_cast<PhotoEnemyView *>(enemy)->attachedVmId =
+        enemy->attachedVmId =
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_BULLET_ANM_SPAWNER, 0xd2,
-                &reinterpret_cast<PhotoEnemyView *>(enemy)->position);
+                &enemy->position);
         TH095_ECL_ANM_GET_VM(
-            reinterpret_cast<PhotoEnemyView *>(enemy)->attachedVmId.value)
+            enemy->attachedVmId.value)
             ->counterVar0 = Th095PreserveI32(g_RuntimeGlobalStateOwner->completion.timer.current);
         break;
     }
@@ -453,8 +455,8 @@ enter_subroutine:
             TH095_ECL_PHOTO_CARD_SESSION = 0;
             TH095_ECL_PHOTO_MODE_END();
             TH095_ECL_ANM_MARK_DELETE(
-                reinterpret_cast<PhotoEnemyView *>(enemy)->attachedVmId.value);
-            reinterpret_cast<PhotoEnemyView *>(enemy)->attachedVmId.value =
+                enemy->attachedVmId.value);
+            enemy->attachedVmId.value =
                 Th095PreserveI32(0);
         }
         break;
@@ -462,14 +464,14 @@ enter_subroutine:
 
     case 144:
     {
-        reinterpret_cast<PhotoEnemyView *>(enemy)->photoPulseTimer =
+        enemy->photoPulseTimer =
             TH08_ECL_READ_I(ctx, 0);
-        reinterpret_cast<PhotoEnemyView *>(enemy)->photoPulseDurationTimer =
+        enemy->photoPulseDurationTimer =
             TH08_ECL_READ_I(ctx, 0);
-        reinterpret_cast<PhotoEnemyView *>(enemy)->photoPulseVmId =
+        enemy->photoPulseVmId =
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_BULLET_ANM_SPAWNER, 0x125,
-                &reinterpret_cast<PhotoEnemyView *>(enemy)->position);
+                &enemy->position);
         g_SoundPlayer.PlaySoundByIdx(SOUND_PHOTO_PULSE, 0);
         break;
     }

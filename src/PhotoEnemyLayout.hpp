@@ -175,6 +175,7 @@ struct PhotoEnemyView
     }
     f32 ResolveFloat(f32 operand);
     void UpdateShotAndAnm();
+    void UpdateMovement();
     void IntegrateMovement();
     void ClampPosition();
     void RestartEcl();

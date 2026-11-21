@@ -3592,9 +3592,12 @@ def check_photo_enemy_owner() -> None:
             fail(f"EclExtended lost canonical movement-control binding: {fact}")
 
     movement = (SRC / "EnemyMovement.cpp").read_text(encoding="utf-8")
-    if "struct Enemy : PhotoEnemyView" not in movement:
-        fail("EnemyMovement must retain only a method ABI shell over PhotoEnemyView")
-    for retired in ("u8 prefix[0x28a0]", "MovementModeProbe", "MovementEasingProbe"):
+    if "void PhotoEnemyView::UpdateMovement()" not in movement:
+        fail("EnemyMovement must implement movement on the compact enemy")
+    for retired in (
+        "struct Enemy : PhotoEnemyView", "u8 prefix[0x28a0]",
+        "MovementModeProbe", "MovementEasingProbe",
+    ):
         if retired in movement:
             fail(f"EnemyMovement restored retired compact-enemy projection: {retired}")
     explicit_enum(
@@ -3631,6 +3634,8 @@ def check_photo_enemy_owner() -> None:
             fail(f"{path.relative_to(SRC)} bypasses the shared runtime operand path")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
+    if "PhotoEnemyEclManagerView::RunEcl(PhotoEnemyView *enemy)" not in ecl_run:
+        fail("RunEcl must dispatch on the compact enemy")
     if "g_PhotoEnemyManager->enemyAnm" not in ecl_run:
         fail("normal EclRun must consume canonical EnemyInf::enemyAnm")
     if "EclEnemyAnmRuntimeView" in ecl_run:
@@ -3679,11 +3684,11 @@ def check_photo_enemy_owner() -> None:
         fail("ECL opcode 115 must store the complete scheduled call word")
     for marker in (
         "g_PhotoEnemyManager->photoTargets",
-        "reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames",
-        "reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks",
-        "reinterpret_cast<PhotoEnemyView *>(enemy)->control",
-        "reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl",
-        "reinterpret_cast<PhotoEnemyView *>(enemy)->photoPulseTimer",
+        "enemy->shootIntervalFrames",
+        "enemy->childEclBlocks",
+        "enemy->control",
+        "enemy->secondaryControl",
+        "enemy->photoPulseTimer",
     ):
         if marker not in run_surfaces:
             fail(f"RunEcl lost shared compact-enemy access: {marker}")

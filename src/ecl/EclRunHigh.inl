@@ -199,7 +199,7 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
 #define TH08_ECL_READ_I16(ctx, byteOffset, flagIndex) \
     ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << (flagIndex))) \
          ? EclOperands::ResolveInt( \
-               reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)), \
+               TH08_ECL_CONTEXT_ENEMY(ctx), \
                static_cast<i32>(*reinterpret_cast<i16 *>( \
                    reinterpret_cast<u8 *>(TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operands) + (byteOffset)))) \
          : static_cast<i32>(*reinterpret_cast<i16 *>( \
@@ -207,7 +207,7 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
 #define TH08_ECL_READ_I(ctx, index) \
     ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << (index))) \
          ? EclOperands::ResolveInt( \
-               reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)), \
+               TH08_ECL_CONTEXT_ENEMY(ctx), \
                TH08_ECL_RAW_I((ctx), (index))) \
          : TH08_ECL_RAW_I((ctx), (index)))
 #define TH08_ECL_READ_F(ctx, index) \
@@ -226,11 +226,11 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
 
 #define TH08_ECL_WRITE_I(ctx, index) \
     EclOperands::ResolveIntLValue( \
-        reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)), \
+        TH08_ECL_CONTEXT_ENEMY(ctx), \
         &TH08_ECL_RAW_I((ctx), (index)), TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags, (index))
 #define TH08_ECL_WRITE_F(ctx, index) \
     EclOperands::ResolveFloatLValue( \
-        reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx)), \
+        TH08_ECL_CONTEXT_ENEMY(ctx), \
         &TH08_ECL_RAW_F((ctx), (index)), TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags, (index))
 #define TH08_ECL_LASER(ctx, index) \
     (TH08_ECL_CONTEXT_ENEMY(ctx)->laserSlots[(index)])

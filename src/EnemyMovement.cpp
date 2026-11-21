@@ -4,10 +4,6 @@
 
 namespace th095
 {
-// Target-facing method ABI only.  Storage and semantic fields belong to the
-// canonical compact PhotoEnemyView; the inherited Enemy name is retained only
-// because EclRun calls the decorated Enemy::UpdateMovement symbol.
-
 f32 AddNormalizeAngle(f32 a, f32 b);
 
 static __forceinline f32 MovementFrameRateMultiplier()
@@ -18,16 +14,9 @@ static __forceinline f32 MovementFrameRateMultiplier()
     return g_AnmGameSpeed;
 }
 
-struct Enemy : PhotoEnemyView
+void PhotoEnemyView::UpdateMovement()
 {
-    void UpdateMovement();
-};
-
-#define PHOTO_ENEMY_MOVEMENT_FIELD(field) this->field
-
-void Enemy::UpdateMovement()
-{
-    switch ((PHOTO_ENEMY_MOVEMENT_FIELD(flags1) >>
+    switch ((this->flags1 >>
                 PHOTO_ENEMY_MOVEMENT_MODE_SHIFT) & 3)
     {
     case PHOTO_ENEMY_MOVEMENT_ORBIT:
@@ -39,55 +28,55 @@ void Enemy::UpdateMovement()
         }
         Float3 polarVelocity;
 
-        PHOTO_ENEMY_MOVEMENT_FIELD(orbitAngle) =
+        this->orbitAngle =
             AddNormalizeAngle(
-                PHOTO_ENEMY_MOVEMENT_FIELD(orbitAngle),
+                this->orbitAngle,
                 MovementFrameRateMultiplier() *
-                    PHOTO_ENEMY_MOVEMENT_FIELD(orbitAngularVelocity));
-        PHOTO_ENEMY_MOVEMENT_FIELD(orbitRadius) =
+                    this->orbitAngularVelocity);
+        this->orbitRadius =
             MovementFrameRateMultiplier() *
-                PHOTO_ENEMY_MOVEMENT_FIELD(radialVelocity) +
-            PHOTO_ENEMY_MOVEMENT_FIELD(orbitRadius);
+                this->radialVelocity +
+            this->orbitRadius;
         polarVelocity.FromAngleMagnitude(
-            PHOTO_ENEMY_MOVEMENT_FIELD(orbitAngle),
-            PHOTO_ENEMY_MOVEMENT_FIELD(orbitRadius));
-        PHOTO_ENEMY_MOVEMENT_FIELD(velocity).x = polarVelocity.x +
-            PHOTO_ENEMY_MOVEMENT_FIELD(movementInterpolationOrigin).x -
-            PHOTO_ENEMY_MOVEMENT_FIELD(position).x;
-        PHOTO_ENEMY_MOVEMENT_FIELD(velocity).y = polarVelocity.y +
-            PHOTO_ENEMY_MOVEMENT_FIELD(movementInterpolationOrigin).y -
-            PHOTO_ENEMY_MOVEMENT_FIELD(position).y;
-        PHOTO_ENEMY_MOVEMENT_FIELD(movementAngle) = atan2f(
-            PHOTO_ENEMY_MOVEMENT_FIELD(velocity).y,
-            PHOTO_ENEMY_MOVEMENT_FIELD(velocity).x);
-        if (PHOTO_ENEMY_MOVEMENT_FIELD(movementDuration) > 0)
+            this->orbitAngle,
+            this->orbitRadius);
+        this->velocity.x = polarVelocity.x +
+            this->movementInterpolationOrigin.x -
+            this->position.x;
+        this->velocity.y = polarVelocity.y +
+            this->movementInterpolationOrigin.y -
+            this->position.y;
+        this->movementAngle = atan2f(
+            this->velocity.y,
+            this->velocity.x);
+        if (this->movementDuration > 0)
         {
-            PHOTO_ENEMY_MOVEMENT_FIELD(movementTimer)--;
-            if (PHOTO_ENEMY_MOVEMENT_FIELD(movementTimer) <= 0)
-                PHOTO_ENEMY_MOVEMENT_FIELD(flags1) &=
+            this->movementTimer--;
+            if (this->movementTimer <= 0)
+                this->flags1 &=
                     ~PHOTO_ENEMY_MOVEMENT_MODE_MASK;
         }
         break;
     }
 
     case PHOTO_ENEMY_MOVEMENT_POLAR:
-        PHOTO_ENEMY_MOVEMENT_FIELD(movementAngle) =
+        this->movementAngle =
             AddNormalizeAngle(
-                PHOTO_ENEMY_MOVEMENT_FIELD(movementAngle),
+                this->movementAngle,
                 MovementFrameRateMultiplier() *
-                    PHOTO_ENEMY_MOVEMENT_FIELD(angularVelocity));
-        PHOTO_ENEMY_MOVEMENT_FIELD(speed) = MovementFrameRateMultiplier() *
-            PHOTO_ENEMY_MOVEMENT_FIELD(acceleration) +
-            PHOTO_ENEMY_MOVEMENT_FIELD(speed);
-        PHOTO_ENEMY_MOVEMENT_FIELD(velocity).FromAngleMagnitude(
-            PHOTO_ENEMY_MOVEMENT_FIELD(movementAngle),
-            PHOTO_ENEMY_MOVEMENT_FIELD(speed));
-        PHOTO_ENEMY_MOVEMENT_FIELD(velocity).operator float *()[2] = 0.0f;
-        if (PHOTO_ENEMY_MOVEMENT_FIELD(movementDuration) > 0)
+                    this->angularVelocity);
+        this->speed = MovementFrameRateMultiplier() *
+            this->acceleration +
+            this->speed;
+        this->velocity.FromAngleMagnitude(
+            this->movementAngle,
+            this->speed);
+        this->velocity.operator float *()[2] = 0.0f;
+        if (this->movementDuration > 0)
         {
-            PHOTO_ENEMY_MOVEMENT_FIELD(movementTimer)--;
-            if (PHOTO_ENEMY_MOVEMENT_FIELD(movementTimer) <= 0)
-                PHOTO_ENEMY_MOVEMENT_FIELD(flags1) &=
+            this->movementTimer--;
+            if (this->movementTimer <= 0)
+                this->flags1 &=
                     ~PHOTO_ENEMY_MOVEMENT_MODE_MASK;
         }
         break;
@@ -96,13 +85,13 @@ void Enemy::UpdateMovement()
     {
         f32 progress;
 
-        PHOTO_ENEMY_MOVEMENT_FIELD(movementTimer)--;
+        this->movementTimer--;
         progress = 1.0f -
-            (f32)PHOTO_ENEMY_MOVEMENT_FIELD(movementTimer) /
-                PHOTO_ENEMY_MOVEMENT_FIELD(movementDuration);
+            (f32)this->movementTimer /
+                this->movementDuration;
         if (progress < 0.0f)
             progress = 0.0f;
-        switch ((PHOTO_ENEMY_MOVEMENT_FIELD(flags1) >>
+        switch ((this->flags1 >>
                     PHOTO_ENEMY_MOVEMENT_EASING_SHIFT) & 7)
         {
         case PHOTO_ENEMY_EASING_IN_QUADRATIC: progress *= progress; break;
@@ -125,25 +114,25 @@ void Enemy::UpdateMovement()
             break;
         }
 
-        PHOTO_ENEMY_MOVEMENT_FIELD(velocity) =
-            PHOTO_ENEMY_MOVEMENT_FIELD(movementInterpolationOrigin) +
-            PHOTO_ENEMY_MOVEMENT_FIELD(movementInterpolationDelta) * progress -
-            PHOTO_ENEMY_MOVEMENT_FIELD(position);
-        if (((PHOTO_ENEMY_MOVEMENT_FIELD(flags1) >>
+        this->velocity =
+            this->movementInterpolationOrigin +
+            this->movementInterpolationDelta * progress -
+            this->position;
+        if (((this->flags1 >>
                   PHOTO_ENEMY_MIRROR_MOVEMENT_X_SHIFT) & 1) != 0)
-            PHOTO_ENEMY_MOVEMENT_FIELD(velocity).x =
-                -PHOTO_ENEMY_MOVEMENT_FIELD(velocity).x;
-        PHOTO_ENEMY_MOVEMENT_FIELD(movementAngle) = atan2f(
-            PHOTO_ENEMY_MOVEMENT_FIELD(velocity).y,
-            PHOTO_ENEMY_MOVEMENT_FIELD(velocity).x);
-        if (PHOTO_ENEMY_MOVEMENT_FIELD(movementTimer) <= 0)
+            this->velocity.x =
+                -this->velocity.x;
+        this->movementAngle = atan2f(
+            this->velocity.y,
+            this->velocity.x);
+        if (this->movementTimer <= 0)
         {
-            PHOTO_ENEMY_MOVEMENT_FIELD(flags1) &=
+            this->flags1 &=
                 ~PHOTO_ENEMY_MOVEMENT_MODE_MASK;
-            PHOTO_ENEMY_MOVEMENT_FIELD(position) =
-                PHOTO_ENEMY_MOVEMENT_FIELD(movementInterpolationOrigin) +
-                PHOTO_ENEMY_MOVEMENT_FIELD(movementInterpolationDelta);
-            PHOTO_ENEMY_MOVEMENT_FIELD(velocity) =
+            this->position =
+                this->movementInterpolationOrigin +
+                this->movementInterpolationDelta;
+            this->velocity =
                 Float3(0.0f, 0.0f, 0.0f);
         }
         break;
@@ -151,5 +140,4 @@ void Enemy::UpdateMovement()
     }
 }
 
-#undef PHOTO_ENEMY_MOVEMENT_FIELD
 } // namespace th095

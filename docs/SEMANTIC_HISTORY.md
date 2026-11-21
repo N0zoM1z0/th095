@@ -18850,3 +18850,22 @@ dispatcher's comparison call. Both builds reproduce the retail result in
 288 comparison cases. The previous builds failed all 144 taken-branch
 timer checks. The 54 movement-delta and 642 related cases also agree
 across all three images. See `.analysis/pi/ecl-resolver-owner/`.
+
+### SEM-433 — dispatch ECL on the compact enemy
+
+The EnemyInf spawners and update loop pass the compact record directly to
+`PhotoEnemyEclManagerView::RunEcl @ 0x00408E70`. The interpreter uses its
+main and saved ECL contexts, collision dimensions, timers, and ANM fields
+by name. The remaining legacy receiver conversions are at the helper and
+callback calls. `UpdateMovement @ 0x00412970` is a method of the compact
+record, and opcode 63 calls its `ClampPosition @ 0x00416320` directly in
+both profiles.
+
+All 167 affected exact units pass. Both normal link orders move the
+dispatcher, movement updater, and clamp, and all six checked calls follow
+their destinations. Against retail, 240 movement cases agree, including
+all four modes, all seven interpolation curves, and calls through RunEcl.
+The collision dimensions and immediate and per-frame ECL callback
+fixtures agree in 23 further cases. Both normal builds have the same four
+mapped sections as the SEM-432 demo0 replay images. See
+`.analysis/pi/ecl-dispatch-owner/`.

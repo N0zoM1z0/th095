@@ -504,7 +504,7 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
         this->eclManager->InitializeContext(
             &enemy->mainEclContext,
             static_cast<i16>(subroutineId));
-        if (this->eclManager->RunEcl(reinterpret_cast<Enemy *>(enemy)) ==
+        if (this->eclManager->RunEcl(enemy) ==
             TH095_LEGACY_ZUN_ERROR)
         {
             enemy->Deactivate();
@@ -561,7 +561,7 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
             &enemy->mainEclContext,
             static_cast<i16>(subroutineId));
         enemy->mainEclContext.scriptState = *scriptState;
-        if (this->eclManager->RunEcl(reinterpret_cast<Enemy *>(enemy)) ==
+        if (this->eclManager->RunEcl(enemy) ==
             TH095_LEGACY_ZUN_ERROR)
         {
             enemy->Deactivate();
@@ -672,7 +672,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
 
         enemy->UpdatePhotoMarkerPulse();
         enemy->UpdateScheduledEclCalls();
-        if (enemyManager->eclManager->RunEcl(reinterpret_cast<Enemy *>(enemy)) ==
+        if (enemyManager->eclManager->RunEcl(enemy) ==
             TH095_LEGACY_ZUN_ERROR)
         {
             enemy->Deactivate();

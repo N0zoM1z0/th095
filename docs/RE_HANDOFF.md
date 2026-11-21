@@ -113,7 +113,8 @@ shares the stage score multiplier between opcode 149 and camera scoring
 in both profiles. SEM-432 gives all four operand resolvers the compact
 enemy receiver and retires the exact-side float call adapter. RunEcl now
 uses the TH095 comparison helper so a taken branch resets all three timer
-fields.
+fields. SEM-433 gives RunEcl and UpdateMovement the compact enemy receiver.
+Context and callback helpers still have legacy signatures.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
