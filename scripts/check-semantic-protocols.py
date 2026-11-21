@@ -3972,7 +3972,7 @@ def check_photo_camera_state_owner() -> None:
 
     exact_sources = (
         source,
-        (SRC / "PhotoGameExact.inl").read_text(encoding="utf-8"),
+        (SRC / "PhotoGame.cpp").read_text(encoding="utf-8"),
         (SRC / "PhotoStage.cpp").read_text(encoding="utf-8"),
     )
     if any("PhotoAnmVmId::operator==" in text for text in exact_sources):
@@ -4025,10 +4025,7 @@ def check_photo_camera_state_owner() -> None:
     if "this->chargeUiState = PHOTO_CAMERA_CHARGE_UI_INITIAL;" not in game:
         fail("PhotoCamera initialization lost the named charge UI initial state")
     if game.count("TH095_PHOTO_ANM_CREATE_VM(") != 3:
-        fail("normal PhotoGame CreateVm calls escaped the emission boundary")
-    exact_game = (SRC / "PhotoGameExact.inl").read_text(encoding="utf-8")
-    if exact_game.count("TH095_PHOTO_ANM_CREATE_VM(") != 3:
-        fail("exact PhotoGame CreateVm calls escaped the emission boundary")
+        fail("PhotoGame CreateVm calls escaped the emission boundary")
 
 
 def check_ecl_photo_player_owner() -> None:

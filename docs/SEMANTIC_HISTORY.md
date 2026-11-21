@@ -20451,3 +20451,24 @@ The original and both links agree on 22 countdown, 40 camera feedback,
 two transition and 22 replay-browser cases. Both new links have the
 same mapped sections as their preceding images. See
 `.analysis/pi/sound-command-names/`.
+
+### SEM-506 — share player movement and camera initialization
+
+PhotoGame uses the controller’s direction, shoot and bomb masks and
+initializes the camera charge UI through the named bitfield. The death
+transition creates its 33 VMs through the bullet manager’s loaded ANM
+and plays the death cue through SoundPlayer. Both builds use the same
+source. The existing camera creation adapter still supplies three
+pinned VC7.1 call sites.
+
+Direct `Float3` member updates shortened the main-state comparison
+extent from 3,527 to 3,508 bytes. Rewriting the SHOT descriptor rebase
+as a pointer assignment also changed the corresponding load code.
+The shared implementation keeps the original source shapes for those
+two operations.
+
+All 22 PhotoGame units match in both exact and normal COFF. Across the
+two links, 248 code references and eight initialized-data references
+resolve to their owners. Both links agree with the original on 108
+movement and focus cases, six camera initializations and six death
+transitions. See `.analysis/pi/photo-game-share/`.

@@ -1,26 +1,31 @@
-#ifdef TH095_MATCH_EXACT
-#include "PhotoGameExact.inl"
-#else
+#include "ControllerInputSlot.hpp"
 #include "PhotoGamePlayer.hpp"
-#include "PhotoBulletManager.hpp"
 #include "Global.hpp"
+#include "PhotoStage.hpp"
+#include "PhotoBulletManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
-#include "PhotoStage.hpp"
-#include "ControllerInputSlot.hpp"
-#include "PhotoEnemyManager.hpp"
 #include "PhotoEffectRuntime.hpp"
+#include "PhotoEnemyManager.hpp"
 #include "SoundPlayer.hpp"
 
 namespace th095
 {
 
-void Rotate(Float3 *outVector, Float3 *point, f32 angle);
+struct PhotoAnmVmIdValue
+{
+    i32 value;
+
+    PhotoAnmVmIdValue(i32 value)
+    {
+        this->value = value;
+    }
+};
 
 static __forceinline i32 PhotoGameFocusVmIsZero(const PhotoAnmVmId *vm)
 {
-    return *vm == 0;
+    return vm->value == PhotoAnmVmIdValue(0).value;
 }
 
 static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
@@ -62,11 +67,7 @@ void PhotoCameraState::Initialize()
     this->viewfinderPosition.y = 400.0f;
     this->charge = 0.5f;
     this->photoLimit = 0;
-#if defined(DIFFBUILD)
-    this->flags = (this->flags & ~0x18) | 0x10;
-#else
     this->chargeUiState = PHOTO_CAMERA_CHARGE_UI_INITIAL;
-#endif
     this->captureRequested = 1;
     this->trackingRadius = 56.0f;
 
@@ -441,18 +442,15 @@ i32 PhotoGameUpdateView::UpdateMainState()
         this->movementState = PHOTO_PLAYER_DIRECTION_NONE;
     }
 
-    this->cameraTrackingMode =
-        PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) != 0
-            ? TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET
-            : TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE;
+    this->cameraTrackingMode = static_cast<PhotoPlayerCameraTrackingMode>(
+        PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_SHOOT) != 0);
 
-    if (this->cameraTrackingMode != TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
+    if (this->cameraTrackingMode != PHOTO_PLAYER_CAMERA_TRACKING_FREE)
     {
         if (PhotoGameFocusVmIsZero(&this->focusVm))
         {
             this->focusVm = TH095_PHOTO_ANM_CREATE_VM(
-                reinterpret_cast<PhotoAnmLoadedView *>(
-                    g_PhotoBulletManager->bulletAnm),
+                g_PhotoBulletManager->bulletAnm,
                 0x11f, 6);
         }
 
@@ -490,12 +488,11 @@ i32 PhotoGameUpdateView::UpdateMainState()
             break;
         }
 
-        if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) != 0)
+        if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_BOMB) != 0)
         {
             verticalSpeed *= 0.22f;
             horizontalSpeed *= 0.22f;
-            this->cameraTrackingMode =
-                TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW;
+            this->cameraTrackingMode = PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW;
         }
     }
     else
@@ -669,5 +666,3 @@ i32 PhotoGameUpdateView::Update()
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

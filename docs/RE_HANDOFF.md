@@ -263,6 +263,9 @@ SEM-504 shares ItemInf and corrects the sound command names for damage
 and item collection against the retail buffer table.
 SEM-505 corrects the shared countdown, photo feedback and invalid-selection
 commands using the retail table and their callers.
+SEM-506 shares the PlayerInf and camera initialization code. Movement
+uses the controller masks, and the death transition calls the shared
+ANM and SoundPlayer methods.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
