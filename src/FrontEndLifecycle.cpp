@@ -9,10 +9,7 @@
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
 #include "SoundPlayer.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "SceneSelect.hpp"
-#include "SupervisorFlags.hpp"
-#endif
 #include "utils.hpp"
 
 namespace th095
@@ -22,12 +19,6 @@ enum TitleAnmSlot
 {
     TITLE_ANM_SLOT = 11,
     TITLE_TRANSITION_ANM_SLOT = 12,
-};
-
-enum FrontEndControllerFlag
-{
-    FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE = 1,
-    FRONT_END_CONTROLLER_TITLE_LOAD_FAILED = 2,
 };
 
 DIFFABLE_STATIC(void *, g_ActiveMenuController);
@@ -40,51 +31,6 @@ i32 LoadPhotoPlayerAnm();
 // Target 0x004CA2F8 is the zero-initialized completion flag written by this
 // resource-loader lifecycle.
 DIFFABLE_STATIC(i32, g_FrontEndLoadActive);
-struct FrontEndLifecycleView;
-
-#ifdef TH095_MATCH_EXACT
-extern FrontEndLifecycleView *g_FrontEndController;
-
-struct FrontEndSupervisorView
-{
-    i32 StartReplayScan(void (__fastcall *callback)(void *), void *argument);
-    void HideLoadingVms();
-    void BeginLoadingCompletion();
-};
-extern FrontEndSupervisorView g_FrontEndSupervisor;
-extern SupervisorFlags g_FrontEndSupervisorFlags;
-
-#define TH095_FRONT_CONTROLLER_STORAGE g_FrontEndController
-#define TH095_FRONT_CONTROLLER_VALUE g_FrontEndController
-#define TH095_FRONT_SUPERVISOR_FLAGS g_FrontEndSupervisorFlags
-#define TH095_FRONT_HIDE_LOADING() g_FrontEndSupervisor.HideLoadingVms()
-#define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_FrontEndSupervisor.BeginLoadingCompletion()
-#define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_FrontEndSupervisor.StartReplayScan((callback), (argument))
-#else
-#define TH095_FRONT_CONTROLLER_STORAGE g_ActiveMenuController
-#define TH095_FRONT_CONTROLLER_VALUE reinterpret_cast<FrontEndLifecycleView *>(g_ActiveMenuController)
-#define TH095_FRONT_SUPERVISOR_FLAGS g_Supervisor.flags
-#define TH095_FRONT_HIDE_LOADING() g_Supervisor.HideLoadingVms()
-#define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_Supervisor.BeginLoadingCompletion()
-#define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_Supervisor.StartReplayScan((callback), (argument))
-#endif
-
-extern i32 g_SoundInitializationComplete;
-extern i32 g_MusicArchiveBaseOffset;
-extern u32 g_FrontEndConfigurationFlags;
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-// These three historical target-facing names are embedded production fields,
-// not standalone storage.  g_SoundPlayer @ 0x004C4EE8 places the archive base
-// and worker completion flag at +0x5214 / +0x522C (0x004CA0FC / 0x004CA114).
-// g_Supervisor @ 0x004C4670 places config.options at +0x1E0 (0x004C4850).
-// Exact objects retain their original relocation names through DIFFBUILD.
-#define g_SoundInitializationComplete \
-    (g_SoundPlayer.initializationComplete)
-#define g_MusicArchiveBaseOffset (g_SoundPlayer.bgmFileBaseOffset)
-#define g_FrontEndConfigurationFlags \
-    (*reinterpret_cast<u32 *>(&g_Supervisor.config.options))
-#endif
-
 struct FrontEndMissionEntryView
 {
     u16 group;
@@ -125,8 +71,8 @@ struct FrontEndTimerView
 
 struct FrontEndLifecycleView
 {
-    void *sceneAnm;
-    void *transitionAnm;
+    AnmLoaded *sceneAnm;
+    AnmLoaded *transitionAnm;
     FrontEndTimerView stateTimer;
     FrontEndTimerView transitionTimer;
     ResultScreenReplayCursor groupCursor;
@@ -142,13 +88,7 @@ struct FrontEndLifecycleView
     u8 unknown0fe8[0x14];
     void *replayListData;
     u8 unknown1000[0x5120];
-    union
-    {
-        u32 flags;
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-        FrontEndControllerFlagBits flagBits;
-#endif
-    };
+    FrontEndControllerFlagBits flagBits;
     i32 entryMode;
     SceneValueQueue selectionQueue;
     SceneValueQueue loadedSceneQueue;
@@ -170,8 +110,6 @@ struct FrontEndLifecycleView
     i32 Initialize();
     static void __fastcall LoadResources(void *unused);
     static void __fastcall LoadThread(void *unused);
-    static void __fastcall OnUpdate(void *controller);
-    static void __fastcall OnDraw(void *controller);
     static FrontEndLifecycleView *__fastcall Create(i32 entryMode);
     void Destroy();
 };
@@ -202,7 +140,7 @@ typedef char FrontEndLifecycleGroupDataQueueAt61B8[
         ? 1
         : -1];
 typedef char FrontEndLifecycleFlagsAt6120[
-    (offsetof(FrontEndLifecycleView, flags) == 0x6120) ? 1 : -1];
+    (offsetof(FrontEndLifecycleView, flagBits) == 0x6120) ? 1 : -1];
 typedef char FrontEndLifecycleEntryModeAt6124[
     (offsetof(FrontEndLifecycleView, entryMode) == 0x6124) ? 1 : -1];
 typedef char FrontEndLifecycleSceneDataQueueAt6248[
@@ -227,20 +165,12 @@ typedef char FrontEndLifecycleChainsAt6400[
 typedef char FrontEndLifecycleSizeIs6514[
     (sizeof(FrontEndLifecycleView) == 0x6514) ? 1 : -1];
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_FRONT_END_ON_UPDATE FrontEndLifecycleView::OnUpdate
-#define TH095_FRONT_END_ON_DRAW FrontEndLifecycleView::OnDraw
-#else
-#define TH095_FRONT_END_ON_UPDATE SceneSelectControllerView::OnUpdate
-#define TH095_FRONT_END_ON_DRAW SceneSelectControllerView::OnDraw
-#endif
-
 // FUNCTION: TH095 0x00445440.
 FrontEndLifecycleView::FrontEndLifecycleView()
 {
     utils::DebugPrint("initialize TitleTaskInf\n");
     memset(this, 0, sizeof(*this));
-    TH095_FRONT_CONTROLLER_STORAGE = this;
+    g_ActiveMenuController = this;
 }
 
 // FUNCTION: TH095 0x004456F0.
@@ -301,28 +231,20 @@ i32 FrontEndLifecycleView::Initialize()
     }
 
     this->currentDisplayState = -1;
-    this->flags |= 0x10;
-    if (g_SoundInitializationComplete == 0)
+    this->flagBits.unknownFlagBit4 = 1;
+    if (g_SoundPlayer.initializationComplete == 0)
     {
         g_SoundPlayer.InitSoundBuffers();
-        if (g_MusicArchiveBaseOffset == 0)
+        if (g_SoundPlayer.bgmFileBaseOffset == 0)
         {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            if (((g_FrontEndConfigurationFlags >> 4) & 1) == 0)
-#else
             if (g_Supervisor.config.options.preloadMusic == 0)
-#endif
                 g_SoundPlayer.StartBGM("thbgm.dat");
             else
                 strcpy(g_SoundPlayer.currentBgmFileName, "thbgm.dat");
         }
         else
         {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-            if (((g_FrontEndConfigurationFlags >> 4) & 1) == 0)
-#else
             if (g_Supervisor.config.options.preloadMusic == 0)
-#endif
                 g_SoundPlayer.StartBGM("th095.dat");
             else
                 strcpy(g_SoundPlayer.currentBgmFileName, "th095.dat");
@@ -361,12 +283,12 @@ void __fastcall ReleaseFrontEndAnms()
 void __fastcall FrontEndLifecycleView::LoadThread(void *)
 {
     FrontEndLifecycleView *controller =
-        TH095_FRONT_CONTROLLER_VALUE;
+        static_cast<FrontEndLifecycleView *>(g_ActiveMenuController);
 
     while (g_AnmManager->captureSurfaceIdx >= 0 ||
            g_AnmManager->captureAnmIdx >= 0)
     {
-        if (TH095_FRONT_SUPERVISOR_FLAGS.receivedCloseMsg != 0)
+        if (g_Supervisor.flags.receivedCloseMsg != 0)
             goto loadFailed;
         Sleep(1);
     }
@@ -374,24 +296,16 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
     if (controller->Initialize() != 0)
         goto loadFailed;
 
-    TH095_FRONT_HIDE_LOADING();
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    controller->flags &= ~FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE;
-#else
+    g_Supervisor.HideLoadingVms();
     controller->flagBits.titleLoadIncomplete = 0;
-#endif
     utils::DebugPrint("Title Load Thread Finish\n");
     WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
     WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
     goto loadDone;
 
 loadFailed:
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    controller->flags |= FRONT_END_CONTROLLER_TITLE_LOAD_FAILED;
-#else
     controller->flagBits.titleLoadFailed = 1;
-#endif
-    TH095_FRONT_BEGIN_LOADING_COMPLETION();
+    g_Supervisor.BeginLoadingCompletion();
     WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
     WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
 
@@ -405,24 +319,20 @@ FrontEndLifecycleView *__fastcall FrontEndLifecycleView::Create(i32 mode)
     FrontEndLifecycleView *controller = new FrontEndLifecycleView();
     ChainElem *elem;
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    controller->flags |= FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE;
-#else
     controller->flagBits.titleLoadIncomplete = 1;
-#endif
     controller->entryMode = mode;
 
-    elem = g_Chain.CreateElem((ChainCallback)TH095_FRONT_END_ON_UPDATE);
+    elem = g_Chain.CreateElem(SceneSelectControllerView::OnUpdate);
     elem->arg = controller;
     g_Chain.AddToCalcChain(elem, 4);
     controller->calcChain = elem;
 
-    elem = g_Chain.CreateElem((ChainCallback)TH095_FRONT_END_ON_DRAW);
+    elem = g_Chain.CreateElem(SceneSelectControllerView::OnDraw);
     elem->arg = controller;
     g_Chain.AddToDrawChain(elem, 1);
     controller->drawChain = elem;
 
-    TH095_FRONT_START_REPLAY_SCAN(
+    g_Supervisor.StartReplayScan(
         FrontEndLifecycleView::LoadThread, controller);
     return controller;
 }
@@ -495,7 +405,7 @@ FrontEndLifecycleView::~FrontEndLifecycleView()
     utils::DebugPrint("shutdown TitleTaskInf\n");
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    TH095_FRONT_CONTROLLER_STORAGE = NULL;
+    g_ActiveMenuController = NULL;
 
     FrontEndFreeReplayListData(this);
     FrontEndFreeMissionMessageData(this);

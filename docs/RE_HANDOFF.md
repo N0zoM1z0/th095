@@ -198,6 +198,8 @@ that seeds both streams.
 SEM-475 shares archive validation, frame calibration, and the startup worker.
 SEM-476 shares shutdown and binds pause and title ANM loading and
 release to the canonical manager.
+SEM-477 uses canonical title-worker bindings and restores publication
+of title-load failure through the normal Chain callback.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

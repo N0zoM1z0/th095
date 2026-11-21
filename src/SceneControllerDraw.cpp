@@ -298,31 +298,21 @@ ChainCallbackResult SceneSelectControllerView::Draw()
 #undef levelText
 #undef position
 
-void __fastcall SceneSelectControllerView::OnDraw(
-    SceneSelectControllerView *controller)
+ChainCallbackResult __fastcall SceneSelectControllerView::OnDraw(void *controller)
 {
-    controller->Draw();
+    return static_cast<SceneSelectControllerView *>(controller)->Draw();
 }
 
-void __fastcall SceneSelectControllerView::OnUpdate(
-    SceneSelectControllerView *controller)
+ChainCallbackResult __fastcall SceneSelectControllerView::OnUpdate(void *argument)
 {
-    // The exact target wrapper immediately enters Update(), relying on the
-    // asynchronous title loader to win the race before the first calc tick.
-    // Whole-program reconstruction does not preserve the target's image
-    // layout or startup timing, and Wine can schedule that first tick while
-    // sceneAnm is still null.  The loader owns titleLoadIncomplete: Create()
-    // sets it before registering this callback and LoadThread clears it only
-    // after every title resource is ready.  Keep production builds behind
-    // that real lifecycle barrier; TH095_MATCH_EXACT includes the untouched
-    // exact wrapper above and therefore retains the verified 19-byte target
-    // body.
-    if (reinterpret_cast<FrontEndControllerDrawView *>(controller)
-            ->flagBits.titleLoadIncomplete != 0)
+    SceneSelectControllerView *controller = static_cast<SceneSelectControllerView *>(argument);
+    // The loading worker sets the failure bit without clearing the pending bit.
+    // Update handles that failure before using the title resources.
+    if (controller->flagBits.titleLoadIncomplete && !controller->flagBits.titleLoadFailed)
     {
-        return;
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
-    controller->Update();
+    return controller->Update();
 }
 
 } // namespace th095

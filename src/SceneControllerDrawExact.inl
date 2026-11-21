@@ -290,16 +290,14 @@ ChainCallbackResult SceneSelectControllerView::Draw()
 #undef levelText
 #undef position
 
-void __fastcall SceneSelectControllerView::OnDraw(
-    SceneSelectControllerView *controller)
+ChainCallbackResult __fastcall SceneSelectControllerView::OnDraw(void *controller)
 {
-    controller->Draw();
+    return static_cast<SceneSelectControllerView *>(controller)->Draw();
 }
 
-void __fastcall SceneSelectControllerView::OnUpdate(
-    SceneSelectControllerView *controller)
+ChainCallbackResult __fastcall SceneSelectControllerView::OnUpdate(void *controller)
 {
-    controller->Update();
+    return static_cast<SceneSelectControllerView *>(controller)->Update();
 }
 
 } // namespace th095

@@ -1535,7 +1535,7 @@ def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
         (main_body, "g_Supervisor.flags.resultRestartActive = 1;"),
         (controller, "g_Supervisor.flags.keyboardAvailable"),
         (controller, "g_Supervisor.flags.controllerAvailable"),
-        (front_end, "TH095_FRONT_SUPERVISOR_FLAGS.receivedCloseMsg != 0"),
+        (front_end, "g_Supervisor.flags.receivedCloseMsg != 0"),
         (photo_front, "g_Supervisor.flags.resultRestartActive != 0"),
         (photo_task, "g_Supervisor.flags.restartPhotoGame == 0"),
         (photo_task, "g_Supervisor.flags.resultRestartActive = 0;"),
@@ -1543,12 +1543,8 @@ def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
     for text, fact in consumer_facts:
         if fact not in text:
             fail(f"canonical Supervisor flag producer/consumer was lost: {fact}")
-    for fact in (
-        "extern SupervisorFlags g_FrontEndSupervisorFlags;",
-        "#define TH095_FRONT_SUPERVISOR_FLAGS g_Supervisor.flags",
-    ):
-        if fact not in front_end:
-            fail(f"front-end flag access lost its common typed contract: {fact}")
+    if "g_FrontEndSupervisorFlags" in front_end or "TH095_FRONT_SUPERVISOR_FLAGS" in front_end:
+        fail("front-end flag access restored a Supervisor alias")
 
 
 

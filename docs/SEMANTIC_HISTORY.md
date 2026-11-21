@@ -19792,3 +19792,33 @@ and title preload failures, capture wait and cancellation, and
 shutdown order with and without a version buffer or vertex buffer.
 The fixture stubs external operations and executes the pause and
 title release bodies. See `.analysis/pi/supervisor-anm-cleanup/`.
+
+### SEM-477 — bind the title worker and forward load failures
+
+Title creation, loading, and destruction share their storage and
+callbacks in both profiles. The constructor and destructor publish
+the active menu slot directly. Loading uses Supervisor's close bit,
+worker callbacks, and preload option, along with SoundPlayer's
+initialization latch and BGM archive offset. The exact Create unit
+registers the real Scene Select draw and update symbols.
+
+Both Chain wrappers return the result of the dispatch. In the old
+normal build, a failed title load left the pending flag set, so the
+guard skipped Update and returned the controller address in EAX.
+The normal wrapper now defers only a pending load without failure.
+The failed path reaches Update, stops the worker, and requests the
+error scene. Both exact wrappers retain the original 19-byte bodies.
+
+All 44 affected strict comparisons pass. The eight title lifecycle
+units and the draw wrapper also reproduce their full extents and
+115 relocations in the normal objects. The guarded normal OnUpdate
+is 64 bytes. The reversed links resolve all 11,439 game code
+references and 639 initialized-data references.
+
+The failure fixture reproduces the old guard and verifies error
+publication in the original and both rebuilt links. The 31 cases
+also cover Chain results, successful creation, and sound
+initialization. The diagnostic text in the existing title error
+path differs from the original Japanese text. The fixture verifies
+when logging occurs. Both rebuilt layouts reach the Main Menu and
+enter Scene Select under Wine. See `.analysis/pi/title-worker-owner/`.
