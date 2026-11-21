@@ -17257,15 +17257,15 @@ target_address = 0x0041B0F0
 size = 0x181
 relocations = [
   { offset = 0x9, type = "REL32", symbol = "__chkstk", target = 0x00485AA0 },
-  { offset = 0x1D, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x1D, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x664, target = 0x004C4670 },
   { offset = 0x24, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
-  { offset = 0x2A, type = "DIR32", symbol = "?g_ErrorCriticalActiveCount@th095@@3EA", target = 0x004C4D7F },
-  { offset = 0x33, type = "DIR32", symbol = "?g_ErrorCriticalActiveCount@th095@@3EA", target = 0x004C4D7F },
+  { offset = 0x2A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x70F, target = 0x004C4670 },
+  { offset = 0x33, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x70F, target = 0x004C4670 },
   { offset = 0x47, type = "REL32", symbol = "_vsprintf", target = 0x00484EAA },
-  { offset = 0x160, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x160, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x664, target = 0x004C4670 },
   { offset = 0x167, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
-  { offset = 0x16D, type = "DIR32", symbol = "?g_ErrorCriticalActiveCount@th095@@3EA", target = 0x004C4D7F },
-  { offset = 0x176, type = "DIR32", symbol = "?g_ErrorCriticalActiveCount@th095@@3EA", target = 0x004C4D7F },
+  { offset = 0x16D, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x70F, target = 0x004C4670 },
+  { offset = 0x176, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x70F, target = 0x004C4670 },
 ]
 
 [units.game-error-fatal]
@@ -17277,15 +17277,15 @@ symbol = "?Fatal@GameErrorContext@th095@@QAAPBDPBDZZ"
 target_address = 0x0041B280
 size = 0x188
 relocations = [
-  { offset = 0x19, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x19, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x664, target = 0x004C4670 },
   { offset = 0x20, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
-  { offset = 0x26, type = "DIR32", symbol = "?g_ErrorCriticalActiveCount@th095@@3EA", target = 0x004C4D7F },
-  { offset = 0x2F, type = "DIR32", symbol = "?g_ErrorCriticalActiveCount@th095@@3EA", target = 0x004C4D7F },
+  { offset = 0x26, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x70F, target = 0x004C4670 },
+  { offset = 0x2F, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x70F, target = 0x004C4670 },
   { offset = 0x43, type = "REL32", symbol = "_vsprintf", target = 0x00484EAA },
-  { offset = 0x167, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x167, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x664, target = 0x004C4670 },
   { offset = 0x16E, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
-  { offset = 0x174, type = "DIR32", symbol = "?g_ErrorCriticalActiveCount@th095@@3EA", target = 0x004C4D7F },
-  { offset = 0x17D, type = "DIR32", symbol = "?g_ErrorCriticalActiveCount@th095@@3EA", target = 0x004C4D7F },
+  { offset = 0x174, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x70F, target = 0x004C4670 },
+  { offset = 0x17D, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x70F, target = 0x004C4670 },
 ]
 
 [units.photo-overlay-slot-constructor]

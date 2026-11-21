@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#include "GameErrorContextExact.inl"
-#else
 #include "Global.hpp"
 #include "Main.hpp"
 
@@ -10,6 +7,9 @@
 
 namespace th095
 {
+
+enum { GAME_ERROR_CRITICAL_SECTION = 3 };
+
 GameErrorContext::GameErrorContext()
 {
     this->ResetContext();
@@ -38,8 +38,8 @@ const char *GameErrorContext::Log(const char *fmt, ...)
     va_list args;
 
     va_start(args, fmt);
-    EnterErrorCritical(3);
-    g_Supervisor.criticalSectionLockCounts[3]++;
+    EnterErrorCritical(GAME_ERROR_CRITICAL_SECTION);
+    g_Supervisor.criticalSectionLockCounts[GAME_ERROR_CRITICAL_SECTION]++;
     vsprintf(tmpBuffer, fmt, args);
     tmpBufferSize = strlen(tmpBuffer);
     if (this->bufferEnd + tmpBufferSize < &this->buffer[sizeof(this->buffer) - 1])
@@ -49,8 +49,8 @@ const char *GameErrorContext::Log(const char *fmt, ...)
         this->bufferEnd[0] = '\0';
     }
     va_end(args);
-    LeaveErrorCritical(3);
-    g_Supervisor.criticalSectionLockCounts[3]--;
+    LeaveErrorCritical(GAME_ERROR_CRITICAL_SECTION);
+    g_Supervisor.criticalSectionLockCounts[GAME_ERROR_CRITICAL_SECTION]--;
     return fmt;
 }
 
@@ -61,8 +61,8 @@ const char *GameErrorContext::Fatal(const char *fmt, ...)
     va_list args;
 
     va_start(args, fmt);
-    EnterErrorCritical(3);
-    g_Supervisor.criticalSectionLockCounts[3]++;
+    EnterErrorCritical(GAME_ERROR_CRITICAL_SECTION);
+    g_Supervisor.criticalSectionLockCounts[GAME_ERROR_CRITICAL_SECTION]++;
     vsprintf(tmpBuffer, fmt, args);
     tmpBufferSize = strlen(tmpBuffer);
     if (this->bufferEnd + tmpBufferSize < &this->buffer[sizeof(this->buffer) - 1])
@@ -73,14 +73,10 @@ const char *GameErrorContext::Fatal(const char *fmt, ...)
     }
     va_end(args);
     this->showMessageBox = true;
-    LeaveErrorCritical(3);
-    g_Supervisor.criticalSectionLockCounts[3]--;
+    LeaveErrorCritical(GAME_ERROR_CRITICAL_SECTION);
+    g_Supervisor.criticalSectionLockCounts[GAME_ERROR_CRITICAL_SECTION]--;
     return fmt;
 }
-} // namespace th095
-
-namespace th095
-{
 
 // FUNCTION: TH095 0x00421C00.
 void GameErrorContext::Flush()
@@ -99,5 +95,3 @@ void GameErrorContext::Flush()
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

@@ -172,7 +172,8 @@ publications and the D3D reader through Supervisor.
 SEM-461 shares the typed Background stage operands and all 15 opcode
 cases. The normal stage interpreter matches its full retail extent.
 SEM-462 shares the stage cache, diagnostic calls and spell VM factory
-across both Background translation units.
+across both Background translation units. SEM-463 shares the logger
+bodies and uses Supervisor critical section and lock-count index 3.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

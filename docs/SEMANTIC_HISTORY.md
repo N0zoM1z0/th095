@@ -19518,3 +19518,18 @@ source bytes, restart and normal teardown, both failure paths and two
 distinct spell handles. Direct byte-pointer addition changes the loader
 instructions and assigning the result's `value` changes the spawn
 instructions. See `.analysis/pi/background-shared-lifecycle/`.
+
+### SEM-463 — share the logger critical section and count
+
+Log and Fatal both use `g_Supervisor.criticalSections[3]` and
+`criticalSectionLockCounts[3]`. The target computes the lock from the
+array base at Supervisor+0x664 and updates the byte at Supervisor+0x70F.
+The separate exact logger file and its two globals are retired.
+
+All three exact comparisons pass. The normal object matches the same
+extents and all 25 relocation slots. The four lock base references and
+the eight count references follow Supervisor in both links. Retail and
+both normal builds pass the append boundary, counter wraparound,
+fatal latch and flush cases with formatting and Windows calls stubbed.
+The count increments after Enter and decrements after Leave. See
+`.analysis/pi/game-error-critical-section/`.

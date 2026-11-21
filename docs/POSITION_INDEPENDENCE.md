@@ -50,6 +50,13 @@ match retail's script publication, card save/clear/restore and the
 D3D clear arguments. See
 [SEM-460](SEMANTIC_HISTORY.md#sem-460--use-the-supervisor-backbuffer-clear-color).
 
+Log and Fatal use `criticalSections[3]` and
+`criticalSectionLockCounts[3]`. Both links resolve the four array-base
+references and the eight count-byte references through Supervisor.
+The count moves from 0x004DB15F to 0x004D5807. The append, fatal-latch
+and flush probes agree in both layouts. See
+[SEM-463](SEMANTIC_HISTORY.md#sem-463--share-the-logger-critical-section-and-count).
+
 ## Controller configuration bindings
 
 The two groups of three saved mappings belong to live controller slots 0 and
