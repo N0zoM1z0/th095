@@ -615,7 +615,7 @@ th095::PhotoStageStateView::Destroy
 th095::DrawPhotoStage
 th095::LoadPhotoAnm
 th095::ReadResultHelpLine
-th095::ReplayInputSource::Update
+th095::ControllerInputSlotView::UpdateReplayHistory
 th095::ScreenEffect::Clear
 th095::ScreenEffect::SetViewport
 th095::ScreenEffect::CalcFadeIn

@@ -1,3 +1,4 @@
+#include "ControllerInputSlot.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoBulletManager.hpp"
@@ -36,7 +37,6 @@ static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
 }
 
 
-extern u16 g_PhotoInput;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -376,7 +376,7 @@ i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
 
     if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
-        if (PhotoGameInputMask(g_PhotoInput, 2) != 0)
+        if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.pressed, 2) != 0)
         {
             player->camera.captureRequested = 1;
         }
@@ -422,35 +422,35 @@ i32 PhotoGameUpdateView::UpdateMainState()
 
     if (this->camera.mode != PHOTO_CAMERA_CHARGING)
     {
-        if (PhotoGameInputMask(g_PhotoInput, 0x50) == 0x50)
+        if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 0x50) == 0x50)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_UP_LEFT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x60) == 0x60)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 0x60) == 0x60)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_DOWN_LEFT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x90) == 0x90)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 0x90) == 0x90)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_UP_RIGHT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0xa0) == 0xa0)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 0xa0) == 0xa0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_DOWN_RIGHT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x20) != 0)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 0x20) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_DOWN;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x10) != 0)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 0x10) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_UP;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x40) != 0)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 0x40) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_LEFT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x80) != 0)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 0x80) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_RIGHT;
         }
@@ -465,7 +465,7 @@ i32 PhotoGameUpdateView::UpdateMainState()
     }
 
     this->cameraTrackingMode = static_cast<PhotoPlayerCameraTrackingMode>(
-        PhotoGameInputMask(g_PhotoInput, 1) != 0);
+        PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) != 0);
 
     if (this->cameraTrackingMode != PHOTO_PLAYER_CAMERA_TRACKING_FREE)
     {
@@ -511,7 +511,7 @@ i32 PhotoGameUpdateView::UpdateMainState()
             break;
         }
 
-        if (PhotoGameInputMask(g_PhotoInput, 2) != 0)
+        if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) != 0)
         {
             verticalSpeed *= 0.22f;
             horizontalSpeed *= 0.22f;

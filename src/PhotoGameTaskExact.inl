@@ -205,7 +205,7 @@ i32 PhotoGameTaskView::Update()
     }
 
     if (g_ReplayUsesArchive != 0 &&
-        (ReadPhotoDemoInterrupt(&g_ControllerInputSlots[0], 0x160b) != 0 ||
+        (ReadPhotoDemoInterrupt(&g_ControllerInputSlots[0], TH_BUTTON_DEMO_INTERRUPT) != 0 ||
          ((this->flags >> 4) & 1) != 0 ||
          ((this->flags >> 5) & 1) != 0 ||
          ((this->flags >> 6) & 1) != 0))

@@ -8,9 +8,6 @@
 #include "ZunResult.hpp"
 #include "diffbuild.hpp"
 #include "inttypes.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#include "InputRuntime.hpp"
-#endif
 #include "pbg/PbgArchive.hpp"
 #include "utils.hpp"
 #include <d3dx8.h>
@@ -24,11 +21,6 @@
 
 namespace th095
 {
-
-#define IS_PRESSED(key) (g_CurFrameInput & (key))
-#define WAS_PRESSED(key) (((g_CurFrameInput & (key)) != 0) && (g_CurFrameInput & (key)) != (g_LastFrameInput & (key)))
-#define WAS_PRESSED_SCROLLING(key)                                                                                     \
-    (WAS_PRESSED(key) || (((g_CurFrameInput & (key)) != 0) && (g_IsEighthFrameOfHeldInput != 0)))
 
 /* zunName is ZUN's original name for this type */
 #define ZUN_NEW(type, zunName) ((type *)g_ZunMemory.AddToRegistry(new type(), sizeof(type), zunName))
@@ -234,12 +226,6 @@ C_ASSERT(offsetof(ZunGlobals, bombsUsed) == 0x84);
 C_ASSERT(offsetof(ZunGlobals, bombsUsedInStage) == 0x88);
 C_ASSERT(offsetof(ZunGlobals, playerPower) == 0x98);
 
-DIFFABLE_EXTERN(u16, g_CurFrameInput);
-DIFFABLE_EXTERN(u16, g_LastFrameInput);
-DIFFABLE_EXTERN(u16, g_NumOfFramesInputsWereHeld);
-DIFFABLE_EXTERN(u16, g_IsEighthFrameOfHeldInput);
-DIFFABLE_EXTERN(u16, g_ResultMenuInput);
-DIFFABLE_EXTERN(u16, g_PressedButtons);
 DIFFABLE_EXTERN(PbgArchive, g_PbgArchive);
 DIFFABLE_EXTERN(ZunMemory, g_ZunMemory);
 

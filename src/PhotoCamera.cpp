@@ -6,9 +6,7 @@
 #include "PhotoEnemyManager.hpp"
 #include "PhotoGameTask.hpp"
 #include "GameplayGlobals.hpp"
-#ifndef DIFFBUILD
-#include "InputRuntime.hpp"
-#endif
+#include "ControllerInputSlot.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "SoundPlayer.hpp"
 #include "PhotoStage.hpp"
@@ -62,13 +60,6 @@ static inline SoundPlayer *PhotoSoundPlayer()
 {
     return &g_SoundPlayer;
 }
-
-extern u16 g_PhotoInput;
-extern u16 g_PhotoInputPressed;
-#ifndef DIFFBUILD
-#define g_PhotoInput (RuntimeHistoryCurrent())
-#define g_PhotoInputPressed (RuntimeHistoryPressed())
-#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 f32 NormalizeAngle(f32 angle);
@@ -267,35 +258,35 @@ void PhotoCameraState::UpdateViewfinder()
     locals.offsetX = 0.0f;
     locals.offsetY = 0.0f;
 
-    if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_UP_LEFT) == TH095_PHOTO_INPUT_UP_LEFT)
+    if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_UP_LEFT) == TH095_PHOTO_INPUT_UP_LEFT)
     {
         locals.direction = PHOTO_DIRECTION_UP_LEFT;
     }
-    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_DOWN_LEFT) == TH095_PHOTO_INPUT_DOWN_LEFT)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_DOWN_LEFT) == TH095_PHOTO_INPUT_DOWN_LEFT)
     {
         locals.direction = PHOTO_DIRECTION_DOWN_LEFT;
     }
-    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_UP_RIGHT) == TH095_PHOTO_INPUT_UP_RIGHT)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_UP_RIGHT) == TH095_PHOTO_INPUT_UP_RIGHT)
     {
         locals.direction = PHOTO_DIRECTION_UP_RIGHT;
     }
-    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_DOWN_RIGHT) == TH095_PHOTO_INPUT_DOWN_RIGHT)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_DOWN_RIGHT) == TH095_PHOTO_INPUT_DOWN_RIGHT)
     {
         locals.direction = PHOTO_DIRECTION_DOWN_RIGHT;
     }
-    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_DOWN) != 0)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_DOWN) != 0)
     {
         locals.direction = PHOTO_DIRECTION_DOWN;
     }
-    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_UP) != 0)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_UP) != 0)
     {
         locals.direction = PHOTO_DIRECTION_UP;
     }
-    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_LEFT) != 0)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_LEFT) != 0)
     {
         locals.direction = PHOTO_DIRECTION_LEFT;
     }
-    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_RIGHT) != 0)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_RIGHT) != 0)
     {
         locals.direction = PHOTO_DIRECTION_RIGHT;
     }
@@ -868,8 +859,8 @@ void PhotoCameraState::UpdateCharge()
     {
         if (this->charge < 1.0f)
         {
-            if (PhotoInputMask(g_PhotoInput, 2) != 0 &&
-                PhotoInputMask(g_PhotoInput, 1) != 0)
+            if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) != 0 &&
+                PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) != 0)
             {
                 this->focusChargeFrames++;
                 if (this->focusChargeFrames >= 5)
@@ -893,7 +884,7 @@ void PhotoCameraState::UpdateCharge()
             }
         }
 
-        if (PhotoInputMask(g_PhotoInput, 1) == 0)
+        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) == 0)
         {
             this->focusHeldFrames++;
             this->flags &= ~PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
@@ -935,8 +926,8 @@ normalCharge:
         this->focusChargeFrames++;
         this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
         this->focusHeldFrames = 0;
-        if (PhotoInputMask(g_PhotoInput, 2) == 0 ||
-            PhotoInputMask(g_PhotoInput, 1) == 0)
+        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) == 0 ||
+            PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) == 0)
         {
             this->flags &= ~PHOTO_FLAG_FOCUSED;
             this->focusChargeFrames = 0;
@@ -1274,21 +1265,21 @@ updateCharge:
             }
         }
 
-        if (PhotoInputMask(g_PhotoInputPressed, 2) != 0)
+        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.pressed, 2) != 0)
             camera->captureRequested = 1;
-        else if (PhotoInputMask(g_PhotoInput, 2) == 0)
+        else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) == 0)
             camera->captureRequested = 0;
-        else if (PhotoInputMask(g_PhotoInput, 1) != 0 &&
-                 PhotoInputMask(g_PhotoInput, 2) != 0)
+        else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) != 0 &&
+                 PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) != 0)
             camera->captureRequested = 1;
 
         if (PHOTO_CAMERA_FOCUSED(camera->flags) == 0 &&
             camera->charge >= 1.0f &&
-            PhotoInputMask(g_PhotoInput, 2) != 0 &&
-            PhotoInputMask(g_PhotoInput, 1) == 0 &&
+            PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) != 0 &&
+            PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) == 0 &&
             camera->captureRequested != 0 &&
             (camera->focusHeldFrames > 4 ||
-             PhotoInputMask(g_PhotoInputPressed, 2) != 0))
+             PhotoInputMask(g_ControllerInputSlots[0].replayHistory.pressed, 2) != 0))
         {
             camera->BeginCapture();
             camera->flags |= PHOTO_FLAG_TARGET_FRAME_ACTIVE;
@@ -1298,7 +1289,7 @@ updateCharge:
 
     case PHOTO_CAMERA_CHARGING:
         camera->UpdateViewfinder();
-        if (PhotoInputMask(g_PhotoInput, 2) == 0)
+        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) == 0)
         {
             camera->TakePhoto();
             break;

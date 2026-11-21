@@ -28,13 +28,8 @@
 1	src/FileWrite.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/FrontEndController.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameplayGlobals.hpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/Global.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/Global.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Global.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Global.hpp	#ifndef TH095_MATCH_EXACT
-1	src/InputRuntime.hpp	#if !defined(TH095_MATCH_EXACT)
-1	src/InputRuntime.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-2	src/InputRuntime.hpp	#if defined(TH095_MATCH_EXACT)
 2	src/Main.cpp	#ifdef DIFFBUILD
 1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
 2	src/Main.cpp	#ifndef DIFFBUILD
@@ -47,7 +42,6 @@
 1	src/PhotoCamera.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
-2	src/PhotoCamera.cpp	#ifndef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD
 1	src/PhotoFront.cpp	#ifdef TH095_MATCH_EXACT
@@ -62,7 +56,6 @@
 1	src/PhotoStage.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoStage.cpp	#ifndef DIFFBUILD
 1	src/ReplayBrowser.cpp	#ifndef DIFFBUILD
-1	src/ReplayInputSource.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/ReplayManager.cpp	#ifdef DIFFBUILD
 2	src/ReplayManager.cpp	#ifdef TH095_MATCH_EXACT
 2	src/ReplayManager.cpp	#ifndef DIFFBUILD

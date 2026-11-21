@@ -10,7 +10,7 @@
 #include "FileSystem.hpp"
 #endif
 #include "GameplayGlobals.hpp"
-#include "InputRuntime.hpp"
+#include "ControllerInputSlot.hpp"
 #include "Main.hpp"
 #include "PhotoBulletManager.hpp"
 #include "PhotoCardInfo.hpp"
@@ -153,7 +153,7 @@ i32 PhotoGameTaskView::Update()
     }
 
     if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_ARCHIVE &&
-        ((RuntimeInputCurrent() & TH_BUTTON_DEMO_INTERRUPT) != 0 ||
+        ((g_ControllerInputSlots[0].current & TH_BUTTON_DEMO_INTERRUPT) != 0 ||
          this->resultScreenActive != 0 ||
          this->playerDeathTransitionComplete != 0 ||
          this->photoLimitTransitionComplete != 0))

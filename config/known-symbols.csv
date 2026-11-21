@@ -294,7 +294,7 @@ address,name,module,confidence,evidence
 0x0042C410,th095::DrawPhotoStage,PhotoOverlay,exact,"Exact draw-chain shell: gameplay viewport 1, photography suppression bit 2 gate, then PhotoInf Draw"
 0x0042AA90,th095::LoadPhotoAnm,PhotoOverlay,exact,Exact slot-9 photo.anm preload helper with target Japanese corruption diagnostic
 0x0041B920,th095::ReadResultHelpLine,ResultScreen,exact,Exact CR/LF-skipping Shift-JIS line reader with lead-byte ranges 0x81..0x9F and 0xE0..0xFC
-0x004353B0,th095::ReplayInputSource::Update,ReplayManager,exact,"Exact replay-input history update at +0x2C..+0x58; held threshold 26, subtract-8 repeat cadence, pressed/released masks"
+0x004353B0,th095::ControllerInputSlotView::UpdateReplayHistory,ReplayManager,exact,"Exact replay-input history update at +0x2C..+0x58; held threshold 26, subtract-8 repeat cadence, pressed/released masks"
 0x00436760,th095::ScreenEffect::Clear,ScreenEffect,exact,Exact double clear/present/reset helper for the shared D3D8 target and depth buffer
 0x00436820,th095::ScreenEffect::SetViewport,ScreenEffect,exact,"Exact full-window 640x480 viewport setup, ANM flush, and clear path; independently anchored by exact Main caller"
 0x004368A0,th095::ScreenEffect::CalcFadeIn,ScreenEffect,exact,Exact 255-to-0 fade update using timer subFrame/current and target-visible timer-times-255 x87 operand order

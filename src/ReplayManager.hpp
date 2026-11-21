@@ -13,6 +13,11 @@ typedef ::ZunResult ReplayManagerResult;
 typedef ZunResult ReplayManagerResult;
 #endif
 
+enum
+{
+    REPLAY_RECORDING_INPUT_ALLOCATION_SIZE = 0x69780,
+};
+
 // Persistent replay container header. The game writer emits the complete
 // 0x24-byte block. LoadReplay trusts the payload sizes directly and does not
 // validate the writer metadata before allocation, decryption, or decompression.
@@ -74,11 +79,10 @@ struct ReplayManager
 #else
     ReplayFileHeader *ownedFileHeader; // +0x004; owning allocation root
 #endif
+    ReplayInputData *ownedInputData; // +0x008; allocation root in every mode
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    ReplayInputData *inputData;      // +0x008
     u8 *fpsData;                     // +0x00c
 #else
-    ReplayInputData *ownedInputData; // +0x008; allocation root in every mode
     u8 *fpsStreamBase;               // +0x00c; record owner, playback/load interior view
 #endif
     u8 *inputCursor;                 // +0x010

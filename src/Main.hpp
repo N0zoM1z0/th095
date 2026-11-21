@@ -60,7 +60,6 @@ void DebugPrint(char *format, ...);
 extern GameWindow g_GameWindow;
 extern Supervisor g_Supervisor;
 extern AnmManager *g_AnmManager;
-extern u16 g_PressedButtons;
 extern char g_WindowTitle[];
 extern HANDLE g_ExclusiveMutex;
 

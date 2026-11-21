@@ -4,7 +4,6 @@
 # This file is an exact closed baseline: remove entries when debt is retired;
 # never add or increase an entry to admit a new declaration.
 1	src/AsciiManager.cpp	struct	AsciiBackgroundSupervisorView
-1	src/InputRuntime.hpp	struct	ControllerInputSlotView
 1	src/Main.cpp	struct	DummyMidiTimer
 1	src/Main.cpp	struct	LoadMusicLocals
 1	src/Main.cpp	struct	MidiTimer
@@ -24,9 +23,7 @@
 1	src/PhotoStage.cpp	struct	PhotoStageTextureClearLocalsOracle
 1	src/ReplayManager.cpp	struct	FreeSlots
 1	src/ReplayManager.cpp	struct	ReplayAsciiManagerView
-1	src/ReplayManager.cpp	struct	ReplayFrameScratch
 1	src/ReplayManager.cpp	struct	ReplayInitializeScratch
-1	src/ReplayManager.cpp	struct	ReplayInputFrameView
 1	src/ReplayManager.cpp	struct	ReplayLoadLocals
 1	src/ReplayManager.cpp	struct	ReplayUserDataHeader
 1	src/ReplayManager.cpp	struct	ReplayWriteLocals

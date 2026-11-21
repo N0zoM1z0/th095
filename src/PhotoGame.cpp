@@ -8,7 +8,7 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
 #include "PhotoStage.hpp"
-#include "InputRuntime.hpp"
+#include "ControllerInputSlot.hpp"
 #include "PhotoEnemyManager.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "SoundPlayer.hpp"
@@ -29,8 +29,6 @@ static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
     clearedVm = 0;
     *vm = clearedVm;
 }
-
-#define g_PhotoInput (RuntimeHistoryCurrent())
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -355,7 +353,7 @@ i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
 
     if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
-        if (PhotoGameInputMask(RuntimeHistoryPressed(), 2) != 0)
+        if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.pressed, 2) != 0)
         {
             player->camera.captureRequested = 1;
         }
@@ -401,35 +399,35 @@ i32 PhotoGameUpdateView::UpdateMainState()
 
     if (this->camera.mode != PHOTO_CAMERA_CHARGING)
     {
-        if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_UP_LEFT) == TH_BUTTON_UP_LEFT)
+        if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_UP_LEFT) == TH_BUTTON_UP_LEFT)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_UP_LEFT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_DOWN_LEFT) == TH_BUTTON_DOWN_LEFT)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_DOWN_LEFT) == TH_BUTTON_DOWN_LEFT)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_DOWN_LEFT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_UP_RIGHT) == TH_BUTTON_UP_RIGHT)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_UP_RIGHT) == TH_BUTTON_UP_RIGHT)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_UP_RIGHT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_DOWN_RIGHT) == TH_BUTTON_DOWN_RIGHT)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_DOWN_RIGHT) == TH_BUTTON_DOWN_RIGHT)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_DOWN_RIGHT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_DOWN) != 0)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_DOWN) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_DOWN;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_UP) != 0)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_UP) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_UP;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_LEFT) != 0)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_LEFT) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_LEFT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_RIGHT) != 0)
+        else if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_RIGHT) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_RIGHT;
         }
@@ -444,7 +442,7 @@ i32 PhotoGameUpdateView::UpdateMainState()
     }
 
     this->cameraTrackingMode =
-        PhotoGameInputMask(g_PhotoInput, 1) != 0
+        PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) != 0
             ? TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET
             : TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE;
 
@@ -492,7 +490,7 @@ i32 PhotoGameUpdateView::UpdateMainState()
             break;
         }
 
-        if (PhotoGameInputMask(g_PhotoInput, 2) != 0)
+        if (PhotoGameInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) != 0)
         {
             verticalSpeed *= 0.22f;
             horizontalSpeed *= 0.22f;

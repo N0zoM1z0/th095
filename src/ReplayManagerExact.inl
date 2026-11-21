@@ -1,12 +1,13 @@
 #include "ReplayManager.hpp"
 #include "PhotoGameTask.hpp"
 #include "SceneData.hpp"
+#include "SupervisorRuntime.hpp"
 
 #ifdef TH095_MATCH_EXACT
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
 #define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
 #endif
-#include "ReplayInputSource.hpp"
+#include "ControllerInputSlot.hpp"
 #include "ZunMath.hpp"
 
 #include <stdlib.h>
@@ -18,9 +19,6 @@
 namespace th095
 {
 
-extern u16 g_ReplayInputAux;
-extern u16 g_ReplayInputFlags;
-extern f32 g_ReplayFps;
 extern u16 g_ReplayRngSeed;
 
 struct ReplayAsciiManagerView
@@ -70,15 +68,6 @@ struct ReplayUserDataHeader
 
 typedef char ReplayUserDataHeaderSizeIs0C[
     (sizeof(ReplayUserDataHeader) == 0x0c) ? 1 : -1];
-
-struct ReplayFrameScratch
-{
-    u32 unused[2];
-
-    ReplayFrameScratch()
-    {
-    }
-};
 
 struct ReplayInitializeScratch
 {
@@ -133,20 +122,20 @@ ReplayManager::ReplayManager()
         g_ReplayManager = this;
         scratch.headerSize = sizeof(ReplayFileHeader);
         this->fileHeader = (ReplayFileHeader *)malloc(scratch.headerSize);
-        scratch.inputSize = 0x69780;
-        this->inputData = (ReplayInputData *)malloc(scratch.inputSize);
+        scratch.inputSize = REPLAY_RECORDING_INPUT_ALLOCATION_SIZE;
+        this->ownedInputData = (ReplayInputData *)malloc(scratch.inputSize);
         scratch.fpsSize = 0x11940;
         this->fpsData = (u8 *)malloc(scratch.fpsSize);
 
         memset(this->fileHeader, 0, sizeof(ReplayFileHeader));
-        memset(this->inputData, 0, 0x69780);
+        memset(this->ownedInputData, 0, REPLAY_RECORDING_INPUT_ALLOCATION_SIZE);
         memset(this->fpsData, 0, 0x11940);
 
         this->fileHeader->magic = 0x72353974;
         this->fileHeader->version = 1;
         this->fileHeader->gameVersion = 0x102;
 
-        this->activeInputData = this->inputData;
+        this->activeInputData = this->ownedInputData;
         this->inputCursor =
             (u8 *)this->activeInputData + sizeof(ReplayInputData);
         this->fpsCursor = this->fpsData;
@@ -168,7 +157,7 @@ ReplayManager::ReplayManager()
             return ZUN_ERROR;
         }
 
-        this->activeInputData = this->inputData;
+        this->activeInputData = this->ownedInputData;
         this->inputCursor =
             (u8 *)this->activeInputData + sizeof(ReplayInputData);
         this->fpsCursor = this->fpsData;
@@ -187,7 +176,7 @@ ReplayManager::ReplayManager()
         {
             return ZUN_ERROR;
         }
-        this->activeInputData = this->inputData;
+        this->activeInputData = this->ownedInputData;
     }
     return ZUN_SUCCESS;
 }
@@ -224,7 +213,7 @@ ReplayManager::ReplayManager()
     }
 
     locals.allocationSize = this->fileHeader->decompressedPayloadSize;
-    this->inputData = (ReplayInputData *)malloc(locals.allocationSize);
+    this->ownedInputData = (ReplayInputData *)malloc(locals.allocationSize);
     FileSystem::Decrypt(locals.compressedData, this->fileHeader->compressedPayloadSize,
                         0xaa, 0xe1, 0x400,
                         this->fileHeader->compressedPayloadSize);
@@ -232,12 +221,12 @@ ReplayManager::ReplayManager()
                         0x3d, 0x7a, 0x80,
                         this->fileHeader->compressedPayloadSize);
     ReplayLzss::Decode(locals.compressedData, this->fileHeader->compressedPayloadSize,
-                       (u8 *)this->inputData,
+                       (u8 *)this->ownedInputData,
                        this->fileHeader->decompressedPayloadSize);
 
-    locals.inputData = this->inputData;
+    locals.inputData = this->ownedInputData;
     this->fpsData = (u8 *)(locals.inputData->inputStreamSize +
-                           sizeof(ReplayInputData) + (u32)this->inputData);
+                           sizeof(ReplayInputData) + (u32)this->ownedInputData);
     if (g_ReplayUsesArchive == 0)
     {
         free(locals.compressedData);
@@ -250,7 +239,7 @@ ReplayManager::ReplayManager()
     i32 userDataAllocationSize;
     ReplayWriteLocals locals;
 
-    locals.inputData = this->inputData;
+    locals.inputData = this->ownedInputData;
     strcpy(locals.inputData->replayName, replayName);
     for (locals.i = strlen(replayName);
          locals.i < 8; locals.i++)
@@ -271,7 +260,7 @@ ReplayManager::ReplayManager()
         sizeof(ReplayInputData) + locals.inputData->inputStreamSize +
         locals.inputData->fpsStreamSize;
     locals.uncompressedData = (u8 *)malloc(locals.totalStreamSize);
-    memcpy(locals.uncompressedData, this->inputData,
+    memcpy(locals.uncompressedData, this->ownedInputData,
            sizeof(ReplayInputData) + locals.inputData->inputStreamSize);
     memcpy(locals.uncompressedData + sizeof(ReplayInputData) +
                locals.inputData->inputStreamSize,
@@ -386,9 +375,9 @@ ReplayManager::~ReplayManager()
     } freeSlots;
 
     utils::DebugPrint("shitdown ReplayInf\n");
-    if (this->inputData != NULL)
+    if (this->ownedInputData != NULL)
     {
-        freeSlots.inputData = this->inputData;
+        freeSlots.inputData = this->ownedInputData;
         free(freeSlots.inputData);
     }
     if (this->mode == REPLAY_MANAGER_RECORD && this->fpsData != NULL)
@@ -463,54 +452,6 @@ void ReplayManager::Destroy(ReplayManager *replayManager)
         delete manager;
         manager = NULL;
     }
-}
-
-ChainCallbackResult ReplayManager::ProcessFrame()
-{
-    ReplayFrameScratch conversionScratch;
-
-    if (this->mode == REPLAY_MANAGER_RECORD)
-    {
-        g_LastFrameInput = g_CurFrameInput;
-        g_CurFrameInput = g_ReplayInputSource.currentInput;
-        g_ReplayInputSource.Update();
-        g_ReplayInputAux = g_ReplayInputSource.pressedInput;
-
-        if ((u32)(this->inputCursor - (u8 *)this->inputData) >= 0x69780)
-        {
-            utils::DebugPrint("error : replay byffer over\n");
-            return CHAIN_CALLBACK_RESULT_CONTINUE;
-        }
-
-        *(u16 *)(this->inputCursor + 0) = g_CurFrameInput;
-        *(u16 *)(this->inputCursor + 2) = g_ReplayInputAux;
-        *(u16 *)(this->inputCursor + 4) = g_ReplayInputFlags;
-
-        if (this->frameCounter % 30 == 0)
-        {
-            *this->fpsCursor = 256.0f <= g_ReplayFps + 0.5f
-                                   ? 0xff
-                                   : (u8)(g_ReplayFps + 0.5f);
-            this->fpsCursor++;
-        }
-    }
-    else
-    {
-        g_LastFrameInput = g_CurFrameInput;
-        g_CurFrameInput = *(u16 *)(this->inputCursor + 0);
-        g_ReplayInputAux = *(u16 *)(this->inputCursor + 2);
-        g_ReplayInputFlags = *(u16 *)(this->inputCursor + 4);
-
-        if (this->frameCounter % 30 == 0)
-        {
-            this->replayFps = *this->fpsCursor;
-            this->fpsCursor++;
-        }
-    }
-
-    this->inputCursor += 6;
-    this->frameCounter++;
-    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 ChainCallbackResult ReplayManager::DrawFps()

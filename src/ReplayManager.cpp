@@ -10,7 +10,7 @@
 #include "GameplayGlobals.hpp"
 #include "Main.hpp"
 #include "SceneData.hpp"
-#include "ReplayInputSource.hpp"
+#include "ControllerInputSlot.hpp"
 #include "Rng.hpp"
 #include "ZunMath.hpp"
 
@@ -38,14 +38,8 @@ static __forceinline tm *ReplayTimestampToLocalTime(i32 timestamp)
 ReplayManager *g_ReplayManager = NULL;
 #endif
 
-#define g_ReplayInputSource (*RuntimeReplayInputSource())
-#define g_CurFrameInput (RuntimeHistoryCurrent())
-#define g_LastFrameInput (RuntimeHistoryPrevious())
-#define g_ReplayInputAux (RuntimeHistoryPressed())
-#define g_ReplayInputFlags (RuntimeHistoryReleased())
 
 #ifdef DIFFBUILD
-#define ownedInputData inputData
 #define fpsStreamBase fpsData
 #endif
 
@@ -91,25 +85,6 @@ struct ReplayUserDataHeader
 
 typedef char ReplayUserDataHeaderSizeIs0C[
     (sizeof(ReplayUserDataHeader) == 0x0c) ? 1 : -1];
-
-struct ReplayFrameScratch
-{
-    u32 unused[2];
-
-    ReplayFrameScratch()
-    {
-    }
-};
-
-struct ReplayInputFrameView
-{
-    u16 currentInput;
-    u16 pressedInput;
-    u16 releasedInput;
-};
-
-typedef char ReplayInputFrameSizeIs6[
-    (sizeof(ReplayInputFrameView) == 6) ? 1 : -1];
 
 struct ReplayInitializeScratch
 {
@@ -168,13 +143,13 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
         g_ReplayManager = this;
         scratch.headerSize = sizeof(ReplayFileHeader);
         this->ownedFileHeader = (ReplayFileHeader *)malloc(scratch.headerSize);
-        scratch.inputSize = 0x69780;
+        scratch.inputSize = REPLAY_RECORDING_INPUT_ALLOCATION_SIZE;
         this->ownedInputData = (ReplayInputData *)malloc(scratch.inputSize);
         scratch.fpsSize = 0x11940;
         this->fpsStreamBase = (u8 *)malloc(scratch.fpsSize);
 
         memset(this->ownedFileHeader, 0, sizeof(ReplayFileHeader));
-        memset(this->ownedInputData, 0, 0x69780);
+        memset(this->ownedInputData, 0, REPLAY_RECORDING_INPUT_ALLOCATION_SIZE);
         memset(this->fpsStreamBase, 0, 0x11940);
 
         this->ownedFileHeader->magic = 0x72353974;
@@ -500,56 +475,6 @@ void ReplayManager::Destroy(ReplayManager *replayManager)
     }
 }
 
-ChainCallbackResult ReplayManager::ProcessFrame()
-{
-    ReplayFrameScratch conversionScratch;
-    ReplayInputFrameView *inputFrame;
-
-    inputFrame = reinterpret_cast<ReplayInputFrameView *>(this->inputCursor);
-    if (this->mode == REPLAY_MANAGER_RECORD)
-    {
-        g_LastFrameInput = g_CurFrameInput;
-        g_CurFrameInput = g_ReplayInputSource.currentInput;
-        g_ReplayInputSource.Update();
-        g_ReplayInputAux = g_ReplayInputSource.pressedInput;
-
-        if ((u32)(this->inputCursor - (u8 *)this->ownedInputData) >= 0x69780)
-        {
-            utils::DebugPrint("error : replay byffer over\n");
-            return CHAIN_CALLBACK_RESULT_CONTINUE;
-        }
-
-        inputFrame->currentInput = g_CurFrameInput;
-        inputFrame->pressedInput = g_ReplayInputAux;
-        inputFrame->releasedInput = g_ReplayInputFlags;
-
-        if (this->frameCounter % 30 == 0)
-        {
-            *this->fpsCursor = 256.0f <= g_Supervisor.currentFps + 0.5f
-                                   ? 0xff
-                                   : (u8)(g_Supervisor.currentFps + 0.5f);
-            this->fpsCursor++;
-        }
-    }
-    else
-    {
-        g_LastFrameInput = g_CurFrameInput;
-        g_CurFrameInput = inputFrame->currentInput;
-        g_ReplayInputAux = inputFrame->pressedInput;
-        g_ReplayInputFlags = inputFrame->releasedInput;
-
-        if (this->frameCounter % 30 == 0)
-        {
-            this->replayFps = *this->fpsCursor;
-            this->fpsCursor++;
-        }
-    }
-
-    this->inputCursor += sizeof(ReplayInputFrameView);
-    this->frameCounter++;
-    return CHAIN_CALLBACK_RESULT_CONTINUE;
-}
-
 ChainCallbackResult ReplayManager::DrawFps()
 {
     Float3 position;
@@ -575,6 +500,82 @@ ChainCallbackResult ReplayManager::DrawFps()
 
 namespace th095
 {
+
+struct ReplayFrameScratch
+{
+    u32 unused[2];
+
+    ReplayFrameScratch()
+    {
+    }
+};
+
+struct ReplayInputFrameView
+{
+    u16 currentInput;
+    u16 pressedInput;
+    u16 releasedInput;
+};
+
+typedef char ReplayInputFrameSizeIs6[
+    (sizeof(ReplayInputFrameView) == 6) ? 1 : -1];
+
+ChainCallbackResult ReplayManager::ProcessFrame()
+{
+    ReplayFrameScratch conversionScratch;
+
+    if (this->mode == REPLAY_MANAGER_RECORD)
+    {
+        g_ControllerInputSlots[0].replayHistory.previous =
+            g_ControllerInputSlots[0].replayHistory.current;
+        g_ControllerInputSlots[0].replayHistory.current = g_ControllerInputSlots[0].current;
+        g_ControllerInputSlots[0].UpdateReplayHistory();
+        g_ControllerInputSlots[0].replayHistory.pressed = g_ControllerInputSlots[0].pressed;
+
+        if ((u32)(this->inputCursor - (u8 *)this->ownedInputData) >=
+            REPLAY_RECORDING_INPUT_ALLOCATION_SIZE)
+        {
+            utils::DebugPrint("error : replay byffer over\n");
+            return CHAIN_CALLBACK_RESULT_CONTINUE;
+        }
+
+        reinterpret_cast<ReplayInputFrameView *>(this->inputCursor)->currentInput =
+            g_ControllerInputSlots[0].replayHistory.current;
+        reinterpret_cast<ReplayInputFrameView *>(this->inputCursor)->pressedInput =
+            g_ControllerInputSlots[0].replayHistory.pressed;
+        reinterpret_cast<ReplayInputFrameView *>(this->inputCursor)->releasedInput =
+            g_ControllerInputSlots[0].replayHistory.released;
+
+        if (this->frameCounter % 30 == 0)
+        {
+            *this->fpsCursor = 256.0f <= g_Supervisor.currentFps + 0.5f
+                                   ? 0xff
+                                   : (u8)(g_Supervisor.currentFps + 0.5f);
+            this->fpsCursor++;
+        }
+    }
+    else
+    {
+        g_ControllerInputSlots[0].replayHistory.previous =
+            g_ControllerInputSlots[0].replayHistory.current;
+        g_ControllerInputSlots[0].replayHistory.current =
+            reinterpret_cast<ReplayInputFrameView *>(this->inputCursor)->currentInput;
+        g_ControllerInputSlots[0].replayHistory.pressed =
+            reinterpret_cast<ReplayInputFrameView *>(this->inputCursor)->pressedInput;
+        g_ControllerInputSlots[0].replayHistory.released =
+            reinterpret_cast<ReplayInputFrameView *>(this->inputCursor)->releasedInput;
+
+        if (this->frameCounter % 30 == 0)
+        {
+            this->replayFps = *this->fpsCursor;
+            this->fpsCursor++;
+        }
+    }
+
+    this->inputCursor += sizeof(ReplayInputFrameView);
+    this->frameCounter++;
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
+}
 
 ChainCallbackResult ReplayManager::OnUpdate(ReplayManager *replayManager)
 {

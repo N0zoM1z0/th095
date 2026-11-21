@@ -229,6 +229,8 @@ on the allocated controller. The ANM handle view and the comparison VM
 access adapter are the next ownership boundary in this path.
 SEM-490 routes main-menu, result-screen and screenshot input directly
 through the live controller slot in both builds.
+SEM-491 places replay history in that slot and shares the frame step
+between both builds. The photo camera and player read the history fields.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

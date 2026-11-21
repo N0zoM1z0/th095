@@ -20117,3 +20117,40 @@ agree on 38 main-menu cases, 48 result cursor cases, and 24 presentation
 and screenshot cases. These cover directional repeat, ignored neighbor
 slots, device reset, and the range of candidate screenshot filenames.
 See `.analysis/pi/menu-live-input/`.
+
+### SEM-491 — give replay input history to the controller slot
+
+`ControllerInputSlotView` now embeds the replay history at `+0x2C`. The
+slot retains its `0x8E` stride and mappings at `+0x58`. ReplayManager
+updates slot zero, and the player and camera read its current and
+pressed history directly. The capture request during the photo transition
+reads history pressed. Movement uses history current. The history update
+clears the live repeat mask,
+then sets bit 0 in the history repeat mask when any held counter reaches
+26. On a recorded frame the caller replaces history pressed with the live
+pressed mask.
+
+Both profiles share the frame step and the six-byte wire representation.
+Recording and playback keep their FPS-byte cadence, using Supervisor's
+sample for recording. Recording still publishes history before checking
+the input allocation bound.
+
+All 654 affected strict comparisons pass across 79 translation units.
+The 247-byte history update and 408-byte frame step match their full
+target extents. The normal GetInput object is unchanged across its 2,655
+bytes and 22 relocations. In the reversed link, the controller slots
+move from `0x004D12E0` to `0x004DF220`, and the frame step moves from
+`0x0043C6B0` to `0x0041F460`. All 48 input and two FPS references in the
+affected consumers follow their storage.
+
+The original and both links agree on 180 history cases and 43 stream
+cases. The native x86-64 test runs the same history update for every
+button and checks the live fields, mappings and next slot.
+See `.analysis/pi/replay-history-owner/`.
+
+Both linked layouts complete all 2,712 input indices of the built-in
+`demo0.rpy` under Wine with the retail score, position, RNG and camera
+samples. The reordered link also matches both timer fields. In the
+regular link the integer stage timer advances one input index earlier
+and remains one tick ahead. The traces are under
+`build/position-independence/replay-history-demo0/`.

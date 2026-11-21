@@ -67,6 +67,21 @@ operands in the three normal functions follow the array and their member
 addends. Both layouts load and edit the same bindings as retail, and the
 controller reader uses the edited binding on its next call.
 
+## Replay input ownership
+
+SEM-491 puts the replay history and its counters inside the actual
+controller slot. The replay driver, player and camera use slot zero;
+the replay driver also reads the FPS sample inside Supervisor. Both
+normal links resolve 48 slot references and two FPS references to the
+same fields after relocation. The slot array moves from `0x004D12E0`
+to `0x004DF220`.
+
+The original and both linked layouts agree on live-repeat clearing,
+history updates, six-byte recording and playback, FPS saturation and
+the recording allocation bound. The x86-64 component test verifies the
+history update and slot layout. See
+[SEM-491](SEMANTIC_HISTORY.md#sem-491--give-replay-input-history-to-the-controller-slot).
+
 ## Windows i386 link experiment
 
 `scripts/build-whole.py` links the regular PE and emits a map. The second
