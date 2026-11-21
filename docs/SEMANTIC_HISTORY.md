@@ -19353,3 +19353,28 @@ in both layouts. Both demo0 replays match all ten gameplay fields at
 all 2,712 input indices. The scene timer first advances one frame
 earlier in the regular link and at the retail index in the reverse
 link. See `.analysis/pi/ecl-spawn-result/`.
+
+### SEM-456 — share ECL ANM lookup and deferred deletion
+
+RunEcl and EclExtended now use one fieldless declaration for ANM handle
+arguments in both builds. Retail GetVm and MarkVmForDeletion read the
+handle as a dword at EBP+8 and return with `ret 4`. The shared
+declaration preserves that call shape, and the linker resolves it to
+the canonical methods on the shared ANM manager. This removes the
+last profile selector in RunEcl and two selectors in EclExtended.
+
+All 23 affected exact comparisons pass. The 23 lookup calls reach
+0x0040B7A0 and 0x0044F120 in the regular and reverse links. The
+deletion call reaches 0x0040B840 and 0x0044F1C0. Both links and retail
+agree on 108 cases that execute the real manager methods. The cases
+cover high-bit handles, misses, zero, delayed deletion, and interrupt
+updates through indexed and background handles.
+
+The normal RunEcl object matches the complete 27,747-byte target
+extent and the same 647 relocation destinations. Its only symbol
+differences from the exact object are 166 compiler-private labels.
+Seventeen normal extension callbacks also match their full extents
+and relocation destinations. The five remaining extent differences
+cover bullet-motion reset, enemy-marker update and callbacks 2–4.
+Both normal links pass the current game and library relocation checks
+and the full three-replay cycle. See `.analysis/pi/ecl-shared-handle-call/`.

@@ -36,12 +36,6 @@ inline void SetVmInterrupt(AnmVm *vm, i16 interrupt)
     vm->pendingInterrupt = interrupt;
 }
 
-struct AnmManagerLookup
-{
-    AnmVm *FindVm(i32 handle);
-    void RemoveVm(i32 handle);
-};
-
 // The target's inlined allocation wrapper keeps its size parameter addressable,
 // so VC7.1 materializes it in RunEcl's shared temporary region before malloc.
 inline void *Th095Alloc(size_t size)

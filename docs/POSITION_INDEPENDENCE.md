@@ -139,14 +139,16 @@ The two initialization tables register the same sixteen game initializers
 and the CRT security-cookie initializer. See
 `.analysis/pi/ecl-movement-operands/whole-game-link.log`.
 
-A retail comparison checks the 548 normal functions whose complete decoded
-instruction layout matches an accepted target extent. In that set, 2,249
+A retail comparison checks 629 normal functions whose complete decoded
+instruction layout matches an accepted target extent. In that set, 2,768
 paired writable operands map consistently between the retail addresses and
 normal storage. There are no splits or collisions in those mappings.
-1,069 call operands agree with the accepted addresses of their named
-callees, and 357 floating-point references carry the retail literal bytes.
+2,118 call operands agree with the accepted addresses of their named
+callees, and 534 floating-point references carry the retail literal bytes.
 The audit uses the normal objects and link map at each paired operand.
-See `.analysis/pi/normal-coff-call-leads.py` for the local recipe.
+See `.analysis/pi/ecl-resolver-owner/normal-coff-leads.py` for the recipe
+and `.analysis/pi/ecl-shared-handle-call/normal-coff-leads.log` for the
+SEM-456 results.
 
 ## Scene loading and capture against the original
 
@@ -388,6 +390,16 @@ and 639 initialized-data relocations. The library comparison resolves
 with retail on the stored-handle cases and the complete demo0 gameplay
 trace. See [SEM-455](SEMANTIC_HISTORY.md#sem-455--share-the-ecl-world-spawn-return-path)
 and `.analysis/pi/ecl-spawn-result/`.
+
+SEM-456 publishes one shared handle call path for RunEcl and EclExtended.
+The 23 lookup calls and the deferred-delete call follow their canonical
+methods in both links. Both layouts complete the three archive replays and
+match retail on all ten sampled gameplay fields at all 8,127 indices.
+The integer scene timer matches throughout demo1 in both layouts and
+demo2 in the reordered layout. The differences in the other runs begin
+at the first timer advance and stay within two ticks. See
+[SEM-456](SEMANTIC_HISTORY.md#sem-456--share-ecl-anm-lookup-and-deferred-deletion)
+and `build/position-independence/ecl-shared-handle-cycle/`.
 
 ## ANM VM lifetime and handles
 

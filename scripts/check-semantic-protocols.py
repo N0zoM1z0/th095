@@ -503,7 +503,7 @@ def check_ecl_extended_type_boundaries() -> None:
             fail(f"EclExtended restored retired normal type debt: {token}")
 
     emission_requirements = {
-        "EclExtendedAnmEmission.inl": ("struct AnmManagerLookupView",),
+        "EclAnmHandleEmission.inl": ("struct EclAnmHandleEmission",),
         "EclExtendedMathEmission.inl": ("struct ExtendedVector",),
         "EclExtendedBulletEmission.inl": ("struct ExtendedBulletView",),
     }

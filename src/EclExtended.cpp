@@ -14,6 +14,7 @@
 #endif
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
+#include "ecl/EclAnmHandleEmission.inl"
 #include <string.h>
 
 namespace th095
@@ -22,19 +23,10 @@ extern f32 g_AnmGameSpeed;
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 #ifndef DIFFBUILD
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
-extern AnmManager *g_AnmManager;
-static __forceinline AnmManager *EclExtendedCanonicalAnmManager()
-{
-    return g_AnmManager;
-}
 #endif
 
 namespace EclExtended
 {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#include "ecl/EclExtendedAnmEmission.inl"
-#endif
-
 #ifdef DIFFBUILD
 #include "ecl/EclExtendedMathEmission.inl"
 #define TH095_EXTENDED_FROM_ANGLE(vector, angle, magnitude) \
@@ -44,19 +36,6 @@ typedef Float3 ExtendedVector;
 #define TH095_EXTENDED_FROM_ANGLE(vector, angle, magnitude) \
     reinterpret_cast<Float3 *>(&(vector))->FromAngleMagnitude( \
         (angle), (magnitude))
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_EXT_ANM_GET_VM(handle) \
-    reinterpret_cast<AnmManagerLookupView *>(::th095::g_AnmManager)->GetVm(handle)
-#else
-static __forceinline AnmVmId ExtendedCanonicalAnmId(i32 value)
-{
-    AnmVmId id;
-    id.value = value;
-    return id;
-}
-#define TH095_EXT_ANM_GET_VM(handle)     ::th095::EclExtendedCanonicalAnmManager()->GetVm(         ExtendedCanonicalAnmId(handle))
 #endif
 
 #ifdef DIFFBUILD
@@ -193,7 +172,7 @@ void __fastcall UpdatePlayerProximityAndMarker(
         g_RuntimePlayerOwner->movementScale =
             (locals.distanceSquared - 1024.0f) / 3072.0f * 0.75f + 0.25f;
 
-    locals.vm = TH095_EXT_ANM_GET_VM(
+    locals.vm = TH095_ECL_ANM_GET_VM(
         enemy->anmHandles[0].value);
     if (locals.vm != NULL)
         TH095_EXT_PHOTO_TO_SCREEN(&locals.vm->positionOffset, &enemy->position);
@@ -235,10 +214,10 @@ void __fastcall SetBackgroundVmsState2(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-    firstVm = TH095_EXT_ANM_GET_VM(
+    firstVm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[0].value);
     firstVm->pendingInterrupt = 2;
-    secondVm = TH095_EXT_ANM_GET_VM(
+    secondVm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 2;
 }
@@ -249,10 +228,10 @@ void __fastcall SetBackgroundVmsState3(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-    firstVm = TH095_EXT_ANM_GET_VM(
+    firstVm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[0].value);
     firstVm->pendingInterrupt = 3;
-    secondVm = TH095_EXT_ANM_GET_VM(
+    secondVm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 3;
     TH095_ECL_EXT_GAME_SPEED = 1.0f;
@@ -279,11 +258,11 @@ void __fastcall EnablePhotoTransition(
     AnmVm *secondVm;
     AnmVm *firstVm;
     g_RuntimeGlobalStateOwner->photoTransitionActive = 1;
-    firstVm = TH095_EXT_ANM_GET_VM(
+    firstVm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[0].value);
     firstVm->pendingInterrupt = 2;
     AnmManager::ExecuteScript(firstVm);
-    secondVm = TH095_EXT_ANM_GET_VM(
+    secondVm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 2;
     AnmManager::ExecuteScript(secondVm);
@@ -298,11 +277,11 @@ void __fastcall DisablePhotoTransition(
     AnmVm *secondVm;
     AnmVm *firstVm;
     g_RuntimeGlobalStateOwner->photoTransitionActive = 0;
-    firstVm = TH095_EXT_ANM_GET_VM(
+    firstVm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[0].value);
     firstVm->pendingInterrupt = 3;
     AnmManager::ExecuteScript(firstVm);
-    secondVm = TH095_EXT_ANM_GET_VM(
+    secondVm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 3;
     AnmManager::ExecuteScript(secondVm);
@@ -383,7 +362,7 @@ void __fastcall UpdateEnemyMarkerVms(PhotoEnemyView *enemy, EclRawInstruction *i
 {
     ExtendedVector position;
     AnmVm *firstVm;
-    firstVm = TH095_EXT_ANM_GET_VM(
+    firstVm = TH095_ECL_ANM_GET_VM(
         enemy->anmHandles[0].value);
     if (firstVm != NULL)
     {
@@ -395,7 +374,7 @@ void __fastcall UpdateEnemyMarkerVms(PhotoEnemyView *enemy, EclRawInstruction *i
         firstVm->positionOffset.y -= 16.0f;
         firstVm->rotation.z = enemy->movementAngle;
         position = *reinterpret_cast<ExtendedVector *>(&firstVm->positionOffset);
-        firstVm = TH095_EXT_ANM_GET_VM(
+        firstVm = TH095_ECL_ANM_GET_VM(
             enemy->anmHandles[1].value);
         firstVm->positionOffset = *reinterpret_cast<Float3 *>(&position);
         firstVm->rotation.z = enemy->movementAngle;
@@ -449,11 +428,11 @@ void __fastcall RunPhotoTransition(
         if (enemy->activeEclContext->scriptState.extraIntVariables[2] == 60)
         {
             g_RuntimeGlobalStateOwner->photoTransitionActive = 0;
-            locals.firstEndVm = TH095_EXT_ANM_GET_VM(
+            locals.firstEndVm = TH095_ECL_ANM_GET_VM(
                 g_Background->spellBackgroundVmIds[0].value);
             locals.firstEndVm->pendingInterrupt = 3;
             AnmManager::ExecuteScript(locals.firstEndVm);
-            locals.secondEndVm = TH095_EXT_ANM_GET_VM(
+            locals.secondEndVm = TH095_ECL_ANM_GET_VM(
                 g_Background->spellBackgroundVmIds[1].value);
             locals.secondEndVm->pendingInterrupt = 3;
             AnmManager::ExecuteScript(locals.secondEndVm);
@@ -468,11 +447,11 @@ void __fastcall RunPhotoTransition(
         g_RuntimePlayerOwner->camera.CountPhotoTargets(NULL, NULL) != 0)
     {
         g_RuntimeGlobalStateOwner->photoTransitionActive = 1;
-        locals.firstStartVm = TH095_EXT_ANM_GET_VM(
+        locals.firstStartVm = TH095_ECL_ANM_GET_VM(
             g_Background->spellBackgroundVmIds[0].value);
         locals.firstStartVm->pendingInterrupt = 2;
         AnmManager::ExecuteScript(locals.firstStartVm);
-        locals.secondStartVm = TH095_EXT_ANM_GET_VM(
+        locals.secondStartVm = TH095_ECL_ANM_GET_VM(
             g_Background->spellBackgroundVmIds[1].value);
         locals.secondStartVm->pendingInterrupt = 2;
         AnmManager::ExecuteScript(locals.secondStartVm);
@@ -661,7 +640,7 @@ void __fastcall Callback17(PhotoEnemyView *enemy, EclRawInstruction *instruction
 static __forceinline void SetExtendedBackgroundVm0State2()
 {
     AnmVm *vm;
-    vm = TH095_EXT_ANM_GET_VM(
+    vm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[0].value);
     vm->pendingInterrupt = 2;
 }
@@ -669,7 +648,7 @@ static __forceinline void SetExtendedBackgroundVm0State2()
 static __forceinline void SetExtendedBackgroundVm1State2()
 {
     AnmVm *vm;
-    vm = TH095_EXT_ANM_GET_VM(
+    vm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[1].value);
     vm->pendingInterrupt = 2;
 }
@@ -677,7 +656,7 @@ static __forceinline void SetExtendedBackgroundVm1State2()
 static __forceinline void SetExtendedBackgroundVm0State3()
 {
     AnmVm *vm;
-    vm = TH095_EXT_ANM_GET_VM(
+    vm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[0].value);
     vm->pendingInterrupt = 3;
 }
@@ -685,7 +664,7 @@ static __forceinline void SetExtendedBackgroundVm0State3()
 static __forceinline void SetExtendedBackgroundVm1State3()
 {
     AnmVm *vm;
-    vm = TH095_EXT_ANM_GET_VM(
+    vm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[1].value);
     vm->pendingInterrupt = 3;
 }

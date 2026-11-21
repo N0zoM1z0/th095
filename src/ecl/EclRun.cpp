@@ -21,31 +21,8 @@
 #include "../PhotoEnemyManagerLayout.hpp"
 #include "../PhotoStageLayout.hpp"
 #include "../PhotoGamePlayer.hpp"
+#include "EclAnmHandleEmission.inl"
 #include "EclWorldVmSpawnEmission.inl"
-
-#ifdef DIFFBUILD
-#define TH095_ECL_ANM_MANAGER \
-    reinterpret_cast<EclRunHigh::AnmManagerLookup *>(::th095::g_AnmManager)
-#define TH095_ECL_ANM_GET_VM(id) TH095_ECL_ANM_MANAGER->FindVm(id)
-#define TH095_ECL_ANM_MARK_DELETE(id) TH095_ECL_ANM_MANAGER->RemoveVm(id)
-#else
-namespace th095
-{
-
-static __forceinline AnmVmId Th095EclAnmId(i32 value)
-{
-    AnmVmId id;
-    id.value = value;
-    return id;
-}
-
-} // namespace th095
-
-#define TH095_ECL_ANM_GET_VM(id) \
-    ::th095::g_AnmManager->GetVm(::th095::Th095EclAnmId(id))
-#define TH095_ECL_ANM_MARK_DELETE(id) \
-    ::th095::g_AnmManager->MarkVmForDeletion(::th095::Th095EclAnmId(id))
-#endif
 
 #define TH095_ECL_RESOLVE_FLOAT(enemy, operand) \
     (enemy)->ResolveFloat((operand).asFloat)

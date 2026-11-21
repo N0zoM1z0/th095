@@ -158,6 +158,8 @@ SEM-453 uses the instruction union for the four narrow immediates.
 SEM-454 binds both ECL profiles to the canonical ANM manager slot.
 SEM-455 shares the POD return adapter for all three stored world-spawn
 results. The linker binds them to the same ANM factory as opcode 150.
+SEM-456 shares the four-byte lookup and deferred-delete calls between
+RunEcl and EclExtended. RunEcl has no remaining profile selectors.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
