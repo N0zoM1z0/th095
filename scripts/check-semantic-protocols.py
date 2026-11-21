@@ -1531,8 +1531,9 @@ def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
         if path != "Background.cpp" and "g_Supervisor.flags.resultRestartActive" not in text:
             fail(f"{path} lost its canonical bit-9 consumer")
 
+    scene_state = (SRC / "SupervisorSceneState.inl").read_text(encoding="utf-8")
     consumer_facts = (
-        (main_body, "g_Supervisor.flags.resultRestartActive = 1;"),
+        (scene_state, "g_Supervisor.flags.resultRestartActive = 1;"),
         (controller, "g_Supervisor.flags.keyboardAvailable"),
         (controller, "g_Supervisor.flags.controllerAvailable"),
         (front_end, "g_Supervisor.flags.receivedCloseMsg != 0"),
@@ -2167,9 +2168,12 @@ def check_supervisor_state_owner() -> None:
         "SUPERVISOR_STATE_RETRY_PHOTO_GAME",
     )
     render_body = (SRC / "GameWindowRender.inl").read_text(encoding="utf-8")
+    scene_state = (SRC / "SupervisorSceneState.inl").read_text(encoding="utf-8")
     for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
         if '#include "GameWindowRender.inl"' in text:
             text += render_body
+        if '#include "SupervisorSceneState.inl"' in text:
+            text += scene_state
         for constant in constants:
             if constant not in text:
                 fail(f"{path} lost canonical Supervisor state route: {constant}")
@@ -2757,8 +2761,12 @@ def check_front_end_flags_owner(
         if name == "SceneSelectAssets.cpp":
             if "SceneSelectControllerView *view;" not in body:
                 fail("asset worker lost its actual controller receiver")
-        elif "FrontEndControllerFlagBits flagBits;" not in body:
-            fail(f"{name} lost shared FrontEnd flag-bit storage")
+        else:
+            owner = body
+            if name == "FrontEndLifecycle.cpp" and '#include "FrontEndController.hpp"' in body:
+                owner = (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
+            if "FrontEndControllerFlagBits flagBits;" not in owner:
+                fail(f"{name} lost shared FrontEnd flag-bit storage")
         for marker in markers:
             if marker not in body:
                 fail(f"{name} lost a named FrontEnd flag producer/consumer: {marker}")
@@ -2893,7 +2901,7 @@ def check_scene_value_queue_owner(
             r"FrontEndPointerQueueView)\b", source
         ):
             fail(f"{path.name} restored a retired queue projection")
-    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp", "FrontEndLifecycle.cpp"):
+    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp", "FrontEndController.hpp"):
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         if '#include "SceneValueQueue.hpp"' not in source:
             fail(f"{name} lost the canonical raw queue include")
@@ -2927,7 +2935,7 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
         fail("preview data queue restored selected/truncated storage")
     for name in (
         "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectUpdate.cpp",
-        "SceneSelectUpdateExact.inl", "FrontEndLifecycle.cpp",
+        "SceneSelectUpdateExact.inl", "FrontEndController.hpp",
     ):
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         for field in ("groupPreviewDataQueue", "scenePreviewDataQueue"):
@@ -3405,7 +3413,7 @@ def check_front_end_pending_texture_owner(header_text: str | None = None) -> Non
         fail("pending-texture owner restored profile or platform dependencies")
     for name in (
         "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectUpdate.cpp",
-        "SceneSelectUpdateExact.inl", "FrontEndLifecycle.cpp",
+        "SceneSelectUpdateExact.inl", "FrontEndController.hpp",
     ):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         if body.count("FrontEndPendingTextureData pendingTextures;") != 1:

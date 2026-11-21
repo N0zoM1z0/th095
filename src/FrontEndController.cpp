@@ -1,3 +1,4 @@
+#include "FrontEndController.hpp"
 #ifdef TH095_MATCH_EXACT
 #include "AnmManager.hpp"
 #endif
@@ -284,13 +285,13 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         else
         {
-            view->entryMode = 0;
+            view->entryMode = FRONT_END_ENTRY_MAIN_MENU;
             g_ReplayUsesArchive = REPLAY_PLAYBACK_SOURCE_LOOSE_FILE;
         }
 
         switch (view->entryMode)
         {
-        case 0:
+        case FRONT_END_ENTRY_MAIN_MENU:
         {
             view->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             FrontEndResetTimer(&view->stateTimer);
@@ -305,7 +306,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             FrontEndCreateSceneVm(view, 0x65);
             break;
         }
-        case 1:
+        case FRONT_END_ENTRY_SCENE_SELECT:
         {
             view->requestedState = FRONT_END_REQUESTED_STATE_SCENE_SELECT;
             view->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
@@ -316,10 +317,10 @@ ChainCallbackResult SceneSelectControllerView::Update()
             FrontEndCreateSceneVm(view, 0x1b);
             FrontEndCreateSceneVm(view, 0x64);
             FrontEndCreateSceneVm(view, 0x65);
-            view->entryMode = 0;
+            view->entryMode = FRONT_END_ENTRY_MAIN_MENU;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        case 2:
+        case FRONT_END_ENTRY_REPLAY_BROWSER:
         {
             view->requestedState = FRONT_END_REQUESTED_STATE_REPLAY_BROWSER;
             view->state = TH095_REPLAY_BROWSER_STATE_INITIALIZE;
@@ -331,7 +332,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             FrontEndCreateSceneVm(view, 0x1b);
             FrontEndCreateSceneVm(view, 0x64);
             FrontEndCreateSceneVm(view, 0x65);
-            view->entryMode = 0;
+            view->entryMode = FRONT_END_ENTRY_MAIN_MENU;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
         default:

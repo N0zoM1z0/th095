@@ -19822,3 +19822,26 @@ initialization. The diagnostic text in the existing title error
 path differs from the original Japanese text. The fixture verifies
 when logging occurs. Both rebuilt layouts reach the Main Menu and
 enter Scene Select under Wine. See `.analysis/pi/title-worker-owner/`.
+
+### SEM-478 — share the Supervisor title controller lifetime
+
+FrontEndController.hpp declares the full controller allocated at
+`0x00445CC0` and held by Supervisor at +0x780. Both profiles call that
+factory and Destroy at `0x00445DE0` through this declaration. The old
+method-only Main views are gone. SupervisorSceneState.inl shares scene
+routing and manager cleanup. The entry-mode producer and consumer now
+name Main Menu, Scene Select, and Replay Browser.
+
+All 60 affected strict comparisons pass. The normal scene router
+matches the 1,026-byte extent including its switch tables and all 46
+relocation destinations, with 25 different compiler-private names.
+Both normal links retain their mapped bytes relative to the prior
+build. All fourteen title and photo-task operands in the scene router
+and cleanup follow their moved symbols.
+
+The original and both normal links agree on 17 scene transitions
+including title creation failure, release on exit, and return from play
+or replay. A second fixture follows all three entry modes with both
+title texture formats. The retail photo-game exit path returns with
+critical-section lane 5 still held, which the fixture observes in all
+three layouts. See `.analysis/pi/front-end-lifetime-owner/`.

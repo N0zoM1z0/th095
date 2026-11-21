@@ -1,13 +1,9 @@
 #include "AnmManager.hpp"
+#include "FrontEndController.hpp"
 #include "Global.hpp"
-#include "FrontEndGlobals.hpp"
-#include "FrontEndPendingTextureData.hpp"
-#include "SceneValueQueue.hpp"
-#include "ScenePreviewDataQueue.hpp"
 #include "Main.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
-#include "SceneData.hpp"
 #include "SoundPlayer.hpp"
 #include "SceneSelect.hpp"
 #include "utils.hpp"
@@ -55,118 +51,8 @@ struct FrontEndInitializeLocals
 };
 
 
-struct FrontEndTimerView
-{
-    i32 previous;
-    f32 subFrame;
-    i32 current;
-
-    FrontEndTimerView()
-    {
-        this->current = 0;
-        this->previous = -999999;
-        this->subFrame = 0.0f;
-    }
-};
-
-struct FrontEndLifecycleView
-{
-    AnmLoaded *sceneAnm;
-    AnmLoaded *transitionAnm;
-    FrontEndTimerView stateTimer;
-    FrontEndTimerView transitionTimer;
-    ResultScreenReplayCursor groupCursor;
-    ResultScreenReplayCursor secondaryCursor;
-    ResultScreenReplayCursor sceneCursors[12];
-    u8 unknown0bf0[0x26c];
-    u8 *ownedMissionMessageData;
-    SceneEncodedText specialEncodedText[10];
-    i8 specialDisplayStates[10];
-    i8 currentDisplayState;
-    u8 unknown0e93[0x15];
-    ReplayManager *replays[80];
-    u8 unknown0fe8[0x14];
-    void *replayListData;
-    u8 unknown1000[0x5120];
-    FrontEndControllerFlagBits flagBits;
-    i32 entryMode;
-    SceneValueQueue selectionQueue;
-    SceneValueQueue loadedSceneQueue;
-    ScenePreviewDataQueue groupPreviewDataQueue;
-    SceneValueQueue groupPreviewSizeQueue;
-    ScenePreviewDataQueue scenePreviewDataQueue;
-    SceneValueQueue scenePreviewSizeQueue;
-    SceneValueQueue groupPreviewQueue;
-    SceneValueQueue scenePreviewQueue;
-    SceneValueQueue loadedGroupQueue;
-    u8 unknown63b0[0x1c];
-    FrontEndPendingTextureData pendingTextures;
-    ChainElem *calcChain;
-    ChainElem *drawChain;
-    u8 unknown6408[0x10c];
-
-    FrontEndLifecycleView();
-    ~FrontEndLifecycleView();
-    i32 Initialize();
-    static void __fastcall LoadResources(void *unused);
-    static void __fastcall LoadThread(void *unused);
-    static FrontEndLifecycleView *__fastcall Create(i32 entryMode);
-    void Destroy();
-};
-
-
-typedef char FrontEndLifecyclePendingTextureDataLayout[
-    (sizeof(FrontEndPendingTextureData) == 0x34 &&
-     offsetof(FrontEndLifecycleView, pendingTextures) == 0x63cc &&
-     offsetof(FrontEndPendingTextureData, primaryData) == 0x04 &&
-     offsetof(FrontEndPendingTextureData, primarySize) == 0x10 &&
-     offsetof(FrontEndPendingTextureData, secondaryData) == 0x1c &&
-     offsetof(FrontEndPendingTextureData, secondarySize) == 0x28) ? 1 : -1];
-typedef char FrontEndLifecycleOwnedMissionDataAtE5C[
-    (offsetof(FrontEndLifecycleView, ownedMissionMessageData) == 0xe5c)
-        ? 1
-        : -1];
-typedef char FrontEndLifecycleSpecialEncodedTextAtE60[
-    (offsetof(FrontEndLifecycleView, specialEncodedText) == 0xe60) ? 1 : -1];
-typedef char FrontEndLifecycleDisplayStateAtE92[
-    (offsetof(FrontEndLifecycleView, currentDisplayState) == 0xe92) ? 1
-                                                                   : -1];
-typedef char FrontEndLifecycleReplaysAtEA8[
-    (offsetof(FrontEndLifecycleView, replays) == 0xea8) ? 1 : -1];
-typedef char FrontEndLifecycleReplayListDataAtFFC[
-    (offsetof(FrontEndLifecycleView, replayListData) == 0xffc) ? 1 : -1];
-typedef char FrontEndLifecycleGroupDataQueueAt61B8[
-    (offsetof(FrontEndLifecycleView, groupPreviewDataQueue) == 0x61b8)
-        ? 1
-        : -1];
-typedef char FrontEndLifecycleFlagsAt6120[
-    (offsetof(FrontEndLifecycleView, flagBits) == 0x6120) ? 1 : -1];
-typedef char FrontEndLifecycleEntryModeAt6124[
-    (offsetof(FrontEndLifecycleView, entryMode) == 0x6124) ? 1 : -1];
-typedef char FrontEndLifecycleSceneDataQueueAt6248[
-    (offsetof(FrontEndLifecycleView, scenePreviewDataQueue) == 0x6248)
-        ? 1
-        : -1];
-typedef char FrontEndLifecyclePendingPrimaryAt63D0[
-    (offsetof(FrontEndLifecycleView, pendingTextures) +
-         offsetof(FrontEndPendingTextureData, primaryData) == 0x63d0)
-        ? 1
-        : -1];
-typedef char FrontEndLifecyclePendingSecondaryAt63E8[
-    (offsetof(FrontEndLifecycleView, pendingTextures) +
-         offsetof(FrontEndPendingTextureData, secondaryData) == 0x63e8)
-        ? 1
-        : -1];
-typedef char FrontEndLifecycleChainsAt6400[
-    (offsetof(FrontEndLifecycleView, calcChain) == 0x6400 &&
-     offsetof(FrontEndLifecycleView, drawChain) == 0x6404)
-        ? 1
-        : -1];
-typedef char FrontEndLifecycleSizeIs6514[
-    (sizeof(FrontEndLifecycleView) == 0x6514) ? 1 : -1];
-
 // FUNCTION: TH095 0x00445440.
-FrontEndLifecycleView::FrontEndLifecycleView()
+FrontEndControllerView::FrontEndControllerView()
 {
     utils::DebugPrint("initialize TitleTaskInf\n");
     memset(this, 0, sizeof(*this));
@@ -174,7 +60,7 @@ FrontEndLifecycleView::FrontEndLifecycleView()
 }
 
 // FUNCTION: TH095 0x004456F0.
-i32 FrontEndLifecycleView::Initialize()
+i32 FrontEndControllerView::Initialize()
 {
     FrontEndInitializeLocals locals;
 
@@ -251,12 +137,12 @@ i32 FrontEndLifecycleView::Initialize()
         }
     }
 
-    FrontEndLifecycleView::LoadResources(NULL);
+    FrontEndControllerView::LoadResources(NULL);
     return 0;
 }
 
 // FUNCTION: TH095 0x00445A50.
-void __fastcall FrontEndLifecycleView::LoadResources(void *)
+void __fastcall FrontEndControllerView::LoadResources(void *)
 {
     if (LoadPhotoBulletAnm() < 0)
         goto loadDone;
@@ -280,10 +166,10 @@ void __fastcall ReleaseFrontEndAnms()
 }
 
 // FUNCTION: TH095 0x00445980.
-void __fastcall FrontEndLifecycleView::LoadThread(void *)
+void __fastcall FrontEndControllerView::LoadThread(void *)
 {
-    FrontEndLifecycleView *controller =
-        static_cast<FrontEndLifecycleView *>(g_ActiveMenuController);
+    FrontEndControllerView *controller =
+        static_cast<FrontEndControllerView *>(g_ActiveMenuController);
 
     while (g_AnmManager->captureSurfaceIdx >= 0 ||
            g_AnmManager->captureAnmIdx >= 0)
@@ -314,9 +200,9 @@ loadDone:
 }
 
 // FUNCTION: TH095 0x00445CC0.
-FrontEndLifecycleView *__fastcall FrontEndLifecycleView::Create(i32 mode)
+FrontEndControllerView *__fastcall FrontEndControllerView::Create(i32 mode)
 {
-    FrontEndLifecycleView *controller = new FrontEndLifecycleView();
+    FrontEndControllerView *controller = new FrontEndControllerView();
     ChainElem *elem;
 
     controller->flagBits.titleLoadIncomplete = 1;
@@ -333,11 +219,11 @@ FrontEndLifecycleView *__fastcall FrontEndLifecycleView::Create(i32 mode)
     controller->drawChain = elem;
 
     g_Supervisor.StartReplayScan(
-        FrontEndLifecycleView::LoadThread, controller);
+        FrontEndControllerView::LoadThread, controller);
     return controller;
 }
 
-static __forceinline void FrontEndFreeReplayListData(FrontEndLifecycleView *view)
+static __forceinline void FrontEndFreeReplayListData(FrontEndControllerView *view)
 {
     if (view->replayListData != NULL)
     {
@@ -345,7 +231,7 @@ static __forceinline void FrontEndFreeReplayListData(FrontEndLifecycleView *view
         free(data);
     }
 }
-static __forceinline void FrontEndFreeMissionMessageData(FrontEndLifecycleView *view)
+static __forceinline void FrontEndFreeMissionMessageData(FrontEndControllerView *view)
 {
     if (view->ownedMissionMessageData != NULL)
     {
@@ -357,19 +243,19 @@ static __forceinline void FrontEndFreePoppedValue(void *data)
 {
     free(data);
 }
-static __forceinline void FrontEndFreeGroupQueuePop(FrontEndLifecycleView *view)
+static __forceinline void FrontEndFreeGroupQueuePop(FrontEndControllerView *view)
 {
     u32 compilerStorage;
     FrontEndFreePoppedValue(
         reinterpret_cast<void *>(view->groupPreviewDataQueue.Pop()));
 }
-static __forceinline void FrontEndFreeSceneQueuePop(FrontEndLifecycleView *view)
+static __forceinline void FrontEndFreeSceneQueuePop(FrontEndControllerView *view)
 {
     u32 compilerStorage;
     FrontEndFreePoppedValue(
         reinterpret_cast<void *>(view->scenePreviewDataQueue.Pop()));
 }
-static __forceinline void FrontEndFreePendingPrimary(FrontEndLifecycleView *view, i32 index)
+static __forceinline void FrontEndFreePendingPrimary(FrontEndControllerView *view, i32 index)
 {
     if (view->pendingTextures.primaryData[index] != NULL)
     {
@@ -377,7 +263,7 @@ static __forceinline void FrontEndFreePendingPrimary(FrontEndLifecycleView *view
         free(data);
     }
 }
-static __forceinline void FrontEndFreePendingSecondary(FrontEndLifecycleView *view, i32 index)
+static __forceinline void FrontEndFreePendingSecondary(FrontEndControllerView *view, i32 index)
 {
     if (view->pendingTextures.secondaryData[index] != NULL)
     {
@@ -387,7 +273,7 @@ static __forceinline void FrontEndFreePendingSecondary(FrontEndLifecycleView *vi
 }
 
 // FUNCTION: TH095 0x00445AA0.
-FrontEndLifecycleView::~FrontEndLifecycleView()
+FrontEndControllerView::~FrontEndControllerView()
 {
     i32 replayIndex;
     i32 pendingIndex;
@@ -427,9 +313,9 @@ FrontEndLifecycleView::~FrontEndLifecycleView()
 }
 
 // FUNCTION: TH095 0x00445DE0.
-void FrontEndLifecycleView::Destroy()
+void FrontEndControllerView::Destroy()
 {
-    FrontEndLifecycleView *controller = this;
+    FrontEndControllerView *controller = this;
     if (controller != NULL)
     {
         delete controller;

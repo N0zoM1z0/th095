@@ -200,6 +200,8 @@ SEM-476 shares shutdown and binds pause and title ANM loading and
 release to the canonical manager.
 SEM-477 uses canonical title-worker bindings and restores publication
 of title-load failure through the normal Chain callback.
+SEM-478 shares the title controller declaration and Supervisor scene
+transitions. The title entry mode names all three menu destinations.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
