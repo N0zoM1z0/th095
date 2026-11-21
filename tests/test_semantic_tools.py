@@ -1035,21 +1035,25 @@ class SemanticProtocolGuardTests(unittest.TestCase):
 
     def test_scene_select_prefix_guard_rejects_legacy_view_and_reset(self) -> None:
         GUARD.check_scene_select_front_end_prefix_owner()
-        exact = (ROOT / "src" / "SceneSelectUpdateExact.inl").read_text(
-            encoding="utf-8"
-        )
+        owner = (ROOT / "src" / "FrontEndController.hpp").read_text(encoding="utf-8")
         for old, new in (
-            ("SceneAnmLoadedView *transitionAnm;", "u8 unknown0004[4];"),
+            ("AnmLoaded *transitionAnm;", "u8 unknown0004[4];"),
             ("ZunTimer stateTimer;", "ResultScreenTimer stateTimer;"),
             ("ZunTimer animationTimer;", "u8 unknown0014[0x0c];"),
             ("ResultScreenReplayCursor secondaryCursor;", "u8 unknown00f8[0xd8];"),
-            ("SceneSelectResetTimer(&view->stateTimer);", "view->stateTimer.Reset();"),
         ):
             with self.subTest(old=old):
                 with self.assertRaises(SystemExit):
                     GUARD.check_scene_select_front_end_prefix_owner(
-                        exact.replace(old, new, 1)
+                        owner_text=owner.replace(old, new, 1)
                     )
+        update = (ROOT / "src" / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
+        with self.assertRaises(SystemExit):
+            GUARD.check_scene_select_front_end_prefix_owner(
+                scene_update_text=update.replace(
+                    "FrontEndResetTimer(&this->stateTimer);", "this->stateTimer.Reset();", 1
+                )
+            )
 
     def test_transition_vm_guard_rejects_anonymous_exact_storage(self) -> None:
         GUARD.check_front_end_transition_vm_owner()
@@ -1061,24 +1065,24 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 exact.replace("AnmVmId transitionVm;", "u8 unknown6100[4];", 1)
             )
 
-    def test_scene_best_shot_guard_rejects_raw_exact_access(self) -> None:
+    def test_scene_best_shot_guard_rejects_raw_access(self) -> None:
         GUARD.check_scene_select_best_shot_record_access()
-        exact = (ROOT / "src" / "SceneSelectUpdateExact.inl").read_text(
+        update = (ROOT / "src" / "SceneSelectUpdate.cpp").read_text(
             encoding="utf-8"
         )
         with self.assertRaises(SystemExit):
             GUARD.check_scene_select_best_shot_record_access(
-                exact.replace("].componentsLoaded", "][0x31c9]", 1)
+                update.replace("].componentsLoaded", "][0x31c9]", 1)
             )
 
     def test_scene_color_interpolation_guard_rejects_local_proxy(self) -> None:
         GUARD.check_scene_select_color_interpolation_owner()
-        exact = (ROOT / "src" / "SceneSelectUpdateExact.inl").read_text(
+        update = (ROOT / "src" / "SceneSelectUpdate.cpp").read_text(
             encoding="utf-8"
         )
         with self.assertRaises(SystemExit):
             GUARD.check_scene_select_color_interpolation_owner(
-                exact.replace(
+                update.replace(
                     "reinterpret_cast<AnmVmColorInterpolationView *>(",
                     "reinterpret_cast<SceneSelectColorInterpolationView *>(",
                     1,
@@ -1145,28 +1149,28 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 GUARD.check_front_end_flags_owner(changed)
 
-    def test_front_end_exact_scene_state_and_flags_reject_raw_values(self) -> None:
+    def test_front_end_scene_state_and_flags_reject_raw_values(self) -> None:
         GUARD.check_front_end_requested_state_owner()
         GUARD.check_front_end_flags_owner()
-        source = (ROOT / "src" / "SceneSelectUpdateExact.inl").read_text(
+        source = (ROOT / "src" / "SceneSelectUpdate.cpp").read_text(
             encoding="utf-8"
         )
         state = source.replace(
-            "view->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;",
-            "view->requestedState = 5;",
+            "this->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;",
+            "this->requestedState = 5;",
             1,
         )
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
-                GUARD.check_front_end_requested_state_owner(exact_update_text=state)
+                GUARD.check_front_end_requested_state_owner(scene_update_text=state)
         flags = source.replace(
-            "view->flagBits.assetLoadStopRequested = 1;",
-            "view->flags |= 0x20;",
+            "this->flagBits.assetLoadStopRequested = 1;",
+            "this->flags |= 0x20;",
             1,
         )
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
-                GUARD.check_front_end_flags_owner(exact_update_text=flags)
+                GUARD.check_front_end_flags_owner(scene_update_text=flags)
 
     def test_pending_texture_owner_guard_rejects_pointer_truncation(self) -> None:
         GUARD.check_front_end_pending_texture_owner()

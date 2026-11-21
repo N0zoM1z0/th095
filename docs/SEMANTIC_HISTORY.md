@@ -20079,3 +20079,26 @@ reversed object order. The original and both linked layouts agree on
 48 detail cases and 36 replay and score-summary cases. The fixtures
 check the selected score index, timestamp argument, digit order, and
 leading-zero visibility. See `.analysis/pi/scene-detail-owner/`.
+
+### SEM-489 — run Scene Select on the allocated front-end controller
+
+The Scene Select update now shares one body on the controller allocated by
+the title factory. It uses the controller's timers, selection, queues and
+state directly. Input reads use the shared controller slot, and the worker,
+critical section and lock count use the Supervisor owner. The controller's
+bit 4 mirrors the visibility changes sent to the detail and preview VMs
+when holding or releasing Skip.
+
+The existing Scene Select view still supplies the VM handle calls. The
+small comparison adapter preserves the POD handle ABI, whole-word visibility
+writes and packed color access. The update's strict comparison covers its
+0x3EC2-byte owned extent and relocations, including the input slot fields.
+
+All 102 affected strict comparisons pass across 15 translation units. The
+normal update moves from `0x00444630` to `0x00410E60` under reversed object
+order. The original and both linked layouts agree on 36 preview text cases,
+54 visibility and stale-handle cases, and eight pending texture cases. The
+last group checks upload and free order, lock 4's count, the shifted queue,
+and the two completion interrupts. The native x86-64 fixture exercises the
+shared shift with pointers above 4 GB. See
+`.analysis/pi/scene-select-update-owner/`.

@@ -82,7 +82,6 @@
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelect.hpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelectController.cpp	#ifdef TH095_MATCH_EXACT
-1	src/SceneSelectUpdate.cpp	#ifdef DIFFBUILD
 1	src/SceneSelectUpdate.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelectUpdate.cpp	#ifndef DIFFBUILD
 1	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)

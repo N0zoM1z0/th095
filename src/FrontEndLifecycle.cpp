@@ -117,7 +117,7 @@ i32 FrontEndControllerView::Initialize()
     }
 
     this->currentDisplayState = -1;
-    this->flagBits.unknownFlagBit4 = 1;
+    this->flagBits.sceneDetailsVisible = 1;
     if (g_SoundPlayer.initializationComplete == 0)
     {
         g_SoundPlayer.InitSoundBuffers();

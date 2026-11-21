@@ -224,6 +224,9 @@ onto the allocated controller. The digit lookup still uses a bounded
 comparison adapter with the shared Scene Select VM view.
 SEM-488 moves scene-detail reads onto the allocated controller and shares
 the stored timestamp conversion with replay drawing.
+SEM-489 removes the two Scene Select update layouts and shares one update
+on the allocated controller. The ANM handle view and the comparison VM
+access adapter are the next ownership boundary in this path.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

@@ -30,9 +30,10 @@ static void Check(bool condition, int line)
 struct Consumer
 {
     FrontEndPendingTextureData pendingTextures;
+    i32 Advance();
 };
 
-static i32 Advance(Consumer *view)
+i32 Consumer::Advance()
 {
     i32 i;
 #include "FrontEndPendingTextureAdvance.inl"
@@ -90,7 +91,7 @@ static void CheckDrain(i32 initialCount, bool missingSecondary)
         pending.primaryData[0] = NULL;
         free(pending.secondaryData[0]);
         pending.secondaryData[0] = NULL;
-        CHECK(Advance(&consumer) == 2);
+        CHECK(consumer.Advance() == 2);
 
         i32 remaining = initialCount - consumed - 1;
         CHECK(pending.count == remaining);

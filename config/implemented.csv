@@ -182,7 +182,7 @@ th095::FrontEndControllerView::Update
 th095::FrontEndControllerView::UpdateMainMenu
 th095::SceneSelectControllerView::CloseMainMenu
 th095::SceneSelectControllerView::UpdateMainMenuSelection
-th095::SceneSelectControllerView::UpdateSceneSelect
+th095::FrontEndControllerView::UpdateSceneSelect
 th095::AnmTextureEntryView::Clear
 th095::LoadSceneSelectionAssets
 th095::ResultSaveDataView::LoadBestShotForScene

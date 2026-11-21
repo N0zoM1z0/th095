@@ -256,7 +256,7 @@ ChainCallbackResult FrontEndControllerView::Update()
         break;
 
     case FRONT_END_REQUESTED_STATE_SCENE_SELECT:
-        sceneMenu->UpdateSceneSelect();
+        this->UpdateSceneSelect();
         break;
 
     case FRONT_END_REQUESTED_STATE_REPLAY_BROWSER:

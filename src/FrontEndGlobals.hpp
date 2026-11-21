@@ -71,7 +71,7 @@ struct FrontEndControllerFlagBits
     u32 titleLoadFailed : 1;
     u32 previewPending : 1;
     u32 showRates : 1;
-    u32 unknownFlagBit4 : 1;
+    u32 sceneDetailsVisible : 1;
     u32 assetLoadStopRequested : 1;
     u32 unknownFlagBits6 : 26;
 };

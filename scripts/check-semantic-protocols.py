@@ -1209,8 +1209,7 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
     if re.sub(r"\s+", "", request_body) != "WriteWorkerSignal(this->exitSignal,1);":
         fail("worker request changed more than the exit handshake")
     for name, receiver in (("ReplayBrowser.cpp", "g_Supervisor"),
-                           ("SceneSelectUpdate.cpp", "g_Supervisor"),
-                           ("SceneSelectUpdateExact.inl", "g_SceneSupervisor")):
+                           ("SceneSelectUpdate.cpp", "g_Supervisor")):
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         if f"{receiver}.replayScanWorker.RequestExit();" not in source:
             fail(f"{name} lost its real primary-worker request receiver")
@@ -2372,7 +2371,8 @@ def check_front_end_timer_owner() -> None:
 
 
 def check_scene_select_front_end_prefix_owner(
-    exact_update_text: str | None = None,
+    scene_update_text: str | None = None,
+    owner_text: str | None = None,
 ) -> None:
     for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
         scene = source_without_comments((SRC / name).read_text(encoding="utf-8"))
@@ -2392,74 +2392,45 @@ def check_scene_select_front_end_prefix_owner(
         if "offsetof(SceneSelectControllerView, secondaryCursor) == 0xf8" not in scene:
             fail(f"{name} lost secondary-cursor layout assertion")
 
-    normal_update = source_without_comments(
-        (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
+    owner = source_without_comments(
+        owner_text if owner_text is not None
+        else (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
     )
-    if "SceneAnmLoadedView *transitionAnm;" not in normal_update:
-        fail("normal Scene Select update restored anonymous +0x04 storage")
-    if "offsetof(SceneSelectUpdateView, transitionAnm) == 0x04" not in normal_update:
-        fail("normal Scene Select update lost transition-ANM offset assertion")
-    if "ResultScreenReplayCursor secondaryCursor;" not in normal_update:
-        fail("normal Scene Select update lost the shared secondary cursor")
-    if "offsetof(SceneSelectUpdateView, secondaryCursor) == 0xf8" not in normal_update:
-        fail("normal Scene Select update lost secondary-cursor layout assertion")
-
-    exact = source_without_comments(
-        exact_update_text
-        if exact_update_text is not None
-        else (SRC / "SceneSelectUpdateExact.inl").read_text(encoding="utf-8")
+    for marker in (
+        "ZunTimer stateTimer;", "ZunTimer animationTimer;",
+        "AnmLoaded *transitionAnm;", "ResultScreenReplayCursor secondaryCursor;",
+        "offsetof(FrontEndControllerView, transitionAnm) == 0x04",
+        "offsetof(FrontEndControllerView, secondaryCursor) == 0xf8",
+    ):
+        if marker not in owner:
+            fail(f"Front-end controller lost shared Scene Select field: {marker}")
+    update = source_without_comments(
+        scene_update_text if scene_update_text is not None
+        else (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
     )
-    for declaration in ("ZunTimer stateTimer;", "ZunTimer animationTimer;"):
-        if declaration not in exact:
-            fail(f"exact Scene Select update lost {declaration}")
-    if "SceneAnmLoadedView *transitionAnm;" not in exact:
-        fail("exact Scene Select update restored anonymous +0x04 storage")
-    if "offsetof(SceneSelectUpdateView, transitionAnm) == 0x04" not in exact:
-        fail("exact Scene Select update lost transition-ANM offset assertion")
-    if "ResultScreenReplayCursor secondaryCursor;" not in exact:
-        fail("exact Scene Select update lost the shared secondary cursor")
-    if "offsetof(SceneSelectUpdateView, secondaryCursor) == 0xf8" not in exact:
-        fail("exact Scene Select update lost secondary-cursor layout assertion")
-    if "ResultScreenTimer stateTimer;" in exact or "unknown0014[0x0c]" in exact:
-        fail("exact Scene Select update restored its legacy timer view")
-    if "unknown00f8[0xd8]" in exact:
-        fail("exact Scene Select update restored anonymous secondary-cursor storage")
-    signature = "static __forceinline void SceneSelectResetTimer(ZunTimer *timer)"
-    start = exact.find(signature)
-    if start < 0:
-        fail("exact Scene Select update lost its target-order timer reset")
-    body = braced_body_after(exact, start, signature)
-    statements = (
-        "timer->current = 0;",
-        "timer->subFrame = 0.0f;",
-        "timer->previous = -999999;",
-    )
-    positions = [body.find(statement) for statement in statements]
-    if any(position < 0 for position in positions) or positions != sorted(positions):
-        fail("exact Scene Select timer reset lost target-observed store order")
-    if exact.count("SceneSelectResetTimer(&view->stateTimer);") != 3:
-        fail("exact Scene Select state-timer reset sites drifted")
-    if "view->stateTimer.Reset();" in exact:
-        fail("exact Scene Select restored profile-sensitive Reset calls")
+    if "SceneSelectUpdateView" in update:
+        fail("Scene Select restored a separate update layout")
+    if (update.count("FrontEndResetTimer(&view->stateTimer);") != 1 or
+        update.count("FrontEndResetTimer(&this->stateTimer);") != 2 or
+        "stateTimer.Reset();" in update):
+        fail("Scene Select lost its shared state-timer reset")
 
 
 def check_scene_select_best_shot_record_access(
-    exact_body_text: str | None = None,
+    update_text: str | None = None,
 ) -> None:
-    for name in ("SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl"):
-        body = source_without_comments(
-            exact_body_text
-            if name == "SceneSelectUpdateExact.inl" and exact_body_text is not None
-            else (SRC / name).read_text(encoding="utf-8")
-        )
-        for field in ("comment", "componentsLoaded", "width", "height"):
-            if f"].{field}" not in body:
-                fail(f"{name} lost typed best-shot {field} access")
-        if any(raw in body for raw in (
-            "0x316c", "0x316e", "0x3178", "0x31c9",
-            "TH095_SCENE_BEST_SHOT_",
-        )):
-            fail(f"{name} restored raw best-shot record access")
+    body = source_without_comments(
+        update_text if update_text is not None
+        else (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
+    )
+    for field in ("comment", "componentsLoaded", "width", "height"):
+        if f"].{field}" not in body:
+            fail(f"Scene Select lost typed best-shot {field} access")
+    if any(raw in body for raw in (
+        "0x316c", "0x316e", "0x3178", "0x31c9",
+        "TH095_SCENE_BEST_SHOT_",
+    )):
+        fail("Scene Select restored raw best-shot record access")
     for name, field in (
         ("SceneBestShot.cpp", "componentsLoaded"),
         ("ScenePreview.cpp", "width"),
@@ -2471,25 +2442,18 @@ def check_scene_select_best_shot_record_access(
 
 
 def check_scene_select_color_interpolation_owner(
-    exact_body_text: str | None = None,
+    update_text: str | None = None,
 ) -> None:
-    for name in ("SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl"):
-        body = source_without_comments(
-            exact_body_text
-            if name == "SceneSelectUpdateExact.inl" and exact_body_text is not None
-            else (SRC / name).read_text(encoding="utf-8")
-        )
-        if body.count("reinterpret_cast<AnmVmColorInterpolationView *>(") != 4:
-            fail(f"{name} lost one of four shared VM color-interpolation calls")
-        if "SceneSelectColorInterpolationView" in body:
-            fail(f"{name} restored the local color-interpolation proxy")
-    exact = source_without_comments(
-        exact_body_text
-        if exact_body_text is not None
-        else (SRC / "SceneSelectUpdateExact.inl").read_text(encoding="utf-8")
+    body = source_without_comments(
+        update_text if update_text is not None
+        else (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
     )
-    if '#include "AnmVmInterpolation.hpp"' not in exact:
-        fail("exact Scene Select lost the shared color-interpolation declaration")
+    if body.count("reinterpret_cast<AnmVmColorInterpolationView *>(") != 4:
+        fail("Scene Select lost one of four shared VM color-interpolation calls")
+    if "SceneSelectColorInterpolationView" in body:
+        fail("Scene Select restored the local color-interpolation proxy")
+    if '#include "AnmVmInterpolation.hpp"' not in body:
+        fail("Scene Select lost the shared color-interpolation declaration")
 
 
 def check_scene_select_cursor_count_owner(
@@ -2524,16 +2488,15 @@ def check_scene_select_cursor_count_owner(
         for method in ("Move", "Push", "Pop"):
             if f"ResultScreenReplayCursor::{method}(" in body:
                 fail(f"{name} restored a duplicate cursor {method} body")
-    for name in ("SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl"):
-        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        for marker in (
-            "view->groupCursor.SetCount(",
-            "view->sceneCursors[initialCursorIndex].SetCount(",
-        ):
-            if marker not in body:
-                fail(f"{name} lost a cursor-count consumer: {marker}")
-        if "SceneSelectCursorCountSetterView" in body:
-            fail(f"{name} restored its duplicate cursor-count view")
+    body = source_without_comments((SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8"))
+    for marker in (
+        "this->groupCursor.SetCount(",
+        "this->sceneCursors[initialCursorIndex].SetCount(",
+    ):
+        if marker not in body:
+            fail(f"Scene Select lost a cursor-count consumer: {marker}")
+    if "SceneSelectCursorCountSetterView" in body:
+        fail("Scene Select restored its duplicate cursor-count view")
 
 
 def check_front_end_transition_vm_owner(exact_header_text: str | None = None) -> None:
@@ -2563,19 +2526,10 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
             ),
         ),
         (
-            "SceneSelectUpdateExact.inl",
-            (
-                "offsetof(SceneSelectUpdateView, transitionVm) == 0x6100",
-                "view->transitionVm.SetInterrupt(3);",
-                "view->transitionVm.SetInterrupt(2);",
-            ),
-        ),
-        (
             "SceneSelectUpdate.cpp",
             (
-                "offsetof(SceneSelectUpdateView, transitionVm) == 0x6100",
-                "view->transitionVm.SetInterrupt(3);",
-                "view->transitionVm.SetInterrupt(2);",
+                "SCENE_MENU(this)->transitionVm.SetInterrupt(3);",
+                "SCENE_MENU(this)->transitionVm.SetInterrupt(2);",
             ),
         ),
         (
@@ -2607,7 +2561,7 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
 
 def check_front_end_requested_state_owner(
     controller_text: str | None = None,
-    exact_update_text: str | None = None,
+    scene_update_text: str | None = None,
 ) -> None:
     header_path = SRC / "FrontEndGlobals.hpp"
     expected = [
@@ -2669,28 +2623,19 @@ def check_front_end_requested_state_owner(
         if "offsetof(SceneSelectControllerView, requestedState) == 0x6110" not in scene:
             fail(f"{name} lost requested-state offset assertion")
     scene_update = source_without_comments(
-        (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
+        scene_update_text if scene_update_text is not None
+        else (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
     )
-    exact_update = source_without_comments(
-        exact_update_text
-        if exact_update_text is not None
-        else (SRC / "SceneSelectUpdateExact.inl").read_text(encoding="utf-8")
-    )
-    for name, body in (("normal", scene_update), ("exact", exact_update)):
-        if "FrontEndRequestedState requestedState;" not in body:
-            fail(f"Scene Select {name} update lost its shared requested-state type")
-        if "i32 requestedState;" in body:
-            fail(f"Scene Select {name} update restored integer requested-state storage")
-        if "offsetof(SceneSelectUpdateView, requestedState) == 0x6110" not in body:
-            fail(f"Scene Select {name} update lost requested-state offset assertion")
-        for state in ("START_GAME", "MAIN_MENU"):
-            if f"view->requestedState = FRONT_END_REQUESTED_STATE_{state};" not in body:
-                fail(f"Scene Select {name} update lost named {state} publication")
+    if "i32 requestedState;" in scene_update:
+        fail("Scene Select restored integer requested-state storage")
+    for state in ("START_GAME", "MAIN_MENU"):
+        if f"this->requestedState = FRONT_END_REQUESTED_STATE_{state};" not in scene_update:
+            fail(f"Scene Select lost named {state} publication")
 
 
 def check_front_end_flags_owner(
     controller_text: str | None = None,
-    exact_update_text: str | None = None,
+    scene_update_text: str | None = None,
 ) -> None:
     header_path = SRC / "FrontEndGlobals.hpp"
     header = source_without_comments(header_path.read_text(encoding="utf-8"))
@@ -2703,7 +2648,7 @@ def check_front_end_flags_owner(
         ("titleLoadFailed", "1"),
         ("previewPending", "1"),
         ("showRates", "1"),
-        ("unknownFlagBit4", "1"),
+        ("sceneDetailsVisible", "1"),
         ("assetLoadStopRequested", "1"),
         ("unknownFlagBits6", "26"),
     ]:
@@ -2750,7 +2695,7 @@ def check_front_end_flags_owner(
         ),
         "SceneSelectUpdate.cpp": (
             "flagBits.previewPending = 1",
-            "flagBits.showRates = 1 - view->flagBits.showRates",
+            "flagBits.showRates = 1 - this->flagBits.showRates",
             "flagBits.assetLoadStopRequested = 1",
         ),
         "SceneControllerDraw.cpp": ("flagBits.showRates",),
@@ -2769,25 +2714,18 @@ def check_front_end_flags_owner(
             if marker not in body:
                 fail(f"{name} lost a named FrontEnd flag producer/consumer: {marker}")
 
-    exact_update = source_without_comments(
-        exact_update_text
-        if exact_update_text is not None
-        else (SRC / "SceneSelectUpdateExact.inl").read_text(encoding="utf-8")
+    scene_update = source_without_comments(
+        scene_update_text if scene_update_text is not None
+        else (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
     )
-    if "FrontEndControllerFlagBits flagBits;" not in exact_update:
-        fail("exact Scene Select update restored a local flag-bit declaration")
-    if "offsetof(SceneSelectUpdateView, flags) == 0x6120" not in exact_update:
-        fail("exact Scene Select update lost its flag-word offset assertion")
-    for field, value in (
-        ("previewPending", "0"),
-        ("previewPending", "1"),
-        ("assetLoadStopRequested", "0"),
-        ("assetLoadStopRequested", "1"),
-    ):
-        if f"view->flagBits.{field} = {value};" not in exact_update:
-            fail(f"exact Scene Select update lost named {field} = {value} transition")
-    if re.search(r"view->flags\s*(?:\|=|&=)\s*(?:~\s*)?(?:4|0x20)\b", exact_update):
-        fail("exact Scene Select update restored raw preview or asset-stop masks")
+    if "FrontEndControllerFlagBits flagBits;" in scene_update:
+        fail("Scene Select restored a local flag-bit declaration")
+    for field in ("previewPending", "assetLoadStopRequested", "sceneDetailsVisible"):
+        for value in (0, 1):
+            if f"this->flagBits.{field} = {value};" not in scene_update:
+                fail(f"Scene Select lost named {field} = {value} transition")
+    if re.search(r"(?:view|this)->flags\s*(?:\|=|&=)", scene_update):
+        fail("Scene Select restored raw front-end flag masks")
 
 
 def check_front_end_scene_queue_owner(controller_text: str | None = None) -> None:
@@ -2931,8 +2869,7 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
     if any(token in header for token in (*PROFILE_NAMES, "Global.hpp", "i32 bits;")):
         fail("preview data queue restored selected/truncated storage")
     for name in (
-        "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectUpdate.cpp",
-        "SceneSelectUpdateExact.inl", "FrontEndController.hpp",
+        "SceneSelect.hpp", "SceneSelectExact.hpp", "FrontEndController.hpp",
     ):
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         for field in ("groupPreviewDataQueue", "scenePreviewDataQueue"):
@@ -2984,7 +2921,7 @@ def check_scene_queue_word_access(overrides: dict[str, str] | None = None) -> No
     for name in ("SceneValueQueue.hpp", "SceneValueQueue.inl", "ScenePreviewDataQueue.hpp",
                  "ScenePreviewDataQueue.inl", "ScenePreviewDataPublish.inl", "ScenePreviewDataPublishNull.inl",
                  "SceneSelectAssets.cpp", "SceneSelectController.cpp",
-                 "SceneSelectControllerExact.inl", "SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl",
+                 "SceneSelectControllerExact.inl", "SceneSelectUpdate.cpp",
                  "FrontEndController.cpp"):
         text = source(name)
         spans = []
@@ -3405,8 +3342,7 @@ def check_front_end_pending_texture_owner(header_text: str | None = None) -> Non
     if any(token in header for token in (*PROFILE_NAMES, "Global.hpp")):
         fail("pending-texture owner restored profile or platform dependencies")
     for name in (
-        "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectUpdate.cpp",
-        "SceneSelectUpdateExact.inl", "FrontEndController.hpp",
+        "SceneSelect.hpp", "SceneSelectExact.hpp", "FrontEndController.hpp",
     ):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         if body.count("FrontEndPendingTextureData pendingTextures;") != 1:
@@ -3425,14 +3361,13 @@ def check_front_end_pending_texture_owner(header_text: str | None = None) -> Non
         fail("asset worker restored pointer truncation at pending publication")
     if "->pendingTextures.count++;" not in body:
         fail("asset worker lost pending-data publication")
-    for name in ("SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl"):
-        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if body.count('#include "FrontEndPendingTextureAdvance.inl"') != 1:
-            fail(f"{name} lost the shared pending-data shift transition")
-        if "view->pendingTextures.count == 1" not in body:
-            fail(f"{name} lost its newest-pair upload gate")
-        if re.search(r"reinterpret_cast<[^>]+>\(view->pendingTextures\.", body):
-            fail(f"{name} restored integer/pointer conversion at pending consumption")
+    body = source_without_comments((SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8"))
+    if body.count('#include "FrontEndPendingTextureAdvance.inl"') != 1:
+        fail("Scene Select lost the shared pending-data shift transition")
+    if "this->pendingTextures.count == 1" not in body:
+        fail("Scene Select lost its newest-pair upload gate")
+    if re.search(r"reinterpret_cast<[^>]+>\(this->pendingTextures\.", body):
+        fail("Scene Select restored integer/pointer conversion at pending consumption")
 
 
 def check_photo_enemy_owner() -> None:
@@ -4919,12 +4854,12 @@ def main() -> int:
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")
     print("  Supervisor fog cache: one shared TH095 0/1/255 domain at +0x768")
     print("  FrontEnd timers: one shared ZunTimer type with target-order reset helper")
-    print("  Scene Select best-shot preview: typed record fields in both update bodies")
+    print("  Scene Select best-shot preview: typed record fields in the shared update")
     print("  Scene Select VM colors: one shared interpolation ABI view")
     print("  Front-end cursor: one shared layout and movement/history body")
     print("  FrontEnd transition VM: one shared +0x6100 handle across title pages")
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
-    print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")
+    print("  FrontEnd flags: one shared owner for bits 0..5")
     print("  FrontEnd scene queues: nine typed owners and post-queue cleanup in both profiles")
     print("  Preview data queue: native address words, signed counts, and shared publication")
     print("  Raw front-end queue: one 18-word owner with explicit count/capacity metadata")

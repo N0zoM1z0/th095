@@ -187,7 +187,6 @@ struct SceneSelectControllerView
         return this->selectedGroup;
     }
 
-    ChainCallbackResult UpdateSceneSelect();
     void CloseMainMenu();
     void UpdateMainMenuSelection();
     void SetDetailDigitSprite(i32 vmIndex, i32 spriteIndex);

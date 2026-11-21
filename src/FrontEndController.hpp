@@ -98,6 +98,7 @@ struct FrontEndControllerView
     i32 UpdateMusicRoom();
     ChainCallbackResult UpdateReplayBrowser();
     ChainCallbackResult UpdateOptionsMenu();
+    ChainCallbackResult UpdateSceneSelect();
     ZunResult LoadReplaySlot(i32 slot, char *path);
     void RefreshSceneSelection(i32 selectedScoreEntryIndex);
     void BuildScenePreviewText();
@@ -162,9 +163,11 @@ typedef char FrontEndLifecycleGroupDataQueueAt61B8[
 typedef char FrontEndControllerSelectedScoreAtBF0[
     (offsetof(FrontEndControllerView, selectedScoreEntryIndex) == 0xbf0) ? 1 : -1];
 typedef char FrontEndControllerUpdateFields[
-    (offsetof(FrontEndControllerView, stateTimer) == 0x08 &&
+    (offsetof(FrontEndControllerView, transitionAnm) == 0x04 &&
+     offsetof(FrontEndControllerView, stateTimer) == 0x08 &&
      offsetof(FrontEndControllerView, animationTimer) == 0x14 &&
      offsetof(FrontEndControllerView, groupCursor) == 0x20 &&
+     offsetof(FrontEndControllerView, secondaryCursor) == 0xf8 &&
      offsetof(FrontEndControllerView, transitionReady) == 0x6108 &&
      offsetof(FrontEndControllerView, state) == 0x610c) ? 1 : -1];
 typedef char FrontEndControllerRequestedStateAt6110[
