@@ -20504,3 +20504,16 @@ six retail launch cases and eight cases per normal layout, including
 null callbacks, failed creation and transport allocation failure.
 The native worker tests also pass typed dispatch, ownership and 128
 thread publication scenarios. See `.analysis/pi/replay-worker-binding/`.
+
+### SEM-509 — bind enemy movement to the shared game speed
+
+The four speed operands in `IntegrateMovement @ 0x004160B0` read
+`g_AnmGameSpeed @ 0x004BDED8`. The multiplier affects all three axes,
+and bit 16 of the enemy control word reverses X. Both builds now
+reference the same speed symbol. Enemy teardown also uses one name
+for its inline child ECL cleanup. Three profile selectors are retired.
+
+All 22 EnemyManagerUpdate units pass strict comparison. Movement
+and teardown also match in normal COFF. The original and both links
+agree on 40 movement and six teardown cases. Both normal links retain
+their previous mapped bytes. See `.analysis/pi/enemy-game-speed/`.

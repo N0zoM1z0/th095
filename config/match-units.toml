@@ -11014,10 +11014,10 @@ symbol = "?IntegrateMovement@PhotoEnemyView@th095@@QAEXXZ"
 target_address = 0x004160B0
 size = 0x134
 relocations = [
-  { offset = 0xAF, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
-  { offset = 0xD2, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
-  { offset = 0xF3, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
-  { offset = 0x114, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0xAF, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0xD2, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0xF3, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x114, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
 ]
 
 [units.enemy-clamp-position]
@@ -11040,7 +11040,7 @@ target_address = 0x004163F0
 size = 0x332
 compare_size = 0x372
 relocations = [
-  { offset = 0x5C, type = "DIR32", symbol = "$L74689", target = 0x00416722 },
+  { offset = 0x5C, type = "DIR32", symbol = "$L74688", target = 0x00416722 },
   { offset = 0xB1, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0xB6, type = "REL32", symbol = "?Spawn@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@HPBUFloat3@2@HHHI@Z", target = 0x004156C0 },
   { offset = 0x109, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
@@ -11061,22 +11061,22 @@ relocations = [
   { offset = 0x2BF, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0x2EA, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
   { offset = 0x32A, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
-  { offset = 0x332, type = "DIR32", symbol = "$L73612", target = 0x00416457 },
-  { offset = 0x336, type = "DIR32", symbol = "$L73611", target = 0x00416450 },
-  { offset = 0x33A, type = "DIR32", symbol = "$L73644", target = 0x00416589 },
-  { offset = 0x33E, type = "DIR32", symbol = "$L73654", target = 0x00416604 },
-  { offset = 0x342, type = "DIR32", symbol = "$L73643", target = 0x00416582 },
-  { offset = 0x346, type = "DIR32", symbol = "$L73653", target = 0x004165FD },
-  { offset = 0x34A, type = "DIR32", symbol = "$L73608", target = 0x004166E0 },
-  { offset = 0x34E, type = "DIR32", symbol = "$L73608", target = 0x004166E0 },
-  { offset = 0x352, type = "DIR32", symbol = "$L73660", target = 0x00416663 },
-  { offset = 0x356, type = "DIR32", symbol = "$L73608", target = 0x004166E0 },
-  { offset = 0x35A, type = "DIR32", symbol = "$L73666", target = 0x0041668B },
-  { offset = 0x35E, type = "DIR32", symbol = "$L74670", target = 0x0041650E },
-  { offset = 0x362, type = "DIR32", symbol = "$L73626", target = 0x00416507 },
-  { offset = 0x366, type = "DIR32", symbol = "$L73608", target = 0x004166E0 },
-  { offset = 0x36A, type = "DIR32", symbol = "$L73608", target = 0x004166E0 },
-  { offset = 0x36E, type = "DIR32", symbol = "$L73619", target = 0x004164AF },
+  { offset = 0x332, type = "DIR32", symbol = "$L73611", target = 0x00416457 },
+  { offset = 0x336, type = "DIR32", symbol = "$L73610", target = 0x00416450 },
+  { offset = 0x33A, type = "DIR32", symbol = "$L73643", target = 0x00416589 },
+  { offset = 0x33E, type = "DIR32", symbol = "$L73653", target = 0x00416604 },
+  { offset = 0x342, type = "DIR32", symbol = "$L73642", target = 0x00416582 },
+  { offset = 0x346, type = "DIR32", symbol = "$L73652", target = 0x004165FD },
+  { offset = 0x34A, type = "DIR32", symbol = "$L73607", target = 0x004166E0 },
+  { offset = 0x34E, type = "DIR32", symbol = "$L73607", target = 0x004166E0 },
+  { offset = 0x352, type = "DIR32", symbol = "$L73659", target = 0x00416663 },
+  { offset = 0x356, type = "DIR32", symbol = "$L73607", target = 0x004166E0 },
+  { offset = 0x35A, type = "DIR32", symbol = "$L73665", target = 0x0041668B },
+  { offset = 0x35E, type = "DIR32", symbol = "$L74669", target = 0x0041650E },
+  { offset = 0x362, type = "DIR32", symbol = "$L73625", target = 0x00416507 },
+  { offset = 0x366, type = "DIR32", symbol = "$L73607", target = 0x004166E0 },
+  { offset = 0x36A, type = "DIR32", symbol = "$L73607", target = 0x004166E0 },
+  { offset = 0x36E, type = "DIR32", symbol = "$L73618", target = 0x004164AF },
 ]
 
 [units.enemy-update-photo-marker-pulse]

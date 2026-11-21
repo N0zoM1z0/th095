@@ -146,13 +146,6 @@ struct PhotoEnemyTimelineExtendedSpawnArgs
 PhotoEnemyManagerView *g_PhotoEnemyManager; // Retail 0x004BDDC0
 extern f32 g_AnmGameSpeed;
 
-#ifdef TH095_MATCH_EXACT
-extern f32 g_GameSpeed;
-#define TH095_PHOTO_ENEMY_GAME_SPEED g_GameSpeed
-#else
-#define TH095_PHOTO_ENEMY_GAME_SPEED g_AnmGameSpeed
-#endif
-
 PhotoEnemyView::PhotoEnemyView()
 {
     // The target's VC7.1 constructor frame retains two unconsumed local slots.
@@ -263,9 +256,6 @@ i32 PhotoEnemyManagerView::LoadResources()
     return ZUN_SUCCESS;
 }
 
-#if defined(TH095_MATCH_EXACT)
-#define FreePhotoEnemyChildEclBlock FreePhotoEnemyEclArgument
-#endif
 static __forceinline void FreePhotoEnemyChildEclBlock(
     PhotoEnemyView *enemy, i32 argumentIndex)
 {
@@ -839,14 +829,14 @@ void PhotoEnemyView::IntegrateMovement()
 
     if (this->control.mirrorMovementX == 0)
     {
-        this->position.x += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
+        this->position.x += g_AnmGameSpeed * this->velocity.x;
     }
     else
     {
-        this->position.x -= TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
+        this->position.x -= g_AnmGameSpeed * this->velocity.x;
     }
-    this->position.y += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.y;
-    this->position.z += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.z;
+    this->position.y += g_AnmGameSpeed * this->velocity.y;
+    this->position.z += g_AnmGameSpeed * this->velocity.z;
 }
 
 void PhotoEnemyView::ClampPosition()
@@ -1017,7 +1007,3 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
 #undef scheduledCurrentPhoto
 
 } // namespace th095
-
-#if defined(TH095_MATCH_EXACT)
-#undef FreePhotoEnemyChildEclBlock
-#endif
