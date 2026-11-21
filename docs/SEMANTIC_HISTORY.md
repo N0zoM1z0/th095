@@ -20285,3 +20285,26 @@ the 25 VMs and release of owned replay and help data. The initializers
 exercise the embedded VM receivers, timer reset, and CRT timestamp
 destination. The Best Shot save and navigation probes also pass. See
 `.analysis/pi/result-screen-owner/`.
+
+### SEM-498 — share the replay manager and its stream ownership
+
+Both builds now use the same 0x12C ReplayManager and method bodies.
+Recording allocates the FPS stream separately. In playback and load-only
+modes the loader finds that stream by adding the header and input stream
+sizes to the decompressed buffer pointer. Loose-file loading releases a
+separate compressed buffer, while archive loading keeps it within the
+owned file allocation. The destructor frees the separate FPS stream
+only in record mode.
+
+The replay methods use the canonical compression and file calls, RNG
+seed, Supervisor lag fields and ASCII manager. All 135 strict
+comparisons across the 16 affected sources pass. Normal COFF reproduces
+all 12 replay extents and destinations. Its replay-source global uses
+the normal enum spelling, which the comparison resolves to the same
+retail slot. Both normal links resolve 4,635 code and 24 initialized-data
+references in the affected objects.
+
+The original and both link orders agree on nine allocation and
+teardown cases, including both input sources and loose-file open failures,
+18 FPS display cases, and 16 writes. The 180 history, 43 stream and 20
+replay browser cases pass too. See `.analysis/pi/replay-manager-owner/`.

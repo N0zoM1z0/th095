@@ -242,6 +242,9 @@ checks the writer, result draw and browser in both link orders.
 SEM-497 shares the entire ResultScreen declaration and implementation.
 Its actual ANM members let the constructor drop the old cursor overload.
 Both builds use the canonical timer and Supervisor fields.
+SEM-498 shares ReplayManager's declaration and methods. The playback and
+load-only FPS stream points into the decompressed buffer. Mode-specific
+ownership is verified in both link orders.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

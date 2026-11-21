@@ -1019,7 +1019,7 @@ def check_rng_owner() -> None:
             fail(f"match manifest restored a retired RNG identity: {identity}")
 
     canonical_identities = {
-        "?g_Rng@th095@@3VRng@1@A": 43,
+        "?g_Rng@th095@@3VRng@1@A": 45,
         "?g_AnmAlternateRng@th095@@3VRng@1@A": 6,
     }
     for identity, count in canonical_identities.items():

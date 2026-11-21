@@ -238,8 +238,8 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("TH095_MATCH_RNG_AS_STRUCT", header)
         self.assertNotIn("?g_Rng@th095@@3URng@1@A", manifest)
         self.assertNotIn("ExtendedRng", manifest)
-        self.assertEqual(manifest.count("?g_Rng@th095@@3VRng@1@A"), 43)
-        self.assertEqual(manifest.count("?g_Rng2@th095@@3VRng@1@A"), 6)
+        self.assertEqual(manifest.count("?g_Rng@th095@@3VRng@1@A"), 45)
+        self.assertEqual(manifest.count("?g_AnmAlternateRng@th095@@3VRng@1@A"), 6)
 
     def test_midi_output_guard_accepts_owner_and_api_adapter(self) -> None:
         GUARD.check_midi_output_owner()

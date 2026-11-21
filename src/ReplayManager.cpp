@@ -1,18 +1,15 @@
-#ifdef TH095_MATCH_EXACT
-#include "ReplayManagerExact.inl"
-#else
 #include "ReplayManager.hpp"
 #include "FrontEndLocalTime.hpp"
 #include "PhotoGameTask.hpp"
 #include "AsciiManager.hpp"
-#ifndef DIFFBUILD
-#include "FileSystem.hpp"
-#endif
-#include "GameplayGlobals.hpp"
-#include "Main.hpp"
-#include "SceneData.hpp"
 #include "ControllerInputSlot.hpp"
+#include "Decompress.hpp"
+#include "FileSystem.hpp"
+#include "FileSystemApi.hpp"
+#include "GameplayGlobals.hpp"
 #include "Rng.hpp"
+#include "SceneData.hpp"
+#include "SupervisorRuntime.hpp"
 #include "ZunMath.hpp"
 
 #include <stdlib.h>
@@ -21,54 +18,18 @@
 #include <time.h>
 #include <direct.h>
 
-#ifdef TH095_MATCH_EXACT
-#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
-#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
-#endif
-
 namespace th095
 {
 
-#ifndef DIFFBUILD
-ReplayManager *g_ReplayManager = NULL;
-#endif
-
-
-#ifdef DIFFBUILD
-#define fpsStreamBase fpsData
-#endif
-
-struct ReplayAsciiManagerView
-{
-    u8 unknown0000[0x806c];
-    u32 color;
-
-    void AddFormatText(Float3 *position, const char *format, ...);
-
-    void SetColor(u32 value)
-    {
-        this->color = value;
-    }
-};
-
-typedef char ReplayAsciiManagerColorAt806c[
-    (offsetof(ReplayAsciiManagerView, color) == 0x806c) ? 1 : -1];
-
-#ifdef DIFFBUILD
-extern i32 g_ReplayUsesArchive;
-#define REPLAY_PLAYBACK_SOURCE_LOOSE_FILE 0
-#define REPLAY_PLAYBACK_SOURCE_ARCHIVE 1
-#endif
+DIFFABLE_STATIC(ReplayManager *, g_ReplayManager);
 
 namespace ReplayFile
 {
-int Open(char *path);
+i32 Open(char *path);
 void *Read(u32 size);
-};
+} // namespace ReplayFile
 
 u8 *__fastcall CompressData(u8 *input, i32 inputSize, i32 *outputSize);
-u8 *__fastcall DecompressData(
-    u8 *input, i32 inputSize, u8 *output, size_t outputSize);
 
 struct ReplayUserDataHeader
 {
@@ -124,15 +85,11 @@ ReplayManager::ReplayManager()
     memset(this, 0, sizeof(ReplayManager));
 }
 
-ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
+ZunResult ReplayManager::Initialize(i32 mode, char *path)
 {
     ReplayInitializeScratch scratch;
 
-#ifdef DIFFBUILD
-    this->mode = mode;
-#else
     this->mode = static_cast<ReplayManagerMode>(mode);
-#endif
     if (this->mode == REPLAY_MANAGER_RECORD)
     {
         g_ReplayManager = this;
@@ -157,9 +114,9 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
         this->fpsCursor = this->fpsStreamBase;
 
         this->activeInputData->playerConfigId = static_cast<u16>(g_SelectedScene->scoreEntryIndex);
-        this->activeInputData->level = g_SelectedScene->group;
+        this->activeInputData->level = static_cast<i8>(g_SelectedScene->group);
         this->activeInputData->scene =
-            g_SelectedScene->scene;
+            static_cast<i8>(g_SelectedScene->scene);
         memcpy(this->activeInputData->globalStateSnapshot,
                &g_RuntimeGlobalStateOwner->runtimeConfig,
                sizeof(this->activeInputData->globalStateSnapshot));
@@ -197,7 +154,7 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
     return ZUN_SUCCESS;
 }
 
-ReplayManagerResult ReplayManager::LoadReplay(char *path)
+ZunResult ReplayManager::LoadReplay(char *path)
 {
     ReplayLoadLocals locals;
 
@@ -237,12 +194,13 @@ ReplayManagerResult ReplayManager::LoadReplay(char *path)
                         0x3d, 0x7a, 0x80,
                         this->ownedFileHeader->compressedPayloadSize);
     DecompressData(locals.compressedData, this->ownedFileHeader->compressedPayloadSize,
-                   (u8 *)this->ownedInputData,
-                   this->ownedFileHeader->decompressedPayloadSize);
+                       (u8 *)this->ownedInputData,
+                       this->ownedFileHeader->decompressedPayloadSize);
 
     locals.inputData = this->ownedInputData;
-    this->fpsStreamBase = (u8 *)(locals.inputData->inputStreamSize +
-                           sizeof(ReplayInputData) + (u32)this->ownedInputData);
+    this->fpsStreamBase =
+        (locals.inputData->inputStreamSize + sizeof(ReplayInputData)) +
+        reinterpret_cast<u8 *>(this->ownedInputData);
     if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
     {
         free(locals.compressedData);
@@ -250,7 +208,7 @@ ReplayManagerResult ReplayManager::LoadReplay(char *path)
     return ZUN_SUCCESS;
 }
 
-ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
+ZunResult ReplayManager::WriteReplay(char *path, char *replayName)
 {
     i32 userDataAllocationSize;
     ReplayWriteLocals locals;
@@ -355,8 +313,8 @@ ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
     }
     locals.userDataHeader->size =
         locals.userDataCursor - (char *)locals.userData;
-    FileSystem::WriteToOpenFile(
-        locals.userData, locals.userDataCursor - (char *)locals.userData);
+    FileSystem::WriteToOpenFile(locals.userData,
+                      locals.userDataCursor - (char *)locals.userData);
 
     memset(locals.userData, 0, 0xffff);
     locals.userDataHeader = (ReplayUserDataHeader *)locals.userData;
@@ -375,8 +333,8 @@ ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
     }
     locals.userDataHeader->size =
         locals.userDataCursor - (char *)locals.userData;
-    FileSystem::WriteToOpenFile(
-        locals.userData, locals.userDataCursor - (char *)locals.userData);
+    FileSystem::WriteToOpenFile(locals.userData,
+                      locals.userDataCursor - (char *)locals.userData);
     free(locals.userData);
     FileSystem::CloseWriteFile();
     return ZUN_SUCCESS;
@@ -489,13 +447,6 @@ ChainCallbackResult ReplayManager::DrawFps()
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
-
-} // namespace th095
-
-#endif // TH095_MATCH_EXACT
-
-namespace th095
-{
 
 struct ReplayFrameScratch
 {

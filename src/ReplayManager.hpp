@@ -7,12 +7,6 @@
 namespace th095
 {
 
-#ifdef TH095_MATCH_EXACT
-typedef ::ZunResult ReplayManagerResult;
-#else
-typedef ZunResult ReplayManagerResult;
-#endif
-
 enum
 {
     REPLAY_RECORDING_INPUT_ALLOCATION_SIZE = 0x69780,
@@ -62,22 +56,10 @@ typedef char ReplayInputDataSizeIsF8[
 
 struct ReplayManager
 {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 mode;                        // +0x000
-#else
     ReplayManagerMode mode;          // +0x000
-#endif
-#if defined(TH095_MATCH_EXACT)
-    ReplayFileHeader *fileHeader;    // +0x004
-#else
     ReplayFileHeader *ownedFileHeader; // +0x004; owning allocation root
-#endif
     ReplayInputData *ownedInputData; // +0x008; allocation root in every mode
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u8 *fpsData;                     // +0x00c
-#else
     u8 *fpsStreamBase;               // +0x00c; record owner, playback/load interior view
-#endif
     u8 *inputCursor;                 // +0x010
     u8 *fpsCursor;                   // +0x014
     u8 replayFps;                    // +0x018
@@ -91,9 +73,9 @@ struct ReplayManager
     ReplayManager();
     ~ReplayManager();
 
-    ReplayManagerResult Initialize(i32 mode, char *path);
-    ReplayManagerResult WriteReplay(char *path, char *replayName);
-    ReplayManagerResult LoadReplay(char *path);
+    ZunResult Initialize(i32 mode, char *path);
+    ZunResult WriteReplay(char *path, char *replayName);
+    ZunResult LoadReplay(char *path);
 
     static ReplayManager *Create(i32 mode, char *path);
     static ReplayManager *Load(char *path);
@@ -109,7 +91,7 @@ typedef char ReplayManagerCalcChainAt124[
 typedef char ReplayManagerSizeIs12C[
     (sizeof(ReplayManager) == 0x12c) ? 1 : -1];
 
-extern ReplayManager *g_ReplayManager;
+DIFFABLE_EXTERN(ReplayManager *, g_ReplayManager);
 
 } // namespace th095
 
