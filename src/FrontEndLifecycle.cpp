@@ -213,7 +213,7 @@ FrontEndControllerView *__fastcall FrontEndControllerView::Create(i32 mode)
     g_Chain.AddToCalcChain(elem, 4);
     controller->calcChain = elem;
 
-    elem = g_Chain.CreateElem(SceneSelectControllerView::OnDraw);
+    elem = g_Chain.CreateElem(FrontEndControllerView::OnDraw);
     elem->arg = controller;
     g_Chain.AddToDrawChain(elem, 1);
     controller->drawChain = elem;

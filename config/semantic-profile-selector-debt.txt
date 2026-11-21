@@ -99,7 +99,6 @@
 3	src/ResultScreen.cpp	#ifndef DIFFBUILD
 3	src/ResultScreen.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ResultScreenExact.inl	#ifdef TH095_MATCH_EXACT
-1	src/SceneControllerDraw.cpp	#ifdef DIFFBUILD
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneDetail.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelect.hpp	#ifdef TH095_MATCH_EXACT

@@ -2763,7 +2763,7 @@ def check_front_end_flags_owner(
                 fail("asset worker lost its actual controller receiver")
         else:
             owner = body
-            if name == "FrontEndLifecycle.cpp" and '#include "FrontEndController.hpp"' in body:
+            if name in ("FrontEndLifecycle.cpp", "SceneControllerDraw.cpp") and '#include "FrontEndController.hpp"' in body:
                 owner = (SRC / "FrontEndController.hpp").read_text(encoding="utf-8")
             if "FrontEndControllerFlagBits flagBits;" not in owner:
                 fail(f"{name} lost shared FrontEnd flag-bit storage")

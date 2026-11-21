@@ -19845,3 +19845,31 @@ or replay. A second fixture follows all three entry modes with both
 title texture formats. The retail photo-game exit path returns with
 critical-section lane 5 still held, which the fixture observes in all
 three layouts. See `.analysis/pi/front-end-lifetime-owner/`.
+
+### SEM-479 — draw scene and replay menus on their controller
+
+The title factory registers FrontEndControllerView::OnDraw.
+The draw body reads the selected score, two replay cursors, replay
+records, and requested state directly from the allocated object.
+Both builds use the same AsciiManager and the Supervisor replay-list
+lock at lane 4, including its count at +0x710.
+
+The pinned VC7.1 CRT receives the address of the original signed
+32-bit timestamp field. The shared source widens that value into a
+local time_t for wider CRT builds. The user tag copy reads four
+filename bytes without an unaligned integer access.
+
+All 92 affected strict comparisons pass. The normal draw body
+matches the entire 1,851-byte extent and 78 relocations, replacing
+the prior normal timestamp-copy sequence with the original CRT call
+shape. The draw callback and title Create extents also match. The
+draw body moves from `0x004415A0` to `0x00418CE0` in the reverse
+link and the game-object reference audit passes in both layouts.
+
+The original, both rebuilt layouts and both prior normal links
+agree on 36 drawing cases. The fixture checks rendered row strings,
+colors, scene totals, the Best Shot lock marker, the selected replay
+row, and the acquisition and release count. It stubs the CRT calendar
+result and the ASCII drawing calls. A native fixture checks signed
+32-to-64-bit time conversion with a distinct following score field.
+See `.analysis/pi/front-end-draw-owner/`.

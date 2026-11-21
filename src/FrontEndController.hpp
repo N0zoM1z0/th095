@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Chain.hpp"
 #include "FrontEndGlobals.hpp"
 #include "FrontEndPendingTextureData.hpp"
 #include "ResultScreenReplayCursor.hpp"
@@ -11,7 +12,6 @@ namespace th095
 {
 
 struct AnmLoaded;
-class ChainElem;
 struct ReplayManager;
 
 enum FrontEndEntryMode
@@ -44,7 +44,8 @@ struct FrontEndControllerView
     ResultScreenReplayCursor groupCursor;
     ResultScreenReplayCursor secondaryCursor;
     ResultScreenReplayCursor sceneCursors[12];
-    u8 unknown0bf0[0x26c];
+    i32 selectedScoreEntryIndex;
+    u8 unknown0bf4[0x268];
     u8 *ownedMissionMessageData;
     SceneEncodedText specialEncodedText[10];
     i8 specialDisplayStates[10];
@@ -53,7 +54,9 @@ struct FrontEndControllerView
     ReplayManager *replays[80];
     u8 unknown0fe8[0x14];
     void *replayListData;
-    u8 unknown1000[0x5120];
+    u8 unknown1000[0x5110];
+    FrontEndRequestedState requestedState;
+    u8 unknown6114[0x0c];
     FrontEndControllerFlagBits flagBits;
     i32 entryMode;
     SceneValueQueue selectionQueue;
@@ -78,6 +81,8 @@ struct FrontEndControllerView
     static void __fastcall LoadThread(void *unused);
     static FrontEndControllerView *__fastcall Create(i32 entryMode);
     void Destroy();
+    ChainCallbackResult Draw();
+    static ChainCallbackResult __fastcall OnDraw(void *controller);
 };
 
 
@@ -105,6 +110,10 @@ typedef char FrontEndLifecycleGroupDataQueueAt61B8[
     (offsetof(FrontEndControllerView, groupPreviewDataQueue) == 0x61b8)
         ? 1
         : -1];
+typedef char FrontEndControllerSelectedScoreAtBF0[
+    (offsetof(FrontEndControllerView, selectedScoreEntryIndex) == 0xbf0) ? 1 : -1];
+typedef char FrontEndControllerRequestedStateAt6110[
+    (offsetof(FrontEndControllerView, requestedState) == 0x6110) ? 1 : -1];
 typedef char FrontEndLifecycleFlagsAt6120[
     (offsetof(FrontEndControllerView, flagBits) == 0x6120) ? 1 : -1];
 typedef char FrontEndLifecycleEntryModeAt6124[
