@@ -20612,3 +20612,24 @@ All 18 units in the affected source closure pass strict comparison.
 The four resolver units match in normal COFF, and 660 cases agree
 across retail and both linked layouts. Each link retains its mapped
 bytes. Evidence is under `.analysis/pi/ecl-random-operands/`.
+
+### SEM-515 — retire the duplicate PlayerInf and camera layouts
+
+Boundary-aware ECL movement reads player X to choose a random direction.
+Shot dispatch reads player X and Y before deciding whether to emit the
+shot. Both functions now read the canonical PlayerInf from
+`g_RuntimePlayerOwner` and use the canonical ANM and ECL instruction
+headers.
+
+The remaining `PhotoPlayerRuntimeView` name aliases `PhotoGameUpdateView`
+for the expansion directors. The PlayerInf and camera offsets are
+asserted on the actual allocation and its embedded camera. The
+PlayerInf guard checks the canonical owners and alias.
+
+All 282 units in the affected header closure pass strict comparison.
+Their relocation changes are limited to compiler-private symbol names.
+The two changed gameplay functions match in normal COFF. Retail and
+both linked layouts agree on 36 movement and 216 shot cases, including
+the equality boundary of the distance gate. Both links retain their
+mapped bytes. The expansion alias and camera accesses also compile
+with pinned VC7.1. Evidence is under `.analysis/pi/player-owner-closure/`.

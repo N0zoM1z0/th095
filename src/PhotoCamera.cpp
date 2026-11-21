@@ -1021,12 +1021,12 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
             else
             {
                 if (g_RuntimePlayerOwner->cameraTrackingMode ==
-                    TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW)
+                    PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW)
                 {
                     camera->trackingRadius = 56.0f;
                 }
                 else if (g_RuntimePlayerOwner->cameraTrackingMode ==
-                         TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET)
+                         PHOTO_PLAYER_CAMERA_TRACKING_TARGET)
                 {
                     f32 playerDistance = PhotoDistance2D(
                         &g_RuntimePlayerOwner->playerPosition,
@@ -1061,7 +1061,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                 }
 
                 if (g_RuntimePlayerOwner->cameraTrackingMode !=
-                    TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
+                    PHOTO_PLAYER_CAMERA_TRACKING_FREE)
                 {
                     camera->cameraOffset = PhotoCameraTrackingDifference(
                         g_PhotoEnemyManager->photoTargets[0]->position,
@@ -1100,7 +1100,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
             }
 
             if (g_RuntimePlayerOwner->cameraTrackingMode !=
-                TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
+                PHOTO_PLAYER_CAMERA_TRACKING_FREE)
             {
                 camera->viewfinderPosition =
                     (camera->cameraOffset - camera->viewfinderPosition) *

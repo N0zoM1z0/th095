@@ -5,7 +5,6 @@
 #include "PhotoAnmCreateVmEmission.hpp"
 #include "PhotoAnmVmId.hpp"
 #include "PhotoCameraMode.hpp"
-#include "PhotoPlayerRuntime.hpp"
 #include "PhotoScoreBreakdown.hpp"
 
 namespace th095
@@ -88,12 +87,17 @@ typedef char PhotoCameraModeAt000[
     (offsetof(PhotoCameraState, mode) == 0x000) ? 1 : -1];
 typedef char PhotoCameraChargeAtB80[
     (offsetof(PhotoCameraState, charge) == 0xb80) ? 1 : -1];
+typedef char PhotoCameraCounterOffsets[
+    (offsetof(PhotoCameraState, photoIndex) == 0xba8 &&
+     offsetof(PhotoCameraState, photosTaken) == 0xbac &&
+     offsetof(PhotoCameraState, photoLimit) == 0xbb0) ? 1 : -1];
 typedef char PhotoCameraFlagsAtBB4[
     (offsetof(PhotoCameraState, flags) == 0xbb4) ? 1 : -1];
 typedef char PhotoCameraFocusChargeFramesAtBB8[
     (offsetof(PhotoCameraState, focusChargeFrames) == 0xbb8) ? 1 : -1];
 typedef char PhotoCameraPositionAtBC4[
-    (offsetof(PhotoCameraState, viewfinderPosition) == 0xbc4) ? 1 : -1];
+    (offsetof(PhotoCameraState, viewfinderPosition) == 0xbc4 &&
+     offsetof(PhotoCameraState, viewfinderSize) == 0xbd0) ? 1 : -1];
 typedef char PhotoCameraStateSizeIsBDC[
     (sizeof(PhotoCameraState) == 0xbdc) ? 1 : -1];
 

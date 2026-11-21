@@ -290,8 +290,9 @@ SEM-387 uses the same ANM manager fields for capture publication and
 dispatch in both profiles. SEM-388 shares those fields with the result
 initializers and gives both result profiles the actual PlayerInf photo limit.
 SEM-389 removes the remaining result-browser PhotoInf view and shares the
-saved score entry with automatic capture. The legacy ECL headers still require
-the dependency-light Player view.
+saved score entry with automatic capture. SEM-515 retires the duplicate
+PlayerInf and camera layouts. Boundary movement and shot dispatch read
+the same PlayerInf fields as the other ECL consumers.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below

@@ -6,6 +6,40 @@
 namespace th095
 {
 
+enum PhotoPlayerMode
+{
+    PHOTO_PLAYER_MODE_ENTERING = 0,
+    PHOTO_PLAYER_MODE_ACTIVE = 1,
+    PHOTO_PLAYER_MODE_DEATH_TRANSITION = 2,
+    PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION = 3,
+};
+
+enum PhotoPlayerMovementDirection
+{
+    PHOTO_PLAYER_DIRECTION_NONE = 0,
+    PHOTO_PLAYER_DIRECTION_UP = 1,
+    PHOTO_PLAYER_DIRECTION_DOWN = 2,
+    PHOTO_PLAYER_DIRECTION_LEFT = 3,
+    PHOTO_PLAYER_DIRECTION_RIGHT = 4,
+    PHOTO_PLAYER_DIRECTION_UP_LEFT = 5,
+    PHOTO_PLAYER_DIRECTION_UP_RIGHT = 6,
+    PHOTO_PLAYER_DIRECTION_DOWN_LEFT = 7,
+    PHOTO_PLAYER_DIRECTION_DOWN_RIGHT = 8,
+};
+
+typedef char PhotoPlayerMovementDirectionSizeIs4[
+    (sizeof(PhotoPlayerMovementDirection) == 4) ? 1 : -1];
+
+enum PhotoPlayerCameraTrackingMode
+{
+    PHOTO_PLAYER_CAMERA_TRACKING_FREE = 0,
+    PHOTO_PLAYER_CAMERA_TRACKING_TARGET = 1,
+    PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW = 2,
+};
+
+typedef char PhotoPlayerCameraTrackingModeSizeIs4[
+    (sizeof(PhotoPlayerCameraTrackingMode) == 4) ? 1 : -1];
+
 struct PhotoPlayerMovementConfigView
 {
     u16 unknown000;
@@ -103,6 +137,17 @@ struct PhotoGameUpdateView
     static i32 __fastcall OnDrawCamera(PhotoGameUpdateView *player);
 };
 
+typedef char PhotoGameUpdateEffectOffsets[
+    (offsetof(PhotoGameUpdateView, effectAnm) == 0x0004 &&
+     offsetof(PhotoGameUpdateView, effectVm) == 0x0008) ? 1 : -1];
+typedef char PhotoGameUpdateInputOffsets[
+    (offsetof(PhotoGameUpdateView, movementState) == 0x02d4 &&
+     offsetof(PhotoGameUpdateView, cameraTrackingMode) == 0x02d8) ? 1 : -1];
+typedef char PhotoGameUpdateCompletionAt420[
+    (offsetof(PhotoGameUpdateView, completionTimer) == 0x0420) ? 1 : -1];
+typedef char PhotoGameUpdateBoundsEnds[
+    (offsetof(PhotoGameUpdateView, hurtboxBoundsMax) == 0x03b4 &&
+     offsetof(PhotoGameUpdateView, photoTargetBoundsMax) == 0x2a34) ? 1 : -1];
 typedef char PhotoGameUpdateHistoryAt2E8[
     (offsetof(PhotoGameUpdateView, positionHistory) == 0x02e8) ? 1 : -1];
 typedef char PhotoGameUpdateBoundsAt3A8[

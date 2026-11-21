@@ -1,11 +1,11 @@
-#include "EnemyManager.hpp"
+#include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyEclManager.hpp"
-#include "ecl/EclManager.hpp"
+#include "EclInstruction.hpp"
 #include "ecl/EclOperands.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #include "utils.hpp"
-#include "PhotoPlayerRuntime.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "ZunMath.hpp"
 #include <stdlib.h>
 
@@ -49,8 +49,7 @@ void __fastcall BeginBoundaryAwareMove(
 {
     f32 angle;
 
-    if (reinterpret_cast<const PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)
-            ->playerPosition.x < enemy->position.x)
+    if (g_RuntimePlayerOwner->playerPosition.x < enemy->position.x)
     {
         angle = AddNormalizeAngle(
             g_Rng.GetRandomF32InRange(1.5707964f) + 2.3561945f, 0.0f);

@@ -4026,38 +4026,43 @@ def check_photo_camera_state_owner() -> None:
 
 
 def check_ecl_photo_player_owner() -> None:
-    player = (SRC / "PhotoPlayerRuntime.hpp").read_text(encoding="utf-8")
-    if "TH095_MATCH_EXACT" in player or "DIFFBUILD" in player:
-        fail("canonical PhotoPlayerRuntime.hpp must be profile-independent")
-    required_layout = (
-        "AnmLoaded *effectAnm;",
-        "PhotoPlayerEffectVmStorage effectVm;",
-        "sizeof(PhotoPlayerEffectVmStorage) == 0x02cc",
+    allocation = (SRC / "PhotoGamePlayer.hpp").read_text(encoding="utf-8")
+    camera = (SRC / "PhotoCamera.hpp").read_text(encoding="utf-8")
+    compatibility = (SRC / "PhotoPlayerRuntime.hpp").read_text(encoding="utf-8")
+    if any(profile in source for source in (allocation, camera, compatibility)
+           for profile in PROFILE_NAMES):
+        fail("PlayerInf and camera must use one layout across profiles")
+    if ('#include "PhotoGamePlayer.hpp"' not in compatibility or
+            "typedef PhotoGameUpdateView PhotoPlayerRuntimeView;" not in compatibility):
+        fail("expansion PlayerInf must alias the canonical allocation")
+
+    for fact in (
+        "AnmVm effectVm;",
         "PhotoPlayerMovementDirection movementState;",
         "PhotoPlayerCameraTrackingMode cameraTrackingMode;",
-        "offsetof(PhotoPlayerRuntimeView, effectAnm) == 0x0004",
-        "offsetof(PhotoPlayerRuntimeView, effectVm) == 0x0008",
-        "offsetof(PhotoPlayerRuntimeView, movementState) == 0x02d4",
-        "offsetof(PhotoPlayerRuntimeView, cameraTrackingMode) == 0x02d8",
-        "offsetof(PhotoPlayerRuntimeView, completionTimer) == 0x0420",
-        "offsetof(PhotoPlayerRuntimeView, playerPosition) == 0x1e30",
-        "offsetof(PhotoPlayerCameraRuntimeView, photoLimit) == 0x0bb0",
-        "offsetof(PhotoPlayerRuntimeView, camera) == 0x1e3c",
-        "offsetof(PhotoPlayerRuntimeView, camera.photoLimit) == 0x29ec",
-    )
-    for fact in required_layout:
-        if fact not in player:
-            fail(f"canonical PlayerInf/camera layout lost fact: {fact}")
+        "offsetof(PhotoGameUpdateView, effectAnm) == 0x0004",
+        "offsetof(PhotoGameUpdateView, effectVm) == 0x0008",
+        "offsetof(PhotoGameUpdateView, movementState) == 0x02d4",
+        "offsetof(PhotoGameUpdateView, cameraTrackingMode) == 0x02d8",
+        "offsetof(PhotoGameUpdateView, completionTimer) == 0x0420",
+        "offsetof(PhotoGameUpdateView, playerPosition) == 0x1e30",
+        "offsetof(PhotoGameUpdateView, camera) == 0x1e3c",
+    ):
+        if fact not in allocation:
+            fail(f"canonical PlayerInf layout lost fact: {fact}")
+    if "offsetof(PhotoCameraState, photoLimit) == 0xbb0" not in camera:
+        fail("canonical camera layout lost the photo limit")
+    if any(re.search(r"\b(?:class|struct)\s+PhotoPlayer(?:RuntimeView|CameraRuntimeView)\b",
+                     source) for source in (allocation, camera, compatibility)):
+        fail("retired PlayerInf storage projection was restored")
 
-    allocation = (SRC / "PhotoGamePlayer.hpp").read_text(encoding="utf-8")
-    if any(profile in allocation for profile in PROFILE_NAMES):
-        fail("PhotoGamePlayer.hpp must declare one PlayerInf allocation")
     if "f32 AngleToPoint(const Float3 *point);" not in allocation:
         fail("PlayerInf lost its forward angle method")
     if "f32 AngleFromPoint(Float3 *position);" not in allocation:
         fail("PlayerInf lost its reverse angle method")
 
-    for name in ("PhotoCamera.cpp", "PhotoStage.cpp"):
+    for name in ("PhotoCamera.cpp", "PhotoStage.cpp",
+                 "EclDependencies.cpp", "EnemyShotDispatch.cpp"):
         source = (SRC / name).read_text(encoding="utf-8")
         if '#include "PhotoGamePlayer.hpp"' not in source or "g_RuntimePlayerOwner" not in source:
             fail(f"{name} must consume the typed PlayerInf owner")

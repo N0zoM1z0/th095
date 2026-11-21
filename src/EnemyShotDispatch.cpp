@@ -1,21 +1,15 @@
-#include "EnemyManager.hpp"
+#include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoBulletManagerLayout.hpp"
 #include "PhotoEnemyLayout.hpp"
-#include "PhotoPlayerRuntime.hpp"
-#include "ecl/EclManager.hpp"
+#include "PhotoGamePlayer.hpp"
+#include "EclInstruction.hpp"
 #include "ecl/EclOperands.hpp"
 
 namespace th095
 {
 namespace EclRunHigh
 {
-static __forceinline const Float3 &TargetPlayerPosition()
-{
-    return reinterpret_cast<const PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)
-        ->playerPosition;
-}
-
 void __fastcall DispatchShotInstruction(PhotoEnemyView *enemy, EclShotInstruction *instruction)
 {
     PhotoBulletSpawnDescriptor *descriptor;
@@ -28,10 +22,10 @@ void __fastcall DispatchShotInstruction(PhotoEnemyView *enemy, EclShotInstructio
     // Preserve the TH08-ancestral nested early-return source shape.
     if (enemy->minimumPlayerDistanceSquared > 0.0f)
     {
-        if (((enemy->worldPosition.x - TargetPlayerPosition().x) *
-                 (enemy->worldPosition.x - TargetPlayerPosition().x) +
-             (enemy->worldPosition.y - TargetPlayerPosition().y) *
-                 (enemy->worldPosition.y - TargetPlayerPosition().y)) <
+        if (((enemy->worldPosition.x - g_RuntimePlayerOwner->playerPosition.x) *
+                 (enemy->worldPosition.x - g_RuntimePlayerOwner->playerPosition.x) +
+             (enemy->worldPosition.y - g_RuntimePlayerOwner->playerPosition.y) *
+                 (enemy->worldPosition.y - g_RuntimePlayerOwner->playerPosition.y)) <
             enemy->minimumPlayerDistanceSquared)
             return;
     }

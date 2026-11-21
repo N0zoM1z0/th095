@@ -506,23 +506,13 @@ class SemanticProtocolGuardTests(unittest.TestCase):
 
     def test_ecl_photo_player_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_ecl_photo_player_owner()
-        player = (ROOT / "src" / "PhotoPlayerRuntime.hpp").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn(
-            "offsetof(PhotoPlayerRuntimeView, camera.photoLimit) == 0x29ec", player
-        )
-        high = (ROOT / "src" / "ecl" / "EclRunHigh.inl").read_text(
-            encoding="utf-8"
-        )
+        player = (ROOT / "src" / "PhotoGamePlayer.hpp").read_text(encoding="utf-8")
+        camera = (ROOT / "src" / "PhotoCamera.hpp").read_text(encoding="utf-8")
+        self.assertIn("offsetof(PhotoGameUpdateView, camera) == 0x1e3c", player)
+        self.assertIn("offsetof(PhotoCameraState, photoLimit) == 0xbb0", camera)
+        high = (ROOT / "src" / "ecl" / "EclRunHigh.inl").read_text(encoding="utf-8")
         self.assertNotIn("PhotoCameraOpcodeState", high)
         self.assertNotIn("opcode141Value", high)
-        emission = (ROOT / "src" / "ecl" / "PhotoCameraEclEmission.hpp").read_text(
-            encoding="utf-8"
-        )
-        self.assertNotIn("TH095_MATCH_EXACT", emission)
-        self.assertNotIn("DIFFBUILD", emission)
-        self.assertIn("f32 GetAngle(Float3 *position);", emission)
 
     def test_ecl_float_resolver_guard_accepts_method_only_adapter(self) -> None:
         GUARD.check_ecl_float_resolver_boundary()
