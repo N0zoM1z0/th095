@@ -24,7 +24,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00402250,authored,Background,authored,exact,background-lifecycle-2026-08-30
 0x00402330,authored,Background,authored,exact,vc71-background-destructor-exact-2026-09-01
 0x004024A0,authored,Background,authored,exact,background-create-exact-2026-08-31
-0x00402620,compiler,Background,exclude,exact,background-scalar-deleting-destructor-2026-08-30
+0x00402620,authored,Background,authored,exact,sem-500-background-destroy-2026-11-21
 0x00402680,authored,Background,authored,exact,background-lifecycle-2026-08-30
 0x00402750,authored,Background,authored,exact,background-render-spine-2026-08-30
 0x00402990,authored,Background,authored,exact,vc71-exact-background-draw-low-prio-2026-08-31

@@ -1,29 +1,26 @@
-#ifdef TH095_MATCH_EXACT
-#include "PhotoGameTaskExact.inl"
-#else
 #include "AnmManager.hpp"
+#include "SceneData.hpp"
 #include "AnmVmId.hpp"
 #include "AsciiManager.hpp"
 #include "Background.hpp"
-#include "FrontEndGlobals.hpp"
-#include "FileSystem.hpp"
-#include "GameplayGlobals.hpp"
 #include "ControllerInputSlot.hpp"
-#include "Main.hpp"
-#include "PhotoBulletManager.hpp"
-#include "PhotoCardInfo.hpp"
-#include "PhotoEnemyManager.hpp"
-#include "PhotoGameTask.hpp"
-#include "PhotoGamePlayer.hpp"
+#include "FileSystem.hpp"
+#include "FrontEndController.hpp"
 #include "PhotoFront.hpp"
+#include "PhotoCardInfo.hpp"
+#include "PhotoGameTask.hpp"
 #include "PhotoItemManager.hpp"
-#include "PhotoStage.hpp"
 #include "PhotoEffectRuntime.hpp"
+#include "PhotoBulletManager.hpp"
+#include "PhotoEnemyManager.hpp"
+#include "PhotoStage.hpp"
+#include "SoundPlayer.hpp"
+#include "ScoreData.hpp"
+#include "PhotoGamePlayer.hpp"
+#include "ReplayBrowser.hpp"
 #include "ReplayManager.hpp"
 #include "ResultScreen.hpp"
-#include "ScoreData.hpp"
-#include "SceneData.hpp"
-#include "SoundPlayer.hpp"
+#include "GameplayGlobals.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -31,30 +28,7 @@
 namespace th095
 {
 
-PhotoGameTaskView *g_RuntimeGlobalStateOwner; // 0x004BDEC8
-
-struct PhotoHelpMenuTaskView
-{
-    u8 unknown000[0x6108];
-    i32 closeRequested;
-};
-
-// The target DrawHud relocations retain the historical AddFormatText proxy
-// spelling but resolve to canonical AsciiManager::AddGuiFormatText. Keep that
-// proxy receiver/method only for DIFFBUILD; runnable production must enqueue
-// the five HUD strings in the dedicated GUI text queue.
-#ifdef DIFFBUILD
-struct PhotoAsciiManagerTaskView
-{
-    i32 AddFormatText(Float3 *position, const char *format, ...);
-};
-extern PhotoAsciiManagerTaskView g_PhotoAsciiManager;
-#define TH095_PHOTO_HUD_ASCII_MANAGER g_PhotoAsciiManager
-#define TH095_PHOTO_HUD_FORMAT_METHOD AddFormatText
-#else
-#define TH095_PHOTO_HUD_ASCII_MANAGER g_AsciiManager
-#define TH095_PHOTO_HUD_FORMAT_METHOD AddGuiFormatText
-#endif
+PhotoGameTaskView *g_RuntimeGlobalStateOwner;
 
 struct PhotoGameTaskDrawHudLocals
 {
@@ -75,8 +49,8 @@ typedef char PhotoGameTaskDrawHudAlphaAt44[
 
 struct PhotoGameTaskUpdateLocals
 {
-    PhotoHelpMenuTaskView *activeHelpMenu;
-    PhotoHelpMenuTaskView *shutdownHelpMenu;
+    FrontEndControllerView *activeFrontEnd;
+    FrontEndControllerView *shutdownFrontEnd;
     i32 previousSecond;
     i32 j;
     i32 i;
@@ -90,42 +64,31 @@ typedef char PhotoGameTaskUpdateLoopIAt10[
 typedef char PhotoRuntimeConfigSizeIsC8[
     (sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
 
-extern char g_ReplayPath[];
-#ifndef DIFFBUILD
-extern char g_SelectedReplayPath[0x100];
-#define g_ReplayPath g_SelectedReplayPath
-#endif
-extern u32 g_PhotoAsciiTextColor;
-#ifndef DIFFBUILD
-// Target 0x004B1FEC is g_AsciiManager @ 0x004A9F80 + 0x806C, the
-// canonical ZunColor storage used by every following AddFormatText call.
-#define g_PhotoAsciiTextColor (g_AsciiManager.color.color)
-#endif
-
 PhotoGameTaskView::PhotoGameTaskView()
 {
-    this->runtimeConfig.Initialize();
     utils::DebugPrint("initialize GameTaskInf\n");
     memset(this, 0, sizeof(PhotoGameTaskView));
+}
+
+// Preserve the target's 16-bit mask result before testing it.
+static __forceinline u16 ReadPhotoDemoInterrupt(
+    const ControllerInputSlotView *slot, u16 mask)
+{
+    return slot->current & mask;
 }
 
 i32 PhotoGameTaskView::Update()
 {
     PhotoGameTaskUpdateLocals locals;
 
-#if defined(TH095_MATCH_EXACT)
-    if (((this->flags >> 3) & 1) != 0)
-#else
     if (this->gameplayLoadFailed != 0)
-#endif
     {
         g_Supervisor.StopReplayScan();
         g_Supervisor.requestedSceneState = SUPERVISOR_STATE_ERROR;
         if (g_ActiveMenuController != NULL)
         {
-            locals.shutdownHelpMenu = reinterpret_cast<PhotoHelpMenuTaskView *>(
-                g_ActiveMenuController);
-            locals.shutdownHelpMenu->closeRequested = 1;
+            locals.shutdownFrontEnd = static_cast<FrontEndControllerView *>(g_ActiveMenuController);
+            locals.shutdownFrontEnd->transitionReady = 1;
         }
         return 1;
     }
@@ -139,14 +102,13 @@ i32 PhotoGameTaskView::Update()
     g_Supervisor.StopReplayScan();
     if (g_ActiveMenuController != NULL)
     {
-        locals.activeHelpMenu = reinterpret_cast<PhotoHelpMenuTaskView *>(
-            g_ActiveMenuController);
-        locals.activeHelpMenu->closeRequested = 1;
+        locals.activeFrontEnd = static_cast<FrontEndControllerView *>(g_ActiveMenuController);
+        locals.activeFrontEnd->transitionReady = 1;
         return 1;
     }
 
-    if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_ARCHIVE &&
-        ((g_ControllerInputSlots[0].current & TH_BUTTON_DEMO_INTERRUPT) != 0 ||
+    if (g_ReplayUsesArchive != REPLAY_PLAYBACK_SOURCE_LOOSE_FILE &&
+        (ReadPhotoDemoInterrupt(&g_ControllerInputSlots[0], TH_BUTTON_DEMO_INTERRUPT) != 0 ||
          this->resultScreenActive != 0 ||
          this->playerDeathTransitionComplete != 0 ||
          this->photoLimitTransitionComplete != 0))
@@ -158,14 +120,15 @@ i32 PhotoGameTaskView::Update()
     {
         if (this->photoLimitTransitionComplete != 0)
         {
+            i32 photoLimit;
             for (locals.i = 0;
-                 locals.i < g_RuntimePlayerOwner->camera.photoLimit;
+                 photoLimit = g_RuntimePlayerOwner->camera.photoLimit,
+                 locals.i < photoLimit;
                  locals.i++)
             {
                 AnmManager::ExecuteScript(
-                    g_PhotoStageState
-                        ->capturedPhotoVms[locals.i]
-                        .GetVm());
+                    reinterpret_cast<AnmVmId *>(
+                        &g_PhotoStageState->capturedPhotoVms[locals.i])->GetVm());
             }
         }
         return 3;
@@ -178,14 +141,15 @@ i32 PhotoGameTaskView::Update()
 
     if (this->photoLimitTransitionComplete != 0)
     {
+        i32 photoLimit;
         for (locals.j = 0;
-             locals.j < g_RuntimePlayerOwner->camera.photoLimit;
+             photoLimit = g_RuntimePlayerOwner->camera.photoLimit,
+             locals.j < photoLimit;
              locals.j++)
         {
             AnmManager::ExecuteScript(
-                g_PhotoStageState
-                    ->capturedPhotoVms[locals.j]
-                    .GetVm());
+                reinterpret_cast<AnmVmId *>(
+                    &g_PhotoStageState->capturedPhotoVms[locals.j])->GetVm());
         }
         return 3;
     }
@@ -240,35 +204,34 @@ i32 PhotoGameTaskView::DrawHud()
                 0x40;
         }
 
-        g_PhotoAsciiTextColor = locals.alpha << 24 | 0xffffff;
-        TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
+        g_AsciiManager.color.color = locals.alpha << 24 | 0xffffff;
+        g_AsciiManager.AddGuiFormatText(
             ((locals.highScorePosition.x = 128.0f),
              (locals.highScorePosition.y = 19.0f),
              (locals.highScorePosition.z = 0.0f),
              &locals.highScorePosition),
             "HiScore %.7d",
-            g_ResultSaveData
-                        ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
-                        .score > this->score
-                ? g_ResultSaveData
-                      ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
-                      .score
+            g_ResultSaveData->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex].score >
+                    this->score
+                ? g_ResultSaveData->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex].score
                 : this->score);
         locals.scorePosition.x = 128.0f;
         locals.scorePosition.y = 32.0f;
         locals.scorePosition.z = 0.0f;
-        TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
+        g_AsciiManager.AddGuiFormatText(
             &locals.scorePosition,
             "  Score %.7d",
             this->score);
 
-        g_PhotoAsciiTextColor = locals.alpha << 24 | 0xdfefff;
-        locals.photoLimit = g_RuntimePlayerOwner->camera.photoLimit;
-        locals.photoIndex = g_RuntimePlayerOwner->camera.photoIndex;
+        g_AsciiManager.color.color = locals.alpha << 24 | 0xdfefff;
+        locals.photoLimit =
+            g_RuntimePlayerOwner->camera.photoLimit;
+        locals.photoIndex =
+            g_RuntimePlayerOwner->camera.photoIndex;
         locals.photoCountPosition.x = 409.0f;
         locals.photoCountPosition.y = 19.0f;
         locals.photoCountPosition.z = 0.0f;
-        TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
+        g_AsciiManager.AddGuiFormatText(
             &locals.photoCountPosition,
             "Photo %.2d/%.2d",
             locals.photoIndex,
@@ -279,7 +242,7 @@ i32 PhotoGameTaskView::DrawHud()
             locals.scenePosition.x = 472.0f;
             locals.scenePosition.y = 32.0f;
             locals.scenePosition.z = 0.0f;
-            TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
+            g_AsciiManager.AddGuiFormatText(
                 &locals.scenePosition,
                 "%2d-%d",
                 g_SelectedScene->group + 1,
@@ -290,18 +253,15 @@ i32 PhotoGameTaskView::DrawHud()
             locals.extraScenePosition.x = 472.0f;
             locals.extraScenePosition.y = 32.0f;
             locals.extraScenePosition.z = 0.0f;
-            TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
+            g_AsciiManager.AddGuiFormatText(
                 &locals.extraScenePosition,
                 "EX-%d",
                 g_SelectedScene->scene + 1);
         }
-        g_PhotoAsciiTextColor = 0xffffffff;
+        g_AsciiManager.color.color = 0xffffffff;
     }
     return 1;
 }
-
-#undef TH095_PHOTO_HUD_FORMAT_METHOD
-#undef TH095_PHOTO_HUD_ASCII_MANAGER
 
 PhotoGameTaskView *PhotoGameTaskView::Create(i32 replayMode)
 {
@@ -388,11 +348,7 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
     return;
 
 failure:
-#if defined(TH095_MATCH_EXACT)
-    task->flags = task->flags | 8;
-#else
     task->gameplayLoadFailed = 1;
-#endif
     g_Supervisor.BeginLoadingCompletion();
     WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
     WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
@@ -414,7 +370,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
 
     this->runtimeConfig = g_Supervisor.config;
     this->replay = ReplayManager::Create(
-        this->replayMode, g_ReplayPath);
+        this->replayMode, g_SelectedReplayPath);
     if (this->replay == NULL)
     {
         return ZUN_ERROR;
@@ -507,7 +463,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
 PhotoGameTaskView::~PhotoGameTaskView()
 {
     utils::DebugPrint("shitdown GameTaskInf\n");
-    delete this->background;
+    Background::Destroy(this->background);
     this->front->Destroy();
     this->bullets->Destroy();
     this->player->Destroy();
@@ -541,5 +497,3 @@ PhotoGameTaskView::~PhotoGameTaskView()
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

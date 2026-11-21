@@ -5,11 +5,9 @@
 namespace th095
 {
 
-// The target constructs Supervisor's configuration before the parent body's
-// 0x7BC reset. Other GameConfiguration objects include persistent images and
-// task snapshots, so their default construction must not acquire this policy.
-// This existing fieldless construction adapter is shared by all Supervisor
-// clients; GameConfiguration remains the one owner of the 0xC8 data layout.
+// Supervisor and PhotoGameTask initialize their configuration members before
+// clearing the parent allocation. Persistent images use GameConfiguration's
+// plain 0xC8 layout directly.
 struct GameConfigurationConstructionAdapter : GameConfiguration
 {
     // Preserve assignment from a loaded base configuration image without a

@@ -248,6 +248,9 @@ ownership is verified in both link orders.
 SEM-499 gives the replay source and shared file handle one type and one
 symbol each across both builds. The file probes verify both I/O lanes
 and their lock lifetime.
+SEM-500 shares the photo task implementation, including its configuration
+construction and subsystem lifetimes. The authored ledger includes the
+95-byte Background destroy wrapper used by task teardown.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

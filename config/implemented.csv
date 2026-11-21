@@ -695,3 +695,4 @@ th095::EclExtended::Callback03
 th095::EclExtended::Callback04
 th095::EclRunHigh::DispatchShotInstruction
 th095::PhotoEnemyView::UpdateMovement
+th095::Background::Destroy

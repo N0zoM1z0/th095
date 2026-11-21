@@ -4,6 +4,7 @@
 #include "Main.hpp"
 #include "PhotoGameTaskOwner.hpp"
 #include "ReplayManagerMode.hpp"
+#include "SupervisorMemberConstruction.hpp"
 #include "ZunTimer.hpp"
 
 namespace th095
@@ -26,8 +27,7 @@ struct PhotoCompletionStateTaskView
     ZunTimer timer;
 };
 
-// Canonical layout of the live photography task. Exact-only source emission
-// stays isolated in PhotoGameTaskExact.inl; consumers share this owner.
+// The active photography task and its owned subsystem pointers.
 struct PhotoGameTaskView
 {
     Background *background;                 // +0x000
@@ -41,7 +41,7 @@ struct PhotoGameTaskView
     ResultScreen *pause;                     // +0x020
     PhotoEffectManagerView *lasers;          // +0x024
     ZunTimer stageTimer;                     // +0x028
-    GameConfiguration runtimeConfig;        // +0x034
+    GameConfigurationConstructionAdapter runtimeConfig;        // +0x034
     union
     {
         u32 flags;                           // +0x0fc

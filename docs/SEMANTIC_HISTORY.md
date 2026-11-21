@@ -20326,3 +20326,26 @@ image and both links agree on the loose replay read and write
 transactions, including acquisition, handle use, close and lock release.
 The replay ownership, main-menu, screenshot, configuration and archive
 version probes also pass. See `.analysis/pi/replay-file-state/`.
+
+### SEM-500 — share the photo task and recover its Background teardown
+
+The photo task now uses one declaration and implementation. Its
+configuration member initializes between the two timers, before the
+constructor clears the 0x124-byte allocation. The task publishes the
+front-end transition through the allocated controller, and the HUD sends
+GUI text to the canonical AsciiManager queue. Subsystem initialization
+and teardown call their respective owners directly.
+
+`Background::Destroy @ 0x00402620` takes a single pointer in ECX.
+PhotoGameTask calls it at `0x00417E89`. Its 95-byte body has the same
+layout as the ReplayManager and ResultScreen destroy wrappers, with
+relocations to the Background destructor and operator delete. The
+ordinary guarded delete expression reproduces the entire unit with
+pinned VC7.1. The authored ledger now records this entry.
+
+All 366 strict comparisons across 23 affected sources pass. Normal COFF
+also reproduces all 13 units in the two edited objects. Both normal
+link orders resolve 6,507 code and 137 initialized-data references.
+The original and both links agree on construction order, null and
+non-null Background release, 176 subsystem cases, 80 HUD cases, 384
+loader cases and 540 update cases. See `.analysis/pi/photo-task-share/`.

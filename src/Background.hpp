@@ -40,6 +40,7 @@ struct Background
 {
     Background();
     ~Background();
+    static void __fastcall Destroy(Background *background);
 
     i32 Initialize();
     i32 Update();

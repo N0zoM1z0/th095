@@ -57,4 +57,16 @@ Background::~Background()
     g_Background = NULL;
 }
 
+// FUNCTION: TH095 0x00402620.
+void __fastcall Background::Destroy(Background *background)
+{
+    Background *ownedBackground = background;
+
+    if (ownedBackground != NULL)
+    {
+        delete ownedBackground;
+        ownedBackground = NULL;
+    }
+}
+
 } // namespace th095

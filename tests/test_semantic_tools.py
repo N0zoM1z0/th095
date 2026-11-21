@@ -381,21 +381,20 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("SoundPlayer@th095@@QAE?AW4ZunResult@@", manifest)
         self.assertIn("SoundPlayer@th095@@QAE?AW4ZunResult@2@", manifest)
 
-    def test_photo_game_task_ecl_guard_accepts_state_bridge(self) -> None:
+    def test_photo_game_task_ecl_guard_accepts_shared_owner(self) -> None:
         GUARD.check_photo_game_task_ecl_owner()
-        state = (ROOT / "src" / "PhotoGameTaskState.hpp").read_text(
+        state = (ROOT / "src" / "PhotoGameTask.hpp").read_text(
             encoding="utf-8"
         )
         self.assertNotIn("TH095_MATCH_EXACT", state)
         self.assertNotIn("DIFFBUILD", state)
-        self.assertIn("PHOTO_GAME_TASK_FLAGS_OFFSET = 0xfc", state)
+        self.assertIn("offsetof(PhotoGameTaskView, flags) == 0xfc", state)
         extended = (ROOT / "src" / "EclExtended.cpp").read_text(
             encoding="utf-8"
         )
         self.assertNotIn("g_PhotoGlobalState->flags", extended)
-        self.assertEqual(
-            extended.count("TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState)"), 7
-        )
+        self.assertNotIn("TH095_PHOTO_GAME_TASK_FLAGS", extended)
+        self.assertIn("g_RuntimeGlobalStateOwner->photoTransitionActive", extended)
         camera = (ROOT / "src" / "PhotoCamera.cpp").read_text(encoding="utf-8")
         manifest = (ROOT / "config" / "match-units.toml").read_text(
             encoding="utf-8"
@@ -404,15 +403,14 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("struct PhotoGlobalStateView", camera)
         self.assertNotIn("unknownFlag0", camera)
         self.assertNotIn("unknownFlag2", camera)
-        self.assertIn("extern PhotoGameTaskView *g_PhotoGlobalState;", camera)
-        self.assertIn("g_PhotoGlobalState->captureActive", camera)
-        self.assertIn("g_PhotoGlobalState->gameplayLoadActive", camera)
-        self.assertIn("g_PhotoGlobalState->photoSoundSuppressed", camera)
+        self.assertIn("g_RuntimeGlobalStateOwner->captureActive", camera)
+        self.assertIn("g_RuntimeGlobalStateOwner->gameplayLoadActive", camera)
+        self.assertIn("g_RuntimeGlobalStateOwner->photoSoundSuppressed", camera)
         self.assertNotIn(
             "?g_PhotoGlobalState@th095@@3PAUPhotoGlobalStateView@1@A", manifest
         )
         self.assertIn(
-            "?g_PhotoGlobalState@th095@@3PAUPhotoGameTaskView@1@A", manifest
+            "?g_RuntimeGlobalStateOwner@th095@@3PAUPhotoGameTaskView@1@A", manifest
         )
 
     def test_photo_card_info_owner_guard_accepts_canonical_layout(self) -> None:

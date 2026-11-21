@@ -3197,7 +3197,7 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
     for name, count in (
         ("HelpMenu.cpp", 1),
         ("ReplayBrowser.cpp", 1),
-        ("PhotoGameTask.cpp", 2), ("PhotoGameTaskExact.inl", 2),
+        ("PhotoGameTask.cpp", 2),
         ("FrontEndLifecycle.cpp", 2),
         ("SceneSelectAssets.cpp", 1),
     ):
@@ -3225,7 +3225,7 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
     for name in ("ReplayScanWorkerBehavior.inl", "Main.cpp", "MainExact.inl",
                  "AnmPreload.cpp", "SceneSelectAssets.cpp",
                  "ReplayBrowser.cpp", "HelpMenu.cpp",
-                 "PhotoGameTask.cpp", "PhotoGameTaskExact.inl", "FrontEndController.cpp", "FrontEndLifecycle.cpp"):
+                 "PhotoGameTask.cpp", "FrontEndController.cpp", "FrontEndLifecycle.cpp"):
         rest = write.sub("", read.sub("", source(name)))
         if re.search(word, rest):
             fail(f"{name} bypasses atomic worker signal access")
