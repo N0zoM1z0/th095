@@ -8,7 +8,6 @@
 1	src/Main.cpp	struct	LoadMusicLocals
 1	src/Main.cpp	struct	MidiTimer
 1	src/Main.cpp	struct	ScreenshotCaptureLocals
-1	src/PhotoItemManager.cpp	struct	UpdateLocals
 1	src/ecl/AnmManagerEclView.hpp	struct	AnmEntry
 1	src/ecl/AnmManagerEclView.hpp	struct	AnmLoaded
 1	src/ecl/AnmManagerEclView.hpp	struct	AnmLoadedSprite

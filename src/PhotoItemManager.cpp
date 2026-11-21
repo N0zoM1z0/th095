@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#include "PhotoItemManagerExact.inl"
-#else
 #include "PhotoItemManager.hpp"
 #include "PhotoBulletManager.hpp"
 #include "GameplayGlobals.hpp"
@@ -11,7 +8,7 @@
 namespace th095
 {
 
-
+PhotoItemManagerView *g_PhotoItemManager; // Retail 0x004C45DC
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -192,7 +189,7 @@ i32 PhotoItemManagerView::Update()
             if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
             {
                 g_SoundPlayer.PlaySoundPositionedByIdx(
-                    static_cast<SoundIdx>(0x14), locals.item->position.x);
+                    SOUND_ITEM, locals.item->position.x);
             }
             continue;
         }
@@ -287,10 +284,3 @@ finished:
 #undef item
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT
-
-namespace th095
-{
-PhotoItemManagerView *g_PhotoItemManager; // Retail 0x004C45DC
-}

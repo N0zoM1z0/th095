@@ -20413,3 +20413,24 @@ Both link orders resolve 576 code and six initialized-data references.
 The original and both links agree on 48 HUD initialization cases,
 including preload failure, restart and nonzero replay source values.
 See `.analysis/pi/photo-front-share/`.
+
+### SEM-504 — share ItemInf and correct the pickup sound name
+
+ItemInf now uses the canonical SoundPlayer call in both builds. The
+pickup branch at 0x0041D2FE pushes command 0x14 and sends the item’s
+horizontal position for panning. The target sound metadata maps 0x13
+to buffer 16 (`se_damage00.wav`), 0x14 to buffer 17
+(`se_item00.wav`), and 0x15 to buffer 5 (`se_tan00.wav`). The shared
+enum names damage and item at 0x13 and 0x14. The 0x15 entry keeps its
+numeric name because the sample alone does not establish the command’s
+role.
+
+All 598 strict unit comparisons affected by the shared sound header
+pass. Normal COFF reproduces all 12 ItemInf units. Both links agree
+with retail on 384 pickup cases and 74 lifetime and spawn cases.
+Their mapped sections match the previous PI audit images byte for
+byte. See `.analysis/pi/photo-item-share/`.
+
+The same table exposes another inherited name in ReplayBrowser. The
+missing or unloaded replay branch at 0x0044E21C pushes 0x25. Its buffer
+is `se_invalid.wav`, currently named `SOUND_DAMAGE_LOW_HEALTH`.

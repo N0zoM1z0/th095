@@ -38,7 +38,6 @@
 1	src/pbg/PbgFile.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/PhotoGame.cpp	#if defined(DIFFBUILD)
 1	src/PhotoGame.cpp	#ifdef TH095_MATCH_EXACT
-1	src/PhotoItemManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayBrowser.cpp	#ifndef DIFFBUILD
 1	src/ReplayScanWorker.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT

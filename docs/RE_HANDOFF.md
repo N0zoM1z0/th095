@@ -259,6 +259,8 @@ Supervisor. The camera and stage share the score flags.
 SEM-503 shares HUD initialization through the ANM, Supervisor and replay
 source owners. PhotoCamera reads the capture phase through PhotoInf in
 both builds.
+SEM-504 shares ItemInf and corrects the sound command names for damage
+and item collection against the retail buffer table.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
