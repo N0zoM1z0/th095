@@ -2243,6 +2243,15 @@ Every variant reserves 0x11C, so narrowing the mask result leaves the
 retail stack gap unexplained. See
 `.analysis/controller-get-input/key-result-types/`.
 
+Four further pinned probes change the storage used for keyboard masks.
+Representing the high bit as a per-key byte bitfield adds two instructions
+per key and emits a 2,760-byte body. A two-byte accumulator with a live
+inlined OR operator emits 2,797 bytes with a 16-bit argument and 2,663
+bytes with a 32-bit argument. All four still reserve 0x11C. The existing
+2,655-byte source retains all 212 target stack operands, and both normal
+links pass the 1,312-case retail input comparison. See
+`.analysis/controller-get-input/key-byte-owner/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
