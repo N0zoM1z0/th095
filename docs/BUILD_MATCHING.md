@@ -2305,6 +2305,15 @@ instructions for the two references. Retail keeps the index at EBP-0x11C.
 The pinned probes are in
 `.analysis/controller-get-input/backend-snapshots/`.
 
+Five acquisition-sequence variants leave the frame at 0x11C. Sequencing
+the Win32 call with the first key-mask update emits the same 2,655 bytes
+and 22 relocations. Assigning the first mask, putting the call in the key
+test, or grouping the first two masks emits 2,649–2,654 bytes with two
+fewer instructions. Testing the DirectInput call's status inside the
+condition moves the existing button clear before the call. The new
+variants are under `.analysis/controller-get-input/key-acquisition-sequence/`.
+The current linked layouts pass all 1,312 retail input cases.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
