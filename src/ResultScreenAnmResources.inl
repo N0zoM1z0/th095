@@ -1,7 +1,7 @@
 enum { PAUSE_ANM_SLOT = 10 };
 
 // FUNCTION: TH095 0x00426820.
-::ZunResult ResultScreen::LoadAnm()
+ZunResult ResultScreen::LoadAnm()
 {
     if (g_AnmManager->PreloadAnm(PAUSE_ANM_SLOT, "pause.anm") == NULL)
     {
@@ -13,14 +13,14 @@ enum { PAUSE_ANM_SLOT = 10 };
             "\x83\x66\x81\x5b\x83\x5e\x82\xaa"
             "\x89\xf3\x82\xea\x82\xc4\x82\xa2"
             "\x82\xdc\x82\xb7\r\n");
-        return ::TH095_LEGACY_ZUN_ERROR;
+        return ZUN_ERROR;
     }
-    return ::TH095_LEGACY_ZUN_SUCCESS;
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH095 0x00426860.
-::ZunResult ResultScreen::ReleaseAnm()
+ZunResult ResultScreen::ReleaseAnm()
 {
     g_AnmManager->ReleaseAnm(PAUSE_ANM_SLOT);
-    return ::TH095_LEGACY_ZUN_SUCCESS;
+    return ZUN_SUCCESS;
 }

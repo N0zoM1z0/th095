@@ -20255,3 +20255,33 @@ and two timestamps. The probe compares the input to compression, the
 metadata chunks and the address passed to the CRT. Both links also pass
 the 37 result draw and 20 replay-browser input cases. See
 `.analysis/pi/replay-name-owner/` for the local probes.
+
+### SEM-497 — share the result screen owner and implementation
+
+The 0x6E2C ResultScreen allocation now has one declaration and one
+implementation. Its 25 animation members use `AnmVm`. Each loaded
+resource uses `AnmLoaded`, with `Supervisor::textAnm` supplying the replay
+labels. Scene requests and lag counters use their Supervisor fields, and
+scene bounds use `g_SceneGroupCounts`. The screen shares the target reset
+order with the front-end and uses the canonical `ZunTimer::Tick` from
+`ZunTimer.cpp`.
+
+The initial ANM type substitution increased the pinned VC7.1 constructor
+frame by 0x18. Removing the old first-cursor overload restored the
+373-byte target extent, all stack homes, and all 15 relocation positions.
+Both cursors now use their ordinary constructor.
+
+All 132 strict comparisons across 17 affected sources pass. The normal
+objects reproduce all 25 ResultScreen and timer extents and their
+relocation destinations. That comparison resolves the existing normal
+and comparison return-enum spellings for `ReplayManager::WriteReplay`.
+Both normal links resolve 4,276 code and 24 initialized-data references
+and retain the initializer table.
+
+The original and both link orders agree on two lifecycle cases, 24
+result initializers, 37 draw cases and 48 cursor cases. The lifecycle
+checks cover publication and clearing of the singleton, destruction of
+the 25 VMs and release of owned replay and help data. The initializers
+exercise the embedded VM receivers, timer reset, and CRT timestamp
+destination. The Best Shot save and navigation probes also pass. See
+`.analysis/pi/result-screen-owner/`.

@@ -30,11 +30,6 @@ struct ResultScreenReplayCursor
         this->count = 999;
     }
 
-    // Legacy ResultScreen construction-phase overload. Only the frozen exact
-    // ResultScreen header defines it; ordinary callers use the default ctor.
-    // Its compiler-only storage is intentionally outside this runtime owner.
-    ResultScreenReplayCursor(i32);
-
     i32 Move(i32 amount);
     void Push();
     void Pop();

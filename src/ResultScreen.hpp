@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#include "ResultScreenExact.hpp"
-#else
 #ifndef TH095_RESULT_SCREEN_HPP
 #define TH095_RESULT_SCREEN_HPP
 
@@ -10,63 +7,11 @@
 #include "ReplayManager.hpp"
 #include "ResultScreenReplayCursor.hpp"
 #include "ScoreData.hpp"
-#include "ZunTimer.hpp"
+#include "FrontEndTimer.hpp"
 #include <stdlib.h>
 
 namespace th095
 {
-
-#ifdef TH095_MATCH_EXACT
-typedef ::ZunResult ResultScreenResult;
-#else
-typedef ZunResult ResultScreenResult;
-#endif
-
-#ifdef TH095_MATCH_EXACT
-struct ResultScreenTimer
-{
-    i32 previous;
-    f32 subFrame;
-    i32 current;
-
-    ResultScreenTimer()
-    {
-        this->current = 0;
-        this->previous = -999999;
-        this->subFrame = 0.0f;
-    }
-
-    u32 operator==(i32 value) { return this->current == value; }
-    u32 operator<(i32 value) { return this->current < value; }
-    u32 operator>=(i32 value) { return this->current >= value; }
-    i32 GetCurrent() { return this->current; }
-    i32 Tick();
-    void Reset()
-    {
-        this->current = 0;
-        this->subFrame = 0.0f;
-        this->previous = -999999;
-    }
-    void Set(i32 value)
-    {
-        this->current = value;
-        this->subFrame = (f32)value;
-        this->previous = -999999;
-    }
-};
-typedef ResultScreenTimer ResultScreenStateTimer;
-#else
-typedef ZunTimer ResultScreenStateTimer;
-#endif
-
-typedef AnmVm ResultScreenAnmVm;
-
-typedef char ResultScreenAnmVmSizeIs2CC[
-    (sizeof(ResultScreenAnmVm) == 0x2cc) ? 1 : -1];
-
-typedef AnmLoaded ResultScreenAnmLoadedView;
-typedef AnmTextureEntryView ResultScreenTextureEntryView;
-typedef AnmLoadedSprite ResultScreenLoadedSpriteView;
 
 struct ResultScreenSceneLabel
 {
@@ -79,41 +24,41 @@ typedef char ResultScreenSceneLabelSizeIs58[
 
 struct ResultScreen
 {
-    ResultScreenAnmLoadedView *anm;       // +0x0000
-    i32 state;                            // +0x0004
-    ResultScreenStateTimer stateTimer;    // +0x0008
-    f32 savedGameSpeed;                   // +0x0014
-    ResultScreenAnmVm vms[21];            // +0x0018
-    ResultScreenAnmVm auxiliaryVms[2];    // +0x3ad4
-    ResultScreenAnmVm photoVm;             // +0x406c
-    ResultScreenAnmVm photoTransitionVm;   // +0x4338
-    ResultScreenReplayCursor replayCursor; // +0x4604
-    i32 keyboardSelection;                // +0x46dc
-    i32 replayNameCursor;                 // +0x46e0
-    u8 *helpTextBuffer;                 // +0x46e4
-    ResultScreenSceneLabel sceneLabels[11][10]; // +0x46e8
-    i32 sceneCounts[11];                  // +0x6cb8
-    i32 selectedGroup;                    // +0x6ce4
-    ReplayManager *replays[20];            // +0x6ce8
+    AnmLoaded *anm;                            // +0x0000
+    i32 state;                                 // +0x0004
+    ZunTimer stateTimer;                       // +0x0008
+    f32 savedGameSpeed;                        // +0x0014
+    AnmVm vms[21];                             // +0x0018
+    AnmVm auxiliaryVms[2];                     // +0x3ad4
+    AnmVm photoVm;                             // +0x406c
+    AnmVm photoTransitionVm;                   // +0x4338
+    ResultScreenReplayCursor replayCursor;     // +0x4604
+    i32 keyboardSelection;                     // +0x46dc
+    i32 replayNameCursor;                      // +0x46e0
+    u8 *helpTextBuffer;                        // +0x46e4
+    ResultScreenSceneLabel sceneLabels[11][10];// +0x46e8
+    i32 sceneCounts[11];                       // +0x6cb8
+    i32 selectedGroup;                         // +0x6ce4
+    ReplayManager *replays[20];                // +0x6ce8
     u8 unknown6d38[4];
-    char replayName[9];                   // +0x6d3c
+    char replayName[9];                        // +0x6d3c
     u8 unknown6d45[3];
-    ResultScreenReplayCursor photoCursor; // +0x6d48
-    i32 notificationTimer;                // +0x6e20
-    ChainElem *calcChain;                  // +0x6e24
-    ChainElem *drawChain;                  // +0x6e28
+    ResultScreenReplayCursor photoCursor;      // +0x6d48
+    i32 notificationTimer;                     // +0x6e20
+    ChainElem *calcChain;                      // +0x6e24
+    ChainElem *drawChain;                      // +0x6e28
 
     ResultScreen();
     ~ResultScreen();
 
-    ResultScreenResult Initialize();
-    static ::ZunResult LoadAnm();
-    static ::ZunResult ReleaseAnm();
+    ZunResult Initialize();
+    static ZunResult LoadAnm();
+    static ZunResult ReleaseAnm();
     static ResultScreen *Create();
     void Destroy();
     i32 UpdateCursor(i32 firstVm);
     void PrepareBestShot();
-    ResultScreenResult LoadReplays();
+    ZunResult LoadReplays();
     ChainCallbackResult Update();
     ChainCallbackResult Draw();
     static ChainCallbackResult OnUpdate(ResultScreen *resultScreen);
@@ -122,7 +67,7 @@ struct ResultScreen
     void SetState(i32 value)
     {
         this->state = value;
-        this->stateTimer.Reset();
+        FrontEndResetTimer(&this->stateTimer);
     }
 };
 
@@ -152,5 +97,3 @@ typedef char ResultScreenSizeIs6E2C[
 } // namespace th095
 
 #endif
-
-#endif // TH095_MATCH_EXACT

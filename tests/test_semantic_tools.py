@@ -1024,13 +1024,14 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("ZunTimer animationTimer;", owner)
         self.assertNotIn("ResultScreenTimer", source)
         self.assertEqual(source.count("FrontEndResetTimer(&this->stateTimer);"), 11)
+        reset = (ROOT / "src" / "FrontEndTimer.hpp").read_text(encoding="utf-8")
         self.assertLess(
-            owner.index("timer->current = 0;"),
-            owner.index("timer->subFrame = 0.0f;"),
+            reset.index("timer->current = 0;"),
+            reset.index("timer->subFrame = 0.0f;"),
         )
         self.assertLess(
-            owner.index("timer->subFrame = 0.0f;"),
-            owner.index("timer->previous = -999999;"),
+            reset.index("timer->subFrame = 0.0f;"),
+            reset.index("timer->previous = -999999;"),
         )
 
     def test_scene_select_prefix_guard_rejects_legacy_view_and_reset(self) -> None:
@@ -1089,18 +1090,18 @@ class SemanticProtocolGuardTests(unittest.TestCase):
 
     def test_scene_cursor_count_guard_rejects_missing_owner(self) -> None:
         GUARD.check_scene_select_cursor_count_owner()
-        exact = (ROOT / "src" / "ResultScreenExact.hpp").read_text(
+        result = (ROOT / "src" / "ResultScreen.hpp").read_text(
             encoding="utf-8"
         )
         with self.assertRaises(SystemExit):
             GUARD.check_scene_select_cursor_count_owner(
-                exact.replace(
+                result.replace(
                     '#include "ResultScreenReplayCursor.hpp"', "", 1
                 )
             )
         with self.assertRaises(SystemExit):
             GUARD.check_scene_select_cursor_count_owner(
-                exact + "\nstruct ResultScreenReplayCursor {};\n"
+                result + "\nstruct ResultScreenReplayCursor {};\n"
             )
         cursor = (ROOT / "src" / "ResultScreenReplayCursor.hpp").read_text(
             encoding="utf-8"

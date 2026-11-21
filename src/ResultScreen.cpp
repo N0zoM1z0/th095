@@ -1,38 +1,65 @@
-#ifdef TH095_MATCH_EXACT
-#include "ResultScreenExact.inl"
-#else
 #include "ResultScreen.hpp"
 #include "ResultScreenState.hpp"
 #include "FrontEndLocalTime.hpp"
-#include "AsciiManager.hpp"
-#include "GameplayGlobals.hpp"
-#include "PhotoGameTask.hpp"
 #include "ControllerInputSlot.hpp"
-#include "Main.hpp"
-#include "PhotoStage.hpp"
-#include "PhotoGamePlayer.hpp"
-#include "ScoreData.hpp"
 #include "SceneData.hpp"
 #include "SoundPlayer.hpp"
 #include "ZunMath.hpp"
+#include "SupervisorRuntime.hpp"
+#include "AsciiManager.hpp"
+#include "PhotoGamePlayer.hpp"
+#include "PhotoStage.hpp"
+#include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#ifdef TH095_MATCH_EXACT
-#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
-#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
-#endif
-
 namespace th095
 {
 
 extern f32 g_AnmGameSpeed;
-// Target 0x004C4E38 is the zero-initialized current result-screen owner; the
-// constructor publishes it and the destructor clears it.
+// The constructor publishes the current result screen and the destructor clears it.
 DIFFABLE_STATIC(ResultScreen *, g_ResultScreen);
+
+typedef char ResultBestShotRecordCommentAt18[
+    (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
+typedef char ResultBestShotRecordValidAt68[
+    (offsetof(ResultBestShotRecordView, valid) == 0x68) ? 1 : -1];
+typedef char ResultBestShotRecordComponentsLoadedAt69[
+    (offsetof(ResultBestShotRecordView, componentsLoaded) == 0x69) ? 1 : -1];
+typedef char ResultBestShotRecordPhotoIndexAt6C[
+    (offsetof(ResultBestShotRecordView, photoIndex) == 0x6c) ? 1 : -1];
+
+// The original initializes all 12 entries to zero and only reads the table.
+DIFFABLE_STATIC_ARRAY(i32, 12, g_ResultGroupMap);
+extern u8 *__fastcall ReadResultHelpLine(
+    char *destination, u8 *source, i32 maxLength);
+DIFFABLE_STATIC_ASSIGN(const char *, g_ResultAlphabet) =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@"
+    "abcdefghijklmnopqrstuvwxyz+-/*=%"
+    "0123456789#!?'\"$(){}[]<>&\\|~^ --";
+
+extern void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen);
+extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
+extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
+inline u16 GetPressedButtons(u16 buttons)
+{
+    return g_ControllerInputSlots[0].pressed & buttons;
+}
+
+inline u16 IsResultMenuInputPressed(u16 buttons)
+{
+    return (u16)((GetPressedButtons(buttons) != 0) ||
+                 ((g_ControllerInputSlots[0].repeat & buttons) != 0));
+}
+
+inline AnmVm *GetResultVm(ResultScreen *resultScreen, i32 index)
+{
+    return &resultScreen->vms[index];
+}
 
 struct ResultScreenInitializeLocals
 {
@@ -45,71 +72,6 @@ struct ResultScreenInitializeLocals
 
 typedef char ResultScreenInitializeLocalsSizeIs50[
     (sizeof(ResultScreenInitializeLocals) == 0x50) ? 1 : -1];
-
-typedef char ResultBestShotRecordCommentAt18[
-    (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
-typedef char ResultBestShotRecordValidAt68[
-    (offsetof(ResultBestShotRecordView, valid) == 0x68) ? 1 : -1];
-typedef char ResultBestShotRecordComponentsLoadedAt69[
-    (offsetof(ResultBestShotRecordView, componentsLoaded) == 0x69) ? 1 : -1];
-typedef char ResultBestShotRecordPhotoIndexAt6C[
-    (offsetof(ResultBestShotRecordView, photoIndex) == 0x6c) ? 1 : -1];
-
-extern i32 g_ResultSceneState;
-#ifndef DIFFBUILD
-#define g_ResultSceneState (g_Supervisor.requestedSceneState)
-#endif
-#ifndef DIFFBUILD
-// Target 0x004C4E3C is a 12-entry zero-initialized BSS map.  Initialize reads
-// it once as [selected scene group * 4 + base] and no target instruction writes
-// any element: every TH095 scene group selects the same photo-result mode.
-i32 g_ResultGroupMap[12];
-#else
-extern i32 g_ResultGroupMap[];
-#endif
-extern u8 *__fastcall ReadResultHelpLine(
-    char *destination, u8 *source, i32 maxLength);
-#ifndef DIFFBUILD
-// Exact ResultScreen relocations named g_ResultSceneLimits and the canonical
-// scene-selection relocations both solve to target 0x004A5830.  Keep one
-// production owner for this twelve-entry table instead of duplicating its
-// currently identical initializer under a partial-view name.
-#define g_ResultSceneLimits g_SceneGroupCounts
-// Target pointer 0x004A441C -> canonical 96-character replay-name keyboard at
-// 0x00496398.  The final two hyphens occupy keyboard cells 94 and 95.
-const char *g_ResultAlphabet =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@"
-    "abcdefghijklmnopqrstuvwxyz+-/*=%"
-    "0123456789#!?'\"$(){}[]<>&\\|~^ --";
-#else
-extern i32 g_ResultSceneLimits[];
-extern const char *g_ResultAlphabet;
-#endif
-extern void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen);
-extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
-extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
-
-#ifdef DIFFBUILD
-extern void __fastcall PreparePhotoResultScreen(ResultScreen *resultScreen);
-#define TH095_RESULT_PREPARE_BEST_SHOT(resultScreen) PreparePhotoResultScreen(resultScreen)
-#else
-#define TH095_RESULT_PREPARE_BEST_SHOT(resultScreen) (resultScreen)->PrepareBestShot()
-#endif
-inline u16 GetPressedButtons(u16 buttons)
-{
-    return g_ControllerInputSlots[0].pressed & buttons;
-}
-
-inline u16 IsResultMenuInputPressed(u16 buttons)
-{
-    return (u16)((GetPressedButtons(buttons) != 0) ||
-                 ((g_ControllerInputSlots[0].repeat & buttons) != 0));
-}
-
-inline ResultScreenAnmVm *GetResultVm(ResultScreen *resultScreen, i32 index)
-{
-    return &resultScreen->vms[index];
-}
 
 static __forceinline void FreeResultHelpText(ResultScreen *resultScreen)
 {
@@ -150,7 +112,7 @@ ResultScreen::~ResultScreen()
 }
 
 // FUNCTION: TH095 0x00426630.
-ResultScreenResult ResultScreen::Initialize()
+ZunResult ResultScreen::Initialize()
 {
     u8 *cursor;
     ResultScreenInitializeLocals locals;
@@ -276,24 +238,40 @@ void ResultScreen::Destroy()
     }
 }
 
-#ifdef TH095_MATCH_EXACT
-i32 ResultScreenTimer::Tick()
-#else
-i32 ZunTimer::Tick()
-#endif
+ChainCallbackResult ResultScreen::OnUpdate(ResultScreen *resultScreen)
 {
-    this->previous = this->current;
-    if (g_AnmGameSpeed <= 0.99f)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive)
     {
-        this->subFrame += g_AnmGameSpeed;
-        this->current = (i32)this->subFrame;
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
-    else
+    return resultScreen->Update();
+}
+
+ChainCallbackResult ResultScreen::OnDraw(ResultScreen *resultScreen)
+{
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive)
     {
-        this->current++;
-        this->subFrame += 1.0f;
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
-    return this->current;
+    return resultScreen->Draw();
+}
+
+ZunResult ResultScreen::LoadReplays()
+{
+    char path[0x100];
+
+    for (i32 i = 0; i < 20; i++)
+    {
+        if (this->replays[i] != NULL)
+        {
+            delete this->replays[i];
+            this->replays[i] = NULL;
+        }
+        sprintf(path, "th95_%.2d.rpy", i + 1);
+        this->replays[i] = ReplayManager::Load(path);
+    }
+    this->replayCursor.Set(0);
+    return ZUN_SUCCESS;
 }
 
 i32 PhotoStageStateView::FindBestShot()
@@ -349,7 +327,7 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
 {
     g_SoundPlayer.PlaySoundByIdx(SOUND_20, 0);
     resultScreen->state = RESULT_SCREEN_GAME_RESULT_MENU;
-    resultScreen->stateTimer.Reset();
+    FrontEndResetTimer(&resultScreen->stateTimer);
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
     g_RuntimeGlobalStateOwner->resultScreenActive = 1;
@@ -383,8 +361,7 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
 static __forceinline void InitializeReplayNormalTailPhase()
 {
     u8 compilerStorage[0xa0];
-    g_ReplayManager->activeInputData->timestamp =
-        (i32)time(NULL);
+    StoreCurrentTimestamp(&g_ReplayManager->activeInputData->timestamp);
     g_ReplayManager->activeInputData->score =
         g_RuntimeGlobalStateOwner->score;
 }
@@ -412,7 +389,7 @@ static __forceinline void InitializeReplayExtraTailPhase(
 
 void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
 {
-    resultScreen->stateTimer.Reset();
+    FrontEndResetTimer(&resultScreen->stateTimer);
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
     g_RuntimeGlobalStateOwner->resultScreenActive = 1;
@@ -492,7 +469,7 @@ static __forceinline void InitializePhotoExtraCursorPhase(
 
 void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
 {
-    resultScreen->stateTimer.Reset();
+    FrontEndResetTimer(&resultScreen->stateTimer);
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
     g_RuntimeGlobalStateOwner->resultScreenActive = 1;
@@ -513,7 +490,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         resultScreen->replayCursor.count = 4;
 
         if (g_SelectedScene->scene >=
-            g_ResultSceneLimits[g_SelectedScene->group] - 1)
+            g_SceneGroupCounts[g_SelectedScene->group] - 1)
         {
             InitializePhotoDisableCursorPhase(&resultScreen->replayCursor);
             resultScreen->vms[13].color1.color = 0x80000000;
@@ -545,8 +522,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
     }
     resultScreen->replayCursor.wraps = 1;
     resultScreen->PrepareBestShot();
-    g_ReplayManager->activeInputData->timestamp =
-        (i32)time(NULL);
+    StoreCurrentTimestamp(&g_ReplayManager->activeInputData->timestamp);
     g_ReplayManager->activeInputData->score =
         g_RuntimeGlobalStateOwner->score;
 }
@@ -566,11 +542,14 @@ void ResultScreen::PrepareBestShot()
         g_PhotoStageState->anm->InitializeVm(
             &this->photoVm, bestShot * 2 + 1);
 
-        ResultScreenAnmVm *vm = &this->photoVm;
+        AnmVm *vm = &this->photoVm;
         vm->spriteSize.x = vm->loadedSprite->uvEndX * 256.0f;
         vm->spriteSize.y = vm->loadedSprite->uvEndY * 256.0f;
 
-        g_PhotoStageState->capturedPhotoVms[bestShot].SetInterrupt(2);
+        // Pass the same trivial handle storage to the AnmVmId ABI directly.
+        // VC7.1 adds receiver temporaries through the PhotoAnmVmId methods.
+        reinterpret_cast<AnmVmId *>(
+            &g_PhotoStageState->capturedPhotoVms[bestShot])->SetInterrupt(2);
         PrepareBestShotCursorSetPhase(&this->photoCursor, bestShot);
 
         if (bestShot < ReadResultPhotoLimit(&g_RuntimePlayerOwner->camera))
@@ -582,7 +561,8 @@ void ResultScreen::PrepareBestShot()
                  i < ReadResultPhotoLimit(&g_RuntimePlayerOwner->camera);
                  i++)
             {
-                g_PhotoStageState->capturedPhotoVms[i].GetVm()->flagsWord |=
+                reinterpret_cast<AnmVmId *>(&g_PhotoStageState->capturedPhotoVms[i])
+                    ->GetVm()->flagsWord |=
                     ANM_VM_BYPASS_PHOTO_GAME_SUPPRESSION;
             }
         }
@@ -593,21 +573,22 @@ static __forceinline void ResultPhotoInterruptPreviousPhase(
     ResultScreen *resultScreen)
 {
     u8 compilerStorage[0x24];
-    g_PhotoStageState
-        ->capturedPhotoVms[resultScreen->photoCursor.GetPrevious()]
-        .SetInterrupt(3);
+    reinterpret_cast<AnmVmId *>(
+        &g_PhotoStageState->capturedPhotoVms[resultScreen->photoCursor.GetPrevious()])
+        ->SetInterrupt(3);
 }
 
 static __forceinline void ResultPhotoInterruptCurrentPhase(i32 photoIndex)
 {
     u8 compilerStorage[8];
-    g_PhotoStageState->capturedPhotoVms[photoIndex].SetInterrupt(2);
+    reinterpret_cast<AnmVmId *>(
+        &g_PhotoStageState->capturedPhotoVms[photoIndex])->SetInterrupt(2);
 }
 
 void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
 {
     i32 direction;
-    ResultScreenAnmVm *vm;
+    AnmVm *vm;
 
     direction = 0;
     if (resultScreen->photoCursor.GetCurrent() <
@@ -663,10 +644,10 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             .magic = 0x53545342;
         g_ResultSaveData
             ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
-            .width = g_PhotoStageState->slots[photoIndex].width;
+            .width = static_cast<u16>(g_PhotoStageState->slots[photoIndex].width);
         g_ResultSaveData
             ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
-            .height = g_PhotoStageState->slots[photoIndex].height;
+            .height = static_cast<u16>(g_PhotoStageState->slots[photoIndex].height);
         g_ResultSaveData
             ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .score = g_PhotoStageState->slots[photoIndex].score;
@@ -752,7 +733,7 @@ static __forceinline void ResultUpdatePhotoSetStatePhase(
 {
     u8 compilerStorage[0xb0];
     resultScreen->state = value;
-    resultScreen->stateTimer.Reset();
+    FrontEndResetTimer(&resultScreen->stateTimer);
 }
 
 static __forceinline void ResultUpdateReplayDisablePhase(
@@ -804,7 +785,7 @@ ChainCallbackResult ResultScreen::Update()
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             this->state = RESULT_SCREEN_GAME_RESULT_EXIT;
             this->replayCursor.Set(0);
-            this->stateTimer.Reset();
+            FrontEndResetTimer(&this->stateTimer);
             ResultUpdateInterruptFirstPhase(this);
             this->photoVm.SetInterrupt(1);
             break;
@@ -841,11 +822,11 @@ ChainCallbackResult ResultScreen::Update()
                 break;
             case 1:
                 g_AnmGameSpeed = 1.0f;
-                g_ResultSceneState = 4;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_RESTART_PHOTO_GAME;
                 break;
             case 2:
                 g_AnmGameSpeed = 1.0f;
-                g_ResultSceneState = 2;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_FRONT_END;
                 break;
             }
             g_ResultSaveData->WriteBestShotData();
@@ -863,7 +844,7 @@ ChainCallbackResult ResultScreen::Update()
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             this->state = RESULT_SCREEN_GAME_RESULT_NON_RECORD_EXIT;
             this->replayCursor.Set(0);
-            this->stateTimer.Reset();
+            FrontEndResetTimer(&this->stateTimer);
             ResultUpdateInterruptFirstPhase(this);
             this->photoVm.SetInterrupt(1);
             break;
@@ -900,11 +881,11 @@ ChainCallbackResult ResultScreen::Update()
                 break;
             case 1:
                 g_AnmGameSpeed = 1.0f;
-                g_ResultSceneState = 4;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_RESTART_PHOTO_GAME;
                 break;
             case 2:
                 g_AnmGameSpeed = 1.0f;
-                g_ResultSceneState = 2;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_FRONT_END;
                 break;
             }
             g_ResultSaveData->WriteBestShotData();
@@ -946,17 +927,17 @@ ChainCallbackResult ResultScreen::Update()
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
-                g_ResultSceneState = 4;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_RESTART_PHOTO_GAME;
                 break;
             case 2:
                 this->replayCursor.Push();
                 this->replayCursor.count = 20;
                 this->state = RESULT_SCREEN_REPLAY_SLOT_SELECT;
                 this->LoadReplays();
-                this->stateTimer.Reset();
+                FrontEndResetTimer(&this->stateTimer);
                 break;
             case 1:
-                g_ResultSceneState = 2;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_FRONT_END;
                 break;
             }
             g_ResultSaveData->WriteBestShotData();
@@ -1003,20 +984,20 @@ ChainCallbackResult ResultScreen::Update()
                 this->replayCursor.count = 20;
                 this->state = RESULT_SCREEN_REPLAY_SLOT_SELECT;
                 this->LoadReplays();
-                this->stateTimer.Reset();
+                FrontEndResetTimer(&this->stateTimer);
                 break;
             case 2:
-                g_ResultSceneState = 2;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_FRONT_END;
                 break;
             case 0:
-                g_ResultSceneState = 4;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_RESTART_PHOTO_GAME;
                 break;
             case 1:
                 g_ResultSaveData->profile.lastSelectedScene = (i16)(g_SelectedScene->scene + 1);
                 g_SelectedScene =
                     g_SceneGroups[g_SelectedScene->group] +
                     (g_SelectedScene->scene + 1);
-                g_ResultSceneState = 8;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_RETRY_PHOTO_GAME;
                 break;
             }
             g_RuntimeGlobalStateOwner->resetFpsSample = 1;
@@ -1053,10 +1034,10 @@ ChainCallbackResult ResultScreen::Update()
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
-                g_ResultSceneState = 4;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_RESTART_PHOTO_GAME;
                 break;
             case 1:
-                g_ResultSceneState = 2;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_FRONT_END;
                 break;
             }
             g_RuntimeGlobalStateOwner->resetFpsSample = 1;
@@ -1095,7 +1076,7 @@ ChainCallbackResult ResultScreen::Update()
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             if (g_RuntimeGlobalStateOwner->playerDeathTransitionComplete != 0)
             {
-                this->stateTimer.Reset();
+                FrontEndResetTimer(&this->stateTimer);
                 this->anm->InitializeVm(GetResultVm(this, 7), 7);
                 this->state = RESULT_SCREEN_REPLAY_RESULT_MENU;
                 this->anm->InitializeVm(GetResultVm(this, 9), 9);
@@ -1109,8 +1090,7 @@ ChainCallbackResult ResultScreen::Update()
             }
             else if (g_RuntimeGlobalStateOwner->photoLimitTransitionComplete != 0)
             {
-                ResultUpdatePhotoSetStatePhase(
-                    this, RESULT_SCREEN_PHOTO_RESULT_MENU);
+                ResultUpdatePhotoSetStatePhase(this, RESULT_SCREEN_PHOTO_RESULT_MENU);
                 this->anm->InitializeVm(GetResultVm(this, 11), 11);
                 this->state = RESULT_SCREEN_PHOTO_RESULT_MENU;
                 this->anm->InitializeVm(GetResultVm(this, 14), 14);
@@ -1119,12 +1099,12 @@ ChainCallbackResult ResultScreen::Update()
                 this->anm->InitializeVm(GetResultVm(this, 13), 13);
                 this->replayCursor.Pop();
                 if (g_SelectedScene->scene >=
-                    g_ResultSceneLimits[g_SelectedScene->group] - 1)
+                    g_SceneGroupCounts[g_SelectedScene->group] - 1)
                 {
                     ResultUpdateReplayDisablePhase(&this->replayCursor, 1);
                     this->vms[13].color1.color = 0x80000000;
                 }
-                TH095_RESULT_PREPARE_BEST_SHOT(this);
+                this->PrepareBestShot();
                 this->replayCursor.count = 4;
                 this->replayCursor.wraps = 1;
                 break;
@@ -1237,59 +1217,20 @@ updateResultVms:
     for (i32 i = 0; i < 21; i++)
     {
         AnmManager::ExecuteScript(
-            reinterpret_cast<AnmVm *>(&this->vms[i]));
+            &this->vms[i]);
     }
     this->stateTimer.Tick();
     AnmManager::ExecuteScript(
-        reinterpret_cast<AnmVm *>(&this->auxiliaryVms[0]));
+        &this->auxiliaryVms[0]);
     AnmManager::ExecuteScript(
-        reinterpret_cast<AnmVm *>(&this->auxiliaryVms[1]));
-    AnmManager::ExecuteScript(reinterpret_cast<AnmVm *>(&this->photoVm));
+        &this->auxiliaryVms[1]);
+    AnmManager::ExecuteScript(&this->photoVm);
     AnmManager::ExecuteScript(
-        reinterpret_cast<AnmVm *>(&this->photoTransitionVm));
+        &this->photoTransitionVm);
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 #include "ResultScreenDraw.inl"
 
 
-ChainCallbackResult ResultScreen::OnUpdate(ResultScreen *resultScreen)
-{
-    if (g_RuntimeGlobalStateOwner->gameplayLoadActive)
-    {
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
-    }
-    return resultScreen->Update();
-}
-
-ChainCallbackResult ResultScreen::OnDraw(ResultScreen *resultScreen)
-{
-    if (g_RuntimeGlobalStateOwner->gameplayLoadActive)
-    {
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
-    }
-    return resultScreen->Draw();
-}
-
-ResultScreenResult ResultScreen::LoadReplays()
-{
-    char path[0x100];
-
-    for (i32 i = 0; i < 20; i++)
-    {
-        if (this->replays[i] != NULL)
-        {
-            delete this->replays[i];
-            this->replays[i] = NULL;
-        }
-        sprintf(path, "th95_%.2d.rpy", i + 1);
-        this->replays[i] = ReplayManager::Load(path);
-    }
-    this->replayCursor.Set(0);
-    return ZUN_SUCCESS;
-}
-
-
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

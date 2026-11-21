@@ -10,7 +10,7 @@
 #include "SceneMenuVmIds.hpp"
 #include "ScenePreviewDataQueue.hpp"
 #include "SceneValueQueue.hpp"
-#include "ZunTimer.hpp"
+#include "FrontEndTimer.hpp"
 
 namespace th095
 {
@@ -24,14 +24,6 @@ enum FrontEndEntryMode
     FRONT_END_ENTRY_SCENE_SELECT = 1,
     FRONT_END_ENTRY_REPLAY_BROWSER = 2,
 };
-
-// Front-end transitions clear the fractional frame before the previous frame.
-static __forceinline void FrontEndResetTimer(ZunTimer *timer)
-{
-    timer->current = 0;
-    timer->subFrame = 0.0f;
-    timer->previous = -999999;
-}
 
 struct FrontEndControllerView
 {

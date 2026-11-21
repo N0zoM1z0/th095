@@ -2342,7 +2342,7 @@ def check_front_end_timer_owner() -> None:
             fail(f"FrontEnd controller timer declaration drifted: {declaration}")
 
     reset_body = function_body(
-        SRC / "FrontEndController.hpp",
+        SRC / "FrontEndTimer.hpp",
         "static __forceinline void FrontEndResetTimer(ZunTimer *timer)",
     )
     reset_statements = (
@@ -2437,19 +2437,18 @@ def check_scene_select_color_interpolation_owner(
 
 
 def check_scene_select_cursor_count_owner(
-    exact_header_text: str | None = None,
+    result_header_text: str | None = None,
     cursor_header_text: str | None = None,
 ) -> None:
-    for name in ("ResultScreen.hpp", "ResultScreenExact.hpp"):
-        header = source_without_comments(
-            exact_header_text
-            if name == "ResultScreenExact.hpp" and exact_header_text is not None
-            else (SRC / name).read_text(encoding="utf-8")
-        )
-        if '#include "ResultScreenReplayCursor.hpp"' not in header:
-            fail(f"{name} lost the canonical cursor include")
-        if re.search(r"\b(?:struct|class)\s+ResultScreenReplayCursor\s*[{:]", header):
-            fail(f"{name} restored a duplicate cursor declaration")
+    header = source_without_comments(
+        result_header_text
+        if result_header_text is not None
+        else (SRC / "ResultScreen.hpp").read_text(encoding="utf-8")
+    )
+    if '#include "ResultScreenReplayCursor.hpp"' not in header:
+        fail("ResultScreen.hpp lost the canonical cursor include")
+    if re.search(r"\b(?:struct|class)\s+ResultScreenReplayCursor\s*[{:]", header):
+        fail("ResultScreen.hpp restored a duplicate cursor declaration")
     cursor = source_without_comments(
         cursor_header_text
         if cursor_header_text is not None
@@ -2461,13 +2460,14 @@ def check_scene_select_cursor_count_owner(
         "TH095_MATCH_EXACT", "DIFFBUILD", "compilerStorage", "Global.hpp",
     )):
         fail("canonical cursor restored profile or platform dependencies")
-    for name in ("ResultScreen.cpp", "ResultScreenExact.inl"):
-        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if body.count('#include "ResultScreenReplayCursor.inl"') != 1:
-            fail(f"{name} lost the shared cursor implementation")
-        for method in ("Move", "Push", "Pop"):
-            if f"ResultScreenReplayCursor::{method}(" in body:
-                fail(f"{name} restored a duplicate cursor {method} body")
+    body = source_without_comments(
+        (SRC / "ResultScreen.cpp").read_text(encoding="utf-8")
+    )
+    if body.count('#include "ResultScreenReplayCursor.inl"') != 1:
+        fail("ResultScreen.cpp lost the shared cursor implementation")
+    for method in ("Move", "Push", "Pop"):
+        if f"ResultScreenReplayCursor::{method}(" in body:
+            fail(f"ResultScreen.cpp restored a duplicate cursor {method} body")
     body = source_without_comments((SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8"))
     for marker in (
         "this->groupCursor.SetCount(",

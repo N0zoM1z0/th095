@@ -239,6 +239,9 @@ uses the canonical ASCII and ANM methods and reads stored replay
 timestamps through the shared CRT helper.
 SEM-496 gives the replay name one nine-byte field in both profiles and
 checks the writer, result draw and browser in both link orders.
+SEM-497 shares the entire ResultScreen declaration and implementation.
+Its actual ANM members let the constructor drop the old cursor overload.
+Both builds use the canonical timer and Supervisor fields.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

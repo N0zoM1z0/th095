@@ -109,16 +109,16 @@ ChainCallbackResult ResultScreen::Draw()
 
     for (i = 0; i < 21; i++)
     {
-        reinterpret_cast<AnmVm *>(&this->vms[i])->Draw();
+        this->vms[i].Draw();
     }
-    reinterpret_cast<AnmVm *>(&this->photoVm)->Draw();
-    reinterpret_cast<AnmVm *>(&this->photoTransitionVm)->Draw();
+    this->photoVm.Draw();
+    this->photoTransitionVm.Draw();
 
     switch (this->state)
     {
     case RESULT_SCREEN_REPLAY_RESULT_MENU:
-        reinterpret_cast<AnmVm *>(&this->auxiliaryVms[0])->Draw();
-        reinterpret_cast<AnmVm *>(&this->auxiliaryVms[1])->Draw();
+        this->auxiliaryVms[0].Draw();
+        this->auxiliaryVms[1].Draw();
         break;
 
     case RESULT_SCREEN_PHOTO_RESULT_MENU:
