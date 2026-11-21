@@ -4282,10 +4282,12 @@ def check_photo_rotating_laser_packet() -> None:
     )
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
     photo_effect = (SRC / "PhotoEffect.cpp").read_text(encoding="utf-8")
+    exact_effect = (SRC / "PhotoEffectExact.inl").read_text(encoding="utf-8")
+    owner = (SRC / "PhotoRotatingLaser.hpp").read_text(encoding="utf-8")
     retired_projections = (
-        "struct PhotoEffectArgs",
         "PhotoEffectArgs args;",
         "ExtendedPhotoEffectArgs",
+        "ExtendedPhotoEffectNode",
         "PhotoEffectArgsView",
         "TH095_EFFECT_ANGULAR_VELOCITY",
         "TH095_EFFECT_MAXIMUM_LENGTH",
@@ -4303,7 +4305,10 @@ def check_photo_rotating_laser_packet() -> None:
         ("ecl/EclRunTargetPhoto.inl", target_photo),
         ("EclExtended.cpp", extended),
         ("PhotoEffect.cpp", photo_effect),
+        ("PhotoEffectExact.inl", exact_effect),
     ):
+        if re.search(r"\bstruct\s+PhotoEffectArgs\b", text):
+            fail(f"{path} restored the retired PhotoEffectArgs type")
         for token in retired_projections:
             if token in text:
                 fail(f"{path} restored retired rotating-laser projection: {token}")
@@ -4328,28 +4333,42 @@ def check_photo_rotating_laser_packet() -> None:
         if f"args.{member}" not in target_photo:
             fail(f"RunEcl rotating handlers lost canonical packet member: {member}")
 
-    if '#include "PhotoRotatingLaserArgs.hpp"' not in extended:
-        fail("EclExtended must consume the canonical rotating packet")
+    if '#include "PhotoRotatingLaserArgs.hpp"' not in owner:
+        fail("PhotoRotatingLaser.hpp must consume the canonical rotating packet")
+    if any(profile in owner for profile in PROFILE_NAMES):
+        fail("PhotoRotatingLaser.hpp must declare one profile-independent owner")
     for fact in (
-        "PhotoRotatingLaserSpawnArgs spawn;",
+        "sizeof(PhotoRotatingLaserView) == 0x630",
+        "offsetof(PhotoRotatingLaserView, spawn) == 0x50",
+        "offsetof(PhotoRotatingLaserView, bodyVm) == 0x98",
+        "offsetof(PhotoRotatingLaserView, tailVm) == 0x364",
+    ):
+        if fact not in owner:
+            fail(f"PhotoRotatingLaser.hpp lost canonical layout: {fact}")
+    for name, consumer in (
+        ("EclExtended.cpp", extended),
+        ("PhotoEffect.cpp", photo_effect),
+        ("PhotoEffectExact.inl", exact_effect),
+    ):
+        if '#include "PhotoRotatingLaser.hpp"' not in consumer:
+            fail(f"{name} must consume the shared rotating-laser owner")
+    for fact in (
         "PhotoRotatingLaserSpawnArgs args;",
         "locals.args.maximumLength",
         "locals.args.followPhotoTarget",
+        "effect->tailVm.drawEnabled = 0;",
     ):
         if fact not in extended:
             fail(f"EclExtended lost canonical rotating packet producer/owner: {fact}")
 
-    if '#include "PhotoRotatingLaserArgs.hpp"' not in photo_effect:
-        fail("normal PhotoEffect must consume the canonical rotating packet")
     for fact in (
-        "PhotoRotatingLaserSpawnArgs spawn;",
         "static_cast<PhotoRotatingLaserSpawnArgs *>(args)",
         "this->spawn.angularVelocity",
         "this->spawn.followPhotoTarget",
         "this->spawn.velocity",
     ):
-        if fact not in photo_effect:
-            fail(f"normal PhotoEffect lost canonical rotating packet consumer: {fact}")
+        if fact not in photo_effect or fact not in exact_effect:
+            fail(f"PhotoEffect lost canonical rotating packet consumer: {fact}")
 
 
 def check_small_closed_domains() -> None:

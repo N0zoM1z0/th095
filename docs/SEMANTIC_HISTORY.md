@@ -19001,3 +19001,27 @@ thresholds and a missing marker VM. The transition and extension
 dispatch fixtures also pass. Both normal images match the mapped
 sections of the SEM-438 replay images. See
 `.analysis/pi/ecl-extended-background/`.
+
+### SEM-440 — share the rotating laser object with ECL
+
+The 0x630 rotating laser has its spawn parameters at +0x50, body VM
+at +0x98 and tail VM at +0x364. ECL extension callbacks 10, 14 and 17
+walk the shared base list, initialize the selected laser's body VM from
+the enemy ANM, and clear the tail VM's draw-enable bit at +0x58C. The
+effect initializer and renderer use the same two embedded VMs. Both
+builds now use one rotating-laser declaration and one spawn packet.
+
+The original callbacks search the manager's current ID even when Spawn
+returns zero at the 256-effect limit. At capacity the fixtures show
+the latest existing rotating laser receives the body script and the
+tail draw update. The callback uses an unchecked downcast, so that
+path assumes the latest effect has the rotating layout.
+
+All 56 exact comparisons pass, including the complete rotating update
+and its jump table. The original and both links agree on six cases
+running the actual Spawn and initializer through the three callbacks,
+with stubbed ANM services. Both links also finish `demo/demo0.rpy` with
+52,930 points and six photos. All ten gameplay fields agree with the
+original at all 2,712 input indices. The regular link's sampled stage
+timer matches the original, and the reordered link remains within one
+tick. See `.analysis/pi/rotating-laser-owner/`.

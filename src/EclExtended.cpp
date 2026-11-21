@@ -5,7 +5,7 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "PhotoEnemyControl.hpp"
-#include "PhotoRotatingLaserArgs.hpp"
+#include "PhotoRotatingLaser.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #include "PhotoBulletManagerLayout.hpp"
@@ -81,21 +81,6 @@ static __forceinline AnmVmId ExtendedCanonicalAnmId(i32 value)
 #define TH095_EXT_HANDLE_GET_VM(handle) (handle).GetVm()
 #define TH095_EXT_HANDLE_SET_SPRITE(handle, sprite) (handle).SetSprite(sprite)
 #endif
-
-struct ExtendedPhotoEffectNode
-{
-    u8 unknown000[8];
-    ExtendedPhotoEffectNode *next;
-    u8 unknown00c[0x40];
-    i32 id;
-    PhotoRotatingLaserSpawnArgs spawn;
-    AnmVm vm;
-    u8 unknown364[0x228];
-    u32 flags;
-};
-typedef char ExtendedPhotoEffectNodeIdAt4C[(offsetof(ExtendedPhotoEffectNode, id) == 0x4c) ? 1 : -1];
-typedef char ExtendedPhotoEffectNodeVmAt98[(offsetof(ExtendedPhotoEffectNode, vm) == 0x98) ? 1 : -1];
-typedef char ExtendedPhotoEffectNodeFlagsAt58C[(offsetof(ExtendedPhotoEffectNode, flags) == 0x58c) ? 1 : -1];
 
 #ifdef DIFFBUILD
 #define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
@@ -614,29 +599,30 @@ void __fastcall RunPhotoTransition(
 struct ExtendedEffectCallbackLocals
 {
     PhotoRotatingLaserSpawnArgs args;
-    ExtendedPhotoEffectNode *effect;
+    PhotoRotatingLaserView *effect;
     i32 spawnId;
-    __forceinline void PublishFlags()
+    __forceinline void DisableTailDraw()
     {
         // Entries 10/14/17 independently repeat this target tail class.
         // VC7.1 places the callback fastcall homes after this inline phase;
         // 0x28/0x30 controls leave them one dword shallow/deep.
         u8 compilerStorage[0x2c];
-        this->effect->flags &= ~2U;
+        this->effect->tailVm.drawEnabled = 0;
     }
 };
 typedef char ExtendedEffectCallbackLocalsSize50[(sizeof(ExtendedEffectCallbackLocals) == 0x50) ? 1 : -1];
 
 static __forceinline void FindSpawnedExtendedEffect(ExtendedEffectCallbackLocals *locals)
 {
-    ExtendedPhotoEffectNode *cursor;
-    cursor = reinterpret_cast<ExtendedPhotoEffectNode *>(
-        g_PhotoEffectManager->listRoot.next);
+    // The original callbacks search the current manager ID even at capacity,
+    // where Spawn returns zero and leaves that ID unchanged.
+    PhotoEffectBaseView *cursor;
+    cursor = g_PhotoEffectManager->listRoot.next;
     while (cursor != NULL)
     {
         if (cursor->id == g_PhotoEffectManager->nextId)
         {
-            locals->effect = cursor;
+            locals->effect = static_cast<PhotoRotatingLaserView *>(cursor);
             return;
         }
         cursor = cursor->next;
@@ -670,9 +656,9 @@ void __fastcall Callback10(PhotoEnemyView *enemy, EclRawInstruction *instruction
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
-        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->vm,
+        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->bodyVm,
         enemy->activeEclContext->scriptState.extraIntVariables[2]);
-    locals.PublishFlags();
+    locals.DisableTailDraw();
 }
 
 
@@ -702,9 +688,9 @@ void __fastcall Callback14(PhotoEnemyView *enemy, EclRawInstruction *instruction
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
-        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->vm,
+        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->bodyVm,
         enemy->activeEclContext->scriptState.extraIntVariables[2]);
-    locals.PublishFlags();
+    locals.DisableTailDraw();
 }
 
 
@@ -734,9 +720,9 @@ void __fastcall Callback17(PhotoEnemyView *enemy, EclRawInstruction *instruction
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
-        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->vm,
+        reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->bodyVm,
         enemy->activeEclContext->scriptState.extraIntVariables[2]);
-    locals.PublishFlags();
+    locals.DisableTailDraw();
 }
 
 

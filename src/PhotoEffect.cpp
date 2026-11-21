@@ -8,7 +8,7 @@
 #include "PhotoGameTask.hpp"
 #include "PhotoEnemyManager.hpp"
 #include "PhotoEffectRuntime.hpp"
-#include "PhotoRotatingLaserArgs.hpp"
+#include "PhotoRotatingLaser.hpp"
 #include "PhotoStraightLaserArgs.hpp"
 #include "PhotoItemManager.hpp"
 
@@ -42,28 +42,6 @@ typedef char PhotoStraightLaserBodyVmAt78[
     (offsetof(PhotoStraightLaserView, bodyVm) == 0x78) ? 1 : -1];
 typedef char PhotoStraightLaserTailVmAt344[
     (offsetof(PhotoStraightLaserView, tailVm) == 0x344) ? 1 : -1];
-
-struct PhotoRotatingLaserView : PhotoEffectBaseView
-{
-    PhotoRotatingLaserSpawnArgs spawn;      // +0x050
-    AnmVm bodyVm;                            // +0x098
-    AnmVm tailVm;                            // +0x364
-
-    PhotoRotatingLaserView();
-    i32 Initialize(void *args);
-    i32 Update();
-    i32 Draw();
-    i32 DrawSecondary();
-    i32 CountPhotoTargets(
-        Float3 *position, Float3 *size, i32 capture);
-    i32 CheckCollision(Float3 *position, Float3 *size, i32 capture);
-    i32 CountNearbyTargets(Float3 *position, f32 radius);
-};
-
-typedef char PhotoRotatingLaserBodyVmAt98[
-    (offsetof(PhotoRotatingLaserView, bodyVm) == 0x98) ? 1 : -1];
-typedef char PhotoRotatingLaserTailVmAt364[
-    (offsetof(PhotoRotatingLaserView, tailVm) == 0x364) ? 1 : -1];
 
 extern f32 g_AnmGameSpeed;
 
@@ -363,7 +341,8 @@ i32 PhotoRotatingLaserView::Update()
 
 i32 PhotoRotatingLaserView::Initialize(void *args)
 {
-    this->spawn = *static_cast<PhotoRotatingLaserSpawnArgs *>(args);
+    static_cast<PhotoRotatingLaserSpawnArgs &>(this->spawn) =
+        *static_cast<PhotoRotatingLaserSpawnArgs *>(args);
     this->state = PHOTO_EFFECT_STATE_STARTUP;
 
     g_PhotoEffectManager->anm->InitializeVm(
@@ -1163,8 +1142,6 @@ PhotoStraightLaserView::PhotoStraightLaserView()
 
 PhotoRotatingLaserView::PhotoRotatingLaserView()
 {
-    memset(&this->spawn, 0, sizeof(this->spawn));
-    this->spawn.speed = 8.0f;
 }
 
 // FUNCTION: TH095 0x0041E750.
