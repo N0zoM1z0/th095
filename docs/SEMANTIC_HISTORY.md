@@ -20599,3 +20599,16 @@ table. The interpreter and its EnemyInf update caller also match in normal
 COFF. All 154 timeline cases agree in retail and both linked layouts. The
 normal images retain their mapped bytes. Evidence is under
 `.analysis/pi/timeline-wire/`.
+
+### SEM-514 — share the ECL RNG selector table
+
+Both value readers now use the same enum in both build profiles. The
+float-only angle case scales the random float by `ZUN_2PI` and subtracts
+`ZUN_PI`. Its integer counterpart stays literal,
+and both lvalue resolvers keep the inline operand address. Active
+selectors advance the shared RNG by two seed steps.
+
+All 18 units in the affected source closure pass strict comparison.
+The four resolver units match in normal COFF, and 660 cases agree
+across retail and both linked layouts. Each link retains its mapped
+bytes. Evidence is under `.analysis/pi/ecl-random-operands/`.

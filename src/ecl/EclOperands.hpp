@@ -29,18 +29,14 @@ enum EclCallParameterSelector
     ECL_MANAGER_PARAMETER_FLOAT3 = 0x2743,
 };
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_ECL_RANDOM_SELECTOR(rawValue, semanticName) rawValue
-#else
 enum EclRandomOperandSelector
 {
     ECL_RANDOM_U31 = 0x2720,
     ECL_RANDOM_F32 = 0x2721,
     ECL_RANDOM_I32 = 0x2722,
     ECL_RANDOM_F32_SIGNED = 0x2723,
+    ECL_RANDOM_ANGLE = 0x2751, // Float resolver only.
 };
-#define TH095_ECL_RANDOM_SELECTOR(rawValue, semanticName) EclOperands::semanticName
-#endif
 
 // Coordinate selectors read worldPosition and write position.
 enum EclEnemyMovementSelector

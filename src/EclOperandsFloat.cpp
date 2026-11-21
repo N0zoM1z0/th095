@@ -32,11 +32,11 @@ f32 PhotoEnemyView::ResolveFloat(f32 operand)
     case 0x2726: return (f32)this->activeEclContext->scriptState.extraIntVariables[2];
     case 0x2727: return (f32)this->activeEclContext->scriptState.extraIntVariables[3];
 
-    case TH095_ECL_RANDOM_SELECTOR(0x2720, ECL_RANDOM_U31): return (f32)(g_Rng.GetRandomU32() & 0x7fffffff);
-    case TH095_ECL_RANDOM_SELECTOR(0x2721, ECL_RANDOM_F32): return g_Rng.GetRandomF32();
-    case TH095_ECL_RANDOM_SELECTOR(0x2722, ECL_RANDOM_I32): return (f32)(i32)g_Rng.GetRandomU32();
-    case TH095_ECL_RANDOM_SELECTOR(0x2723, ECL_RANDOM_F32_SIGNED): return g_Rng.GetRandomF32Signed();
-    case 0x2751: return g_Rng.GetRandomF32() * 6.2831855f - 3.1415927f;
+    case EclOperands::ECL_RANDOM_U31: return (f32)(g_Rng.GetRandomU32() & 0x7fffffff);
+    case EclOperands::ECL_RANDOM_F32: return g_Rng.GetRandomF32();
+    case EclOperands::ECL_RANDOM_I32: return (f32)(i32)g_Rng.GetRandomU32();
+    case EclOperands::ECL_RANDOM_F32_SIGNED: return g_Rng.GetRandomF32Signed();
+    case EclOperands::ECL_RANDOM_ANGLE: return g_Rng.GetRandomF32() * ZUN_2PI - ZUN_PI;
 
     case EclOperands::ECL_ENEMY_TIMER: return (f32)this->eclTimer.current;
     case EclOperands::ECL_ENEMY_LIFE: return (f32)this->life;

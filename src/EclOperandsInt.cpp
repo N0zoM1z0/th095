@@ -38,10 +38,10 @@ i32 __fastcall ResolveInt(PhotoEnemyView *enemy, i32 operand)
     case 0x2726: return enemy->activeEclContext->scriptState.extraIntVariables[2];
     case 0x2727: return enemy->activeEclContext->scriptState.extraIntVariables[3];
 
-    case TH095_ECL_RANDOM_SELECTOR(0x2720, ECL_RANDOM_U31): return (i32)(g_Rng.GetRandomU32() & 0x7fffffff);
-    case TH095_ECL_RANDOM_SELECTOR(0x2721, ECL_RANDOM_F32): return (i32)g_Rng.GetRandomF32();
-    case TH095_ECL_RANDOM_SELECTOR(0x2722, ECL_RANDOM_I32): return (i32)g_Rng.GetRandomU32();
-    case TH095_ECL_RANDOM_SELECTOR(0x2723, ECL_RANDOM_F32_SIGNED): return (i32)g_Rng.GetRandomF32Signed();
+    case ECL_RANDOM_U31: return (i32)(g_Rng.GetRandomU32() & 0x7fffffff);
+    case ECL_RANDOM_F32: return (i32)g_Rng.GetRandomF32();
+    case ECL_RANDOM_I32: return (i32)g_Rng.GetRandomU32();
+    case ECL_RANDOM_F32_SIGNED: return (i32)g_Rng.GetRandomF32Signed();
 
     case ECL_ENEMY_TIMER: return enemy->eclTimer.current;
     case ECL_ENEMY_LIFE: return enemy->life;
