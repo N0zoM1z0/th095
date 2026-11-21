@@ -1,18 +1,19 @@
-#ifdef TH095_MATCH_EXACT
-#include "SceneDetailExact.inl"
-#else
+#include "FrontEndController.hpp"
+#include "FrontEndLocalTime.hpp"
 #include "SceneSelect.hpp"
 
 namespace th095
 {
 
-#define SET_DETAIL_SPRITE(vmIndex, spriteIndex)                               \
-    this->SetDetailDigitSpriteInline(vmIndex, spriteIndex)
+// Only the animation handle access still uses the Scene Select view.
+#define sceneMenu (reinterpret_cast<SceneSelectControllerView *>(this))
 
-void SceneSelectControllerView::UpdateSelectedSceneDetails()
+#define SET_DETAIL_SPRITE(vmIndex, spriteIndex)                               \
+    sceneMenu->SetDetailDigitSpriteInline(vmIndex, spriteIndex)
+
+void FrontEndControllerView::UpdateSelectedSceneDetails()
 {
     i32 value;
-    time_t captureTimeValue;
     tm *captureTime;
 
     if (g_ResultSaveData->scoreEntries[this->selectedScoreEntryIndex]
@@ -35,10 +36,9 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     }
     else
     {
-        captureTimeValue = (time_t)g_ResultSaveData
-                               ->scoreEntries[this->selectedScoreEntryIndex]
-                               .captureTime;
-        captureTime = localtime(&captureTimeValue);
+        captureTime = LocalTimeFromStoredTimestamp(
+            &g_ResultSaveData->scoreEntries[this->selectedScoreEntryIndex]
+                 .captureTime);
 
         SET_DETAIL_SPRITE(0x4c, (captureTime->tm_mon + 1) / 10 + 0x27);
         SET_DETAIL_SPRITE(0x4d, (captureTime->tm_mon + 1) % 10 + 0x27);
@@ -65,75 +65,73 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     if (value / 100000 != 0)
     {
         SET_DETAIL_SPRITE(0x5e, value / 100000 % 10 + 0x4b);
-        this->ShowDetailDigitInline(0x5e);
+        sceneMenu->ShowDetailDigitInline(0x5e);
     }
     else
     {
-        this->HideDetailDigitInline(0x5e);
+        sceneMenu->HideDetailDigitInline(0x5e);
     }
 
     if (value / 10000 != 0)
     {
         SET_DETAIL_SPRITE(0x5f, value / 10000 % 10 + 0x4b);
-        this->ShowDetailDigitInline(0x5f);
+        sceneMenu->ShowDetailDigitInline(0x5f);
     }
     else
     {
-        this->HideDetailDigitInline(0x5f);
+        sceneMenu->HideDetailDigitInline(0x5f);
     }
 
     if (value / 1000 != 0)
     {
         SET_DETAIL_SPRITE(0x60, value / 1000 % 10 + 0x4b);
-        this->ShowDetailDigit(0x60);
+        sceneMenu->ShowDetailDigit(0x60);
     }
     else
     {
-        this->HideDetailDigit(0x60);
+        sceneMenu->HideDetailDigit(0x60);
     }
 
     if (value / 100 != 0)
     {
-        this->SetDetailDigitSprite(0x61, value / 100 % 10 + 0x4b);
-        this->ShowDetailDigit(0x61);
+        sceneMenu->SetDetailDigitSprite(0x61, value / 100 % 10 + 0x4b);
+        sceneMenu->ShowDetailDigit(0x61);
     }
     else
     {
-        this->HideDetailDigit(0x61);
+        sceneMenu->HideDetailDigit(0x61);
     }
 
     if (value / 10 != 0)
     {
-        this->SetDetailDigitSprite(0x62, value / 10 % 10 + 0x4b);
-        this->ShowDetailDigit(0x62);
+        sceneMenu->SetDetailDigitSprite(0x62, value / 10 % 10 + 0x4b);
+        sceneMenu->ShowDetailDigit(0x62);
     }
     else
     {
-        this->HideDetailDigit(0x62);
+        sceneMenu->HideDetailDigit(0x62);
     }
 
-    this->SetDetailDigitSprite(0x63, value % 10 + 0x4b);
+    sceneMenu->SetDetailDigitSprite(0x63, value % 10 + 0x4b);
 }
 
-void SceneSelectControllerView::SetDetailDigitSprite(i32 vmIndex,
-                                                      i32 spriteIndex)
+#undef SET_DETAIL_SPRITE
+#undef sceneMenu
+#undef LocalTimeFromStoredTimestamp
+
+void SceneSelectControllerView::SetDetailDigitSprite(i32 vmIndex, i32 spriteIndex)
 {
-    this->sceneAnm->SetSprite(
-        g_AnmManager->GetVm(this->vmIds.values[vmIndex]), spriteIndex);
+    this->SetDetailDigitSpriteInline(vmIndex, spriteIndex);
 }
 
 void SceneSelectControllerView::ShowDetailDigit(i32 vmIndex)
 {
-    g_AnmManager->GetVm(this->vmIds.values[vmIndex])->drawEnabled = 1;
+    this->ShowDetailDigitInline(vmIndex);
 }
 
 void SceneSelectControllerView::HideDetailDigit(i32 vmIndex)
 {
-    g_AnmManager->GetVm(this->vmIds.values[vmIndex])->drawEnabled = 0;
+    this->HideDetailDigitInline(vmIndex);
 }
 
-#undef SET_DETAIL_SPRITE
-
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

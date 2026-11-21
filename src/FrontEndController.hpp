@@ -101,6 +101,7 @@ struct FrontEndControllerView
     ZunResult LoadReplaySlot(i32 slot, char *path);
     void RefreshSceneSelection(i32 selectedScoreEntryIndex);
     void BuildScenePreviewText();
+    void UpdateSelectedSceneDetails();
     i32 GetSelectedGroup()
     {
         return this->groupCursor.current;

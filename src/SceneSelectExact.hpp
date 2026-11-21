@@ -187,7 +187,6 @@ struct SceneSelectControllerView
         return this->selectedGroup;
     }
 
-    void UpdateSelectedSceneDetails();
     ChainCallbackResult UpdateSceneSelect();
     void CloseMainMenu();
     void UpdateMainMenuSelection();

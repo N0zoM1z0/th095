@@ -385,7 +385,7 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
         view->loadedSceneQueue.Pop();
         g_Supervisor.LeaveCriticalSectionWrapper(4);
         g_Supervisor.criticalSectionLockCounts[4]--;
-        owner->UpdateSelectedSceneDetails();
+        reinterpret_cast<FrontEndControllerView *>(owner)->UpdateSelectedSceneDetails();
     }
 }
 #undef loadedSceneSize0
@@ -847,7 +847,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     60, 0, initialGroupVm->color1.color,
                     g_SceneLockedInitialColor);
         }
-        this->UpdateSelectedSceneDetails();
+        reinterpret_cast<FrontEndControllerView *>(this)->UpdateSelectedSceneDetails();
     }
     case SCENE_SELECT_STATE_ACTIVE:
         break;
@@ -1013,7 +1013,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->vmIds.SetInterrupt(0x49, 2);
         view->vmIds.SetInterrupt(0x4a, 2);
         view->vmIds.SetInterrupt(0x4b, 2);
-        this->UpdateSelectedSceneDetails();
+        reinterpret_cast<FrontEndControllerView *>(this)->UpdateSelectedSceneDetails();
         g_ResultSaveData->profile.lastSelectedGroup =
             (i16)view->groupCursor.GetCurrent();
         g_ResultSaveData->profile.lastSelectedScene =
@@ -1108,7 +1108,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->vmIds.SetInterrupt(0x49, 2);
                 view->vmIds.SetInterrupt(0x4a, 2);
                 view->vmIds.SetInterrupt(0x4b, 2);
-                this->UpdateSelectedSceneDetails();
+                reinterpret_cast<FrontEndControllerView *>(this)->UpdateSelectedSceneDetails();
                 g_ResultSaveData->profile.lastSelectedScene =
                     (i16)activeSceneCursor.GetCurrent();
                 goto update_preview_text;

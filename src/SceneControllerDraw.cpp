@@ -24,6 +24,7 @@ ChainCallbackResult __fastcall FrontEndControllerView::OnUpdate(void *argument)
 #endif // TH095_MATCH_EXACT
 
 #include "AsciiManager.hpp"
+#include "FrontEndLocalTime.hpp"
 #include "Main.hpp"
 #include "ReplayManager.hpp"
 #include "ScoreData.hpp"
@@ -35,19 +36,6 @@ ChainCallbackResult __fastcall FrontEndControllerView::OnUpdate(void *argument)
 
 namespace th095
 {
-
-#if defined(_MSC_VER) && _MSC_VER == 1310
-// VC7.1's x86 CRT reads the replay's signed 32-bit timestamp in place.
-typedef char ReplayTimestampMatchesCrtTime[
-    (sizeof(i32) == sizeof(time_t)) ? 1 : -1];
-#define ReplayTimestampToLocalTime(timestamp) localtime(reinterpret_cast<const time_t *>(timestamp))
-#else
-static __forceinline tm *ReplayTimestampToLocalTime(const i32 *timestamp)
-{
-    time_t timeValue = static_cast<time_t>(*timestamp);
-    return localtime(&timeValue);
-}
-#endif
 
 // The target materializes each replay page/selection read through a distinct
 // value home. Keeping the real member read inside this bounded inline helper
@@ -199,7 +187,7 @@ ChainCallbackResult FrontEndControllerView::Draw()
                 }
                 else
                 {
-                    tm *timestamp = ReplayTimestampToLocalTime(
+                    tm *timestamp = LocalTimeFromStoredTimestamp(
                         &this->replays[replayIndex]->activeInputData->timestamp);
 
 
@@ -230,7 +218,7 @@ ChainCallbackResult FrontEndControllerView::Draw()
             }
             else
             {
-                tm *timestamp = ReplayTimestampToLocalTime(
+                tm *timestamp = LocalTimeFromStoredTimestamp(
                     &this->replays[replayIndex]->activeInputData->timestamp);
 
 
@@ -275,6 +263,6 @@ ChainCallbackResult __fastcall FrontEndControllerView::OnDraw(void *controller)
     return static_cast<FrontEndControllerView *>(controller)->Draw();
 }
 
-#undef ReplayTimestampToLocalTime
+#undef LocalTimeFromStoredTimestamp
 
 } // namespace th095

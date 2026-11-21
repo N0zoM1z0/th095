@@ -20058,3 +20058,24 @@ entry, gated input, volume limits and digits, binding collisions and held
 buttons, sound cadence, and both mapping writes. The dispatcher returns
 the expected exit code after a window-mode change. See
 `.analysis/pi/options-menu-owner/`.
+
+### SEM-488 — render scene details from the allocated front-end controller
+
+`FrontEndControllerView::UpdateSelectedSceneDetails` reads the selected
+score index from the same controller used by Scene Select and the
+summary renderer. Both builds share its date, score, and attempt digit
+logic. The existing Scene Select view supplies the digit handles and
+visibility calls.
+
+Scene details and replay drawing share the signed 32-bit timestamp
+conversion. The VC7.1 CRT receives the address of the stored field.
+A wider CRT receives a widened value. The native fixture compiles the
+production helper and verifies both timestamp signs with a distinct
+neighboring field.
+
+All 102 affected strict comparisons pass across 15 translation units.
+The normal detail renderer moves from `0x00441E10` to `0x004181A0` with
+reversed object order. The original and both linked layouts agree on
+48 detail cases and 36 replay and score-summary cases. The fixtures
+check the selected score index, timestamp argument, digit order, and
+leading-zero visibility. See `.analysis/pi/scene-detail-owner/`.
