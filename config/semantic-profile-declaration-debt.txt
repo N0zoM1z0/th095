@@ -4,7 +4,6 @@
 # This file is an exact closed baseline: remove entries when debt is retired;
 # never add or increase an entry to admit a new declaration.
 1	src/AsciiManager.cpp	struct	AsciiBackgroundSupervisorView
-1	src/FrontEndLifecycle.cpp	struct	FrontEndAnmManagerView
 1	src/FrontEndLifecycle.cpp	struct	FrontEndSupervisorView
 1	src/HelpMenu.hpp	struct	HelpMenuView
 1	src/InputRuntime.hpp	struct	ControllerInputSlotView

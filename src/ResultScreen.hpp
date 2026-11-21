@@ -107,8 +107,8 @@ struct ResultScreen
     ~ResultScreen();
 
     ResultScreenResult Initialize();
-    static ResultScreenResult LoadAnm();
-    static ResultScreenResult ReleaseAnm();
+    static ::ZunResult LoadAnm();
+    static ::ZunResult ReleaseAnm();
     static ResultScreen *Create();
     void Destroy();
     i32 UpdateCursor(i32 firstVm);

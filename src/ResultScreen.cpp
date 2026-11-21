@@ -318,30 +318,7 @@ ResultScreenResult ResultScreen::Initialize()
     return ZUN_SUCCESS;
 }
 
-// FUNCTION: TH095 0x00426820.
-ResultScreenResult ResultScreen::LoadAnm()
-{
-    if (g_AnmManager->PreloadAnm(10, "pause.anm") == NULL)
-    {
-        g_GameErrorContext.Log(
-            "\x89\xe6\x96\xca\x8d\x5c\x90\xac"
-            "\x83\x66\x81\x5b\x83\x5e\x82\xaa"
-            "\x8c\xa9\x82\xc2\x82\xa9\x82\xe8"
-            "\x82\xdc\x82\xb9\x82\xf1\x81\x42"
-            "\x83\x66\x81\x5b\x83\x5e\x82\xaa"
-            "\x89\xf3\x82\xea\x82\xc4\x82\xa2"
-            "\x82\xdc\x82\xb7\r\n");
-        return ZUN_ERROR;
-    }
-    return ZUN_SUCCESS;
-}
-
-// FUNCTION: TH095 0x00426860.
-ResultScreenResult ResultScreen::ReleaseAnm()
-{
-    g_AnmManager->ReleaseAnm(10);
-    return ZUN_SUCCESS;
-}
+#include "ResultScreenAnmResources.inl"
 
 // FUNCTION: TH095 0x00426A50.
 ResultScreen *ResultScreen::Create()

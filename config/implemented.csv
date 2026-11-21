@@ -492,7 +492,7 @@ th095::FrontEndLifecycleView::Initialize
 th095::FrontEndLifecycleView::LoadThread
 th095::FrontEndLifecycleView::LoadResources
 th095::FrontEndLifecycleView::~FrontEndLifecycleView
-th095::FrontEndLifecycleView::ReleaseResources
+th095::ReleaseFrontEndAnms
 th095::FrontEndLifecycleView::Create
 th095::FrontEndLifecycleView::Destroy
 th095::AnmManager::SetRenderStateForVm3D

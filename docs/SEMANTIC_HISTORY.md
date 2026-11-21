@@ -19765,3 +19765,30 @@ calibration schedules, and 60 worker cases. The fixture executes the
 real callback control flow, timestamp arithmetic, and attenuation
 calculation with archive, D3D, timer, and worker transport calls stubbed.
 See `.analysis/pi/supervisor-startup/`.
+
+### SEM-476 — bind pause and title ANM lifetimes
+
+Both Main profiles share the shutdown callback and call the actual
+pause and title release entry points at `0x00426860` and
+`0x00445CA0`. The latter is `ReleaseFrontEndAnms`, a free function
+with no instance receiver. The former comparison recipe used the
+unimplemented `ReleaseReplayAnm` and `ReleaseSceneSelectAnms`
+symbols for those two destinations.
+
+ResultScreen shares the pause loader and release method at ANM slot
+10 with one result ABI. The title initializer and release helper use
+named slots 11 and 12. Title loading checks the canonical manager's
+captureSurfaceIdx and captureAnmIdx fields. The front-end Supervisor
+and controller projections remain in the exact title worker.
+
+All 126 affected strict comparisons pass across the 16 rebuilt
+translation units. Both normal links retain identical mapped section
+bytes relative to their baselines. The normal relocation audit checks
+21 pause and title references in the original and both normal links.
+The shutdown calls follow the moved pause and title release symbols.
+
+The original and both normal links agree on 25 cases covering pause
+and title preload failures, capture wait and cancellation, and
+shutdown order with and without a version buffer or vertex buffer.
+The fixture stubs external operations and executes the pause and
+title release bodies. See `.analysis/pi/supervisor-anm-cleanup/`.

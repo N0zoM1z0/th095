@@ -1,3 +1,4 @@
+#include "AnmManager.hpp"
 #include "Global.hpp"
 #include "FrontEndGlobals.hpp"
 #include "FrontEndPendingTextureData.hpp"
@@ -16,6 +17,12 @@
 
 namespace th095
 {
+
+enum TitleAnmSlot
+{
+    TITLE_ANM_SLOT = 11,
+    TITLE_TRANSITION_ANM_SLOT = 12,
+};
 
 enum FrontEndControllerFlag
 {
@@ -38,17 +45,6 @@ struct FrontEndLifecycleView;
 #ifdef TH095_MATCH_EXACT
 extern FrontEndLifecycleView *g_FrontEndController;
 
-struct FrontEndAnmManagerView
-{
-    u8 unknown000[8];
-    i32 surfaceCaptureIndex;
-    i32 textureCaptureIndex;
-
-    void *PreloadAnm(i32 anmIndex, const char *path);
-    void ReleaseAnm(i32 anmIndex);
-};
-extern FrontEndAnmManagerView *g_FrontEndAnmManager;
-
 struct FrontEndSupervisorView
 {
     i32 StartReplayScan(void (__fastcall *callback)(void *), void *argument);
@@ -60,10 +56,6 @@ extern SupervisorFlags g_FrontEndSupervisorFlags;
 
 #define TH095_FRONT_CONTROLLER_STORAGE g_FrontEndController
 #define TH095_FRONT_CONTROLLER_VALUE g_FrontEndController
-#define TH095_FRONT_ANM_PRELOAD(index, path) g_FrontEndAnmManager->PreloadAnm((index), (path))
-#define TH095_FRONT_ANM_RELEASE(index) g_FrontEndAnmManager->ReleaseAnm(index)
-#define TH095_FRONT_SURFACE_CAPTURE_INDEX g_FrontEndAnmManager->surfaceCaptureIndex
-#define TH095_FRONT_TEXTURE_CAPTURE_INDEX g_FrontEndAnmManager->textureCaptureIndex
 #define TH095_FRONT_SUPERVISOR_FLAGS g_FrontEndSupervisorFlags
 #define TH095_FRONT_HIDE_LOADING() g_FrontEndSupervisor.HideLoadingVms()
 #define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_FrontEndSupervisor.BeginLoadingCompletion()
@@ -71,10 +63,6 @@ extern SupervisorFlags g_FrontEndSupervisorFlags;
 #else
 #define TH095_FRONT_CONTROLLER_STORAGE g_ActiveMenuController
 #define TH095_FRONT_CONTROLLER_VALUE reinterpret_cast<FrontEndLifecycleView *>(g_ActiveMenuController)
-#define TH095_FRONT_ANM_PRELOAD(index, path) g_AnmManager->PreloadAnm((index), (path))
-#define TH095_FRONT_ANM_RELEASE(index) g_AnmManager->ReleaseAnm(index)
-#define TH095_FRONT_SURFACE_CAPTURE_INDEX g_AnmManager->captureSurfaceIdx
-#define TH095_FRONT_TEXTURE_CAPTURE_INDEX g_AnmManager->captureAnmIdx
 #define TH095_FRONT_SUPERVISOR_FLAGS g_Supervisor.flags
 #define TH095_FRONT_HIDE_LOADING() g_Supervisor.HideLoadingVms()
 #define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_Supervisor.BeginLoadingCompletion()
@@ -181,7 +169,6 @@ struct FrontEndLifecycleView
     ~FrontEndLifecycleView();
     i32 Initialize();
     static void __fastcall LoadResources(void *unused);
-    static void ReleaseResources();
     static void __fastcall LoadThread(void *unused);
     static void __fastcall OnUpdate(void *controller);
     static void __fastcall OnDraw(void *controller);
@@ -262,7 +249,7 @@ i32 FrontEndLifecycleView::Initialize()
     FrontEndInitializeLocals locals;
 
     this->sceneAnm =
-        TH095_FRONT_ANM_PRELOAD(11, "title.anm");
+        g_AnmManager->PreloadAnm(TITLE_ANM_SLOT, "title.anm");
     if (this->sceneAnm == NULL)
     {
         g_GameErrorContext.Log("title data is corrupt\r\n");
@@ -270,7 +257,7 @@ i32 FrontEndLifecycleView::Initialize()
     }
 
     this->transitionAnm =
-        TH095_FRONT_ANM_PRELOAD(12, "title_v.anm");
+        g_AnmManager->PreloadAnm(TITLE_TRANSITION_ANM_SLOT, "title_v.anm");
     if (this->transitionAnm == NULL)
     {
         g_GameErrorContext.Log("title data is corrupt\r\n");
@@ -364,10 +351,10 @@ loadDone:
 }
 
 // FUNCTION: TH095 0x00445CA0.
-void FrontEndLifecycleView::ReleaseResources()
+void __fastcall ReleaseFrontEndAnms()
 {
-    TH095_FRONT_ANM_RELEASE(11);
-    TH095_FRONT_ANM_RELEASE(12);
+    g_AnmManager->ReleaseAnm(TITLE_ANM_SLOT);
+    g_AnmManager->ReleaseAnm(TITLE_TRANSITION_ANM_SLOT);
 }
 
 // FUNCTION: TH095 0x00445980.
@@ -376,8 +363,8 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
     FrontEndLifecycleView *controller =
         TH095_FRONT_CONTROLLER_VALUE;
 
-    while (TH095_FRONT_SURFACE_CAPTURE_INDEX >= 0 ||
-           TH095_FRONT_TEXTURE_CAPTURE_INDEX >= 0)
+    while (g_AnmManager->captureSurfaceIdx >= 0 ||
+           g_AnmManager->captureAnmIdx >= 0)
     {
         if (TH095_FRONT_SUPERVISOR_FLAGS.receivedCloseMsg != 0)
             goto loadFailed;

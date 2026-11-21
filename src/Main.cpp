@@ -9,8 +9,8 @@
 #include "PhotoGameTask.hpp"
 #ifndef DIFFBUILD
 #include "ReplayManager.hpp"
-#include "ResultScreen.hpp"
 #endif
+#include "ResultScreen.hpp"
 #include "SoundPlayer.hpp"
 #include "SupervisorViewportSlot.hpp"
 #include "TextRenderer.hpp"
@@ -92,18 +92,15 @@ struct FrontEndControllerView
 struct FrontEndLifecycleView
 {
     static FrontEndLifecycleView *__fastcall Create(i32 mode);
-    static void ReleaseResources();
     void Destroy();
 };
 #define TH095_FRONT_END_CREATE(mode) \
     reinterpret_cast<FrontEndControllerView *>(FrontEndLifecycleView::Create(mode))
 #define TH095_FRONT_END_DESTROY(controller) \
     reinterpret_cast<FrontEndLifecycleView *>(controller)->Destroy()
-#define TH095_FRONT_END_RELEASE_RESOURCES() FrontEndLifecycleView::ReleaseResources()
 #else
 #define TH095_FRONT_END_CREATE(mode) FrontEndControllerView::Create(mode)
 #define TH095_FRONT_END_DESTROY(controller) (controller)->Destroy()
-#define TH095_FRONT_END_RELEASE_RESOURCES() ReleaseSceneSelectAnms()
 #endif
 
 struct MidiTimer
@@ -156,14 +153,7 @@ void ReleaseScoreData();
 HANDLE StartSoundLoadThread();
 i32 ReleasePhotoBulletAnm();
 i32 ReleasePhotoAnm();
-#ifdef DIFFBUILD
-i32 ReleaseReplayAnm();
-#define TH095_RELEASE_REPLAY_ANM() ReleaseReplayAnm()
-#else
-#define TH095_RELEASE_REPLAY_ANM() ResultScreen::ReleaseAnm()
-#endif
 i32 ReleasePhotoFrontAnm();
-void ReleaseSceneSelectAnms();
 i32 ReleasePhotoPlayerAnm();
 }
 
@@ -1231,93 +1221,7 @@ i32 Supervisor::UpdateSceneState()
 
 #include "SupervisorStartup.inl"
 
-// Keep the real version-data ownership local inside its teardown phase so
-// VC7.1 allocates it with the target destructor chronology.
-static __forceinline void ReleaseSupervisorVersionData()
-{
-    if (g_Supervisor.versionData != NULL)
-    {
-        void *versionData = g_Supervisor.versionData;
-        free(versionData);
-        g_Supervisor.versionData = NULL;
-    }
-}
-
-// The ANM vertex-buffer owner has a separate lifetime from later shutdown
-// delete expressions; a bounded inline helper preserves that live local phase.
-static __forceinline void ReleaseSupervisorAnmVertexBuffer()
-{
-    AnmManager *anmManager = g_AnmManager;
-    if (anmManager->quadVertexBuffer != NULL)
-    {
-        anmManager->quadVertexBuffer->Release();
-        anmManager->quadVertexBuffer = NULL;
-    }
-}
-
-// FUNCTION: TH095 0x004244D0.
-i32 __fastcall Supervisor::DeletedCallback(void *arg)
-{
-    g_SupervisorInputWorker.Stop();
-    g_SoundPlayer.RequestThreadStop();
-    g_Supervisor.StopReplayScan();
-
-    ReleaseSupervisorVersionData();
-
-    ((Supervisor *)arg)->ReleaseGameManagers();
-    ReleasePhotoBulletAnm();
-    ReleasePhotoAnm();
-    TH095_RELEASE_REPLAY_ANM();
-    ReleasePhotoFrontAnm();
-    TH095_FRONT_END_RELEASE_RESOURCES();
-    ReleasePhotoPlayerAnm();
-    ReleaseScoreData();
-
-    ReleaseSupervisorAnmVertexBuffer();
-    g_AnmManager->ReleaseAnm(0);
-    g_AnmManager->ReleaseAnm(2);
-    g_AnmManager->ReleaseSurface(SUPERVISOR_STARTUP_BACKGROUND_SURFACE);
-    AsciiManager::CutChain();
-    g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
-    TextHelperView::ReleaseTextBuffer();
-
-    if (((Supervisor *)arg)->keyboard != NULL)
-    {
-        utils::DebugPrint("DirectInput Release\n");
-        ((Supervisor *)arg)->keyboard->Unacquire();
-        if (((Supervisor *)arg)->keyboard != NULL)
-        {
-            ((Supervisor *)arg)->keyboard->Release();
-            ((Supervisor *)arg)->keyboard = NULL;
-        }
-    }
-
-    if (((Supervisor *)arg)->controllerDevices[0] != NULL)
-    {
-        utils::DebugPrint("DirectInput(Pad) Release\n");
-        ((Supervisor *)arg)->controllerDevices[0]->Unacquire();
-        if (((Supervisor *)arg)->controllerDevices[0] != NULL)
-        {
-            ((Supervisor *)arg)->controllerDevices[0]->Release();
-            ((Supervisor *)arg)->controllerDevices[0] = NULL;
-        }
-    }
-
-    if (((Supervisor *)arg)->directInput != NULL)
-    {
-        ((Supervisor *)arg)->directInput->Release();
-        ((Supervisor *)arg)->directInput = NULL;
-    }
-
-    g_PbgArchive.Release();
-    if (g_Supervisor.dummyMidiTimer != NULL)
-    {
-        g_Supervisor.dummyMidiTimer->StopTimer();
-        delete g_Supervisor.dummyMidiTimer;
-        g_Supervisor.dummyMidiTimer = NULL;
-    }
-    return 0;
-}
+#include "SupervisorDeletedCallback.inl"
 
 // FUNCTION: TH095 0x00424980.
 void __fastcall Supervisor::ScreenshotThread(void *unused)
