@@ -1,7 +1,5 @@
-#include "FrontEndController.hpp"
-#ifdef TH095_MATCH_EXACT
 #include "AnmManager.hpp"
-#endif
+#include "FrontEndController.hpp"
 #include "SceneSelect.hpp"
 #include "FrontEndGlobals.hpp"
 #include "ReplayBrowser.hpp"
@@ -23,21 +21,6 @@
 
 namespace th095
 {
-
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_MAIN_MENU_STATE_INITIALIZE 0
-#define TH095_MAIN_MENU_STATE_ACTIVE 1
-#define TH095_SCENE_SELECT_STATE_INITIALIZE 0
-#else
-enum FrontEndMainMenuStateValue
-{
-    FRONT_END_MAIN_MENU_STATE_INITIALIZE = 0,
-    FRONT_END_MAIN_MENU_STATE_ACTIVE = 1,
-};
-#define TH095_MAIN_MENU_STATE_INITIALIZE FRONT_END_MAIN_MENU_STATE_INITIALIZE
-#define TH095_MAIN_MENU_STATE_ACTIVE FRONT_END_MAIN_MENU_STATE_ACTIVE
-#define TH095_SCENE_SELECT_STATE_INITIALIZE SCENE_SELECT_STATE_INITIALIZE
-#endif
 
 #ifdef TH095_MATCH_EXACT
 #define CreateVmAtScreen CreateVm
@@ -118,12 +101,6 @@ static __forceinline u16 FrontEndDownInputMask()
     return TH_BUTTON_DOWN;
 }
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_FRONT_DEMO_INTERRUPT_MASK 0x160b
-#else
-#define TH095_FRONT_DEMO_INTERRUPT_MASK TH_BUTTON_DEMO_INTERRUPT
-#endif
-
 static __forceinline i32 PrimaryWorkerActiveSnapshot()
 {
     i32 active;
@@ -156,16 +133,6 @@ static __forceinline void FrontEndCreateSceneVm(
     controller->vmIds[scriptIndex] =
         controller->sceneAnm->CreateVm(scriptIndex, 7);
 }
-
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_MUSIC_ROOM_STATE_INITIALIZE 0
-#define TH095_REPLAY_BROWSER_STATE_INITIALIZE 0
-#define TH095_OPTIONS_MENU_STATE_INITIALIZE 0
-#else
-#define TH095_MUSIC_ROOM_STATE_INITIALIZE MUSIC_ROOM_STATE_INITIALIZE
-#define TH095_REPLAY_BROWSER_STATE_INITIALIZE REPLAY_BROWSER_STATE_INITIALIZE
-#define TH095_OPTIONS_MENU_STATE_INITIALIZE OPTIONS_MENU_STATE_INITIALIZE
-#endif
 
 ChainCallbackResult FrontEndControllerView::Update()
 {
@@ -250,7 +217,7 @@ ChainCallbackResult FrontEndControllerView::Update()
         {
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             FrontEndResetTimer(&this->stateTimer);
-            this->state = TH095_MAIN_MENU_STATE_INITIALIZE;
+            this->state = FRONT_END_MAIN_MENU_STATE_INITIALIZE;
             FrontEndCreateSceneVm(sceneMenu, 0x66);
             FrontEndCreateSceneVm(sceneMenu, 0x67);
             FrontEndCreateSceneVm(sceneMenu, 0x19);
@@ -264,7 +231,7 @@ ChainCallbackResult FrontEndControllerView::Update()
         case FRONT_END_ENTRY_SCENE_SELECT:
         {
             this->requestedState = FRONT_END_REQUESTED_STATE_SCENE_SELECT;
-            this->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
+            this->state = SCENE_SELECT_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             FrontEndCreateSceneVm(sceneMenu, 0x19);
             FrontEndCreateSceneVm(sceneMenu, 0x1a);
@@ -278,7 +245,7 @@ ChainCallbackResult FrontEndControllerView::Update()
         case FRONT_END_ENTRY_REPLAY_BROWSER:
         {
             this->requestedState = FRONT_END_REQUESTED_STATE_REPLAY_BROWSER;
-            this->state = TH095_REPLAY_BROWSER_STATE_INITIALIZE;
+            this->state = REPLAY_BROWSER_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             this->groupCursor.Set(1);
             FrontEndCreateSceneVm(sceneMenu, 0x19);
@@ -449,7 +416,7 @@ ChainCallbackResult FrontEndControllerView::Update()
 
     if (this->animationTimer.current % 5 == 0)
     {
-        sceneMenu->sceneAnm->CreateVm(0x1c, 0);
+        this->sceneAnm->CreateVm(0x1c, 0);
     }
     this->stateTimer.Tick();
     this->animationTimer.Tick();
@@ -528,11 +495,11 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
 
     switch (this->state)
     {
-    case TH095_MAIN_MENU_STATE_INITIALIZE:
+    case FRONT_END_MAIN_MENU_STATE_INITIALIZE:
     {
         this->groupCursor.count = 6;
         this->groupCursor.wraps = 1;
-        this->state = TH095_MAIN_MENU_STATE_ACTIVE;
+        this->state = FRONT_END_MAIN_MENU_STATE_ACTIVE;
 
 #define CREATE_MAIN_MENU_VM(position, index, yValue)                           \
     positions.position.x = 64.0f;                                             \
@@ -561,7 +528,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
 #undef CREATE_MAIN_MENU_VM
         FrontEndResetTimer(&this->stateTimer);
     }
-    case TH095_MAIN_MENU_STATE_ACTIVE:
+    case FRONT_END_MAIN_MENU_STATE_ACTIVE:
     if ((this->stateTimer.current < 30) != 0)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -588,7 +555,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
         sceneMenu->UpdateMainMenuSelection();
     }
 
-    if (FrontEndInputAnd(g_FrontEndCurrentInput, TH095_FRONT_DEMO_INTERRUPT_MASK) != 0)
+    if (FrontEndInputAnd(g_FrontEndCurrentInput, TH_BUTTON_DEMO_INTERRUPT) != 0)
     {
         g_MainMenuDemoWaitFrames = 0;
     }
@@ -609,7 +576,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
         }
     }
 
-    if (FrontEndInputAnd(g_PressedButtons, 0x1002) != 0)
+    if (FrontEndInputAnd(g_PressedButtons, TH_BUTTON_ENTER | TH_BUTTON_BOMB) != 0)
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
         switch (this->groupCursor.GetCurrent())
@@ -618,7 +585,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
         {
             sceneMenu->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_SCENE_SELECT;
-            this->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
+            this->state = SCENE_SELECT_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             while (PrimaryWorkerActiveSnapshot() != 0)
             {
@@ -647,13 +614,13 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
         case 1:
             sceneMenu->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_REPLAY_BROWSER;
-            this->state = TH095_REPLAY_BROWSER_STATE_INITIALIZE;
+            this->state = REPLAY_BROWSER_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 3:
             sceneMenu->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_OPTIONS;
-            this->state = TH095_OPTIONS_MENU_STATE_INITIALIZE;
+            this->state = OPTIONS_MENU_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 2:
@@ -666,13 +633,13 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
             // the fully linked executable.
             sceneMenu->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_MUSIC_ROOM;
-            this->state = TH095_MUSIC_ROOM_STATE_INITIALIZE;
+            this->state = MUSIC_ROOM_STATE_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 4:
             sceneMenu->CloseMainMenu();
             this->requestedState = FRONT_END_REQUESTED_STATE_HELP;
-            this->state = TH095_HELP_STATE_INITIALIZE;
+            this->state = HELP_MENU_INITIALIZE;
             FrontEndResetTimer(&this->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 5:
@@ -684,7 +651,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
         }
     }
 
-    if (FrontEndInputAnd(g_PressedButtons, 9) != 0)
+    if (FrontEndInputAnd(g_PressedButtons, TH_BUTTON_MENU | TH_BUTTON_SHOOT) != 0)
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
         if (this->groupCursor.GetCurrent() == 5)

@@ -13,14 +13,6 @@
 namespace th095
 {
 
-#ifdef DIFFBUILD
-#define TH095_REPLAY_BROWSER_STATE_INITIALIZE 0
-#define TH095_REPLAY_BROWSER_STATE_BROWSE 1
-#else
-#define TH095_REPLAY_BROWSER_STATE_INITIALIZE REPLAY_BROWSER_STATE_INITIALIZE
-#define TH095_REPLAY_BROWSER_STATE_BROWSE REPLAY_BROWSER_STATE_BROWSE
-#endif
-
 #ifndef DIFFBUILD
 char g_SelectedReplayPath[0x100];
 #endif
@@ -74,7 +66,7 @@ ChainCallbackResult ReplayBrowserView::Update()
 
     switch (this->state)
     {
-    case TH095_REPLAY_BROWSER_STATE_INITIALIZE:
+    case REPLAY_BROWSER_STATE_INITIALIZE:
         g_Supervisor.StopReplayScan();
 
         g_Supervisor.EnterCriticalSectionWrapper(4);
@@ -98,7 +90,7 @@ ChainCallbackResult ReplayBrowserView::Update()
         this->rowCursor.count = 4;
         this->rowCursor.wraps = 1;
         this->rowCursor.Set(g_ReplayBrowserSelection / 20);
-        this->state = TH095_REPLAY_BROWSER_STATE_BROWSE;
+        this->state = REPLAY_BROWSER_STATE_BROWSE;
         this->selectedReplayIndex = 0;
 
         ReplayBrowserCreateVmAt(this, 0x68);
@@ -115,7 +107,7 @@ ChainCallbackResult ReplayBrowserView::Update()
         this->columnCursor.Set(g_ReplayBrowserSelection % 20);
         g_ReplayBrowserSelection = 0;
 
-    case TH095_REPLAY_BROWSER_STATE_BROWSE:
+    case REPLAY_BROWSER_STATE_BROWSE:
         if (this->stateTimer < 30)
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -164,7 +156,7 @@ ChainCallbackResult ReplayBrowserView::Update()
                 this->requestedState = FRONT_END_REQUESTED_STATE_START_REPLAY;
                 this->rowCursor.Pop();
                 this->stateTimer.Reset();
-                this->state = TH095_REPLAY_BROWSER_STATE_INITIALIZE;
+                this->state = REPLAY_BROWSER_STATE_INITIALIZE;
                 strcpy(g_SelectedReplayPath,
                        this->replays[replayIndex]->path);
                 g_ReplayBrowserSelection = replayIndex;
@@ -177,7 +169,7 @@ ChainCallbackResult ReplayBrowserView::Update()
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->rowCursor.Pop();
             this->stateTimer.Reset();
-            this->state = TH095_REPLAY_BROWSER_STATE_INITIALIZE;
+            this->state = REPLAY_BROWSER_STATE_INITIALIZE;
             g_Supervisor.replayScanWorker.RequestExit();
             this->vmIds.SetInterrupt(0x1f, 1);
             this->vmIds.SetInterrupt(0x47, 1);

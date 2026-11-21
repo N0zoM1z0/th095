@@ -50,14 +50,14 @@ ChainCallbackResult OptionsMenuView::Update()
 
     switch (this->state)
     {
-    case 0:
+    case OPTIONS_MENU_STATE_INITIALIZE:
         g_SceneSupervisor.StopReplayScan();
         this->stateTimer.Reset();
         this->cursor.Push();
         this->cursor.Set(0);
         this->cursor.count = 7;
         this->cursor.wraps = 1;
-        this->state = 1;
+        this->state = OPTIONS_MENU_STATE_ACTIVE;
 
         OptionsCreateInitialVm(this, 0x68);
         OptionsCreateInitialVm(this, 0x69);
@@ -84,7 +84,7 @@ ChainCallbackResult OptionsMenuView::Update()
         this->UpdateSfxVolumeSprites(shallow.initialSfxVolume);
         this->outerFlags &= ~8u;
 
-    case 1:
+    case OPTIONS_MENU_STATE_ACTIVE:
     if (this->stateTimer < 30)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -267,7 +267,7 @@ ChainCallbackResult OptionsMenuView::Update()
 options_finish:
             this->cursor.Pop();
             this->requestedState = 1;
-            this->state = 0;
+            this->state = OPTIONS_MENU_STATE_INITIALIZE;
             this->stateTimer.Reset();
             this->vmIds.SetInterrupt(0x68, 1);
             this->vmIds.SetInterrupt(0x69, 1);

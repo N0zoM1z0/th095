@@ -209,6 +209,8 @@ SEM-481 gives Scene Select one asset worker on the allocated controller.
 SEM-482 moves the display-history producer, preview timer and fallback
 text readers onto the same controller. The VM handles still use the
 Scene Select overlay.
+SEM-483 shares the front-end screen substates across both builds and
+uses named button masks in the main menu.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

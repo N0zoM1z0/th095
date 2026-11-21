@@ -23,6 +23,57 @@ enum FrontEndRequestedState
 typedef char FrontEndRequestedStateSizeIs4[
     (sizeof(FrontEndRequestedState) == 4) ? 1 : -1];
 
+// The active screen determines which state domain applies to the shared
+// front-end substate. The requested-state enum above selects the screen.
+enum FrontEndMainMenuStateValue
+{
+    FRONT_END_MAIN_MENU_STATE_INITIALIZE = 0,
+    FRONT_END_MAIN_MENU_STATE_ACTIVE = 1,
+};
+
+typedef i32 ReplayBrowserState;
+enum ReplayBrowserStateValue
+{
+    REPLAY_BROWSER_STATE_INITIALIZE = 0,
+    REPLAY_BROWSER_STATE_BROWSE = 1,
+};
+typedef char ReplayBrowserStateSizeIs4[
+    (sizeof(ReplayBrowserState) == sizeof(i32)) ? 1 : -1];
+
+typedef i32 OptionsMenuState;
+enum OptionsMenuStateValue
+{
+    OPTIONS_MENU_STATE_INITIALIZE = 0,
+    OPTIONS_MENU_STATE_ACTIVE = 1,
+};
+typedef char OptionsMenuStateSizeIs4[
+    (sizeof(OptionsMenuState) == sizeof(i32)) ? 1 : -1];
+
+typedef i32 MusicRoomState;
+enum MusicRoomStateValue
+{
+    MUSIC_ROOM_STATE_INITIALIZE = 0,
+    MUSIC_ROOM_STATE_TRACK_LIST_REVEAL = 1,
+    MUSIC_ROOM_STATE_INTERACTIVE = 2,
+};
+typedef char MusicRoomStateSizeIs4[
+    (sizeof(MusicRoomState) == sizeof(i32)) ? 1 : -1];
+
+enum SceneSelectState
+{
+    SCENE_SELECT_STATE_INITIALIZE = 0,
+    SCENE_SELECT_STATE_ACTIVE = 1,
+};
+
+enum HelpMenuStateValue
+{
+    HELP_MENU_INITIALIZE = 0,
+    HELP_MENU_PAGE_SELECT = 1,
+    HELP_MENU_PAGE_LOADING = 2,
+    HELP_MENU_PAGE_DATA_READY = 3,
+    HELP_MENU_PAGE_VIEW = 4,
+};
+
 struct FrontEndControllerFlagBits
 {
     u32 titleLoadIncomplete : 1;

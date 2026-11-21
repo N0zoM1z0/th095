@@ -92,7 +92,7 @@ i32 MusicRoomView::UpdateMusicRoom()
 {
     switch (this->state)
     {
-    case 0:
+    case MUSIC_ROOM_STATE_INITIALIZE:
     {
         this->cursor.Push();
         this->vmIds.SetInterrupt(0x66, 1);
@@ -108,7 +108,7 @@ i32 MusicRoomView::UpdateMusicRoom()
         this->vmIds.SetInterrupt(0x1a, 3);
         this->transitionVm.SetInterrupt(3);
         this->vmIds.SetInterrupt(0x1b, 3);
-        this->state = 1;
+        this->state = MUSIC_ROOM_STATE_TRACK_LIST_REVEAL;
         this->stateTimer.Reset();
 
         struct MusicCommentLocals
@@ -166,7 +166,7 @@ i32 MusicRoomView::UpdateMusicRoom()
         this->cursor.Set(0);
     }
 
-    case 1:
+    case MUSIC_ROOM_STATE_TRACK_LIST_REVEAL:
     {
         if (MusicRoomTimerAtLeast(&this->stateTimer, 2))
         {
@@ -187,13 +187,13 @@ i32 MusicRoomView::UpdateMusicRoom()
         }
         if (MusicRoomTimerAtLeast(&this->stateTimer, 30))
         {
-            this->state = 2;
+            this->state = MUSIC_ROOM_STATE_INTERACTIVE;
             this->stateTimer.Reset();
         }
         break;
     }
 
-    case 2:
+    case MUSIC_ROOM_STATE_INTERACTIVE:
     {
         if (this->stateTimer < 26 && MusicRoomTimerAtLeast(&this->stateTimer, 10))
         {
@@ -267,7 +267,7 @@ i32 MusicRoomView::UpdateMusicRoom()
             this->transitionVm.SetInterrupt(2);
             this->vmIds.SetInterrupt(0x1b, 2);
             this->requestedState = 1;
-            this->state = 0;
+            this->state = MUSIC_ROOM_STATE_INITIALIZE;
             this->stateTimer.Reset();
             g_Supervisor.LoadMusic(0, "bgm/th095_00.wav");
             g_Supervisor.PlayMusic(0, 0);

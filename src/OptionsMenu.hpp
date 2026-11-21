@@ -10,17 +10,6 @@
 namespace th095
 {
 
-#ifndef DIFFBUILD
-typedef i32 OptionsMenuState;
-enum OptionsMenuStateValue
-{
-    OPTIONS_MENU_STATE_INITIALIZE = 0,
-    OPTIONS_MENU_STATE_ACTIVE = 1,
-};
-typedef char OptionsMenuStateSizeIs4[
-    (sizeof(OptionsMenuState) == sizeof(i32)) ? 1 : -1];
-#endif
-
 typedef i32 OptionsMenuItem;
 enum OptionsMenuItemValue
 {

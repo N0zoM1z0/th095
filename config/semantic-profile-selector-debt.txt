@@ -26,17 +26,14 @@
 1	src/FileSystem.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FileSystem.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FileWrite.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-3	src/FrontEndController.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-3	src/FrontEndController.cpp	#ifdef TH095_MATCH_EXACT
+2	src/FrontEndController.cpp	#ifdef TH095_MATCH_EXACT
 2	src/FrontEndController.cpp	#ifndef DIFFBUILD
 1	src/GameplayGlobals.hpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Global.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/Global.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Global.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Global.hpp	#ifndef TH095_MATCH_EXACT
-1	src/HelpMenu.cpp	#ifdef DIFFBUILD
 1	src/HelpMenu.cpp	#ifdef TH095_MATCH_EXACT
-1	src/HelpMenu.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/HelpMenu.hpp	#ifdef DIFFBUILD
 1	src/HelpMenu.hpp	#ifdef TH095_MATCH_EXACT
 1	src/InputRuntime.hpp	#if !defined(TH095_MATCH_EXACT)
@@ -45,17 +42,13 @@
 2	src/Main.cpp	#ifdef DIFFBUILD
 1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
 2	src/Main.cpp	#ifndef DIFFBUILD
-1	src/MusicRoom.cpp	#ifdef DIFFBUILD
 1	src/MusicRoom.cpp	#ifdef TH095_MATCH_EXACT
 2	src/MusicRoom.hpp	#ifdef DIFFBUILD
 1	src/MusicRoom.hpp	#ifdef TH095_MATCH_EXACT
-1	src/MusicRoom.hpp	#ifndef DIFFBUILD
-1	src/OptionsMenu.cpp	#ifdef DIFFBUILD
 1	src/OptionsMenu.cpp	#ifdef TH095_MATCH_EXACT
 1	src/OptionsMenu.cpp	#ifndef DIFFBUILD
 2	src/OptionsMenu.hpp	#ifdef DIFFBUILD
 1	src/OptionsMenu.hpp	#ifdef TH095_MATCH_EXACT
-1	src/OptionsMenu.hpp	#ifndef DIFFBUILD
 1	src/pbg/Lzss.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/pbg/Lzss.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/pbg/PbgArchive.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
@@ -77,12 +70,10 @@
 2	src/PhotoStage.cpp	#ifdef DIFFBUILD
 1	src/PhotoStage.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoStage.cpp	#ifndef DIFFBUILD
-1	src/ReplayBrowser.cpp	#ifdef DIFFBUILD
 1	src/ReplayBrowser.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayBrowser.cpp	#ifndef DIFFBUILD
 2	src/ReplayBrowser.hpp	#ifdef DIFFBUILD
 1	src/ReplayBrowser.hpp	#ifdef TH095_MATCH_EXACT
-1	src/ReplayBrowser.hpp	#ifndef DIFFBUILD
 1	src/ReplayInputSource.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/ReplayManager.cpp	#ifdef DIFFBUILD
 2	src/ReplayManager.cpp	#ifdef TH095_MATCH_EXACT
@@ -102,9 +93,8 @@
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneDetail.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelect.hpp	#ifdef TH095_MATCH_EXACT
-1	src/SceneSelect.hpp	#ifndef DIFFBUILD
 1	src/SceneSelectController.cpp	#ifdef TH095_MATCH_EXACT
-2	src/SceneSelectUpdate.cpp	#ifdef DIFFBUILD
+1	src/SceneSelectUpdate.cpp	#ifdef DIFFBUILD
 1	src/SceneSelectUpdate.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelectUpdate.cpp	#ifndef DIFFBUILD
 1	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)

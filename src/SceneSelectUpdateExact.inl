@@ -681,7 +681,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     {
     default:
         goto update_preview_text;
-    case 0:
+    case SCENE_SELECT_STATE_INITIALIZE:
     {
         g_SceneSupervisor.StopReplayScan();
         g_Supervisor.textAnm->textures[0].Clear();
@@ -703,7 +703,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     ? 12 : g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2);
         }
         view->groupCursor.wraps = 1;
-        view->state = 1;
+        view->state = SCENE_SELECT_STATE_ACTIVE;
         view->flags |= 0x10;
         view->selectedScoreEntryIndex = 0;
 
@@ -833,7 +833,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         }
         this->UpdateSelectedSceneDetails();
     }
-    case 1:
+    case SCENE_SELECT_STATE_ACTIVE:
         break;
     }
 
@@ -1105,7 +1105,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     &g_SceneGroups[view->groupCursor.GetCurrent()]
                                   [activeSceneCursor.GetCurrent()];
                 view->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;
-                view->state = 0;
+                view->state = SCENE_SELECT_STATE_INITIALIZE;
                 SceneSelectResetTimer(&view->stateTimer);
                 view->flagBits.assetLoadStopRequested = 1;
                 g_SceneSupervisor.replayScanWorker.RequestExit();
@@ -1164,7 +1164,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                                    .GetCurrent()];
             view->groupCursor.Pop();
             view->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
-            view->state = 0;
+            view->state = SCENE_SELECT_STATE_INITIALIZE;
             SceneSelectResetTimer(&view->stateTimer);
             view->vmIds.SetInterrupt(0x68, 1);
             view->vmIds.SetInterrupt(0x69, 1);

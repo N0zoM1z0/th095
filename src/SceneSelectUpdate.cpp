@@ -15,14 +15,6 @@
 namespace th095
 {
 
-#ifdef DIFFBUILD
-#define TH095_SCENE_SELECT_STATE_INITIALIZE 0
-#define TH095_SCENE_SELECT_STATE_ACTIVE 1
-#else
-#define TH095_SCENE_SELECT_STATE_INITIALIZE SCENE_SELECT_STATE_INITIALIZE
-#define TH095_SCENE_SELECT_STATE_ACTIVE SCENE_SELECT_STATE_ACTIVE
-#endif
-
 #ifndef DIFFBUILD
 // Canonical scene-group palette at 0x004A5860 and locked-state colors at
 // 0x004A588C/0x004A5890.
@@ -702,7 +694,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     {
     default:
         goto update_preview_text;
-    case TH095_SCENE_SELECT_STATE_INITIALIZE:
+    case SCENE_SELECT_STATE_INITIALIZE:
     {
         g_Supervisor.StopReplayScan();
         // Target 0x0044BF17 reads 0x004C4AAC, Supervisor::textAnm.  This is
@@ -728,7 +720,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     ? 12 : g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2);
         }
         view->groupCursor.wraps = 1;
-        view->state = TH095_SCENE_SELECT_STATE_ACTIVE;
+        view->state = SCENE_SELECT_STATE_ACTIVE;
         view->flags |= 0x10;
         view->selectedScoreEntryIndex = 0;
 
@@ -858,7 +850,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         }
         this->UpdateSelectedSceneDetails();
     }
-    case TH095_SCENE_SELECT_STATE_ACTIVE:
+    case SCENE_SELECT_STATE_ACTIVE:
         break;
     }
 
@@ -1130,7 +1122,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     &g_SceneGroups[view->groupCursor.GetCurrent()]
                                   [activeSceneCursor.GetCurrent()];
                 view->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;
-                view->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
+                view->state = SCENE_SELECT_STATE_INITIALIZE;
                 view->stateTimer.Reset();
                 view->flagBits.assetLoadStopRequested = 1;
                 g_Supervisor.replayScanWorker.RequestExit();
@@ -1189,7 +1181,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                                    .GetCurrent()];
             view->groupCursor.Pop();
             view->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
-            view->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
+            view->state = SCENE_SELECT_STATE_INITIALIZE;
             view->stateTimer.Reset();
             view->vmIds.SetInterrupt(0x68, 1);
             view->vmIds.SetInterrupt(0x69, 1);

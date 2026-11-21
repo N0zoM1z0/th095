@@ -19,14 +19,6 @@
 namespace th095
 {
 
-#ifndef DIFFBUILD
-enum SceneSelectState
-{
-    SCENE_SELECT_STATE_INITIALIZE = 0,
-    SCENE_SELECT_STATE_ACTIVE = 1,
-};
-#endif
-
 
 struct SceneGroupCursorView
 {

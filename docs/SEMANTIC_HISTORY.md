@@ -19943,3 +19943,27 @@ moves from `0x00443CB0` to `0x00416890` in the reversed link. The
 original and both rebuilt layouts agree on 96 selection refreshes,
 36 preview text cases, and 54 visibility cases including stale handles.
 See `.analysis/pi/scene-refresh-owner/`.
+
+### SEM-483 — share front-end menu states and input masks
+
+The main menu, Scene Select, Replay Browser, Options, Music Room, and Help
+use one declaration per state domain at the controller's shared `+0x610C`
+word. Both profiles use those names at the producers and the dispatch
+sites, including publication of Help's loaded page. The main menu confirms
+on Enter or Bomb, returns on Menu or Shoot, and resets the idle demo timer
+through the common held-input mask. The periodic title effect uses the
+allocated `AnmLoaded` object directly.
+
+The stored animation handles retain their existing emission path. Returning
+the canonical `AnmVmId` at those call sites changes VC7.1's aggregate copy.
+Ordinary assignment expands the coordinator's `0xBC1` comparison extent
+to `0xD6F`. Copying the value gives `0xBC2` with a different register and
+load order, and the inlined memory-copy helper gives `0xC87`.
+
+The change retires 14 source selectors. All 102 affected strict comparisons
+pass across 15 translation units. Both normal link orders preserve the
+prior nonrelocated bytes in the eight affected bodies. The original and
+both links agree on 38 main-menu input and demo cases, including both
+physical buttons for confirmation and return, all single held-bit tests,
+and the 1,800-frame demo boundary. The title initialization and periodic
+VM checks also pass. See `.analysis/pi/front-end-anm-bindings/`.

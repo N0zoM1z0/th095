@@ -56,7 +56,7 @@ ChainCallbackResult ReplayBrowserView::Update()
 
     switch (this->state)
     {
-    case 0:
+    case REPLAY_BROWSER_STATE_INITIALIZE:
         g_SceneSupervisor.StopReplayScan();
 
         g_SceneSupervisor.EnterCriticalSectionWrapper(4);
@@ -80,7 +80,7 @@ ChainCallbackResult ReplayBrowserView::Update()
         this->rowCursor.count = 4;
         this->rowCursor.wraps = 1;
         this->rowCursor.Set(g_ReplayBrowserSelection / 20);
-        this->state = 1;
+        this->state = REPLAY_BROWSER_STATE_BROWSE;
         this->selectedReplayIndex = 0;
 
         ReplayBrowserCreateVmAt(this, 0x68);
@@ -97,7 +97,7 @@ ChainCallbackResult ReplayBrowserView::Update()
         this->columnCursor.Set(g_ReplayBrowserSelection % 20);
         g_ReplayBrowserSelection = 0;
 
-    case 1:
+    case REPLAY_BROWSER_STATE_BROWSE:
         if (this->stateTimer < 30)
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -146,7 +146,7 @@ ChainCallbackResult ReplayBrowserView::Update()
                 this->requestedState = 6;
                 this->rowCursor.Pop();
                 this->stateTimer.Reset();
-                this->state = 0;
+                this->state = REPLAY_BROWSER_STATE_INITIALIZE;
                 strcpy(g_SelectedReplayPath,
                        this->replays[replayIndex]->path);
                 g_ReplayBrowserSelection = replayIndex;
@@ -159,7 +159,7 @@ ChainCallbackResult ReplayBrowserView::Update()
             this->requestedState = 1;
             this->rowCursor.Pop();
             this->stateTimer.Reset();
-            this->state = 0;
+            this->state = REPLAY_BROWSER_STATE_INITIALIZE;
             g_SceneSupervisor.replayScanWorker.RequestExit();
             this->vmIds.SetInterrupt(0x1f, 1);
             this->vmIds.SetInterrupt(0x47, 1);

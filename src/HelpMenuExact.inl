@@ -43,7 +43,7 @@ void __fastcall LoadHelpAnm(void *unused)
 
     helpMenu->helpAnmData = FileSystem::OpenFile(
         helpMenu->helpAnmPath, &helpMenu->helpAnmSize, FALSE);
-    helpMenu->state = 3;
+    helpMenu->state = HELP_MENU_PAGE_DATA_READY;
     WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
     WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
 }
@@ -52,7 +52,7 @@ i32 HelpMenuView::UpdateHelpMenu()
 {
     switch (this->state)
     {
-    case 0:
+    case HELP_MENU_INITIALIZE:
         this->cursor.Push();
         this->vmIds.SetInterrupt(0x66, 1);
         this->vmIds.SetInterrupt(0x67, 1);
@@ -63,7 +63,7 @@ i32 HelpMenuView::UpdateHelpMenu()
         this->vmIds.SetInterrupt(0x1a, 3);
         this->transitionVm.SetInterrupt(3);
         this->vmIds.SetInterrupt(0x1b, 3);
-        this->state = 1;
+        this->state = HELP_MENU_PAGE_SELECT;
         this->stateTimer.Reset();
         this->cursor.count = 9;
         this->cursor.Set(0);
@@ -83,7 +83,7 @@ i32 HelpMenuView::UpdateHelpMenu()
         }
         break;
 
-    case 1:
+    case HELP_MENU_PAGE_SELECT:
         if (this->stateTimer < 20)
         {
             break;
@@ -118,7 +118,7 @@ i32 HelpMenuView::UpdateHelpMenu()
         {
         load_page:
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-            this->state = 2;
+            this->state = HELP_MENU_PAGE_LOADING;
             this->stateTimer.Reset();
             sprintf(this->helpAnmPath, "help_%.2d.anm",
                     this->cursor.GetCurrent());
@@ -148,16 +148,16 @@ i32 HelpMenuView::UpdateHelpMenu()
                 this->vmIds.SetInterrupt(0x91 + i, 1);
             }
             this->requestedState = 1;
-            this->state = 0;
+            this->state = HELP_MENU_INITIALIZE;
             this->stateTimer.Reset();
             break;
         }
         break;
 
-    case 2:
+    case HELP_MENU_PAGE_LOADING:
         break;
 
-    case 3:
+    case HELP_MENU_PAGE_DATA_READY:
     {
         g_AnmManager->LoadTexture(
             &this->sceneAnm->textures[13],
@@ -165,10 +165,10 @@ i32 HelpMenuView::UpdateHelpMenu()
         HelpMenuFreeAnmData(this);
         this->sceneAnm->textures[13].texture->PreLoad();
         HelpMenuCreateVmAt(this, 0x90);
-        this->state = 4;
+        this->state = HELP_MENU_PAGE_VIEW;
     }
 
-    case 4:
+    case HELP_MENU_PAGE_VIEW:
         if (this->stateTimer < 20)
         {
             break;
@@ -195,7 +195,7 @@ i32 HelpMenuView::UpdateHelpMenu()
             GetHelpPressedButtons(9) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->state = 1;
+            this->state = HELP_MENU_PAGE_SELECT;
             this->stateTimer.Reset();
             this->vmIds.SetInterrupt(0x90, 1);
             for (i32 i = 0; i < 9; i++)

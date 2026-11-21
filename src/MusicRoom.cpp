@@ -12,16 +12,6 @@
 namespace th095
 {
 
-#ifdef DIFFBUILD
-#define TH095_MUSIC_ROOM_STATE_INITIALIZE 0
-#define TH095_MUSIC_ROOM_STATE_TRACK_LIST_REVEAL 1
-#define TH095_MUSIC_ROOM_STATE_INTERACTIVE 2
-#else
-#define TH095_MUSIC_ROOM_STATE_INITIALIZE MUSIC_ROOM_STATE_INITIALIZE
-#define TH095_MUSIC_ROOM_STATE_TRACK_LIST_REVEAL MUSIC_ROOM_STATE_TRACK_LIST_REVEAL
-#define TH095_MUSIC_ROOM_STATE_INTERACTIVE MUSIC_ROOM_STATE_INTERACTIVE
-#endif
-
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 #define g_ResultMenuInput (RuntimeResultMenuInput())
@@ -108,7 +98,7 @@ i32 MusicRoomView::UpdateMusicRoom()
 {
     switch (this->state)
     {
-    case TH095_MUSIC_ROOM_STATE_INITIALIZE:
+    case MUSIC_ROOM_STATE_INITIALIZE:
     {
         this->cursor.Push();
         this->vmIds.SetInterrupt(0x66, 1);
@@ -127,7 +117,7 @@ i32 MusicRoomView::UpdateMusicRoom()
         this->vmIds.SetInterrupt(0x1a, 3);
         this->transitionVm.SetInterrupt(3);
         this->vmIds.SetInterrupt(0x1b, 3);
-        this->state = TH095_MUSIC_ROOM_STATE_TRACK_LIST_REVEAL;
+        this->state = MUSIC_ROOM_STATE_TRACK_LIST_REVEAL;
         this->stateTimer.Reset();
 
         struct MusicCommentLocals
@@ -184,7 +174,7 @@ i32 MusicRoomView::UpdateMusicRoom()
         this->cursor.Set(0);
     }
 
-    case TH095_MUSIC_ROOM_STATE_TRACK_LIST_REVEAL:
+    case MUSIC_ROOM_STATE_TRACK_LIST_REVEAL:
     {
         if (MusicRoomTimerAtLeast(&this->stateTimer, 2))
         {
@@ -204,13 +194,13 @@ i32 MusicRoomView::UpdateMusicRoom()
         }
         if (MusicRoomTimerAtLeast(&this->stateTimer, 30))
         {
-            this->state = TH095_MUSIC_ROOM_STATE_INTERACTIVE;
+            this->state = MUSIC_ROOM_STATE_INTERACTIVE;
             this->stateTimer.Reset();
         }
         break;
     }
 
-    case TH095_MUSIC_ROOM_STATE_INTERACTIVE:
+    case MUSIC_ROOM_STATE_INTERACTIVE:
     {
         if (this->stateTimer < 26 && MusicRoomTimerAtLeast(&this->stateTimer, 10))
         {
@@ -282,7 +272,7 @@ i32 MusicRoomView::UpdateMusicRoom()
             this->transitionVm.SetInterrupt(2);
             this->vmIds.SetInterrupt(0x1b, 2);
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
-            this->state = TH095_MUSIC_ROOM_STATE_INITIALIZE;
+            this->state = MUSIC_ROOM_STATE_INITIALIZE;
             this->stateTimer.Reset();
             g_Supervisor.LoadMusic(0, "bgm/th095_00.wav");
             g_Supervisor.PlayMusic(0, 0);
