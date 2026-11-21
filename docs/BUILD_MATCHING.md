@@ -2260,6 +2260,15 @@ reserves 0x128. VC7.1 rejects the pointer's `__restrict` spelling with
 C4235. The closest form still reserves 0x11C. See
 `.analysis/controller-get-input/qualifier-probes/`.
 
+Seven force-inlined helpers move the full history update, the repeat
+calculation, or the pressed and released stores into their own scopes.
+The pointer and reference forms, including variants that declare the
+repeat locals inside the helper, all reproduce the 2,655-byte baseline,
+the 0x11C frame, and all 22 relocations. Moving the history update into
+an inline scope leaves the retail stack gap and keyboard register
+schedule unexplained. See
+`.analysis/controller-get-input/history-frontends/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
