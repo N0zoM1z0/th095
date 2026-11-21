@@ -16,16 +16,12 @@ namespace th095
 // ZUN extensions to the Microsoft DSUtil sound wrapper. The TH08 source is
 // the source-shape oracle; every TH095 address and layout remains target-local.
 
-#ifndef TH095_MATCH_EXACT
-// The retail linker folds this natural one-pointer constructor with the
-// byte-identical PbgArchiveEntry constructor at 0x00452E50.  Production still
-// needs the real CSoundManager decorated definition referenced by SoundPlayer;
-// the exact target address remains owned by the canonical PBG match unit.
+// VC7.1 folds this constructor with PbgArchiveEntry's at retail 0x00452E50.
+// The PbgArchiveEntry unit owns the shared target body.
 CSoundManager::CSoundManager()
 {
     m_pDS = NULL;
 }
-#endif
 
 // FUNCTION: TH095 0x00452E70.
 CSoundManager::~CSoundManager()
@@ -563,7 +559,7 @@ HRESULT CSound::Play(DWORD priority, DWORD flags)
         Reset();
     }
 
-    m_iFadeType = TH095_SOUND_FADE_NONE;
+    m_iFadeType = SOUND_FADE_NONE;
     m_iCurFadeProgress = 0;
     m_iTotalFade = 0;
     SetVolume(0);
@@ -606,7 +602,7 @@ HRESULT CSound::Stop()
         hr |= m_apDSBuffer[i]->Stop();
         hr |= m_apDSBuffer[i]->SetCurrentPosition(0);
     }
-    m_iFadeType = TH095_SOUND_FADE_NONE;
+    m_iFadeType = SOUND_FADE_NONE;
     return hr;
 }
 
@@ -669,11 +665,11 @@ CStreamingSound::~CStreamingSound()
 // FUNCTION: TH095 0x004542E0.
 HRESULT CStreamingSound::UpdateFadeOut()
 {
-    if (m_iFadeType == TH095_SOUND_FADE_OUT)
+    if (m_iFadeType == SOUND_FADE_OUT)
     {
         if (--m_iCurFadeProgress <= 0)
         {
-            m_iFadeType = TH095_SOUND_FADE_NONE;
+            m_iFadeType = SOUND_FADE_NONE;
             m_apDSBuffer[0]->Stop();
             return S_FALSE;
         }
@@ -686,11 +682,11 @@ HRESULT CStreamingSound::UpdateFadeOut()
 // FUNCTION: TH095 0x00454370.
 HRESULT CStreamingSound::UpdateFadeIn()
 {
-    if (m_iFadeType == TH095_SOUND_FADE_IN)
+    if (m_iFadeType == SOUND_FADE_IN)
     {
         if (--m_iCurFadeProgress <= 0)
         {
-            m_iFadeType = TH095_SOUND_FADE_NONE;
+            m_iFadeType = SOUND_FADE_NONE;
             return S_FALSE;
         }
         i32 newVolume = 0 - m_iCurFadeProgress * 5000 / m_iTotalFade;
@@ -702,11 +698,11 @@ HRESULT CStreamingSound::UpdateFadeIn()
 // FUNCTION: TH095 0x00454450.
 HRESULT CStreamingSound::UpdatePartialFadeOut()
 {
-    if (m_iFadeType == TH095_SOUND_FADE_PARTIAL_OUT)
+    if (m_iFadeType == SOUND_FADE_PARTIAL_OUT)
     {
         if (--m_iCurFadeProgress <= 0)
         {
-            m_iFadeType = TH095_SOUND_FADE_NONE;
+            m_iFadeType = SOUND_FADE_NONE;
             return S_FALSE;
         }
         i32 newVolume = m_iCurFadeProgress * 1000 / m_iTotalFade - 1000;
@@ -718,11 +714,11 @@ HRESULT CStreamingSound::UpdatePartialFadeOut()
 // FUNCTION: TH095 0x004543E0.
 HRESULT CStreamingSound::UpdatePartialFadeIn()
 {
-    if (m_iFadeType == TH095_SOUND_FADE_PARTIAL_IN)
+    if (m_iFadeType == SOUND_FADE_PARTIAL_IN)
     {
         if (--m_iCurFadeProgress <= 0)
         {
-            m_iFadeType = TH095_SOUND_FADE_NONE;
+            m_iFadeType = SOUND_FADE_NONE;
             return S_FALSE;
         }
         i32 newVolume = 0 - m_iCurFadeProgress * 1000 / m_iTotalFade;

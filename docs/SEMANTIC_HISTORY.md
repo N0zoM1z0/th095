@@ -20676,3 +20676,21 @@ bytes for 39 streams. They agree on 78 decompression cases, including
 history wraparound and both output allocation paths, and on two
 allocation failures. The normal links retain their mapped bytes.
 Evidence is under `.analysis/pi/pbg-owners/`.
+
+### SEM-519 — share the streaming audio fade type
+
+The streaming updates, Play and Stop, and the BGM command queue now use
+the same four-byte `SoundFadeType` in both builds. The fade counter
+advances for the matching mode. It clears that mode at completion, and
+the full fade-out path stops the DirectSound buffer.
+
+Both builds emit the natural sound manager constructor. Its 23 bytes
+match the shared retail body at `0x00452E50` and the PBG archive entry
+keeps the canonical unit for that address.
+
+All 598 units in the affected header closure pass strict comparison.
+The four streaming updates and two SoundPlayer callers also match
+from normal COFF. Retail and both link orders agree on 392 fade
+transitions and 16 queued fade-out cases with simulated DirectSound
+callbacks. Both links retain their mapped bytes. Evidence is under
+`.analysis/pi/sound-fade-shared/`.

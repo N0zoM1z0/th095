@@ -30,5 +30,3 @@
 1	src/SceneSelectUpdate.cpp	#ifdef TH095_MATCH_EXACT
 1	src/Supervisor.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Supervisor.hpp	#ifndef TH095_MATCH_EXACT
-1	src/zwave.cpp	#ifndef TH095_MATCH_EXACT
-2	src/zwave.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)

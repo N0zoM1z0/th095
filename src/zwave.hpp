@@ -35,13 +35,6 @@ struct ThBgmFormat;
 #define WAVEFILE_READ 1
 #define WAVEFILE_WRITE 2
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_SOUND_FADE_NONE 0
-#define TH095_SOUND_FADE_OUT 1
-#define TH095_SOUND_FADE_IN 2
-#define TH095_SOUND_FADE_PARTIAL_IN 3
-#define TH095_SOUND_FADE_PARTIAL_OUT 4
-#else
 enum SoundFadeType
 {
     SOUND_FADE_NONE = 0,
@@ -52,12 +45,6 @@ enum SoundFadeType
 };
 typedef char SoundFadeTypeSizeIs4[
     (sizeof(SoundFadeType) == sizeof(INT)) ? 1 : -1];
-#define TH095_SOUND_FADE_NONE SOUND_FADE_NONE
-#define TH095_SOUND_FADE_OUT SOUND_FADE_OUT
-#define TH095_SOUND_FADE_IN SOUND_FADE_IN
-#define TH095_SOUND_FADE_PARTIAL_IN SOUND_FADE_PARTIAL_IN
-#define TH095_SOUND_FADE_PARTIAL_OUT SOUND_FADE_PARTIAL_OUT
-#endif
 
 #define DSUtil_StopSound(s)                                                                                            \
     {                                                                                                                  \
@@ -123,11 +110,7 @@ class CSound
     // Modifications by ZUN to this class
     INT m_iCurFadeProgress;
     INT m_iTotalFade;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    INT m_iFadeType;
-#else
     SoundFadeType m_iFadeType;
-#endif
     DWORD m_dwPriority;
     DWORD m_dwFlags;
     DWORD unconsumedDword28;
@@ -197,23 +180,23 @@ class CStreamingSound : public CSound
     HRESULT UpdatePartialFadeOut();
     void FadeOut(f32 seconds)
     {
-        m_iFadeType = TH095_SOUND_FADE_OUT;
+        m_iFadeType = SOUND_FADE_OUT;
         m_iTotalFade = m_iCurFadeProgress = seconds * 60;
     }
     void FadeIn(f32 seconds)
     {
-        this->m_iFadeType = TH095_SOUND_FADE_IN;
+        this->m_iFadeType = SOUND_FADE_IN;
         this->m_iTotalFade = this->m_iCurFadeProgress = seconds * 60;
         this->SetVolume(DSBVOLUME_MIN);
     }
     void PartialFadeOut(f32 seconds)
     {
-        this->m_iFadeType = TH095_SOUND_FADE_PARTIAL_OUT;
+        this->m_iFadeType = SOUND_FADE_PARTIAL_OUT;
         this->m_iTotalFade = this->m_iCurFadeProgress = seconds * 60;
     }
     void PartialFadeIn(f32 seconds)
     {
-        this->m_iFadeType = TH095_SOUND_FADE_PARTIAL_IN;
+        this->m_iFadeType = SOUND_FADE_PARTIAL_IN;
         this->m_iTotalFade = this->m_iCurFadeProgress = seconds * 60;
         this->SetVolume(-1000);
     }
