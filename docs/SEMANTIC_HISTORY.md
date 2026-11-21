@@ -20233,3 +20233,25 @@ positions, font state, replay timestamp addresses and notification
 lifetime. See `.analysis/pi/result-draw-owner/` for the drawing probe.
 ResultScreen's comparison layout and best-shot frame storage remain
 compiler emission debt.
+
+### SEM-496 — share the replay-name wire field
+
+Both builds declare the persisted name as a nine-byte C string at
+`ReplayInputData +0x07`. The writer pads the visible bytes to the array
+size minus one. The zero-initialized recording buffer supplies the
+terminator for a short name. The timestamp at `+0x10` and the `0xF8`
+header extent are pinned in both builds. The writer and result renderer
+use the same stored timestamp conversion.
+
+The 16 header consumers pass all 136 affected strict comparisons. The
+78 changed private COFF labels retain their relocation offsets, addends
+and target destinations. Both link orders resolve all 4,640 code and
+24 initialized-data references for these objects. The initializer table
+also retains all 15 game entries and the CRT cookie initializer.
+
+The original and both linked executables agree on 16 writer cases with
+zero-, one-, seven- and eight-character names, regular and EX levels,
+and two timestamps. The probe compares the input to compression, the
+metadata chunks and the address passed to the CRT. Both links also pass
+the 37 result draw and 20 replay-browser input cases. See
+`.analysis/pi/replay-name-owner/` for the local probes.

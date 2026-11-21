@@ -59,8 +59,7 @@
 3	src/ReplayManager.cpp	#ifdef DIFFBUILD
 2	src/ReplayManager.cpp	#ifdef TH095_MATCH_EXACT
 2	src/ReplayManager.cpp	#ifndef DIFFBUILD
-1	src/ReplayManager.hpp	#if !defined(TH095_MATCH_EXACT)
-2	src/ReplayManager.hpp	#if defined(TH095_MATCH_EXACT)
+1	src/ReplayManager.hpp	#if defined(TH095_MATCH_EXACT)
 2	src/ReplayManager.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/ReplayManager.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayManagerExact.inl	#ifdef TH095_MATCH_EXACT

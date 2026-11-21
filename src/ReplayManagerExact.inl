@@ -1,4 +1,5 @@
 #include "ReplayManager.hpp"
+#include "FrontEndLocalTime.hpp"
 #include "PhotoGameTask.hpp"
 #include "SceneData.hpp"
 #include "SupervisorRuntime.hpp"
@@ -242,7 +243,8 @@ ReplayManager::ReplayManager()
     locals.inputData = this->ownedInputData;
     strcpy(locals.inputData->replayName, replayName);
     for (locals.i = strlen(replayName);
-         locals.i < 8; locals.i++)
+         locals.i < static_cast<i32>(sizeof(locals.inputData->replayName) - 1);
+         locals.i++)
     {
         locals.inputData->replayName[locals.i] = ' ';
     }
@@ -319,7 +321,7 @@ ReplayManager::ReplayManager()
     }
     locals.userDataCursor += sprintf(locals.userDataCursor, "Scene %d\r\n",
                                      locals.inputData->scene + 1);
-    locals.localTime = localtime((time_t *)&locals.inputData->timestamp);
+    locals.localTime = LocalTimeFromStoredTimestamp(&locals.inputData->timestamp);
     locals.userDataCursor += sprintf(
         locals.userDataCursor, "Date %.2d/%.2d/%.2d %.2d:%.2d\r\n",
         locals.localTime->tm_year % 100, locals.localTime->tm_mon + 1,
