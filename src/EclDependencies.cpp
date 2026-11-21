@@ -1,5 +1,6 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoEnemyEclManager.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
@@ -10,18 +11,6 @@
 
 namespace th095
 {
-// TH095 keeps the runtime ECL manager at +0x4DF4 and its call-parameter
-// block at +0x168. Keep these bounded views private to avoid disturbing the
-// generic Enemy/TH08 ABI used by the exact 27KB RunEcl translation unit.
-struct PhotoEnemyEclContextView;
-struct PhotoEnemyEclManagerView
-{
-    u8 unknown000[0x168];
-    EclRunLow::EclCallParameterCopy callParameters;
-    i32 InitializeContext(PhotoEnemyEclContextView *context, i16 subroutineId);
-};
-typedef char EclDependencyManagerParametersAt168[(offsetof(PhotoEnemyEclManagerView, callParameters) == 0x168) ? 1 : -1];
-
 #ifdef DIFFBUILD
 #define TH095_ECL_DEP_INIT(manager, context, subroutineId) \
     (manager)->InitializeContext((context), (subroutineId))
@@ -281,8 +270,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
         reinterpret_cast<PhotoEnemyEclContextView *>(enemy->activeEclContext),
         static_cast<i16>(rawSubId));
 
-    *reinterpret_cast<EclCallParameterCopy *>(
-        &enemy->activeEclContext->callParameterInts[0]) =
+    enemy->activeEclContext->callParameters =
         g_PhotoEnemyManager->eclManager->callParameters;
 
     if (reinterpret_cast<PhotoEnemyView *>(enemy)->suppressEclCallStack == 0 &&

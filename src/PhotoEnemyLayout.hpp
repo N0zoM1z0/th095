@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AnmVertex.hpp"
+#include "EclCallParameters.hpp"
 #include "PhotoBulletSpawnDescriptor.hpp"
 #include "PhotoEnemyControl.hpp"
 #include "PhotoEnemyEclAccess.hpp"
@@ -32,8 +33,7 @@ struct PhotoEnemyEclScriptStateView
     f32 floatVariables[8];
     i32 extraIntVariables[4];
     f32 extraFloatVariables[4];
-    i32 callParameterInts[4];
-    f32 callParameterFloats[4];
+    EclCallParameters callParameters;
 };
 
 struct PhotoEnemyEclContextView
@@ -266,10 +266,9 @@ typedef char PhotoEnemyEclContextExtraFloatVariablesAt68[
     (offsetof(PhotoEnemyEclContextView, scriptState) +
          offsetof(PhotoEnemyEclScriptStateView, extraFloatVariables) ==
      PHOTO_ENEMY_ECL_CONTEXT_EXTRA_FLOAT_VARIABLES_OFFSET) ? 1 : -1];
-typedef char PhotoEnemyEclContextCallParameterFloatsAt88[
+typedef char PhotoEnemyEclContextCallParametersAt78[
     (offsetof(PhotoEnemyEclContextView, scriptState) +
-         offsetof(PhotoEnemyEclScriptStateView, callParameterFloats) ==
-     PHOTO_ENEMY_ECL_CONTEXT_CALL_PARAMETER_FLOATS_OFFSET) ? 1 : -1];
+         offsetof(PhotoEnemyEclScriptStateView, callParameters) == 0x78) ? 1 : -1];
 typedef char PhotoEnemyPhotoCaptureSubroutineAt285A[
     (offsetof(PhotoEnemyView, photoCaptureEclSubroutineId) ==
      PHOTO_ENEMY_ECL_PHOTO_CAPTURE_SUBROUTINE_OFFSET) ? 1 : -1];

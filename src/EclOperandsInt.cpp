@@ -1,5 +1,6 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoEnemyEclManager.hpp"
 #include "PhotoEnemyEclAccess.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #ifndef DIFFBUILD
@@ -11,16 +12,6 @@
 
 namespace th095
 {
-
-// TH095's runtime-owned ECL parameter block is distinct from an enemy's
-// current context.  The target accesses this pointer through the gameplay
-// runtime at +0x4DF4.
-struct EclSharedOperandView
-{
-    u8 unknown000[0x168];
-    i32 intVariables[4];
-    f32 floatVariables[4];
-};
 
 struct EclPhotoCounterView
 {
@@ -94,10 +85,10 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2716: return enemy->activeEclContext->intVariables[6];
     case 0x2717: return enemy->activeEclContext->intVariables[7];
 
-    case TH095_ECL_CALL_PARAMETER_INT0: return enemy->activeEclContext->callParameterInts[0];
-    case TH095_ECL_CALL_PARAMETER_INT1: return enemy->activeEclContext->callParameterInts[1];
-    case TH095_ECL_CALL_PARAMETER_INT2: return enemy->activeEclContext->callParameterInts[2];
-    case TH095_ECL_CALL_PARAMETER_INT3: return enemy->activeEclContext->callParameterInts[3];
+    case ECL_CALL_PARAMETER_INT0: return enemy->activeEclContext->callParameters.ints[0];
+    case ECL_CALL_PARAMETER_INT1: return enemy->activeEclContext->callParameters.ints[1];
+    case ECL_CALL_PARAMETER_INT2: return enemy->activeEclContext->callParameters.ints[2];
+    case ECL_CALL_PARAMETER_INT3: return enemy->activeEclContext->callParameters.ints[3];
     case 0x2724: return enemy->activeEclContext->extraIntVariables[0];
     case 0x2725: return enemy->activeEclContext->extraIntVariables[1];
     case 0x2726: return enemy->activeEclContext->extraIntVariables[2];
@@ -123,19 +114,19 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x271d: return (i32)enemy->activeEclContext->floatVariables[5];
     case 0x271e: return (i32)enemy->activeEclContext->floatVariables[6];
     case 0x271f: return (i32)enemy->activeEclContext->floatVariables[7];
-    case TH095_ECL_CALL_PARAMETER_FLOAT0: return (i32)enemy->activeEclContext->callParameterFloats[0];
-    case TH095_ECL_CALL_PARAMETER_FLOAT1: return (i32)enemy->activeEclContext->callParameterFloats[1];
-    case TH095_ECL_CALL_PARAMETER_FLOAT2: return (i32)enemy->activeEclContext->callParameterFloats[2];
-    case TH095_ECL_CALL_PARAMETER_FLOAT3: return (i32)enemy->activeEclContext->callParameterFloats[3];
+    case ECL_CALL_PARAMETER_FLOAT0: return (i32)enemy->activeEclContext->callParameters.floats[0];
+    case ECL_CALL_PARAMETER_FLOAT1: return (i32)enemy->activeEclContext->callParameters.floats[1];
+    case ECL_CALL_PARAMETER_FLOAT2: return (i32)enemy->activeEclContext->callParameters.floats[2];
+    case ECL_CALL_PARAMETER_FLOAT3: return (i32)enemy->activeEclContext->callParameters.floats[3];
 
-    case 0x273c: return reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[0];
-    case 0x273d: return reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[1];
-    case 0x273e: return reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[2];
-    case 0x273f: return reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->intVariables[3];
-    case 0x2740: return (i32)reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[0];
-    case 0x2741: return (i32)reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[1];
-    case 0x2742: return (i32)reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[2];
-    case 0x2743: return (i32)reinterpret_cast<EclSharedOperandView *>(g_PhotoEnemyManager->eclManager)->floatVariables[3];
+    case ECL_MANAGER_PARAMETER_INT0: return g_PhotoEnemyManager->eclManager->callParameters.ints[0];
+    case ECL_MANAGER_PARAMETER_INT1: return g_PhotoEnemyManager->eclManager->callParameters.ints[1];
+    case ECL_MANAGER_PARAMETER_INT2: return g_PhotoEnemyManager->eclManager->callParameters.ints[2];
+    case ECL_MANAGER_PARAMETER_INT3: return g_PhotoEnemyManager->eclManager->callParameters.ints[3];
+    case ECL_MANAGER_PARAMETER_FLOAT0: return (i32)g_PhotoEnemyManager->eclManager->callParameters.floats[0];
+    case ECL_MANAGER_PARAMETER_FLOAT1: return (i32)g_PhotoEnemyManager->eclManager->callParameters.floats[1];
+    case ECL_MANAGER_PARAMETER_FLOAT2: return (i32)g_PhotoEnemyManager->eclManager->callParameters.floats[2];
+    case ECL_MANAGER_PARAMETER_FLOAT3: return (i32)g_PhotoEnemyManager->eclManager->callParameters.floats[3];
 
     case 0x272a: return (i32)enemy->worldPosition.x;
     case 0x272b: return (i32)enemy->worldPosition.y;

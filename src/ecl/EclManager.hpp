@@ -3,6 +3,7 @@
 #include "Global.hpp"
 #include "AnmManagerEclView.hpp"
 #include "EclCallback.hpp"
+#include "EclCallParameters.hpp"
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 
@@ -241,8 +242,7 @@ struct EnemyEclContext
     f32 floatVariables[8];
     i32 extraIntVariables[4];
     f32 extraFloatVariables[4];
-    i32 callParameterInts[4];
-    f32 callParameterFloats[4];
+    EclCallParameters callParameters;
     ZunTimer secondaryTime;
     EnemyEclInterpolationSlot interpolationSlots[8];
     i32 unconsumedDword224;
@@ -256,7 +256,7 @@ typedef char EnemyEclContextIntVariablesOffsetCheck[offsetof(EnemyEclContext, in
 typedef char EnemyEclContextFloatVariablesOffsetCheck[offsetof(EnemyEclContext, floatVariables) == 0x38 ? 1 : -1];
 typedef char EnemyEclContextExtraIntVariablesOffsetCheck[offsetof(EnemyEclContext, extraIntVariables) == 0x58 ? 1 : -1];
 typedef char EnemyEclContextExtraFloatVariablesOffsetCheck[offsetof(EnemyEclContext, extraFloatVariables) == 0x68 ? 1 : -1];
-typedef char EnemyEclContextCallParametersOffsetCheck[offsetof(EnemyEclContext, callParameterInts) == 0x78 ? 1 : -1];
+typedef char EnemyEclContextCallParametersOffsetCheck[offsetof(EnemyEclContext, callParameters) == 0x78 ? 1 : -1];
 typedef char EnemyEclContextSecondaryTimerOffsetCheck[offsetof(EnemyEclContext, secondaryTime) == 0x98 ? 1 : -1];
 typedef char EnemyEclContextInterpolationSlotsOffsetCheck[offsetof(EnemyEclContext, interpolationSlots) == 0xa4 ? 1 : -1];
 typedef char EnemyEclContextUnconsumedOffsetCheck[offsetof(EnemyEclContext, unconsumedDword224) == 0x224 ? 1 : -1];

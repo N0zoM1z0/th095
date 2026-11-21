@@ -1,16 +1,12 @@
 #include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoEnemyEclManager.hpp"
 #include "PhotoEnemy.hpp"
 #include "PhotoEnemyManager.hpp"
 #include "PhotoItemManager.hpp"
 
 namespace th095
 {
-struct PhotoEnemyEclContextView;
-struct PhotoEnemyEclManagerView
-{
-    i32 InitializeContext(PhotoEnemyEclContextView *context, i16 subroutineId);
-};
 #ifndef DIFFBUILD
 struct EnemyEclContext;
 struct EclManager

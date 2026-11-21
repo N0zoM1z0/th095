@@ -1,17 +1,12 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoEnemyEclManager.hpp"
 #include "PhotoEnemyEclAccess.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #include "ecl/EclOperands.hpp"
 
 namespace th095
 {
-
-struct EclSharedIntLValueView
-{
-    u8 unknown000[0x168];
-    i32 intVariables[4];
-};
 
 
 namespace EclOperands
@@ -37,10 +32,10 @@ i32 *__fastcall ResolveIntLValue(
     case 0x2716: return &enemy->activeEclContext->intVariables[6];
     case 0x2717: return &enemy->activeEclContext->intVariables[7];
 
-    case TH095_ECL_CALL_PARAMETER_INT0: return &enemy->activeEclContext->callParameterInts[0];
-    case TH095_ECL_CALL_PARAMETER_INT1: return &enemy->activeEclContext->callParameterInts[1];
-    case TH095_ECL_CALL_PARAMETER_INT2: return &enemy->activeEclContext->callParameterInts[2];
-    case TH095_ECL_CALL_PARAMETER_INT3: return &enemy->activeEclContext->callParameterInts[3];
+    case ECL_CALL_PARAMETER_INT0: return &enemy->activeEclContext->callParameters.ints[0];
+    case ECL_CALL_PARAMETER_INT1: return &enemy->activeEclContext->callParameters.ints[1];
+    case ECL_CALL_PARAMETER_INT2: return &enemy->activeEclContext->callParameters.ints[2];
+    case ECL_CALL_PARAMETER_INT3: return &enemy->activeEclContext->callParameters.ints[3];
     case 0x2724: return &enemy->activeEclContext->extraIntVariables[0];
     case 0x2725: return &enemy->activeEclContext->extraIntVariables[1];
     case 0x2726: return &enemy->activeEclContext->extraIntVariables[2];
@@ -51,10 +46,10 @@ i32 *__fastcall ResolveIntLValue(
     case 0x275b: return &TH095_ECL_ITEM_DROP_TYPE(enemy);
     case 0x275c: return &TH095_ECL_ENEMY_SCORE(enemy);
 
-    case 0x273c: return &reinterpret_cast<EclSharedIntLValueView *>(g_PhotoEnemyManager->eclManager)->intVariables[0];
-    case 0x273d: return &reinterpret_cast<EclSharedIntLValueView *>(g_PhotoEnemyManager->eclManager)->intVariables[1];
-    case 0x273e: return &reinterpret_cast<EclSharedIntLValueView *>(g_PhotoEnemyManager->eclManager)->intVariables[2];
-    case 0x273f: return &reinterpret_cast<EclSharedIntLValueView *>(g_PhotoEnemyManager->eclManager)->intVariables[3];
+    case ECL_MANAGER_PARAMETER_INT0: return &g_PhotoEnemyManager->eclManager->callParameters.ints[0];
+    case ECL_MANAGER_PARAMETER_INT1: return &g_PhotoEnemyManager->eclManager->callParameters.ints[1];
+    case ECL_MANAGER_PARAMETER_INT2: return &g_PhotoEnemyManager->eclManager->callParameters.ints[2];
+    case ECL_MANAGER_PARAMETER_INT3: return &g_PhotoEnemyManager->eclManager->callParameters.ints[3];
     default: return operand;
     }
 }

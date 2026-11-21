@@ -1,5 +1,6 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoEnemyEclManager.hpp"
 #include "PhotoEnemyEclAccess.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #include "PhotoPlayerRuntime.hpp"
@@ -7,12 +8,6 @@
 
 namespace th095
 {
-
-struct EclSharedFloatLValueView
-{
-    u8 unknown000[0x178];
-    f32 floatVariables[4];
-};
 
 namespace EclOperands
 {
@@ -36,10 +31,10 @@ f32 *__fastcall ResolveFloatLValue(
     case 0x271e: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 6);
     case 0x271f: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 7);
 
-    case TH095_ECL_CALL_PARAMETER_FLOAT0: return &TH095_ECL_CONTEXT_CALL_PARAMETER_FLOAT(enemy, 0);
-    case TH095_ECL_CALL_PARAMETER_FLOAT1: return &TH095_ECL_CONTEXT_CALL_PARAMETER_FLOAT(enemy, 1);
-    case TH095_ECL_CALL_PARAMETER_FLOAT2: return &TH095_ECL_CONTEXT_CALL_PARAMETER_FLOAT(enemy, 2);
-    case TH095_ECL_CALL_PARAMETER_FLOAT3: return &TH095_ECL_CONTEXT_CALL_PARAMETER_FLOAT(enemy, 3);
+    case ECL_CALL_PARAMETER_FLOAT0: return &enemy->activeEclContext->callParameters.floats[0];
+    case ECL_CALL_PARAMETER_FLOAT1: return &enemy->activeEclContext->callParameters.floats[1];
+    case ECL_CALL_PARAMETER_FLOAT2: return &enemy->activeEclContext->callParameters.floats[2];
+    case ECL_CALL_PARAMETER_FLOAT3: return &enemy->activeEclContext->callParameters.floats[3];
 
     case 0x272a: return &TH095_ECL_ENEMY_POSITION(enemy, 0);
     case 0x272b: return &TH095_ECL_ENEMY_POSITION(enemy, 1);
@@ -53,10 +48,10 @@ f32 *__fastcall ResolveFloatLValue(
     case 0x275f: return &TH095_ECL_CONTEXT_EXTRA_FLOAT_VARIABLE(enemy, 2);
     case 0x2760: return &TH095_ECL_CONTEXT_EXTRA_FLOAT_VARIABLE(enemy, 3);
 
-    case 0x2740: return &reinterpret_cast<EclSharedFloatLValueView *>(g_PhotoEnemyManager->eclManager)->floatVariables[0];
-    case 0x2741: return &reinterpret_cast<EclSharedFloatLValueView *>(g_PhotoEnemyManager->eclManager)->floatVariables[1];
-    case 0x2742: return &reinterpret_cast<EclSharedFloatLValueView *>(g_PhotoEnemyManager->eclManager)->floatVariables[2];
-    case 0x2743: return &reinterpret_cast<EclSharedFloatLValueView *>(g_PhotoEnemyManager->eclManager)->floatVariables[3];
+    case ECL_MANAGER_PARAMETER_FLOAT0: return &g_PhotoEnemyManager->eclManager->callParameters.floats[0];
+    case ECL_MANAGER_PARAMETER_FLOAT1: return &g_PhotoEnemyManager->eclManager->callParameters.floats[1];
+    case ECL_MANAGER_PARAMETER_FLOAT2: return &g_PhotoEnemyManager->eclManager->callParameters.floats[2];
+    case ECL_MANAGER_PARAMETER_FLOAT3: return &g_PhotoEnemyManager->eclManager->callParameters.floats[3];
 
     case 0x2749: return &TH095_ECL_MOVEMENT_INTERPOLATION_ORIGIN(enemy, 0);
     case 0x274a: return &TH095_ECL_MOVEMENT_INTERPOLATION_ORIGIN(enemy, 1);

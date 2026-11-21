@@ -18554,3 +18554,25 @@ player-position selectors, ECL context pushes and opcodes 83, 84, 85 and
 109. The fixtures supply ECL entry, ANM and Chain boundaries, and compare
 the pointer reloaded after the call setup. Capture-drop, effect and
 task-lifetime fixtures also pass. See `.analysis/pi/photo-enemy-manager-owner/`.
+
+### SEM-417 — share the ECL call parameter layout
+
+The 0x188-byte script manager and the per-enemy context each hold four
+integers followed by four floats. Both builds now use the same record and
+16 named selectors. The four resolvers read either bank and expose writable
+addresses for the matching scalar type. The script manager constructor and
+destructor continue to be emitted with the EnemyInf resource lifecycle.
+
+`CallSubOnEnemy` saves the old context when stack pushes are enabled,
+initializes the subroutine, then reloads the script manager and assigns
+its parameter block. `SpawnWithContext` initializes the new enemy's
+context and copies the caller's full 0x80-byte script state before running
+the interpreter. This includes the caller's own eight parameters.
+
+All 167 affected exact comparisons pass. The 516 changed private label
+names retain their relocation offsets, kinds and destinations. Both normal
+links resolve all 91 EnemyInf references from 14 objects to the moved
+slot. The 89 targeted comparisons against retail cover both parameter
+banks, the call-stack snapshot and post-initialization reload, the full
+spawn copy and the inherited EnemyInf cases. See
+`.analysis/pi/ecl-call-parameter-owner/`.

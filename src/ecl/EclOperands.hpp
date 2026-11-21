@@ -9,16 +9,6 @@ struct Enemy;
 namespace EclOperands
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_ECL_CALL_PARAMETER_INT0 0x2734
-#define TH095_ECL_CALL_PARAMETER_INT1 0x2735
-#define TH095_ECL_CALL_PARAMETER_INT2 0x2736
-#define TH095_ECL_CALL_PARAMETER_INT3 0x2737
-#define TH095_ECL_CALL_PARAMETER_FLOAT0 0x2738
-#define TH095_ECL_CALL_PARAMETER_FLOAT1 0x2739
-#define TH095_ECL_CALL_PARAMETER_FLOAT2 0x273a
-#define TH095_ECL_CALL_PARAMETER_FLOAT3 0x273b
-#else
 enum EclCallParameterSelector
 {
     ECL_CALL_PARAMETER_INT0 = 0x2734,
@@ -29,16 +19,15 @@ enum EclCallParameterSelector
     ECL_CALL_PARAMETER_FLOAT1 = 0x2739,
     ECL_CALL_PARAMETER_FLOAT2 = 0x273a,
     ECL_CALL_PARAMETER_FLOAT3 = 0x273b,
+    ECL_MANAGER_PARAMETER_INT0 = 0x273c,
+    ECL_MANAGER_PARAMETER_INT1 = 0x273d,
+    ECL_MANAGER_PARAMETER_INT2 = 0x273e,
+    ECL_MANAGER_PARAMETER_INT3 = 0x273f,
+    ECL_MANAGER_PARAMETER_FLOAT0 = 0x2740,
+    ECL_MANAGER_PARAMETER_FLOAT1 = 0x2741,
+    ECL_MANAGER_PARAMETER_FLOAT2 = 0x2742,
+    ECL_MANAGER_PARAMETER_FLOAT3 = 0x2743,
 };
-#define TH095_ECL_CALL_PARAMETER_INT0 EclOperands::ECL_CALL_PARAMETER_INT0
-#define TH095_ECL_CALL_PARAMETER_INT1 EclOperands::ECL_CALL_PARAMETER_INT1
-#define TH095_ECL_CALL_PARAMETER_INT2 EclOperands::ECL_CALL_PARAMETER_INT2
-#define TH095_ECL_CALL_PARAMETER_INT3 EclOperands::ECL_CALL_PARAMETER_INT3
-#define TH095_ECL_CALL_PARAMETER_FLOAT0 EclOperands::ECL_CALL_PARAMETER_FLOAT0
-#define TH095_ECL_CALL_PARAMETER_FLOAT1 EclOperands::ECL_CALL_PARAMETER_FLOAT1
-#define TH095_ECL_CALL_PARAMETER_FLOAT2 EclOperands::ECL_CALL_PARAMETER_FLOAT2
-#define TH095_ECL_CALL_PARAMETER_FLOAT3 EclOperands::ECL_CALL_PARAMETER_FLOAT3
-#endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #define TH095_ECL_RANDOM_SELECTOR(rawValue, semanticName) rawValue
@@ -58,14 +47,4 @@ i32 *__fastcall ResolveIntLValue(Enemy *enemy, i32 *operand, u16 flags, i32 flag
 f32 *__fastcall ResolveFloatLValue(Enemy *enemy, f32 *operand, u16 flags, i32 flagIndex);
 
 } // namespace EclOperands
-
-namespace EclRunLow
-{
-struct EclCallParameterCopy
-{
-    i32 ints[4];
-    f32 floats[4];
-};
-extern EclCallParameterCopy g_EclCallParameters;
-} // namespace EclRunLow
 } // namespace th095
