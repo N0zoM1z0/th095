@@ -91,7 +91,8 @@ same script-state record and removes the float-variable offset accessors.
 SEM-420 shares their full context and interpolation-slot declarations and
 routes child creation, dispatch and return through the compact enemy array.
 SEM-421 routes the movement selectors through the compact enemy and
-preserves world-coordinate reads and local-coordinate writes.
+preserves world-coordinate reads and local-coordinate writes. SEM-422 shares
+the 0x2C deferred-shot instruction between ECL capture and cadence dispatch.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

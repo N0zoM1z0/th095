@@ -18644,3 +18644,24 @@ and identical relocation fields. Both normal link orders move
 retail comparisons include 64 movement cases with distinct local and
 world coordinates, writes with both operand-flag states, and spawns with
 nonzero position offsets. See `.analysis/pi/ecl-movement-operands/`.
+
+### SEM-422 — type the deferred ECL shot instruction
+
+The compact enemy stores a 0x2C shot instruction at +0x2B9C. The fixed
+record shares the general instruction header and names its 0x20 operand
+block. Storing a deferred instruction copies exactly this record regardless
+of the script's next-instruction displacement. At cadence expiry the
+dispatcher resolves the saved selectors against the active context.
+
+The interpreter and the periodic updater now use the typed shot record,
+interval and timer. Opcodes 95 and 96 reset or seed the timer for a nonzero
+interval. Opcodes 97 and 98 toggle the deferral bit. The periodic updater
+requires positive life and interval, while a scheduled call still clears
+the interval after restoring the template descriptor.
+
+All 167 affected exact units pass. The dispatcher moved in both normal
+link orders and its immediate and periodic call sites follow it. All 293
+retail comparisons agree in both layouts. The cases cover the nine shot
+opcodes, disabled cadence, fractional ticks and indirect selectors changed
+after saving the record. The game-object section comparison also passes
+in both links. See `.analysis/pi/ecl-deferred-shot/`.

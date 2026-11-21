@@ -3725,7 +3725,7 @@ def check_photo_enemy_owner() -> None:
         fail("ECL opcode 115 must store the complete scheduled call word")
     for marker in (
         "g_PhotoEnemyManager->photoTargets",
-        "TH095_ECL_SHOOT_INTERVAL_FRAMES",
+        "reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames",
         "reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks",
         "TH095_ENEMY_ECL_CONTROL_BITS",
         "TH095_ENEMY_ECL_SECONDARY_BITS",

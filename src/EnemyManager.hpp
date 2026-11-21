@@ -261,7 +261,7 @@ struct Enemy
     ZunTimer bossTimer;
     D3DCOLOR displayColor;
     BulletSpawnDescriptor bulletSpawnDescriptor;
-    u8 pendingShotInstruction[0x2c];
+    EclShotInstruction pendingShotInstruction;
     i32 shootIntervalFrames;
     ZunTimer shootIntervalTimer;
     BulletSpawnDescriptor laserSpawnDescriptor;

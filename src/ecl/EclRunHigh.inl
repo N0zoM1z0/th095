@@ -81,7 +81,7 @@ C_ASSERT(offsetof(LaserSpawnArgs, transformFlags) == 0x30);
 // Target behavior at 0x00422720 establishes this as the Enemy bullet-spawn
 // descriptor dispatcher.
 void __fastcall DispatchShotInstruction(Enemy *enemy,
-                                        EclRawInstruction *instruction);
+                                        EclShotInstruction *instruction);
 
 struct SpawnPacketTyped
 {
@@ -285,14 +285,14 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
         if (((TH08_ECL_CONTEXT_ENEMY(ctx)->flags1 >>
               ENEMY_FLAG_DEFER_BULLET_PATTERN_SHIFT) & 1) == 1)
         {
-            memcpy(TH08_ECL_CONTEXT_ENEMY(ctx)->pendingShotInstruction,
+            memcpy(&TH08_ECL_CONTEXT_ENEMY(ctx)->pendingShotInstruction,
                    TH08_ECL_CONTEXT_INSTRUCTION(ctx),
                    sizeof(TH08_ECL_CONTEXT_ENEMY(ctx)->pendingShotInstruction));
             break;
         }
         DispatchShotInstruction(
-                                TH08_ECL_CONTEXT_ENEMY(ctx),
-                                TH08_ECL_CONTEXT_INSTRUCTION(ctx));
+            TH08_ECL_CONTEXT_ENEMY(ctx),
+            reinterpret_cast<EclShotInstruction *>(TH08_ECL_CONTEXT_INSTRUCTION(ctx)));
         break;
 
     case 138:

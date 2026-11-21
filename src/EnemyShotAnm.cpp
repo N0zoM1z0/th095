@@ -7,7 +7,7 @@ namespace th095
 {
 namespace EclRunHigh
 {
-void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruction);
+void __fastcall DispatchShotInstruction(Enemy *enemy, EclShotInstruction *instruction);
 }
 
 #define TH095_ENEMY_PRIMARY_ANM (g_PhotoEnemyManager->enemyAnm)
@@ -17,19 +17,6 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruc
 static __forceinline i32 &TargetEnemyLife(Enemy *enemy)
 {
     return reinterpret_cast<PhotoEnemyView *>(enemy)->life;
-}
-static __forceinline EclRawInstruction *TargetEnemyPendingShot(Enemy *enemy)
-{
-    return reinterpret_cast<EclRawInstruction *>(
-        reinterpret_cast<PhotoEnemyView *>(enemy)->pendingShotInstruction);
-}
-static __forceinline i32 &TargetEnemyShootInterval(Enemy *enemy)
-{
-    return reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames;
-}
-static __forceinline ZunTimer &TargetEnemyShootTimer(Enemy *enemy)
-{
-    return reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalTimer;
 }
 #define TargetEnemyMirrorMovementX(enemy) \
     (reinterpret_cast<PhotoEnemyView *>(enemy)->mirrorMovementX)
@@ -58,13 +45,14 @@ void Enemy::UpdateShotAndAnm()
 
     if (TargetEnemyLife(this) > 0)
     {
-        if (TargetEnemyShootInterval(this) > 0)
+        if (reinterpret_cast<PhotoEnemyView *>(this)->shootIntervalFrames > 0)
         {
-            TargetEnemyShootTimer(this)++;
-            if (TargetEnemyShootTimer(this) >= TargetEnemyShootInterval(this))
+            reinterpret_cast<PhotoEnemyView *>(this)->shootIntervalTimer++;
+            if (reinterpret_cast<PhotoEnemyView *>(this)->shootIntervalTimer >= reinterpret_cast<PhotoEnemyView *>(this)->shootIntervalFrames)
             {
-                EclRunHigh::DispatchShotInstruction(this, TargetEnemyPendingShot(this));
-                TargetEnemyShootTimer(this) = 0;
+                EclRunHigh::DispatchShotInstruction(
+                    this, &reinterpret_cast<PhotoEnemyView *>(this)->pendingShotInstruction);
+                reinterpret_cast<PhotoEnemyView *>(this)->shootIntervalTimer = 0;
             }
         }
 

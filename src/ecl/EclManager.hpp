@@ -3,6 +3,7 @@
 #include "Global.hpp"
 #include "AnmManagerEclView.hpp"
 #include "EclCallback.hpp"
+#include "EclInstruction.hpp"
 #include "EnemyEclContext.hpp"
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
@@ -148,23 +149,6 @@ DIFFABLE_EXTERN(ChainElem, g_EffectManagerCalcChain);
 DIFFABLE_EXTERN(ChainElem, g_EffectManagerDrawChain);
 
 DIFFABLE_EXTERN(u32, g_EclGameTimeScaleFlags);
-union EclRawOperand
-{
-    i32 asInt;
-    f32 asFloat;
-};
-
-struct EclRawInstruction
-{
-    i32 time;
-    i16 opcode;
-    i16 nextOffset;
-    u8 serializedReserved08;
-    u8 difficultyMask;
-    u16 operandFlags;
-    EclRawOperand operands[1];
-};
-
 namespace EclRunLow
 {
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)

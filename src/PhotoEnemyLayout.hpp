@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AnmVertex.hpp"
+#include "EclInstruction.hpp"
 #include "EnemyEclContext.hpp"
 #include "PhotoBulletSpawnDescriptor.hpp"
 #include "PhotoEnemyControl.hpp"
@@ -86,7 +87,7 @@ struct PhotoEnemyView
     u8 unknown2984[4];
     u32 displayColor;                      // +0x2988
     PhotoBulletSpawnDescriptor bulletSpawnDescriptor; // +0x298c
-    u8 pendingShotInstruction[0x2c];       // +0x2b9c
+    EclShotInstruction pendingShotInstruction;       // +0x2b9c
     i32 shootIntervalFrames;               // +0x2bc8
     ZunTimer shootIntervalTimer;           // +0x2bcc
     i32 itemDropType;                      // +0x2bd8
@@ -241,12 +242,9 @@ typedef char PhotoEnemyEclTimerCurrentAt2974[
     (offsetof(PhotoEnemyView, eclTimer) + offsetof(ZunTimer, current) ==
         PHOTO_ENEMY_ECL_TIMER_CURRENT_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyShotCadenceAt2B9C[
-    (offsetof(PhotoEnemyView, pendingShotInstruction) ==
-         PHOTO_ENEMY_ECL_PENDING_SHOT_OFFSET &&
-     offsetof(PhotoEnemyView, shootIntervalFrames) ==
-         PHOTO_ENEMY_ECL_SHOOT_INTERVAL_FRAMES_OFFSET &&
-     offsetof(PhotoEnemyView, shootIntervalTimer) ==
-         PHOTO_ENEMY_ECL_SHOOT_INTERVAL_TIMER_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, pendingShotInstruction) == 0x2b9c &&
+     offsetof(PhotoEnemyView, shootIntervalFrames) == 0x2bc8 &&
+     offsetof(PhotoEnemyView, shootIntervalTimer) == 0x2bcc) ? 1 : -1];
 typedef char PhotoEnemyBulletDescriptorAt298C[
     (offsetof(PhotoEnemyView, bulletSpawnDescriptor) ==
          PHOTO_ENEMY_ECL_BULLET_DESCRIPTOR_OFFSET &&

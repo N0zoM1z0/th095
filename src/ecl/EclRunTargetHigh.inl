@@ -25,15 +25,15 @@
     case 94:
         if (TH095_TARGET_ENEMY_LIFE(enemy) <= 0)
             break;
-        if (((TH095_RUN_ECL_CONTROL_WORD(enemy)
-              >> 15) & 1U) != 0)
+        if (((reinterpret_cast<PhotoEnemyView *>(enemy)->flags1
+              >> PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_SHIFT) & 1U) != 0)
         {
-            memcpy(TH095_PHOTO_ENEMY_OBJECT_PTR(
-                       enemy, PHOTO_ENEMY_ECL_PENDING_SHOT_OFFSET, u8),
-                   instruction, 0x2c);
+            memcpy(&reinterpret_cast<PhotoEnemyView *>(enemy)->pendingShotInstruction,
+                   instruction, sizeof(EclShotInstruction));
             break;
         }
-        DispatchShotInstruction(enemy, instruction);
+        DispatchShotInstruction(
+            enemy, reinterpret_cast<EclShotInstruction *>(instruction));
         break;
 
     case 101:
@@ -56,24 +56,26 @@
     }
 
     case 95:
-        TH095_ECL_SHOOT_INTERVAL_FRAMES(enemy) = TH08_ECL_READ_I(ctx, 0);
-        if (TH095_ECL_SHOOT_INTERVAL_FRAMES(enemy) != 0)
-            InitializeEclTargetTimer(&TH095_ECL_SHOOT_INTERVAL_TIMER(enemy));
+        reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames = TH08_ECL_READ_I(ctx, 0);
+        if (reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames != 0)
+            InitializeEclTargetTimer(&reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalTimer);
         break;
 
     case 96:
-        TH095_ECL_SHOOT_INTERVAL_FRAMES(enemy) = TH08_ECL_READ_I(ctx, 0);
-        if (TH095_ECL_SHOOT_INTERVAL_FRAMES(enemy) != 0)
-            TH095_ECL_SHOOT_INTERVAL_TIMER(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames = TH08_ECL_READ_I(ctx, 0);
+        if (reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames != 0)
+            reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalTimer =
                 g_Rng.GetRandomU32InRange(
-                    TH095_ECL_SHOOT_INTERVAL_FRAMES(enemy));
+                    reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames);
         break;
 
     case 97:
-        TH095_RUN_ECL_CONTROL_WORD(enemy) |= 0x8000U;
+        reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 |=
+            PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_MASK;
         break;
     case 98:
-        TH095_RUN_ECL_CONTROL_WORD(enemy) &= 0xffff7fffU;
+        reinterpret_cast<PhotoEnemyView *>(enemy)->flags1 &=
+            ~PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_MASK;
         break;
 
     case 99:

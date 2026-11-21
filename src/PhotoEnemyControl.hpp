@@ -32,6 +32,12 @@ enum PhotoEnemyMovementControlMask
     PHOTO_ENEMY_MOVEMENT_MODE_MASK = 0x00000c00,
 };
 
+enum PhotoEnemyDeferredShotControl
+{
+    PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_SHIFT = 15,
+    PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_MASK = 1U << PHOTO_ENEMY_DEFER_SHOT_INSTRUCTION_SHIFT,
+};
+
 // Shared vocabulary for the compact enemy control word at +0x2BF4.  This is
 // a four-byte value type, not a second projection of the enemy allocation.
 struct PhotoEnemyControlBits
