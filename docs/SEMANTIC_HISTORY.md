@@ -20633,3 +20633,15 @@ both linked layouts agree on 36 movement and 216 shot cases, including
 the equality boundary of the distance gate. Both links retain their
 mapped bytes. The expansion alias and camera accesses also compile
 with pinned VC7.1. Evidence is under `.analysis/pi/player-owner-closure/`.
+
+### SEM-516 — share the menu data definitions
+
+ReplayBrowser's 256-byte path buffer, the Options joystick sentinel and
+the three Scene Select color symbols now have definitions in both builds.
+The retail initializer holds 32 in the signed joystick halfword and the
+same thirteen ARGB values in the palette and locked-state colors.
+
+All five affected exact units pass. COFF and the two linked layouts
+hold the same initial data as retail. Nine code references follow the
+five symbols across both link orders. The two links retain their mapped
+bytes. Evidence is under `.analysis/pi/menu-data-owners/`.

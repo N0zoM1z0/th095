@@ -13,9 +13,7 @@
 namespace th095
 {
 
-#ifndef DIFFBUILD
 char g_SelectedReplayPath[0x100];
-#endif
 
 // Target 0x004BDECC remembers the browser cursor.
 DIFFABLE_STATIC(i32, g_ReplayBrowserSelection);

@@ -10,11 +10,9 @@ namespace th095
 
 static const i16 OPTIONS_JOYSTICK_BUTTON_COUNT = 32;
 
-#ifndef DIFFBUILD
 // Target 0x004A5894 starts at the sentinel immediately beyond the 0..31
 // joystick-button range; Update replaces it after each poll.
 i16 g_OptionsLastJoystickButton = OPTIONS_JOYSTICK_BUTTON_COUNT;
-#endif
 
 inline u16 GetOptionsPressedButtons(u16 buttons)
 {

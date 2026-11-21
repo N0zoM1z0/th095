@@ -21,7 +21,6 @@
 namespace th095
 {
 
-#ifndef DIFFBUILD
 // Canonical scene-group palette at 0x004A5860 and locked-state colors at
 // 0x004A588C/0x004A5890.
 u32 g_SceneGroupColors[11] = {
@@ -30,7 +29,6 @@ u32 g_SceneGroupColors[11] = {
     0xffffc0e0, 0xffffb0ff, 0xff808080};
 u32 g_SceneLockedTransitionColor = 0xff8080ff;
 u32 g_SceneLockedInitialColor = 0xffffffff;
-#endif
 
 /*
  * The target keeps these eighteen simultaneously live values in one
