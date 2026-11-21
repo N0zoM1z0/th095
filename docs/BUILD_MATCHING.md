@@ -2229,6 +2229,14 @@ Combining both DirectInput failures into one acquisition emits 2,621 bytes.
 The existing source remains the closest observed form. See
 `.analysis/controller-get-input/keyboard-control-flow/`.
 
+Six probes vary the type of the keyboard ternary result. The three
+unsigned 32-bit forms emit the same 2,655 bytes and 22 relocations as the
+baseline. The three signed or unsigned 16-bit forms insert a register
+extension for each key test and emit 2,797 bytes in 629 instructions.
+Every variant reserves 0x11C, so narrowing the mask result leaves the
+retail stack gap unexplained. See
+`.analysis/controller-get-input/key-result-types/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
