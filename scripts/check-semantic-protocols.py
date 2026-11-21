@@ -3579,13 +3579,18 @@ def check_photo_enemy_owner() -> None:
             fail(f"exact-unit manifest lost canonical EnemyInf ABI: {symbol}")
 
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
+    callback_type = (SRC / "ecl" / "EclCallback.hpp").read_text(encoding="utf-8")
+    if "PhotoEnemyView *enemy, EclRawInstruction *instruction" not in callback_type:
+        fail("ECL extension callbacks must receive the compact enemy")
+    if "EclExtendedCallback g_EclExtendedCallbacks[22] = {" not in extended:
+        fail("EclExtended.cpp must define the 22-entry callback table")
     for retired in ("EXT_MOVEMENT_FLAGS", "reinterpret_cast<u8 *>(enemy) + 0x2bf4"):
         if retired in extended:
             fail(f"EclExtended restored raw compact-enemy control access: {retired}")
     for fact in (
-        "reinterpret_cast<PhotoEnemyView *>(enemy)->control.movementEasing",
+        "enemy->control.movementEasing",
         "PHOTO_ENEMY_EASING_OUT_QUADRATIC",
-        "reinterpret_cast<PhotoEnemyView *>(enemy)->control.movementMode",
+        "enemy->control.movementMode",
         "PHOTO_ENEMY_MOVEMENT_INTERPOLATED",
     ):
         if fact not in extended:

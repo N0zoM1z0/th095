@@ -174,8 +174,6 @@ enum EclComparisonOpcode
 #endif
 } // namespace EclRunLow
 
-extern EclExtendedCallback g_EclExInsn[32];
-
 // Only the target-observed fixed header is named here. Both pointer tables are
 // stored as file-relative offsets and are rebased in place by Load.
 struct EclRawHeader

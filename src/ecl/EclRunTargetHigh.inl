@@ -211,15 +211,14 @@ enter_subroutine:
         break;
 
     case 118:
-        g_Th095ExInsn[TH08_ECL_READ_I(ctx, 0)](
-            reinterpret_cast<Enemy *>(enemy), instruction);
+        g_EclExtendedCallbacks[TH08_ECL_READ_I(ctx, 0)](enemy, instruction);
         break;
 
     case 119:
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
             enemy->activeEclContext->perFrameCallback =
-                g_Th095ExInsn[TH08_ECL_READ_I(ctx, 0)];
+                g_EclExtendedCallbacks[TH08_ECL_READ_I(ctx, 0)];
             enemy->activeEclContext->perFrameInstruction = instruction;
         }
         else

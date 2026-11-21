@@ -275,7 +275,7 @@ i32 __fastcall DispatchExtendedValue(
 
 // ECL extended callback table entry 0 @ 0x00413380.
 void __fastcall SpawnDeathPhotoVms(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     TH095_EXT_CREATE_VM_WORLD(TH095_EXT_BULLET_ANM, 0x123, &enemy->position);
     for (i32 i = 0; i < 32; ++i)
@@ -286,7 +286,7 @@ void __fastcall SpawnDeathPhotoVms(
 
 // ECL extended callback table entry 6 @ 0x00413AA0.
 void __fastcall UpdatePlayerProximityAndMarker(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     struct ProximityLocals
     {
@@ -311,14 +311,14 @@ void __fastcall UpdatePlayerProximityAndMarker(
             (locals.distanceSquared - 1024.0f) / 3072.0f * 0.75f + 0.25f;
 
     locals.vm = TH095_EXT_ANM_GET_VM(
-        reinterpret_cast<PhotoEnemyView *>(enemy)->anmHandles[0].value);
+        enemy->anmHandles[0].value);
     if (locals.vm != NULL)
         TH095_EXT_PHOTO_TO_SCREEN(&locals.vm->positionOffset, &enemy->position);
 }
 
 // ECL extended callback table entry 9 @ 0x00413DA0.
 void __fastcall DispatchContextValues(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
 #ifdef DIFFBUILD
     DispatchExtendedValue(
@@ -341,14 +341,14 @@ void __fastcall DispatchContextValues(
 
 // ECL extended callback table entry 11 @ 0x00413F90.
 void __fastcall PublishGameSpeed(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     TH095_ECL_EXT_GAME_SPEED = enemy->activeEclContext->scriptState.floatVariables[7];
 }
 
 // ECL extended callback table entry 12 @ 0x00413FC0.
 void __fastcall SetBackgroundVmsState2(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
@@ -362,7 +362,7 @@ void __fastcall SetBackgroundVmsState2(
 
 // ECL extended callback table entry 13 @ 0x00414020.
 void __fastcall SetBackgroundVmsState3(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
@@ -377,21 +377,21 @@ void __fastcall SetBackgroundVmsState3(
 
 // ECL extended callback table entry 15 @ 0x00414230.
 void __fastcall SetPhotoFlag200(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     g_RuntimeGlobalStateOwner->photoSoundSuppressed = 1;
 }
 
 // ECL extended callback table entry 16 @ 0x00414260.
 void __fastcall ClearPhotoFlag200(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     g_RuntimeGlobalStateOwner->photoSoundSuppressed = 0;
 }
 
 // ECL extended callback table entry 18 @ 0x00414430.
 void __fastcall EnablePhotoTransition(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
@@ -410,7 +410,7 @@ void __fastcall EnablePhotoTransition(
 
 // ECL extended callback table entry 19 @ 0x004144E0.
 void __fastcall DisablePhotoTransition(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
@@ -428,7 +428,7 @@ void __fastcall DisablePhotoTransition(
 
 // ECL extended callback table entry 21 @ 0x00414930.
 void __fastcall ResetOwnedBulletMotion(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     ExtendedBulletView *bullet =
         reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
@@ -461,7 +461,7 @@ void __fastcall ResetOwnedBulletMotion(
 
 // ECL extended callback table entry 5 @ 0x00413990.
 void __fastcall FadeOwnedCapturedBullets(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     struct FadeLocals
     {
@@ -514,12 +514,12 @@ void __fastcall FadeOwnedCapturedBullets(
 // ECL extended callback table entry 7 @ 0x00413B90.
 // One real 12-byte vector local is reused: first as the 24px direction
 // offset, then as the projected first-marker position.
-void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall UpdateEnemyMarkerVms(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     ExtendedVector position;
     AnmVm *firstVm;
     firstVm = TH095_EXT_ANM_GET_VM(
-        reinterpret_cast<PhotoEnemyView *>(enemy)->anmHandles[0].value);
+        enemy->anmHandles[0].value);
     if (firstVm != NULL)
     {
         TH095_EXTENDED_FROM_ANGLE(position, enemy->movementAngle, 24.0f);
@@ -531,7 +531,7 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
         firstVm->rotation.z = enemy->movementAngle;
         position = *reinterpret_cast<ExtendedVector *>(&firstVm->positionOffset);
         firstVm = TH095_EXT_ANM_GET_VM(
-            reinterpret_cast<PhotoEnemyView *>(enemy)->anmHandles[1].value);
+            enemy->anmHandles[1].value);
         firstVm->positionOffset = *reinterpret_cast<Float3 *>(&position);
         firstVm->rotation.z = enemy->movementAngle;
     }
@@ -539,7 +539,7 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
 
 // ECL extended callback table entry 8 @ 0x00413CF0.
 void __fastcall SpawnEnemyMarkerVm(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     struct MarkerLocals
     {
@@ -565,7 +565,7 @@ static __forceinline i32 ExtendedCameraIsCharging(
 
 // ECL extended callback table entry 20 @ 0x00414580.
 void __fastcall RunPhotoTransition(
-    Enemy *enemy, EclRawInstruction *instruction)
+    PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     struct TransitionLocals
     {
@@ -659,9 +659,9 @@ void __fastcall RunPhotoTransition(
         locals.movementTimer->subFrame = 60.0f;
         locals.movementTimer->previous = -999999;
 
-        reinterpret_cast<PhotoEnemyView *>(enemy)->control.movementEasing =
+        enemy->control.movementEasing =
             PHOTO_ENEMY_EASING_OUT_QUADRATIC;
-        reinterpret_cast<PhotoEnemyView *>(enemy)->control.movementMode =
+        enemy->control.movementMode =
             PHOTO_ENEMY_MOVEMENT_INTERPOLATED;
 
         locals.zeroVelocity.x = 0.0f;
@@ -705,7 +705,7 @@ static __forceinline void FindSpawnedExtendedEffect(ExtendedEffectCallbackLocals
 }
 
 // ECL extended callback table entry 10 @ 0x00413DF0.
-void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall Callback10(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     ExtendedEffectCallbackLocals locals;
 
@@ -737,7 +737,7 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
 
 
 // ECL extended callback table entry 14 @ 0x00414090.
-void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall Callback14(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     ExtendedEffectCallbackLocals locals;
 
@@ -769,7 +769,7 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
 
 
 // ECL extended callback table entry 17 @ 0x00414290.
-void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall Callback17(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     ExtendedEffectCallbackLocals locals;
 
@@ -833,7 +833,7 @@ static __forceinline void SetExtendedBackgroundVm1State3()
 }
 
 // ECL extended callback table entry 1 @ 0x00413410.
-void __fastcall Callback01(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall Callback01(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     ExtendedBulletView *index;
     i32 bullet;
@@ -857,7 +857,7 @@ void __fastcall Callback01(Enemy *enemy, EclRawInstruction *instruction)
 }
 
 // ECL extended callback table entry 2 @ 0x004134A0.
-void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall Callback02(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     // Exact-facing lexical name; this stores the raw bits of vm.rotation.z.
     u32 savedActiveSprite;
@@ -903,7 +903,7 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
 }
 
 // ECL extended callback table entry 3 @ 0x00413620.
-void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall Callback03(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     ExtendedBulletView *index;
     i32 bullet;
@@ -934,7 +934,7 @@ void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
 }
 
 // ECL extended callback table entry 4 @ 0x00413750.
-void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
+void __fastcall Callback04(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
     // Exact-facing lexical name; this stores the raw bits of vm.rotation.z.
     u32 savedActiveSprite;
@@ -986,12 +986,9 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
 
 } // namespace EclExtended
 
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-namespace EclRunHigh
-{
 // Target 0x004A4270: opcode-118 extension entries 0..21.  Every pointer names
 // its reconstructed exact callback; no preferred-base address is embedded.
-EclExtendedCallback g_Th095ExInsn[22] = {
+EclExtendedCallback g_EclExtendedCallbacks[22] = {
     EclExtended::SpawnDeathPhotoVms,
     EclExtended::Callback01,
     EclExtended::Callback02,
@@ -1014,7 +1011,4 @@ EclExtendedCallback g_Th095ExInsn[22] = {
     EclExtended::DisablePhotoTransition,
     EclExtended::RunPhotoTransition,
     EclExtended::ResetOwnedBulletMotion};
-} // namespace EclRunHigh
-#endif
-
 } // namespace th095

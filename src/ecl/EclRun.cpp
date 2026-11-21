@@ -253,8 +253,7 @@ low_advance_instruction:
 
         if (enemy->activeEclContext->perFrameCallback)
             enemy->activeEclContext->perFrameCallback(
-                reinterpret_cast<Enemy *>(enemy),
-                enemy->activeEclContext->perFrameInstruction);
+                enemy, enemy->activeEclContext->perFrameInstruction);
 
         for (i = 0; i < 8; ++i, ++entry)
         {

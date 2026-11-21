@@ -156,7 +156,6 @@ inline i32 Th095PreserveI32(i32 value)
 
 extern AnmManagerLookup *g_Th095AnmManager;
 extern PhotoModeController *g_Th095PhotoMode;
-extern EclExtendedCallback g_Th095ExInsn[];
 
 inline void AddTimerValue(ZunTimer *timer, i32 value)
 {
@@ -860,22 +859,6 @@ enter_subroutine:
         }
         break;
     }
-    case 136:
-        g_EclExInsn[TH08_ECL_READ_I(ctx, 0)](
-            TH08_ECL_CONTEXT_ENEMY(ctx),
-            TH08_ECL_CONTEXT_INSTRUCTION(ctx));
-        break;
-    case 137:
-        if (TH08_ECL_READ_I(ctx, 0) >= 0)
-        {
-            TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->perFrameCallback =
-                g_EclExInsn[TH08_ECL_READ_I(ctx, 0)];
-            TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->perFrameInstruction =
-                TH08_ECL_CONTEXT_INSTRUCTION(ctx);
-        }
-        else
-            TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->perFrameCallback = 0;
-        break;
     case 141: g_ItemManager.SpawnItem(&TH08_ECL_CONTEXT_ENEMY(ctx)->position, static_cast<ItemType>(TH08_ECL_READ_I(ctx, 0)), ITEM_STATE_DEFAULT); break;
     case 95:
         g_EnemyManager.KillAllNonBossEnemies(8000, 0);

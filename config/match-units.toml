@@ -4867,7 +4867,7 @@ compare_size = 0x6C63
 relocations = [
   { offset = 0x16B, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
   { offset = 0x19F, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
-  { offset = 0x1F9, type = "DIR32", symbol = "$L78795", target = 0x0040F843 },
+  { offset = 0x1F9, type = "DIR32", symbol = "$L78792", target = 0x0040F843 },
   { offset = 0x21B, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUPhotoEnemyView@2@H@Z", target = 0x0040FAE0 },
   { offset = 0x28A, type = "REL32", symbol = "?ResolveIntLValue@EclOperands@th095@@YIPAHPAUPhotoEnemyView@2@PAHGH@Z", target = 0x00410300 },
   { offset = 0x2BD, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUPhotoEnemyView@2@H@Z", target = 0x0040FAE0 },
@@ -5098,10 +5098,10 @@ relocations = [
   { offset = 0x3520, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUPhotoEnemyView@2@H@Z", target = 0x0040FAE0 },
   { offset = 0x3576, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEHPAUEnemyEclContext@2@F@Z", target = 0x00408DE0 },
   { offset = 0x35E4, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUPhotoEnemyView@2@H@Z", target = 0x0040FAE0 },
-  { offset = 0x360B, type = "DIR32", symbol = "?g_Th095ExInsn@EclRunHigh@th095@@3PAP6IXPAUEnemy@2@PAUEclRawInstruction@2@@ZA", target = 0x004A4270 },
+  { offset = 0x360B, type = "DIR32", symbol = "?g_EclExtendedCallbacks@th095@@3PAP6IXPAUPhotoEnemyView@1@PAUEclRawInstruction@1@@ZA", target = 0x004A4270 },
   { offset = 0x362A, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUPhotoEnemyView@2@H@Z", target = 0x0040FAE0 },
   { offset = 0x3661, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUPhotoEnemyView@2@H@Z", target = 0x0040FAE0 },
-  { offset = 0x368B, type = "DIR32", symbol = "?g_Th095ExInsn@EclRunHigh@th095@@3PAP6IXPAUEnemy@2@PAUEclRawInstruction@2@@ZA", target = 0x004A4270 },
+  { offset = 0x368B, type = "DIR32", symbol = "?g_EclExtendedCallbacks@th095@@3PAP6IXPAUPhotoEnemyView@1@PAUEclRawInstruction@1@@ZA", target = 0x004A4270 },
   { offset = 0x36CE, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUPhotoEnemyView@2@H@Z", target = 0x0040FAE0 },
   { offset = 0x3709, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
   { offset = 0x3743, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
@@ -5334,7 +5334,7 @@ relocations = [
   { offset = 0x6418, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUPhotoEnemyView@2@H@Z", target = 0x0040FAE0 },
   { offset = 0x645C, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUPhotoEnemyView@2@H@Z", target = 0x0040FAE0 },
   { offset = 0x6576, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
-  { offset = 0x6635, type = "DIR32", symbol = "$L78796", target = 0x0040FABB },
+  { offset = 0x6635, type = "DIR32", symbol = "$L78793", target = 0x0040FABB },
   { offset = 0x6692, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
   { offset = 0x66B0, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
   { offset = 0x66C4, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
@@ -5348,170 +5348,170 @@ relocations = [
   { offset = 0x68C7, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
   { offset = 0x69BD, type = "REL32", symbol = "?UpdateMovement@PhotoEnemyView@th095@@QAEXXZ", target = 0x00412970 },
   { offset = 0x69C5, type = "REL32", symbol = "?UpdateShotAndAnm@PhotoEnemyView@th095@@QAEXXZ", target = 0x00413030 },
-  { offset = 0x69D3, type = "DIR32", symbol = "$L76965", target = 0x0040906D },
-  { offset = 0x69D7, type = "DIR32", symbol = "$L76966", target = 0x00409075 },
-  { offset = 0x69DB, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x69DF, type = "DIR32", symbol = "$L76972", target = 0x00409153 },
-  { offset = 0x69E3, type = "DIR32", symbol = "$L76968", target = 0x004090E6 },
-  { offset = 0x69E7, type = "DIR32", symbol = "$L76975", target = 0x004091AC },
-  { offset = 0x69EB, type = "DIR32", symbol = "$L76976", target = 0x004091FF },
-  { offset = 0x69EF, type = "DIR32", symbol = "$L76979", target = 0x00409253 },
-  { offset = 0x69F3, type = "DIR32", symbol = "$L76980", target = 0x004092C1 },
-  { offset = 0x69F7, type = "DIR32", symbol = "$L76983", target = 0x0040934F },
-  { offset = 0x69FB, type = "DIR32", symbol = "$L76987", target = 0x0040941E },
-  { offset = 0x69FF, type = "DIR32", symbol = "$L76991", target = 0x004094ED },
-  { offset = 0x6A03, type = "DIR32", symbol = "$L76995", target = 0x004095BD },
-  { offset = 0x6A07, type = "DIR32", symbol = "$L76999", target = 0x0040968D },
-  { offset = 0x6A0B, type = "DIR32", symbol = "$L76984", target = 0x004093B6 },
-  { offset = 0x6A0F, type = "DIR32", symbol = "$L76988", target = 0x00409485 },
-  { offset = 0x6A13, type = "DIR32", symbol = "$L76992", target = 0x00409555 },
-  { offset = 0x6A17, type = "DIR32", symbol = "$L76996", target = 0x00409625 },
-  { offset = 0x6A1B, type = "DIR32", symbol = "$L77000", target = 0x004096F5 },
-  { offset = 0x6A1F, type = "DIR32", symbol = "$L77005", target = 0x00409795 },
-  { offset = 0x6A23, type = "DIR32", symbol = "$L77011", target = 0x004098B1 },
-  { offset = 0x6A27, type = "DIR32", symbol = "$L77017", target = 0x004099CD },
-  { offset = 0x6A2B, type = "DIR32", symbol = "$L77023", target = 0x00409AEA },
-  { offset = 0x6A2F, type = "DIR32", symbol = "$L77029", target = 0x00409C09 },
-  { offset = 0x6A33, type = "DIR32", symbol = "$L77006", target = 0x0040981C },
-  { offset = 0x6A37, type = "DIR32", symbol = "$L77012", target = 0x00409938 },
-  { offset = 0x6A3B, type = "DIR32", symbol = "$L77018", target = 0x00409A55 },
-  { offset = 0x6A3F, type = "DIR32", symbol = "$L77024", target = 0x00409B74 },
-  { offset = 0x6A43, type = "DIR32", symbol = "$L77030", target = 0x00409C93 },
-  { offset = 0x6A47, type = "DIR32", symbol = "$L77035", target = 0x00409D33 },
-  { offset = 0x6A4B, type = "DIR32", symbol = "$L77036", target = 0x00409D69 },
-  { offset = 0x6A4F, type = "DIR32", symbol = "$L77037", target = 0x00409D9F },
-  { offset = 0x6A53, type = "DIR32", symbol = "$L77040", target = 0x00409E0A },
-  { offset = 0x6A57, type = "DIR32", symbol = "$L77043", target = 0x00409E75 },
-  { offset = 0x6A5B, type = "DIR32", symbol = "$L77055", target = 0x00409FE7 },
-  { offset = 0x6A5F, type = "DIR32", symbol = "$L77056", target = 0x00409FF7 },
-  { offset = 0x6A63, type = "DIR32", symbol = "$L77052", target = 0x00409F7F },
-  { offset = 0x6A67, type = "DIR32", symbol = "$L77057", target = 0x0040A007 },
-  { offset = 0x6A6B, type = "DIR32", symbol = "$L77062", target = 0x0040A0F2 },
-  { offset = 0x6A6F, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A73, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A77, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A7B, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A7F, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A83, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A87, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A8B, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A8F, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A93, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A97, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A9B, type = "DIR32", symbol = "$L77071", target = 0x0040A20D },
-  { offset = 0x6A9F, type = "DIR32", symbol = "$L77074", target = 0x0040A231 },
-  { offset = 0x6AA3, type = "DIR32", symbol = "$L77078", target = 0x0040A248 },
-  { offset = 0x6AA7, type = "DIR32", symbol = "$L77088", target = 0x0040A261 },
-  { offset = 0x6AAB, type = "DIR32", symbol = "$L77089", target = 0x0040A315 },
-  { offset = 0x6AAF, type = "DIR32", symbol = "$L77090", target = 0x0040A39B },
-  { offset = 0x6AB3, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6AB7, type = "DIR32", symbol = "$L77091", target = 0x0040A501 },
-  { offset = 0x6ABB, type = "DIR32", symbol = "$L77092", target = 0x0040A5B5 },
-  { offset = 0x6ABF, type = "DIR32", symbol = "$L77093", target = 0x0040A63B },
-  { offset = 0x6AC3, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6AC7, type = "DIR32", symbol = "$L77094", target = 0x0040A7A1 },
-  { offset = 0x6ACB, type = "DIR32", symbol = "$L77097", target = 0x0040A8AB },
-  { offset = 0x6ACF, type = "DIR32", symbol = "$L77102", target = 0x0040A941 },
-  { offset = 0x6AD3, type = "DIR32", symbol = "$L77103", target = 0x0040A951 },
-  { offset = 0x6AD7, type = "DIR32", symbol = "$L77108", target = 0x0040AA3A },
-  { offset = 0x6ADB, type = "DIR32", symbol = "$L77115", target = 0x0040AB68 },
-  { offset = 0x6ADF, type = "DIR32", symbol = "$L77116", target = 0x0040AB78 },
-  { offset = 0x6AE3, type = "DIR32", symbol = "$L77121", target = 0x0040AC18 },
-  { offset = 0x6AE7, type = "DIR32", symbol = "$L77128", target = 0x0040AD94 },
-  { offset = 0x6AEB, type = "DIR32", symbol = "$L77131", target = 0x0040ADF5 },
-  { offset = 0x6AEF, type = "DIR32", symbol = "$L77134", target = 0x0040AE54 },
-  { offset = 0x6AF3, type = "DIR32", symbol = "$L77147", target = 0x0040B059 },
-  { offset = 0x6AF7, type = "DIR32", symbol = "$L77156", target = 0x0040B1D3 },
-  { offset = 0x6AFB, type = "DIR32", symbol = "$L77161", target = 0x0040B2E1 },
-  { offset = 0x6AFF, type = "DIR32", symbol = "$L77162", target = 0x0040B3F6 },
-  { offset = 0x6B03, type = "DIR32", symbol = "$L77163", target = 0x0040B413 },
-  { offset = 0x6B07, type = "DIR32", symbol = "$L77168", target = 0x0040B494 },
-  { offset = 0x6B0B, type = "DIR32", symbol = "$L77173", target = 0x0040B515 },
-  { offset = 0x6B0F, type = "DIR32", symbol = "$L77174", target = 0x0040B646 },
-  { offset = 0x6B13, type = "DIR32", symbol = "$L77181", target = 0x0040B732 },
-  { offset = 0x6B17, type = "DIR32", symbol = "$L77287", target = 0x0040CCFF },
-  { offset = 0x6B1B, type = "DIR32", symbol = "$L77247", target = 0x0040C582 },
-  { offset = 0x6B1F, type = "DIR32", symbol = "$L77249", target = 0x0040C5C1 },
-  { offset = 0x6B23, type = "DIR32", symbol = "$L77255", target = 0x0040C6ED },
-  { offset = 0x6B27, type = "DIR32", symbol = "$L77189", target = 0x0040B81E },
-  { offset = 0x6B2B, type = "DIR32", symbol = "$L77189", target = 0x0040B81E },
-  { offset = 0x6B2F, type = "DIR32", symbol = "$L77189", target = 0x0040B81E },
-  { offset = 0x6B33, type = "DIR32", symbol = "$L77189", target = 0x0040B81E },
-  { offset = 0x6B37, type = "DIR32", symbol = "$L77189", target = 0x0040B81E },
-  { offset = 0x6B3B, type = "DIR32", symbol = "$L77189", target = 0x0040B81E },
-  { offset = 0x6B3F, type = "DIR32", symbol = "$L77189", target = 0x0040B81E },
-  { offset = 0x6B43, type = "DIR32", symbol = "$L77189", target = 0x0040B81E },
-  { offset = 0x6B47, type = "DIR32", symbol = "$L77189", target = 0x0040B81E },
-  { offset = 0x6B4B, type = "DIR32", symbol = "$L77196", target = 0x0040BA0E },
-  { offset = 0x6B4F, type = "DIR32", symbol = "$L77198", target = 0x0040BA90 },
-  { offset = 0x6B53, type = "DIR32", symbol = "$L77200", target = 0x0040BB53 },
-  { offset = 0x6B57, type = "DIR32", symbol = "$L77201", target = 0x0040BB70 },
-  { offset = 0x6B5B, type = "DIR32", symbol = "$L77202", target = 0x0040BB8D },
-  { offset = 0x6B5F, type = "DIR32", symbol = "$L77205", target = 0x0040BC51 },
-  { offset = 0x6B63, type = "DIR32", symbol = "$L77194", target = 0x0040B868 },
-  { offset = 0x6B67, type = "DIR32", symbol = "$L77300", target = 0x0040CF29 },
-  { offset = 0x6B6B, type = "DIR32", symbol = "$L77258", target = 0x0040C741 },
-  { offset = 0x6B6F, type = "DIR32", symbol = "$L77301", target = 0x0040CF44 },
-  { offset = 0x6B73, type = "DIR32", symbol = "$L77312", target = 0x0040D011 },
-  { offset = 0x6B77, type = "DIR32", symbol = "$L77214", target = 0x0040BE28 },
-  { offset = 0x6B7B, type = "DIR32", symbol = "$L77220", target = 0x0040BF05 },
-  { offset = 0x6B7F, type = "DIR32", symbol = "$L77218", target = 0x0040BE8C },
-  { offset = 0x6B83, type = "DIR32", symbol = "$L77208", target = 0x0040BCDF },
-  { offset = 0x6B87, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6B8B, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6B8F, type = "DIR32", symbol = "$L77216", target = 0x0040BE76 },
-  { offset = 0x6B93, type = "DIR32", symbol = "$L77227", target = 0x0040BFF8 },
-  { offset = 0x6B97, type = "DIR32", symbol = "$L77228", target = 0x0040C058 },
-  { offset = 0x6B9B, type = "DIR32", symbol = "$L77229", target = 0x0040C0D8 },
-  { offset = 0x6B9F, type = "DIR32", symbol = "$L77230", target = 0x0040C1C1 },
-  { offset = 0x6BA3, type = "DIR32", symbol = "$L77231", target = 0x0040C275 },
-  { offset = 0x6BA7, type = "DIR32", symbol = "$L77241", target = 0x0040C43E },
-  { offset = 0x6BAB, type = "DIR32", symbol = "$L77243", target = 0x0040C484 },
-  { offset = 0x6BAF, type = "DIR32", symbol = "$L77239", target = 0x0040C412 },
-  { offset = 0x6BB3, type = "DIR32", symbol = "$L77246", target = 0x0040C528 },
-  { offset = 0x6BB7, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6BBB, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6BBF, type = "DIR32", symbol = "$L77256", target = 0x0040C6FD },
-  { offset = 0x6BC3, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6BC7, type = "DIR32", symbol = "$L77261", target = 0x0040C829 },
-  { offset = 0x6BCB, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6BCF, type = "DIR32", symbol = "$L77263", target = 0x0040C855 },
-  { offset = 0x6BD3, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6BD7, type = "DIR32", symbol = "$L77264", target = 0x0040C8A2 },
-  { offset = 0x6BDB, type = "DIR32", symbol = "$L77266", target = 0x0040C8D8 },
-  { offset = 0x6BDF, type = "DIR32", symbol = "$L77212", target = 0x0040BDE6 },
-  { offset = 0x6BE3, type = "DIR32", symbol = "$L77272", target = 0x0040C9EE },
-  { offset = 0x6BE7, type = "DIR32", symbol = "$low_advance_instruction$76970", target = 0x0040F309 },
-  { offset = 0x6BEB, type = "DIR32", symbol = "$L77273", target = 0x0040CA59 },
-  { offset = 0x6BEF, type = "DIR32", symbol = "$L77275", target = 0x0040CA99 },
-  { offset = 0x6BF3, type = "DIR32", symbol = "$L77280", target = 0x0040CBD4 },
-  { offset = 0x6BF7, type = "DIR32", symbol = "$L77286", target = 0x0040CCA6 },
-  { offset = 0x6BFB, type = "DIR32", symbol = "$L77289", target = 0x0040CD5D },
-  { offset = 0x6BFF, type = "DIR32", symbol = "$L77290", target = 0x0040CD9F },
-  { offset = 0x6C03, type = "DIR32", symbol = "$L77291", target = 0x0040CDF5 },
-  { offset = 0x6C07, type = "DIR32", symbol = "$L77298", target = 0x0040CE4C },
-  { offset = 0x6C0B, type = "DIR32", symbol = "$L77299", target = 0x0040CE6C },
-  { offset = 0x6C0F, type = "DIR32", symbol = "$L77317", target = 0x0040D07E },
-  { offset = 0x6C13, type = "DIR32", symbol = "$L78481", target = 0x0040D190 },
-  { offset = 0x6C17, type = "DIR32", symbol = "$L78499", target = 0x0040D3C9 },
-  { offset = 0x6C1B, type = "DIR32", symbol = "$L78523", target = 0x0040D638 },
-  { offset = 0x6C1F, type = "DIR32", symbol = "$L78549", target = 0x0040D9A0 },
-  { offset = 0x6C23, type = "DIR32", symbol = "$L77408", target = 0x0040EFD4 },
-  { offset = 0x6C27, type = "DIR32", symbol = "$L77410", target = 0x0040F019 },
-  { offset = 0x6C2B, type = "DIR32", symbol = "$L77415", target = 0x0040F0F8 },
-  { offset = 0x6C2F, type = "DIR32", symbol = "$L77420", target = 0x0040F219 },
-  { offset = 0x6C33, type = "DIR32", symbol = "$L78575", target = 0x0040DD1C },
-  { offset = 0x6C37, type = "DIR32", symbol = "$L78601", target = 0x0040E082 },
-  { offset = 0x6C3B, type = "DIR32", symbol = "$L78627", target = 0x0040E3FC },
-  { offset = 0x6C3F, type = "DIR32", symbol = "$L78679", target = 0x0040EBD4 },
-  { offset = 0x6C43, type = "DIR32", symbol = "$L78653", target = 0x0040E7E7 },
-  { offset = 0x6C47, type = "DIR32", symbol = "$L77424", target = 0x0040F2B6 },
-  { offset = 0x6C4B, type = "DIR32", symbol = "$L77446", target = 0x0040F4A9 },
-  { offset = 0x6C4F, type = "DIR32", symbol = "$L77447", target = 0x0040F4C0 },
-  { offset = 0x6C53, type = "DIR32", symbol = "$L77448", target = 0x0040F4DD },
-  { offset = 0x6C57, type = "DIR32", symbol = "$L77449", target = 0x0040F500 },
-  { offset = 0x6C5B, type = "DIR32", symbol = "$L77450", target = 0x0040F532 },
-  { offset = 0x6C5F, type = "DIR32", symbol = "$L77451", target = 0x0040F56A },
+  { offset = 0x69D3, type = "DIR32", symbol = "$L76964", target = 0x0040906D },
+  { offset = 0x69D7, type = "DIR32", symbol = "$L76965", target = 0x00409075 },
+  { offset = 0x69DB, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x69DF, type = "DIR32", symbol = "$L76971", target = 0x00409153 },
+  { offset = 0x69E3, type = "DIR32", symbol = "$L76967", target = 0x004090E6 },
+  { offset = 0x69E7, type = "DIR32", symbol = "$L76974", target = 0x004091AC },
+  { offset = 0x69EB, type = "DIR32", symbol = "$L76975", target = 0x004091FF },
+  { offset = 0x69EF, type = "DIR32", symbol = "$L76978", target = 0x00409253 },
+  { offset = 0x69F3, type = "DIR32", symbol = "$L76979", target = 0x004092C1 },
+  { offset = 0x69F7, type = "DIR32", symbol = "$L76982", target = 0x0040934F },
+  { offset = 0x69FB, type = "DIR32", symbol = "$L76986", target = 0x0040941E },
+  { offset = 0x69FF, type = "DIR32", symbol = "$L76990", target = 0x004094ED },
+  { offset = 0x6A03, type = "DIR32", symbol = "$L76994", target = 0x004095BD },
+  { offset = 0x6A07, type = "DIR32", symbol = "$L76998", target = 0x0040968D },
+  { offset = 0x6A0B, type = "DIR32", symbol = "$L76983", target = 0x004093B6 },
+  { offset = 0x6A0F, type = "DIR32", symbol = "$L76987", target = 0x00409485 },
+  { offset = 0x6A13, type = "DIR32", symbol = "$L76991", target = 0x00409555 },
+  { offset = 0x6A17, type = "DIR32", symbol = "$L76995", target = 0x00409625 },
+  { offset = 0x6A1B, type = "DIR32", symbol = "$L76999", target = 0x004096F5 },
+  { offset = 0x6A1F, type = "DIR32", symbol = "$L77004", target = 0x00409795 },
+  { offset = 0x6A23, type = "DIR32", symbol = "$L77010", target = 0x004098B1 },
+  { offset = 0x6A27, type = "DIR32", symbol = "$L77016", target = 0x004099CD },
+  { offset = 0x6A2B, type = "DIR32", symbol = "$L77022", target = 0x00409AEA },
+  { offset = 0x6A2F, type = "DIR32", symbol = "$L77028", target = 0x00409C09 },
+  { offset = 0x6A33, type = "DIR32", symbol = "$L77005", target = 0x0040981C },
+  { offset = 0x6A37, type = "DIR32", symbol = "$L77011", target = 0x00409938 },
+  { offset = 0x6A3B, type = "DIR32", symbol = "$L77017", target = 0x00409A55 },
+  { offset = 0x6A3F, type = "DIR32", symbol = "$L77023", target = 0x00409B74 },
+  { offset = 0x6A43, type = "DIR32", symbol = "$L77029", target = 0x00409C93 },
+  { offset = 0x6A47, type = "DIR32", symbol = "$L77034", target = 0x00409D33 },
+  { offset = 0x6A4B, type = "DIR32", symbol = "$L77035", target = 0x00409D69 },
+  { offset = 0x6A4F, type = "DIR32", symbol = "$L77036", target = 0x00409D9F },
+  { offset = 0x6A53, type = "DIR32", symbol = "$L77039", target = 0x00409E0A },
+  { offset = 0x6A57, type = "DIR32", symbol = "$L77042", target = 0x00409E75 },
+  { offset = 0x6A5B, type = "DIR32", symbol = "$L77054", target = 0x00409FE7 },
+  { offset = 0x6A5F, type = "DIR32", symbol = "$L77055", target = 0x00409FF7 },
+  { offset = 0x6A63, type = "DIR32", symbol = "$L77051", target = 0x00409F7F },
+  { offset = 0x6A67, type = "DIR32", symbol = "$L77056", target = 0x0040A007 },
+  { offset = 0x6A6B, type = "DIR32", symbol = "$L77061", target = 0x0040A0F2 },
+  { offset = 0x6A6F, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A73, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A77, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A7B, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A7F, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A83, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A87, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A8B, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A8F, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A93, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A97, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A9B, type = "DIR32", symbol = "$L77070", target = 0x0040A20D },
+  { offset = 0x6A9F, type = "DIR32", symbol = "$L77073", target = 0x0040A231 },
+  { offset = 0x6AA3, type = "DIR32", symbol = "$L77077", target = 0x0040A248 },
+  { offset = 0x6AA7, type = "DIR32", symbol = "$L77087", target = 0x0040A261 },
+  { offset = 0x6AAB, type = "DIR32", symbol = "$L77088", target = 0x0040A315 },
+  { offset = 0x6AAF, type = "DIR32", symbol = "$L77089", target = 0x0040A39B },
+  { offset = 0x6AB3, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6AB7, type = "DIR32", symbol = "$L77090", target = 0x0040A501 },
+  { offset = 0x6ABB, type = "DIR32", symbol = "$L77091", target = 0x0040A5B5 },
+  { offset = 0x6ABF, type = "DIR32", symbol = "$L77092", target = 0x0040A63B },
+  { offset = 0x6AC3, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6AC7, type = "DIR32", symbol = "$L77093", target = 0x0040A7A1 },
+  { offset = 0x6ACB, type = "DIR32", symbol = "$L77096", target = 0x0040A8AB },
+  { offset = 0x6ACF, type = "DIR32", symbol = "$L77101", target = 0x0040A941 },
+  { offset = 0x6AD3, type = "DIR32", symbol = "$L77102", target = 0x0040A951 },
+  { offset = 0x6AD7, type = "DIR32", symbol = "$L77107", target = 0x0040AA3A },
+  { offset = 0x6ADB, type = "DIR32", symbol = "$L77114", target = 0x0040AB68 },
+  { offset = 0x6ADF, type = "DIR32", symbol = "$L77115", target = 0x0040AB78 },
+  { offset = 0x6AE3, type = "DIR32", symbol = "$L77120", target = 0x0040AC18 },
+  { offset = 0x6AE7, type = "DIR32", symbol = "$L77127", target = 0x0040AD94 },
+  { offset = 0x6AEB, type = "DIR32", symbol = "$L77130", target = 0x0040ADF5 },
+  { offset = 0x6AEF, type = "DIR32", symbol = "$L77133", target = 0x0040AE54 },
+  { offset = 0x6AF3, type = "DIR32", symbol = "$L77146", target = 0x0040B059 },
+  { offset = 0x6AF7, type = "DIR32", symbol = "$L77155", target = 0x0040B1D3 },
+  { offset = 0x6AFB, type = "DIR32", symbol = "$L77160", target = 0x0040B2E1 },
+  { offset = 0x6AFF, type = "DIR32", symbol = "$L77161", target = 0x0040B3F6 },
+  { offset = 0x6B03, type = "DIR32", symbol = "$L77162", target = 0x0040B413 },
+  { offset = 0x6B07, type = "DIR32", symbol = "$L77167", target = 0x0040B494 },
+  { offset = 0x6B0B, type = "DIR32", symbol = "$L77172", target = 0x0040B515 },
+  { offset = 0x6B0F, type = "DIR32", symbol = "$L77173", target = 0x0040B646 },
+  { offset = 0x6B13, type = "DIR32", symbol = "$L77180", target = 0x0040B732 },
+  { offset = 0x6B17, type = "DIR32", symbol = "$L77285", target = 0x0040CCFF },
+  { offset = 0x6B1B, type = "DIR32", symbol = "$L77245", target = 0x0040C582 },
+  { offset = 0x6B1F, type = "DIR32", symbol = "$L77247", target = 0x0040C5C1 },
+  { offset = 0x6B23, type = "DIR32", symbol = "$L77253", target = 0x0040C6ED },
+  { offset = 0x6B27, type = "DIR32", symbol = "$L77188", target = 0x0040B81E },
+  { offset = 0x6B2B, type = "DIR32", symbol = "$L77188", target = 0x0040B81E },
+  { offset = 0x6B2F, type = "DIR32", symbol = "$L77188", target = 0x0040B81E },
+  { offset = 0x6B33, type = "DIR32", symbol = "$L77188", target = 0x0040B81E },
+  { offset = 0x6B37, type = "DIR32", symbol = "$L77188", target = 0x0040B81E },
+  { offset = 0x6B3B, type = "DIR32", symbol = "$L77188", target = 0x0040B81E },
+  { offset = 0x6B3F, type = "DIR32", symbol = "$L77188", target = 0x0040B81E },
+  { offset = 0x6B43, type = "DIR32", symbol = "$L77188", target = 0x0040B81E },
+  { offset = 0x6B47, type = "DIR32", symbol = "$L77188", target = 0x0040B81E },
+  { offset = 0x6B4B, type = "DIR32", symbol = "$L77195", target = 0x0040BA0E },
+  { offset = 0x6B4F, type = "DIR32", symbol = "$L77197", target = 0x0040BA90 },
+  { offset = 0x6B53, type = "DIR32", symbol = "$L77199", target = 0x0040BB53 },
+  { offset = 0x6B57, type = "DIR32", symbol = "$L77200", target = 0x0040BB70 },
+  { offset = 0x6B5B, type = "DIR32", symbol = "$L77201", target = 0x0040BB8D },
+  { offset = 0x6B5F, type = "DIR32", symbol = "$L77204", target = 0x0040BC51 },
+  { offset = 0x6B63, type = "DIR32", symbol = "$L77193", target = 0x0040B868 },
+  { offset = 0x6B67, type = "DIR32", symbol = "$L77298", target = 0x0040CF29 },
+  { offset = 0x6B6B, type = "DIR32", symbol = "$L77256", target = 0x0040C741 },
+  { offset = 0x6B6F, type = "DIR32", symbol = "$L77299", target = 0x0040CF44 },
+  { offset = 0x6B73, type = "DIR32", symbol = "$L77310", target = 0x0040D011 },
+  { offset = 0x6B77, type = "DIR32", symbol = "$L77213", target = 0x0040BE28 },
+  { offset = 0x6B7B, type = "DIR32", symbol = "$L77219", target = 0x0040BF05 },
+  { offset = 0x6B7F, type = "DIR32", symbol = "$L77217", target = 0x0040BE8C },
+  { offset = 0x6B83, type = "DIR32", symbol = "$L77207", target = 0x0040BCDF },
+  { offset = 0x6B87, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6B8B, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6B8F, type = "DIR32", symbol = "$L77215", target = 0x0040BE76 },
+  { offset = 0x6B93, type = "DIR32", symbol = "$L77226", target = 0x0040BFF8 },
+  { offset = 0x6B97, type = "DIR32", symbol = "$L77227", target = 0x0040C058 },
+  { offset = 0x6B9B, type = "DIR32", symbol = "$L77228", target = 0x0040C0D8 },
+  { offset = 0x6B9F, type = "DIR32", symbol = "$L77229", target = 0x0040C1C1 },
+  { offset = 0x6BA3, type = "DIR32", symbol = "$L77230", target = 0x0040C275 },
+  { offset = 0x6BA7, type = "DIR32", symbol = "$L77240", target = 0x0040C43E },
+  { offset = 0x6BAB, type = "DIR32", symbol = "$L77241", target = 0x0040C484 },
+  { offset = 0x6BAF, type = "DIR32", symbol = "$L77238", target = 0x0040C412 },
+  { offset = 0x6BB3, type = "DIR32", symbol = "$L77244", target = 0x0040C528 },
+  { offset = 0x6BB7, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6BBB, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6BBF, type = "DIR32", symbol = "$L77254", target = 0x0040C6FD },
+  { offset = 0x6BC3, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6BC7, type = "DIR32", symbol = "$L77259", target = 0x0040C829 },
+  { offset = 0x6BCB, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6BCF, type = "DIR32", symbol = "$L77261", target = 0x0040C855 },
+  { offset = 0x6BD3, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6BD7, type = "DIR32", symbol = "$L77262", target = 0x0040C8A2 },
+  { offset = 0x6BDB, type = "DIR32", symbol = "$L77264", target = 0x0040C8D8 },
+  { offset = 0x6BDF, type = "DIR32", symbol = "$L77211", target = 0x0040BDE6 },
+  { offset = 0x6BE3, type = "DIR32", symbol = "$L77270", target = 0x0040C9EE },
+  { offset = 0x6BE7, type = "DIR32", symbol = "$low_advance_instruction$76969", target = 0x0040F309 },
+  { offset = 0x6BEB, type = "DIR32", symbol = "$L77271", target = 0x0040CA59 },
+  { offset = 0x6BEF, type = "DIR32", symbol = "$L77273", target = 0x0040CA99 },
+  { offset = 0x6BF3, type = "DIR32", symbol = "$L77278", target = 0x0040CBD4 },
+  { offset = 0x6BF7, type = "DIR32", symbol = "$L77284", target = 0x0040CCA6 },
+  { offset = 0x6BFB, type = "DIR32", symbol = "$L77287", target = 0x0040CD5D },
+  { offset = 0x6BFF, type = "DIR32", symbol = "$L77288", target = 0x0040CD9F },
+  { offset = 0x6C03, type = "DIR32", symbol = "$L77289", target = 0x0040CDF5 },
+  { offset = 0x6C07, type = "DIR32", symbol = "$L77296", target = 0x0040CE4C },
+  { offset = 0x6C0B, type = "DIR32", symbol = "$L77297", target = 0x0040CE6C },
+  { offset = 0x6C0F, type = "DIR32", symbol = "$L77315", target = 0x0040D07E },
+  { offset = 0x6C13, type = "DIR32", symbol = "$L78478", target = 0x0040D190 },
+  { offset = 0x6C17, type = "DIR32", symbol = "$L78496", target = 0x0040D3C9 },
+  { offset = 0x6C1B, type = "DIR32", symbol = "$L78520", target = 0x0040D638 },
+  { offset = 0x6C1F, type = "DIR32", symbol = "$L78546", target = 0x0040D9A0 },
+  { offset = 0x6C23, type = "DIR32", symbol = "$L77406", target = 0x0040EFD4 },
+  { offset = 0x6C27, type = "DIR32", symbol = "$L77408", target = 0x0040F019 },
+  { offset = 0x6C2B, type = "DIR32", symbol = "$L77413", target = 0x0040F0F8 },
+  { offset = 0x6C2F, type = "DIR32", symbol = "$L77418", target = 0x0040F219 },
+  { offset = 0x6C33, type = "DIR32", symbol = "$L78572", target = 0x0040DD1C },
+  { offset = 0x6C37, type = "DIR32", symbol = "$L78598", target = 0x0040E082 },
+  { offset = 0x6C3B, type = "DIR32", symbol = "$L78624", target = 0x0040E3FC },
+  { offset = 0x6C3F, type = "DIR32", symbol = "$L78676", target = 0x0040EBD4 },
+  { offset = 0x6C43, type = "DIR32", symbol = "$L78650", target = 0x0040E7E7 },
+  { offset = 0x6C47, type = "DIR32", symbol = "$L77422", target = 0x0040F2B6 },
+  { offset = 0x6C4B, type = "DIR32", symbol = "$L77443", target = 0x0040F4A9 },
+  { offset = 0x6C4F, type = "DIR32", symbol = "$L77444", target = 0x0040F4C0 },
+  { offset = 0x6C53, type = "DIR32", symbol = "$L77445", target = 0x0040F4DD },
+  { offset = 0x6C57, type = "DIR32", symbol = "$L77446", target = 0x0040F500 },
+  { offset = 0x6C5B, type = "DIR32", symbol = "$L77447", target = 0x0040F532 },
+  { offset = 0x6C5F, type = "DIR32", symbol = "$L77448", target = 0x0040F56A },
 ]
 
 [units.sound-player-initialize]
@@ -15866,7 +15866,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::SpawnDeathPhotoVms"]
-symbol = "?SpawnDeathPhotoVms@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?SpawnDeathPhotoVms@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413380
 size = 0x88
 relocations = [
@@ -15884,7 +15884,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::UpdatePlayerProximityAndMarker"]
-symbol = "?UpdatePlayerProximityAndMarker@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?UpdatePlayerProximityAndMarker@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413AA0
 size = 0xED
 relocations = [
@@ -15907,7 +15907,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::DispatchContextValues"]
-symbol = "?DispatchContextValues@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?DispatchContextValues@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413DA0
 size = 0x4F
 relocations = [
@@ -15919,7 +15919,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::PublishGameSpeed"]
-symbol = "?PublishGameSpeed@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?PublishGameSpeed@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413F90
 size = 0x22
 relocations = [
@@ -15931,7 +15931,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::SetBackgroundVmsState2"]
-symbol = "?SetBackgroundVmsState2@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?SetBackgroundVmsState2@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413FC0
 size = 0x5C
 relocations = [
@@ -15948,7 +15948,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::SetBackgroundVmsState3"]
-symbol = "?SetBackgroundVmsState3@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?SetBackgroundVmsState3@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00414020
 size = 0x66
 relocations = [
@@ -15966,7 +15966,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::SetPhotoFlag200"]
-symbol = "?SetPhotoFlag200@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?SetPhotoFlag200@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00414230
 size = 0x2D
 relocations = [
@@ -15979,7 +15979,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::ClearPhotoFlag200"]
-symbol = "?ClearPhotoFlag200@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?ClearPhotoFlag200@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00414260
 size = 0x2D
 relocations = [
@@ -15992,7 +15992,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::EnablePhotoTransition"]
-symbol = "?EnablePhotoTransition@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?EnablePhotoTransition@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00414430
 size = 0xA1
 relocations = [
@@ -16016,7 +16016,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::DisablePhotoTransition"]
-symbol = "?DisablePhotoTransition@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?DisablePhotoTransition@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x004144E0
 size = 0x97
 relocations = [
@@ -16039,7 +16039,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::ResetOwnedBulletMotion"]
-symbol = "?ResetOwnedBulletMotion@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?ResetOwnedBulletMotion@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00414930
 size = 0xB7
 relocations = [
@@ -16052,7 +16052,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::FadeOwnedCapturedBullets"]
-symbol = "?FadeOwnedCapturedBullets@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?FadeOwnedCapturedBullets@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413990
 size = 0x108
 relocations = [
@@ -16064,7 +16064,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::SpawnEnemyMarkerVm"]
-symbol = "?SpawnEnemyMarkerVm@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?SpawnEnemyMarkerVm@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413CF0
 size = 0xA4
 relocations = [
@@ -16079,7 +16079,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::RunPhotoTransition"]
-symbol = "?RunPhotoTransition@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?RunPhotoTransition@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00414580
 size = 0x3AA
 relocations = [
@@ -16148,7 +16148,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::UpdateEnemyMarkerVms"]
-symbol = "?UpdateEnemyMarkerVms@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?UpdateEnemyMarkerVms@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413B90
 size = 0x155
 relocations = [
@@ -21341,7 +21341,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::Callback10"]
-symbol = "?Callback10@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?Callback10@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413DF0
 size = 0x194
 relocations = [
@@ -21358,7 +21358,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::Callback14"]
-symbol = "?Callback14@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?Callback14@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00414090
 size = 0x194
 relocations = [
@@ -21375,7 +21375,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::Callback17"]
-symbol = "?Callback17@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?Callback17@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00414290
 size = 0x194
 relocations = [
@@ -21392,7 +21392,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::Callback01"]
-symbol = "?Callback01@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?Callback01@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413410
 size = 0x8C
 relocations = [
@@ -21407,7 +21407,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::Callback02"]
-symbol = "?Callback02@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?Callback02@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x004134A0
 size = 0x17A
 relocations = [
@@ -21430,7 +21430,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::Callback03"]
-symbol = "?Callback03@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?Callback03@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413620
 size = 0x125
 relocations = [
@@ -21452,7 +21452,7 @@ source = "src/EclExtended.cpp"
 object = "build/matching/EclExtended.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::EclExtended::Callback04"]
-symbol = "?Callback04@EclExtended@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+symbol = "?Callback04@EclExtended@th095@@YIXPAUPhotoEnemyView@2@PAUEclRawInstruction@2@@Z"
 target_address = 0x00413750
 size = 0x23F
 relocations = [

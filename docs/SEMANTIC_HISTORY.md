@@ -18889,3 +18889,25 @@ both normal links agree on 112 end-to-end interpolation trajectories
 and 329 cases covering shot dispatch, cadence and related bullet state.
 The four mapped sections in each normal link match the corresponding
 SEM-432 replay image. See `.analysis/pi/ecl-helper-owner/`.
+
+### SEM-435 — share the compact enemy and ECL extension table
+
+The 22 extended callbacks take `PhotoEnemyView *` and use its fields
+directly. Opcode 118 passes the compact enemy and current instruction.
+Opcode 119 stores the selected callback and instruction in the active ECL
+context for later frames. The stored callback uses the same argument types
+as the immediate call.
+
+Both profiles now emit `g_EclExtendedCallbacks` from `EclExtended.cpp`.
+The original table at 0x004A4270 identifies all 22 authored callbacks in
+order, and both compiled objects carry the corresponding 22 relocations.
+The two table references inside RunEcl follow the relocated table in both
+normal links. The old 32-slot TH08 declaration and its inactive dispatch
+cases are retired.
+
+All 167 affected exact comparisons pass. The dispatch fixture checks all
+22 slots in both opcodes, including indirect indices and clearing a
+stored callback. The 90 dispatch cases, 414 other opcode and photo callback
+cases, and 329 bullet cases agree with retail. The normal mapped sections
+match the SEM-432 replay images in both layouts. See
+`.analysis/pi/ecl-extended-owner/`.

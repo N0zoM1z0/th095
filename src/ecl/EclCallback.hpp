@@ -3,10 +3,12 @@
 namespace th095
 {
 
-struct Enemy;
+struct PhotoEnemyView;
 struct EclRawInstruction;
 
 typedef void (__fastcall *EclExtendedCallback)(
-    Enemy *enemy, EclRawInstruction *instruction);
+    PhotoEnemyView *enemy, EclRawInstruction *instruction);
+
+extern EclExtendedCallback g_EclExtendedCallbacks[22];
 
 } // namespace th095
