@@ -32,12 +32,6 @@ struct PhotoPlayerManagerView
     void Destroy();
 };
 
-struct PhotoEnemyManagerTaskView
-{
-    static PhotoEnemyManagerTaskView *Create();
-    void Destroy();
-};
-
 struct ResultScreen
 {
     static ResultScreen *Create();
@@ -118,7 +112,7 @@ struct PhotoGameTaskView
     PhotoBulletManagerView *bullets;     // +0x008
     PhotoPlayerManagerView *player;          // +0x00c
     ReplayManagerTaskView *replay;           // +0x010
-    PhotoEnemyManagerTaskView *enemies;      // +0x014
+    PhotoEnemyManagerView *enemies;          // +0x014
     PhotoStageStateView *photoOverlay;       // +0x018
     PhotoItemManagerView *items;         // +0x01c
     ResultScreen *pause;                     // +0x020
@@ -533,7 +527,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->enemies = PhotoEnemyManagerTaskView::Create();
+    this->enemies = PhotoEnemyManagerView::Create();
     if (this->enemies == NULL)
     {
         return ZUN_ERROR;

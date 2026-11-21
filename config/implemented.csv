@@ -542,11 +542,11 @@ th095::EclExtended::SpawnEnemyMarkerVm
 th095::EclExtended::RunPhotoTransition
 th095::EclExtended::UpdateEnemyMarkerVms
 th095::PhotoEnemyView::UpdateShotAndAnm
-th095::PhotoEnemyManagerTaskView::Create
-th095::PhotoEnemyManagerTaskView::Draw
-th095::PhotoEnemyManagerTaskView::DrawGroup
-th095::PhotoEnemyManagerTaskView::OnUpdate
-th095::PhotoEnemyManagerTaskView::OnDraw
+th095::PhotoEnemyManagerView::Create
+th095::PhotoEnemyManagerView::Draw
+th095::PhotoEnemyManagerView::DrawGroup
+th095::PhotoEnemyManagerView::OnTaskUpdate
+th095::PhotoEnemyManagerView::OnTaskDraw
 th095::MidiDevice::~MidiDevice
 th095::MidiDevice::OpenDevice
 th095::MidiDevice::Close

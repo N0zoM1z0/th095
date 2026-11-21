@@ -49,6 +49,11 @@ struct PhotoEnemyManagerView
     ~PhotoEnemyManagerView();
     void Destroy();
     i32 LoadResources();
+    static PhotoEnemyManagerView *Create();
+    i32 Draw();
+    i32 DrawGroup(i32 groupIndex);
+    static i32 __fastcall OnTaskUpdate(PhotoEnemyManagerView *manager);
+    static i32 __fastcall OnTaskDraw(PhotoEnemyManagerView *manager);
     static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
     PhotoEnemyView *Spawn(
         i32 subroutineId,

@@ -12,7 +12,7 @@ namespace th095
 struct Background;
 struct PhotoBulletManagerView;
 struct PhotoEffectManagerView;
-struct PhotoEnemyManagerTaskView;
+struct PhotoEnemyManagerView;
 struct PhotoFrontManagerView;
 struct PhotoGameUpdateView;
 struct PhotoItemManagerView;
@@ -35,7 +35,7 @@ struct PhotoGameTaskView
     PhotoBulletManagerView *bullets;         // +0x008
     PhotoGameUpdateView *player;             // +0x00c
     ReplayManager *replay;                   // +0x010
-    PhotoEnemyManagerTaskView *enemies;      // +0x014
+    PhotoEnemyManagerView *enemies;          // +0x014
     PhotoStageStateView *photoOverlay;        // +0x018
     PhotoItemManagerView *items;             // +0x01c
     ResultScreen *pause;                     // +0x020

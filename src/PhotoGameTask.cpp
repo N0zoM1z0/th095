@@ -35,12 +35,6 @@ namespace th095
 
 PhotoGameTaskView *g_RuntimeGlobalStateOwner; // 0x004BDEC8
 
-struct PhotoEnemyManagerTaskView
-{
-    static PhotoEnemyManagerTaskView *Create();
-};
-
-
 struct PhotoHelpMenuTaskView
 {
     u8 unknown000[0x6108];
@@ -486,7 +480,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->enemies = PhotoEnemyManagerTaskView::Create();
+    this->enemies = PhotoEnemyManagerView::Create();
     if (this->enemies == NULL)
     {
         return ZUN_ERROR;
@@ -525,7 +519,7 @@ PhotoGameTaskView::~PhotoGameTaskView()
     this->bullets->Destroy();
     this->player->Destroy();
     ReplayManager::Destroy(this->replay);
-    reinterpret_cast<PhotoEnemyManagerView *>(this->enemies)->Destroy();
+    this->enemies->Destroy();
     this->photoOverlay->Destroy();
     this->items->Destroy();
     this->pause->Destroy();

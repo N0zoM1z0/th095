@@ -340,3 +340,20 @@ CRT cookie initializer. The 172 import identities agree, including 127
 address-table entries that moved. See `.analysis/pi/active-task-consumers/`
 for the checks and `build/position-independence/active-task-consumers-demo0/`
 for the two traces.
+
+## Current EnemyInf link comparison
+
+SEM-430 gives the factory, draw traversal and chain callbacks one
+EnemyInf declaration. The factory moves from 0x004195E0 to 0x00442330.
+Both photo task builds call the factory and destruction methods through
+the same symbols. All twelve checked EnemyInf lifecycle, callback and
+ANM references follow their destinations. The retail executable and
+both links agree on allocation, callback registration, failure cleanup
+and draw traversal in the focused fixture.
+
+The current pair resolves 11,474 game code references and 639 initialized
+data references. The library replay resolves 7,748 code references and
+1,007 initialized data references, with five zero-relocation COMDAT
+sections handled as described above. Both builds import the same 172
+names or ordinals across nine DLLs, and 127 IAT entries move. See
+`.analysis/pi/enemy-manager-task/`.

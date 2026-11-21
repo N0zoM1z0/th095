@@ -65,11 +65,6 @@
 1	src/EclOperandsFloat.cpp	#ifndef DIFFBUILD
 3	src/EclOperandsInt.cpp	#ifdef DIFFBUILD
 1	src/EclOperandsInt.cpp	#ifndef DIFFBUILD
-3	src/EnemyManagerTask.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/EnemyManagerTask.cpp	#if defined(TH095_MATCH_EXACT)
-1	src/EnemyManagerTask.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/EnemyManagerTask.cpp	#ifdef TH095_MATCH_EXACT
-1	src/EnemyManagerTask.cpp	#ifndef DIFFBUILD
 1	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)

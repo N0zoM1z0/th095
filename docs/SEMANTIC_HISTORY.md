@@ -18787,3 +18787,20 @@ link orders, covering VM retention and interrupt delivery, attachment
 creation and cleanup, pulse state, the trail initializer call, and drawing
 fields. The related opcode, callback and enemy-state cases also pass.
 See `.analysis/pi/enemy-visual-fields/`.
+
+### SEM-430 — share the EnemyInf factory and callbacks
+
+The EnemyInf factory at 0x004149F0, draw traversal at 0x004161F0 and
+0x00416230, and chain callbacks at 0x00416290 and 0x004162F0 now live
+on `PhotoEnemyManagerView`. Both photo task profiles hold this manager
+at +0x14 and call its factory and destructor entry points. Drawing uses
+the canonical ANM manager after projecting each linked enemy's position.
+The task-specific manager layouts and ANM draw projection are retired.
+
+All 384 exact units that consume the changed declarations pass. The
+factory's ten-byte EH handler retains its FuncInfo destination and its
+eleven-byte cleanup still calls operator delete. Twelve reference sites
+in the factory, draw and task consumers follow their destinations in both
+normal links. Retail and both links agree in 66 cases covering load failure,
+chain publication, the update gate and the four draw-group heads.
+See `.analysis/pi/enemy-manager-task/`.
