@@ -51,7 +51,6 @@
 7	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
 2	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
 1	src/EclDependencies.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/EclDependencies.cpp	#ifdef DIFFBUILD
 2	src/EclExtended.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 9	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
@@ -75,9 +74,7 @@
 1	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-2	src/EnemyManagerUpdate.cpp	#ifdef DIFFBUILD
 1	src/EnemyManagerUpdate.cpp	#ifdef TH095_MATCH_EXACT
-1	src/EnemyManagerUpdate.cpp	#ifndef DIFFBUILD
 1	src/FileSystem.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FileSystem.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FileWrite.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -138,7 +135,6 @@
 1	src/PhotoGameTask.cpp	#ifdef TH095_MATCH_EXACT
 3	src/PhotoGameTask.cpp	#ifndef DIFFBUILD
 1	src/PhotoItemManager.cpp	#ifdef TH095_MATCH_EXACT
-1	src/PhotoRuntime.cpp	#ifndef DIFFBUILD
 2	src/PhotoStage.cpp	#ifdef DIFFBUILD
 1	src/PhotoStage.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoStage.cpp	#ifndef DIFFBUILD

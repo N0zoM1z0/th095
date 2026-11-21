@@ -84,8 +84,9 @@ SEM-415 publishes the typed BulletInf slot and shares the shot descriptor
 with the dispatcher and ECL opcode 99.
 SEM-416 shares the EnemyInf slot, layout, ANM and photo targets across
 ECL, camera and gameplay. SEM-417 shares the script-manager allocation
-and both call-parameter banks. The interpreter and context initializer
-still use two method receiver names.
+and both call-parameter banks. SEM-418 puts interpreter entry and context
+initialization on that allocation in both builds. The interpreter still
+uses the legacy enemy argument layout.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

@@ -1,5 +1,5 @@
 // TH095 target-order high opcode body.  This file is included lexically
-// inside EclManager::RunEcl so VC7 owns one shared frame and jump table.
+// inside PhotoEnemyEclManagerView::RunEcl so VC7 owns one shared frame and jump table.
 #define TH095_TARGET_ENEMY_LIFE(enemy) TH095_ECL_ENEMY_LIFE(enemy)
 #define TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy)                 \
     TH095_ECL_PHOTO_CAPTURE_SUBROUTINE(enemy)
@@ -156,8 +156,8 @@ enter_subroutine:
                    &enemy->mainEclContextStorage,
                    sizeof(enemy->mainEclContextStorage));
         }
-        this->CallEclSub(
-            &enemy->mainEclContextStorage,
+        this->InitializeContext(
+            reinterpret_cast<PhotoEnemyEclContextView *>(&enemy->mainEclContextStorage),
             enemy->eclSubroutineIds[enemy->pendingEclSubroutineIndex]);
         if (enemy->activeEclCallStackDepth < 15)
             ++enemy->activeEclCallStackDepth;
@@ -215,9 +215,10 @@ enter_subroutine:
                 TH095_ECL_CHILD_BLOCK(
                     enemy, lhsInt, EnemyChildEclBlock)->subId =
                     TH08_ECL_READ_I(ctx, 1);
-                this->CallEclSub(
-                    &TH095_ECL_CHILD_BLOCK(
-                         enemy, lhsInt, EnemyChildEclBlock)->eclContext,
+                this->InitializeContext(
+                    reinterpret_cast<PhotoEnemyEclContextView *>(
+                        &TH095_ECL_CHILD_BLOCK(
+                            enemy, lhsInt, EnemyChildEclBlock)->eclContext),
                     TH095_ECL_CHILD_BLOCK(
                         enemy, lhsInt, EnemyChildEclBlock)->subId);
                 memcpy(

@@ -18576,3 +18576,19 @@ slot. The 89 targeted comparisons against retail cover both parameter
 banks, the call-stack snapshot and post-initialization reload, the full
 spawn copy and the inherited EnemyInf cases. See
 `.analysis/pi/ecl-call-parameter-owner/`.
+
+### SEM-418 — bind both ECL entry methods to the live manager
+
+Context initialization at 0x00408DE0 and interpreter entry at 0x00408E70
+now use the 0x188-byte script-manager declaration in both builds. Enemy
+spawn, photo capture, reset and scheduled calls use the same initializer
+as the interpreter's pending and child subroutine paths. The interpreter
+keeps the established legacy enemy argument and the child context prefix.
+
+All 64 affected exact units pass, including the full RunEcl body, switch
+tables and relocations. Five call symbols and 423 private labels changed
+names while their relocation offsets, kinds and destinations stayed the same.
+Both normal link orders move the two methods and all 12 direct calls
+resolve to their new addresses. The 101 focused retail comparisons include
+negative and valid subroutine IDs, both timer resets and opcode 107 with
+stack depth and suppression controls. See `.analysis/pi/ecl-manager-methods/`.

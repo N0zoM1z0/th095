@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EclCallParameters.hpp"
+#include "ZunResult.hpp"
 
 #include <d3dx8math.h>
 #include <stdlib.h>
@@ -10,7 +11,7 @@ namespace th095
 {
 
 struct PhotoEnemyEclContextView;
-struct PhotoEnemyView;
+struct Enemy;
 
 struct PhotoEnemyEclFileView
 {
@@ -59,7 +60,7 @@ struct PhotoEnemyEclManagerView
     i32 Load(char *path);
     i32 InitializeContext(
         PhotoEnemyEclContextView *context, i16 subroutineId);
-    i32 RunEcl(PhotoEnemyView *enemy);
+    ::ZunResult RunEcl(Enemy *enemy);
 };
 
 typedef char PhotoEnemyEclManagerSizeIs188[

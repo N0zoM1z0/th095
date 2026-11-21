@@ -300,7 +300,6 @@ struct EclManager
     ZunResult Load(char *path);
     void Unload();
     EclRunResult CallEclSub(EnemyEclContext *context, i16 subId);
-    EclRunResult RunEcl(Enemy *enemy);
     i32 GetTimelineCount();
     EclTimelineInstruction *GetTimeline(i32 index);
 

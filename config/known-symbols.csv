@@ -13,7 +13,7 @@ address,name,module,confidence,evidence
 0x00407620,th095::PhotoBulletView::UpdateHorizontalWrap,BulletManager,exact,Canonical TH095 horizontal wrap transform update
 0x004076E0,th095::PhotoBulletView::UpdateVerticalWrap,BulletManager,exact,Canonical TH095 vertical wrap transform update
 0x00401C10,th095::AnmVm::Initialize,AnmVm,exact,Canonical anm-vm-initialize VC7.1 comparison
-0x00408E70,th095::EclManager::RunEcl,EclManager,exact,Canonical 0x69D3 authored body and 0x6C63 COFF extent with 647 replayed relocations
+0x00408E70,th095::PhotoEnemyEclManagerView::RunEcl,EclManager,exact,Canonical 0x69D3 authored body and 0x6C63 COFF extent with 647 replayed relocations
 0x00418720,th095::GameConfiguration::Initialize,Main,exact,Canonical 200-byte config initialization and controller-mapping serialization
 0x00420240,WinMain,Main,high,CRT call and complete TH095 application lifecycle
 0x00420770,th095::GameWindow::Render,Main,exact,Canonical main-render VC7.1 relocation replay

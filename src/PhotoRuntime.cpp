@@ -7,20 +7,6 @@
 
 namespace th095
 {
-#ifndef DIFFBUILD
-struct EnemyEclContext;
-struct EclManager
-{
-    ::ZunResult CallEclSub(EnemyEclContext *context, i16 subId);
-};
-#define TH095_PHOTO_RUNTIME_ECL_INIT(manager, context, subroutineId) \
-    reinterpret_cast<EclManager *>(manager)->CallEclSub( \
-        reinterpret_cast<EnemyEclContext *>(context), (subroutineId))
-#else
-#define TH095_PHOTO_RUNTIME_ECL_INIT(manager, context, subroutineId) \
-    (manager)->InitializeContext((context), (subroutineId))
-#endif
-
 // Keep the TH08 Float3 divide body in this call-site allocation phase.
 static __forceinline Float3 DividePhotoVector(
     const Float3 &value, f32 scalar)
@@ -88,8 +74,7 @@ int PhotoEnemyManagerView::CountPhotoTargets(
         }
         else
         {
-            TH095_PHOTO_RUNTIME_ECL_INIT(
-                this->eclManager,
+            this->eclManager->InitializeContext(
                 &locals.enemy->mainEclContext,
                 locals.enemy->photoCaptureEclSubroutineId);
         }

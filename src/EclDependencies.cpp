@@ -11,15 +11,6 @@
 
 namespace th095
 {
-#ifdef DIFFBUILD
-#define TH095_ECL_DEP_INIT(manager, context, subroutineId) \
-    (manager)->InitializeContext((context), (subroutineId))
-#else
-#define TH095_ECL_DEP_INIT(manager, context, subroutineId) \
-    reinterpret_cast<EclManager *>(manager)->CallEclSub( \
-        reinterpret_cast<EnemyEclContext *>(context), (subroutineId))
-#endif
-
 namespace EclRunLow
 {
 #define DEP_READ_INT(enemy, instruction, index) \
@@ -265,8 +256,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
             *enemy->activeEclContext;
     }
 
-    TH095_ECL_DEP_INIT(
-        g_PhotoEnemyManager->eclManager,
+    g_PhotoEnemyManager->eclManager->InitializeContext(
         reinterpret_cast<PhotoEnemyEclContextView *>(enemy->activeEclContext),
         static_cast<i16>(rawSubId));
 

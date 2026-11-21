@@ -31,6 +31,7 @@
 
 #include "../GameplayGlobals.hpp"
 #include "../PhotoEffectRuntime.hpp"
+#include "../PhotoEnemyEclManager.hpp"
 #include "../PhotoEnemyManagerLayout.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "../PhotoCardInfo.hpp"
@@ -182,7 +183,7 @@ static __forceinline void InitializeEclTargetTimer(ZunTimer *timer)
 }
 
 // FUNCTION: TH095 0x00408E70; TH08 0x004184B0 is the adjacent source oracle.
-EclRunResult EclManager::RunEcl(Enemy *enemy)
+::ZunResult PhotoEnemyEclManagerView::RunEcl(Enemy *enemy)
 {
     using namespace EclRunLow;
     using namespace EclRunHigh;
