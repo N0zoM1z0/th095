@@ -18,9 +18,6 @@ struct SceneTextureLoadLocals
 typedef char SceneTextureLoadLocalsSizeIs1C[
     (sizeof(SceneTextureLoadLocals) == 0x1c) ? 1 : -1];
 
-extern D3DFORMAT g_TextureFormatD3D8Mapping[6];
-extern u32 g_TextureFormatBytesPerPixel[6];
-
 void __fastcall AccumulateArgb8888Neighbor(u32 *sums, u8 *pixel,
                                            u32 *count)
 {

@@ -19182,3 +19182,21 @@ covering load, reset, lazy restoration, capture and release. In each
 layout, 48 checked surface references follow their symbols. The two
 images retain the four mapped sections of their SEM-445 replay images.
 See `.analysis/pi/anm-surface-owner/`.
+
+### SEM-448 — share the read-only ANM texture format tables
+
+Retail stores the six-entry D3D format table and the six-entry pixel
+stride table in read-only data. Both builds now emit the same tables
+from AnmPreload.cpp. The preloader and scene uploader use the shared
+declarations in AnmWireFormat.hpp.
+
+All 21 affected strict exact comparisons pass. The 17 table
+relocations retain their retail destinations. In both normal links,
+the tables stay read-only, carry the retail entries and move with their
+references. The retail executable and both links agree on 72 texture
+creation cases, 144 scene upload cases and ten alpha and clear cases.
+Both normal links complete all 2,712 demo0 indices with the same
+gameplay samples as retail. Their stage timers start at index 29,
+one index later than the retail reference. The library replay resolves
+all 7,748 code and 1,007 initialized-data relocations in both links.
+See `.analysis/pi/anm-texture-table-owner/`.

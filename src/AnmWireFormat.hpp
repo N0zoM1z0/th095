@@ -2,10 +2,16 @@
 #define TH095_ANM_WIRE_FORMAT_HPP
 
 #include "inttypes.hpp"
+#include <d3d8.h>
 #include <stddef.h>
 
 namespace th095
 {
+
+// Serialized texture formats map to a D3D format and a source pixel stride.
+extern const D3DFORMAT g_TextureFormatD3D8Mapping[6];
+extern const u32 g_TextureFormatBytesPerPixel[6];
+i32 __fastcall GetAnmFormat(i32 format);
 
 // ANM version 4 entry. Offsets are measured from the beginning of this record.
 struct AnmRawEntryView

@@ -30,18 +30,10 @@ class AnmPreloadMemoryView
 };
 
 extern AnmPreloadMemoryView g_AnmPreloadMemory;
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-// Canonical target .rdata tables at 0x00496F10 and 0x00496F28.  They map the
-// six serialized ANM texture formats to Direct3D8 formats and byte strides.
-D3DFORMAT g_TextureFormatD3D8Mapping[6] = {
+const D3DFORMAT g_TextureFormatD3D8Mapping[6] = {
     D3DFMT_UNKNOWN, D3DFMT_A8R8G8B8, D3DFMT_A1R5G5B5,
     D3DFMT_R5G6B5, D3DFMT_R8G8B8, D3DFMT_A4R4G4B4};
-u32 g_TextureFormatBytesPerPixel[6] = {4, 4, 2, 2, 3, 2};
-#else
-extern D3DFORMAT g_TextureFormatD3D8Mapping[6];
-extern u32 g_TextureFormatBytesPerPixel[6];
-#endif
-i32 __fastcall GetAnmFormat(i32 format);
+const u32 g_TextureFormatBytesPerPixel[6] = {4, 4, 2, 2, 3, 2};
 
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 // Runnable builds use Supervisor critical section 6 as the startup-worker
