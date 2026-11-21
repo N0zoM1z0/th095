@@ -2,6 +2,7 @@
 #include "SceneSelectUpdateExact.inl"
 #else
 #include "SceneSelect.hpp"
+#include "FrontEndController.hpp"
 #include "AnmVmInterpolation.hpp"
 #include "InputRuntime.hpp"
 
@@ -50,11 +51,7 @@ struct SceneSelectUpdateView
     ResultScreenReplayCursor sceneCursors[12];
     i32 selectedScoreEntryIndex;
     SceneAnmVmIdArray vmIds;
-    i8 lockedDisplayState;
-    i8 unattemptedDisplayState;
-    i8 belowRequirementDisplayState;
-    i8 attemptedDisplayState;
-    u8 unknown0e8c[6];
+    i8 specialDisplayStates[10];
     i8 currentDisplayState;
     u8 unknown0e93;
     AnmVmId previewTextVmIds[3];
@@ -890,7 +887,8 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->vmIds.SetInterrupt(initialSelectionIndex * 3 + 0x27, 3);
             }
         }
-        this->RefreshSceneSelection(view->selectedScoreEntryIndex);
+        reinterpret_cast<FrontEndControllerView *>(this)->RefreshSceneSelection(
+            view->selectedScoreEntryIndex);
     }
 
     if (SceneInputAnd(g_PressedButtons, TH_BUTTON_S) != 0)
@@ -1103,7 +1101,8 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                 }
                 g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
-                this->RefreshSceneSelection(view->selectedScoreEntryIndex);
+                reinterpret_cast<FrontEndControllerView *>(this)->RefreshSceneSelection(
+                    view->selectedScoreEntryIndex);
                 view->vmIds.SetInterrupt(0x12, 5);
                 view->vmIds.SetInterrupt(0x14, 5);
                 view->sceneAnm->SetSprite(
@@ -1288,7 +1287,7 @@ update_preview_text:
         }
     }
 
-    this->BuildScenePreviewText();
+    reinterpret_cast<FrontEndControllerView *>(this)->BuildScenePreviewText();
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 #undef pendingSecondaryFree
 #undef activeSceneCursor

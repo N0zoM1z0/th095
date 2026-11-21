@@ -18,6 +18,27 @@ void __cdecl SceneWriteText(SceneAnmManagerView *manager,
     manager->DrawTextLeft(vm, color, shadowColor, "%s", text);
 }
 
+#define DRAW_SCENE_PREVIEW_TEXT(vm, textColor, text) \
+    SceneWriteText(g_AnmManager, vm, textColor, 0, text)
+
+} // namespace th095
+
+#endif // TH095_MATCH_EXACT
+
+#include "AnmManager.hpp"
+#include "FrontEndController.hpp"
+
+namespace th095
+{
+
+enum ScenePreviewMessageSlot
+{
+    SCENE_PREVIEW_LOCKED = 0,
+    SCENE_PREVIEW_UNATTEMPTED = 1,
+    SCENE_PREVIEW_BELOW_REQUIREMENT = 2,
+    SCENE_PREVIEW_ATTEMPTED = 3,
+};
+
 static __forceinline void RefreshSelectionQueuePush(
     SceneValueQueue *queue, i32 value)
 {
@@ -42,8 +63,7 @@ static __forceinline void RefreshSelectionQueuePush(
 #define refreshUnlockGroup soundIndexLocal01
 #define refreshLockedGroup jLocal00
 #define refreshStateGroup preloadBufferLocal03
-void SceneSelectControllerView::RefreshSceneSelection(
-    i32 ignoredSelectedScoreEntryIndex)
+void FrontEndControllerView::RefreshSceneSelection(i32)
 {
     i8 refreshDisplayState;
     i32 refreshSelectedGroup;
@@ -57,17 +77,17 @@ void SceneSelectControllerView::RefreshSceneSelection(
     g_Supervisor.EnterCriticalSectionWrapper(4);
     g_Supervisor.criticalSectionLockCounts[4]++;
 
-    refreshSelectedGroup = this->selectedGroup;
-    refreshGroupCursorIndex = this->selectedGroup;
-    refreshSelectedScene = this->groupCursors[refreshGroupCursorIndex].current;
+    refreshSelectedGroup = this->groupCursor.current;
+    refreshGroupCursorIndex = this->groupCursor.current;
+    refreshSelectedScene = this->sceneCursors[refreshGroupCursorIndex].current;
     refreshSelectionQueue = &this->selectionQueue;
     RefreshSelectionQueuePush(
         refreshSelectionQueue,
         (refreshSelectedGroup << 8) | refreshSelectedScene);
 
-    this->vmIds.SetInterrupt(0x82, 1);
+    reinterpret_cast<SceneSelectControllerView *>(this)->vmIds.SetInterrupt(0x82, 1);
 
-    refreshUnlockGroup = this->selectedGroup;
+    refreshUnlockGroup = this->groupCursor.current;
     if (g_ResultSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
     {
         this->groupPreviewQueue.Push(
@@ -77,32 +97,32 @@ void SceneSelectControllerView::RefreshSceneSelection(
     }
     else
     {
-        refreshLockedGroup = this->selectedGroup;
+        refreshLockedGroup = this->groupCursor.current;
         this->groupPreviewQueue.Push(-(refreshLockedGroup + 1));
         this->scenePreviewQueue.Push(0);
     }
 
     refreshDisplayState = 0;
-    refreshStateGroup = this->selectedGroup;
+    refreshStateGroup = this->groupCursor.current;
     if (g_ResultSaveData->IsSceneGroupUnlocked(refreshStateGroup) == 0)
     {
-        refreshDisplayState = this->lockedDisplayState;
+        refreshDisplayState = this->specialDisplayStates[SCENE_PREVIEW_LOCKED];
     }
     else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex].score == 0)
     {
         if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex].captureTime == 0)
         {
-            refreshDisplayState = this->unattemptedDisplayState;
+            refreshDisplayState = this->specialDisplayStates[SCENE_PREVIEW_UNATTEMPTED];
         }
         else
         {
-            refreshDisplayState = this->attemptedDisplayState;
+            refreshDisplayState = this->specialDisplayStates[SCENE_PREVIEW_ATTEMPTED];
         }
     }
     else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex].score <
              g_SelectedScene->scoreRequirement)
     {
-        refreshDisplayState = this->belowRequirementDisplayState;
+        refreshDisplayState = this->specialDisplayStates[SCENE_PREVIEW_BELOW_REQUIREMENT];
     }
     else
     {
@@ -118,8 +138,8 @@ void SceneSelectControllerView::RefreshSceneSelection(
         this->stateHistory.values[this->stateHistory.count] = refreshDisplayState;
         this->stateHistory.count++;
         this->currentDisplayState = refreshDisplayState;
-        this->vmIds.SetInterrupt(0x15, 5);
-        this->vmIds.SetInterrupt(0x16, 5);
+        reinterpret_cast<SceneSelectControllerView *>(this)->vmIds.SetInterrupt(0x15, 5);
+        reinterpret_cast<SceneSelectControllerView *>(this)->vmIds.SetInterrupt(0x16, 5);
     }
 
     g_Supervisor.LeaveCriticalSectionWrapper(4);
@@ -135,79 +155,72 @@ void SceneSelectControllerView::RefreshSceneSelection(
 #undef refreshLockedGroup
 #undef refreshStateGroup
 
-#define DRAW_SCENE_PREVIEW_TEXT(vm, textColor, text) \
-    SceneWriteText(g_AnmManager, vm, textColor, 0, text)
-
-} // namespace th095
-
-#endif // TH095_MATCH_EXACT
-
-#include "AnmManager.hpp"
-
-namespace th095
-{
+// The preview VM handles still use the Scene Select overlay.
+#define PREVIEW_TEXT_VM(slot) \
+    (reinterpret_cast<SceneSelectControllerView *>(this)->previewTextVmIds[slot])
 
 // The three dynamic columns belong to text.anm, published by Supervisor.
-#define BUILD_SCENE_PREVIEW_LINE(vmSlot, scriptIndex, columnIndex)             \
-    this->previewTextVmIds[vmSlot] =                                           \
-        g_Supervisor.textAnm->CreateVm(scriptIndex, 7);                        \
-    g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphHeight = 0x13;   \
-    g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphWidth = 0x13;    \
-    if (g_ResultSaveData->IsSceneGroupUnlocked(this->GetSelectedGroup()) == 0) \
-    {                                                                          \
-        DRAW_SCENE_PREVIEW_TEXT(                                               \
-            g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00df8f8f,   \
-            this->ResolveSceneText(this->previewTextSources.lockedEncodedText, \
-                                   columnIndex, 0x62, 0));                     \
-    }                                                                          \
-    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex]  \
-                 .score == 0)                                                  \
-    {                                                                          \
-        if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex]   \
-                .captureTime == 0)                                             \
-        {                                                                      \
-            DRAW_SCENE_PREVIEW_TEXT(                                           \
-                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00df8f8f,\
-                this->ResolveSceneText(                                        \
-                    this->previewTextSources.unattemptedEncodedText,           \
-                    columnIndex, 0x62, 1));                                    \
-        }                                                                      \
-        else                                                                   \
-        {                                                                      \
-            DRAW_SCENE_PREVIEW_TEXT(                                           \
-                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00df8f8f,\
-                this->ResolveSceneText(                                        \
-                    this->previewTextSources.attemptedEncodedText,             \
-                    columnIndex, 0x62, 3));                                    \
-        }                                                                      \
-    }                                                                          \
-    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex]  \
-                 .score < g_SelectedScene->scoreRequirement)                   \
-    {                                                                          \
-        DRAW_SCENE_PREVIEW_TEXT(                                               \
-            g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00df8f8f,   \
-            this->ResolveSceneText(                                            \
-                this->previewTextSources.belowRequirementEncodedText,          \
-                columnIndex, 0x62, 2));                                        \
-    }                                                                          \
-    else                                                                       \
-    {                                                                          \
-        DRAW_SCENE_PREVIEW_TEXT(                                               \
-            g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00cfcfff,   \
-            g_SelectedScene->encodedTitleText != 0                             \
-                ? this->ResolveSceneText(                                      \
-                      g_SelectedScene->encodedTitleText, columnIndex,          \
-                      g_SelectedScene->group, g_SelectedScene->scene)          \
-                : " ");                                                        \
+#define BUILD_SCENE_PREVIEW_LINE(vmSlot, scriptIndex, columnIndex)                 \
+    PREVIEW_TEXT_VM(vmSlot) =                                                      \
+        g_Supervisor.textAnm->CreateVm(scriptIndex, 7);                            \
+    g_AnmManager->GetVm(PREVIEW_TEXT_VM(vmSlot))->glyphHeight = 0x13;              \
+    g_AnmManager->GetVm(PREVIEW_TEXT_VM(vmSlot))->glyphWidth = 0x13;               \
+    if (g_ResultSaveData->IsSceneGroupUnlocked(this->GetSelectedGroup()) == 0)    \
+    {                                                                              \
+        DRAW_SCENE_PREVIEW_TEXT(                                                   \
+            g_AnmManager->GetVm(PREVIEW_TEXT_VM(vmSlot)), 0x00df8f8f,              \
+            this->ResolveSceneText(                                                \
+                this->specialEncodedText[SCENE_PREVIEW_LOCKED],                    \
+                columnIndex, 0x62, SCENE_PREVIEW_LOCKED));                         \
+    }                                                                              \
+    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex]      \
+                 .score == 0)                                                      \
+    {                                                                              \
+        if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex]       \
+                .captureTime == 0)                                                 \
+        {                                                                          \
+            DRAW_SCENE_PREVIEW_TEXT(                                               \
+                g_AnmManager->GetVm(PREVIEW_TEXT_VM(vmSlot)), 0x00df8f8f,          \
+                this->ResolveSceneText(                                            \
+                    this->specialEncodedText[SCENE_PREVIEW_UNATTEMPTED],           \
+                    columnIndex, 0x62, SCENE_PREVIEW_UNATTEMPTED));                \
+        }                                                                          \
+        else                                                                       \
+        {                                                                          \
+            DRAW_SCENE_PREVIEW_TEXT(                                               \
+                g_AnmManager->GetVm(PREVIEW_TEXT_VM(vmSlot)), 0x00df8f8f,          \
+                this->ResolveSceneText(                                            \
+                    this->specialEncodedText[SCENE_PREVIEW_ATTEMPTED],             \
+                    columnIndex, 0x62, SCENE_PREVIEW_ATTEMPTED));                  \
+        }                                                                          \
+    }                                                                              \
+    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex]      \
+                 .score < g_SelectedScene->scoreRequirement)                       \
+    {                                                                              \
+        DRAW_SCENE_PREVIEW_TEXT(                                                   \
+            g_AnmManager->GetVm(PREVIEW_TEXT_VM(vmSlot)), 0x00df8f8f,              \
+            this->ResolveSceneText(                                                \
+                this->specialEncodedText[SCENE_PREVIEW_BELOW_REQUIREMENT],         \
+                columnIndex, 0x62, SCENE_PREVIEW_BELOW_REQUIREMENT));              \
+    }                                                                              \
+    else                                                                           \
+    {                                                                              \
+        DRAW_SCENE_PREVIEW_TEXT(                                                   \
+            g_AnmManager->GetVm(PREVIEW_TEXT_VM(vmSlot)), 0x00cfcfff,              \
+            g_SelectedScene->encodedTitleText != 0                                 \
+                ? this->ResolveSceneText(                                          \
+                      g_SelectedScene->encodedTitleText, columnIndex,              \
+                      g_SelectedScene->group, g_SelectedScene->scene)              \
+                : " ");                                                            \
     }
 
-void SceneSelectControllerView::BuildScenePreviewText()
+void FrontEndControllerView::BuildScenePreviewText()
 {
     if (this->previewTimer == 0)
     {
-        g_AnmManager->SetInterrupt(this->previewTextVmIds[0], 1);
-        g_AnmManager->SetInterrupt(this->previewTextVmIds[1], 1);
-        g_AnmManager->SetInterrupt(this->previewTextVmIds[2], 1);
+        g_AnmManager->SetInterrupt(PREVIEW_TEXT_VM(0), 1);
+        g_AnmManager->SetInterrupt(PREVIEW_TEXT_VM(1), 1);
+        g_AnmManager->SetInterrupt(PREVIEW_TEXT_VM(2), 1);
     }
     else if (this->previewTimer == 8)
     {
@@ -226,9 +239,10 @@ void SceneSelectControllerView::BuildScenePreviewText()
 }
 
 #undef BUILD_SCENE_PREVIEW_LINE
+#undef PREVIEW_TEXT_VM
 #undef DRAW_SCENE_PREVIEW_TEXT
 
-char *SceneSelectControllerView::ResolveSceneText(
+char *FrontEndControllerView::ResolveSceneText(
     SceneEncodedText encodedText,
     i32 column, i32 argument1, i32 argument2)
 {

@@ -2908,10 +2908,9 @@ def check_scene_value_queue_owner(
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         if '#include "SceneValueQueue.hpp"' not in source:
             fail(f"{name} lost the canonical raw queue include")
-    for name in ("SceneSelectController.cpp", "SceneSelectControllerExact.inl"):
-        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if source.count('#include "SceneValueQueue.inl"') != 1:
-            fail(f"{name} lost the shared Push/Pop implementation")
+    source = source_without_comments((SRC / "SceneSelectController.cpp").read_text(encoding="utf-8"))
+    if source.count('#include "SceneValueQueue.inl"') != 1:
+        fail("Scene Select lost the shared Push/Pop implementation")
     body = source_without_comments(
         body_text if body_text is not None
         else (SRC / "SceneValueQueue.inl").read_text(encoding="utf-8")
@@ -2944,9 +2943,9 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
         for field in ("groupPreviewDataQueue", "scenePreviewDataQueue"):
             if f"ScenePreviewDataQueue {field};" not in source:
                 fail(f"{name} lost the native address channel {field}")
-    for name in ("SceneSelectController.cpp", "SceneSelectControllerExact.inl"):
-        if '#include "ScenePreviewDataQueue.inl"' not in (SRC / name).read_text(encoding="utf-8"):
-            fail(f"{name} lost the shared address-word Pop")
+    source = (SRC / "SceneSelectController.cpp").read_text(encoding="utf-8")
+    if '#include "ScenePreviewDataQueue.inl"' not in source:
+        fail("Scene Select lost the shared address-word Pop")
     source = (SRC / "SceneSelectAssets.cpp").read_text(encoding="utf-8")
     for fragment in ("ScenePreviewDataPublish.inl", "ScenePreviewDataPublishNull.inl"):
         if f'#include "{fragment}"' not in source:

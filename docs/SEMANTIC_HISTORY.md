@@ -19918,3 +19918,28 @@ face-history priority and shift, Best Shot results, and locked and
 unlocked previews. Each cancellation source releases inner waits before
 publication, and completion restores the lock depth and sets the worker
 signals. See `.analysis/pi/scene-assets-owner/`.
+
+### SEM-482 — use the title owner for scene previews
+
+Scene Select refresh writes the selection queues and display history
+on the allocated `FrontEndControllerView`. The preview builder reads
+that object's timer and the same fallback text and display-state arrays
+that the title loader fills from `mission.msg`. Four named fallback slots
+tie the display state and decoded text to locked, unattempted,
+below-requirement, and attempted results. The controller still borrows
+Scene Select's VM handle overlay.
+
+Both builds share the refresh, queue operations, preview builder, and
+decoder. The normal renderer continues to pass decoded text as a
+literal string. The inline `GetSelectedGroup` on the allocated
+controller preserves a value home per text column. Reading the cursor
+directly reduced the pinned preview frame from `0x28` to `0x1C` and
+the comparison extent from `0x7C5` to `0x7B3`.
+
+All 102 affected strict comparisons pass. Both normal links preserve
+the prior nonrelocated instruction bytes for refresh, the preview
+builder, the decoder, and the full Scene Select update. The builder
+moves from `0x00443CB0` to `0x00416890` in the reversed link. The
+original and both rebuilt layouts agree on 96 selection refreshes,
+36 preview text cases, and 54 visibility cases including stale handles.
+See `.analysis/pi/scene-refresh-owner/`.

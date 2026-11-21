@@ -37,7 +37,9 @@ struct FrontEndControllerView
     SceneEncodedText specialEncodedText[10];
     i8 specialDisplayStates[10];
     i8 currentDisplayState;
-    u8 unknown0e93[0x15];
+    u8 unknown0e93[0x0d];
+    i32 previewTimer;
+    u8 unknown0ea4[4];
     ReplayManager *replays[80];
     u8 unknown0fe8[0x14];
     void *replayListData;
@@ -73,6 +75,13 @@ struct FrontEndControllerView
     void Destroy();
     ChainCallbackResult Update();
     ChainCallbackResult UpdateMainMenu();
+    void RefreshSceneSelection(i32 selectedScoreEntryIndex);
+    void BuildScenePreviewText();
+    i32 GetSelectedGroup()
+    {
+        return this->groupCursor.current;
+    }
+    char *ResolveSceneText(SceneEncodedText encodedText, i32 column, i32 group, i32 scene);
     static ChainCallbackResult __fastcall OnUpdate(void *controller);
     ChainCallbackResult Draw();
     static ChainCallbackResult __fastcall OnDraw(void *controller);
@@ -95,6 +104,10 @@ typedef char FrontEndLifecycleSpecialEncodedTextAtE60[
 typedef char FrontEndLifecycleDisplayStateAtE92[
     (offsetof(FrontEndControllerView, currentDisplayState) == 0xe92) ? 1
                                                                    : -1];
+typedef char FrontEndControllerSceneDisplayAtE88[
+    (offsetof(FrontEndControllerView, specialEncodedText) == 0xe60 &&
+     offsetof(FrontEndControllerView, specialDisplayStates) == 0xe88 &&
+     offsetof(FrontEndControllerView, previewTimer) == 0xea0) ? 1 : -1];
 typedef char FrontEndLifecycleReplaysAtEA8[
     (offsetof(FrontEndControllerView, replays) == 0xea8) ? 1 : -1];
 typedef char FrontEndLifecycleReplayListDataAtFFC[

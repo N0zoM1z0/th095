@@ -15,7 +15,6 @@
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
-#include "ScenePreviewTextSources.hpp"
 #include "ZunTimer.hpp"
 #include <time.h>
 
@@ -153,16 +152,8 @@ struct SceneSelectControllerView
     ResultScreenReplayCursor secondaryCursor;
     SceneGroupCursorView groupCursors[12];
     i32 selectedScoreEntryIndex;
-    union
-    {
-        SceneAnmVmIdArray vmIds;
-        ScenePreviewTextSourcesView previewTextSources;
-    };
-    i8 lockedDisplayState;
-    i8 unattemptedDisplayState;
-    i8 belowRequirementDisplayState;
-    i8 attemptedDisplayState;
-    u8 unknown0e8c[6];
+    SceneAnmVmIdArray vmIds;
+    i8 specialDisplayStates[10];
     i8 currentDisplayState;
     u8 unknown0e93;
     AnmVmId previewTextVmIds[3];
@@ -196,8 +187,6 @@ struct SceneSelectControllerView
         return this->selectedGroup;
     }
 
-    void RefreshSceneSelection(i32 unused);
-    void BuildScenePreviewText();
     void UpdateSelectedSceneDetails();
     ChainCallbackResult UpdateSceneSelect();
     void CloseMainMenu();
@@ -222,9 +211,6 @@ struct SceneSelectControllerView
     {
         g_SceneAnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord &= ~2;
     }
-
-    char *ResolveSceneText(SceneEncodedText encodedText, i32 column, i32 argument1,
-                           i32 argument2);
 };
 
 
@@ -276,10 +262,7 @@ typedef char SceneSelectScoreEntryAtBF0[
     (offsetof(SceneSelectControllerView, selectedScoreEntryIndex) == 0xbf0)
         ? 1 : -1];
 typedef char SceneSelectDisplayStatesAtE88[
-    (offsetof(SceneSelectControllerView, lockedDisplayState) == 0xe88) ? 1 : -1];
-typedef char SceneSelectPreviewTextSourcesAtE60[
-    (offsetof(SceneSelectControllerView, previewTextSources) +
-         offsetof(ScenePreviewTextSourcesView, lockedEncodedText) == 0xe60) ? 1 : -1];
+    (offsetof(SceneSelectControllerView, specialDisplayStates) == 0xe88) ? 1 : -1];
 typedef char SceneSelectPreviewTextVmIdsAtE94[
     (offsetof(SceneSelectControllerView, previewTextVmIds) == 0xe94) ? 1 : -1];
 typedef char SceneSelectPreviewTimerAtEA0[

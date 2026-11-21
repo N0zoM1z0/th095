@@ -133,10 +133,10 @@ th095::ResultSaveDataView::CountCapturedScenes
 th095::ResultSaveDataView::CountCapturedScenesInGroup
 th095::ResultSaveDataView::GetSceneGroupAttemptCount
 th095::AnmVmColorInterpolationView::SetColor1Interpolation
-th095::SceneSelectControllerView::RefreshSceneSelection
+th095::FrontEndControllerView::RefreshSceneSelection
 th095::SceneValueQueue::Push
-th095::SceneSelectControllerView::BuildScenePreviewText
-th095::SceneSelectControllerView::ResolveSceneText
+th095::FrontEndControllerView::BuildScenePreviewText
+th095::FrontEndControllerView::ResolveSceneText
 th095::AnmManager::DrawTextLeft
 th095::AnmManager::DrawTextInner
 th095::AnmManager::DrawTextRight

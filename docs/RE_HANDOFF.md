@@ -205,9 +205,10 @@ transitions. The title entry mode names all three menu destinations.
 SEM-479 shares front-end drawing on its allocated controller and
 uses the canonical ASCII manager and Supervisor lock count.
 SEM-480 moves title updates and main-menu dispatch onto that controller.
-SEM-481 gives Scene Select one asset worker on the allocated controller,
-including its queue and history fields. Scene Select still supplies the
-VM overlay and produces display history through its update view.
+SEM-481 gives Scene Select one asset worker on the allocated controller.
+SEM-482 moves the display-history producer, preview timer and fallback
+text readers onto the same controller. The VM handles still use the
+Scene Select overlay.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

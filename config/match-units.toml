@@ -6397,14 +6397,14 @@ relocations = [
   { offset = 0x36, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
   { offset = 0x76, type = "DIR32", symbol = "??_C@_0BB@FDECCDMP@scene?5?$CFd?5?9?$DO?5?$CFd?$AN?6?$AA@", target = 0x00496380 },
   { offset = 0x7B, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
-  { offset = 0xAB, type = "DIR32", symbol = "$L89756", target = 0x0042629A },
+  { offset = 0xAB, type = "DIR32", symbol = "$L89776", target = 0x0042629A },
   { offset = 0xBF, type = "REL32", symbol = "?Create@FrontEndControllerView@th095@@SIPAU12@H@Z", target = 0x00445CC0 },
-  { offset = 0x107, type = "DIR32", symbol = "$L89757", target = 0x004262B6 },
+  { offset = 0x107, type = "DIR32", symbol = "$L89777", target = 0x004262B6 },
   { offset = 0x11A, type = "REL32", symbol = "?Destroy@FrontEndControllerView@th095@@QAEXXZ", target = 0x00445DE0 },
   { offset = 0x140, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
   { offset = 0x16D, type = "REL32", symbol = "?Destroy@FrontEndControllerView@th095@@QAEXXZ", target = 0x00445DE0 },
   { offset = 0x197, type = "REL32", symbol = "?Destroy@FrontEndControllerView@th095@@QAEXXZ", target = 0x00445DE0 },
-  { offset = 0x1D2, type = "DIR32", symbol = "$L89758", target = 0x004262D2 },
+  { offset = 0x1D2, type = "DIR32", symbol = "$L89778", target = 0x004262D2 },
   { offset = 0x1E0, type = "REL32", symbol = "?Destroy@PhotoGameTaskView@th095@@QAEXXZ", target = 0x004180A0 },
   { offset = 0x217, type = "REL32", symbol = "?Destroy@PhotoGameTaskView@th095@@QAEXXZ", target = 0x004180A0 },
   { offset = 0x233, type = "REL32", symbol = "?Create@FrontEndControllerView@th095@@SIPAU12@H@Z", target = 0x00445CC0 },
@@ -6418,28 +6418,28 @@ relocations = [
   { offset = 0x328, type = "REL32", symbol = "?ReleaseGameManagers@Supervisor@th095@@QAEXXZ", target = 0x00423D00 },
   { offset = 0x341, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
   { offset = 0x388, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
-  { offset = 0x3AA, type = "DIR32", symbol = "$L88824", target = 0x00425F9F },
-  { offset = 0x3AE, type = "DIR32", symbol = "$L88821", target = 0x00426251 },
-  { offset = 0x3B2, type = "DIR32", symbol = "$L88828", target = 0x00425FD2 },
-  { offset = 0x3B6, type = "DIR32", symbol = "$L88838", target = 0x0042609D },
-  { offset = 0x3BA, type = "DIR32", symbol = "$L88821", target = 0x00426251 },
-  { offset = 0x3BE, type = "DIR32", symbol = "$L88821", target = 0x00426251 },
-  { offset = 0x3C2, type = "DIR32", symbol = "$failure$88826", target = 0x00426214 },
-  { offset = 0x3C6, type = "DIR32", symbol = "$L88835", target = 0x00426000 },
-  { offset = 0x3CA, type = "DIR32", symbol = "$L88830", target = 0x00426098 },
-  { offset = 0x3CE, type = "DIR32", symbol = "$L88836", target = 0x00426053 },
-  { offset = 0x3D2, type = "DIR32", symbol = "$L88830", target = 0x00426098 },
-  { offset = 0x3D6, type = "DIR32", symbol = "$L88830", target = 0x00426098 },
-  { offset = 0x3DA, type = "DIR32", symbol = "$L88833", target = 0x00425FFB },
-  { offset = 0x3DE, type = "DIR32", symbol = "$L88837", target = 0x00426070 },
-  { offset = 0x3E2, type = "DIR32", symbol = "$L88843", target = 0x004260C6 },
-  { offset = 0x3E6, type = "DIR32", symbol = "$L88844", target = 0x004260EB },
-  { offset = 0x3EA, type = "DIR32", symbol = "$L88840", target = 0x00426212 },
-  { offset = 0x3EE, type = "DIR32", symbol = "$L88852", target = 0x004261AA },
-  { offset = 0x3F2, type = "DIR32", symbol = "$L88840", target = 0x00426212 },
-  { offset = 0x3F6, type = "DIR32", symbol = "$L88847", target = 0x00426146 },
-  { offset = 0x3FA, type = "DIR32", symbol = "$L88840", target = 0x00426212 },
-  { offset = 0x3FE, type = "DIR32", symbol = "$L88849", target = 0x0042614B },
+  { offset = 0x3AA, type = "DIR32", symbol = "$L88844", target = 0x00425F9F },
+  { offset = 0x3AE, type = "DIR32", symbol = "$L88841", target = 0x00426251 },
+  { offset = 0x3B2, type = "DIR32", symbol = "$L88848", target = 0x00425FD2 },
+  { offset = 0x3B6, type = "DIR32", symbol = "$L88858", target = 0x0042609D },
+  { offset = 0x3BA, type = "DIR32", symbol = "$L88841", target = 0x00426251 },
+  { offset = 0x3BE, type = "DIR32", symbol = "$L88841", target = 0x00426251 },
+  { offset = 0x3C2, type = "DIR32", symbol = "$failure$88846", target = 0x00426214 },
+  { offset = 0x3C6, type = "DIR32", symbol = "$L88855", target = 0x00426000 },
+  { offset = 0x3CA, type = "DIR32", symbol = "$L88850", target = 0x00426098 },
+  { offset = 0x3CE, type = "DIR32", symbol = "$L88856", target = 0x00426053 },
+  { offset = 0x3D2, type = "DIR32", symbol = "$L88850", target = 0x00426098 },
+  { offset = 0x3D6, type = "DIR32", symbol = "$L88850", target = 0x00426098 },
+  { offset = 0x3DA, type = "DIR32", symbol = "$L88853", target = 0x00425FFB },
+  { offset = 0x3DE, type = "DIR32", symbol = "$L88857", target = 0x00426070 },
+  { offset = 0x3E2, type = "DIR32", symbol = "$L88863", target = 0x004260C6 },
+  { offset = 0x3E6, type = "DIR32", symbol = "$L88864", target = 0x004260EB },
+  { offset = 0x3EA, type = "DIR32", symbol = "$L88860", target = 0x00426212 },
+  { offset = 0x3EE, type = "DIR32", symbol = "$L88872", target = 0x004261AA },
+  { offset = 0x3F2, type = "DIR32", symbol = "$L88860", target = 0x00426212 },
+  { offset = 0x3F6, type = "DIR32", symbol = "$L88867", target = 0x00426146 },
+  { offset = 0x3FA, type = "DIR32", symbol = "$L88860", target = 0x00426212 },
+  { offset = 0x3FE, type = "DIR32", symbol = "$L88869", target = 0x0042614B },
 ]
 [units.main-added-callback]
 source = "src/Main.cpp"
@@ -8228,8 +8228,8 @@ relocations = []
 source = "src/SceneSelectController.cpp"
 object = "build/matching/SceneSelectController.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
-functions = ["th095::SceneSelectControllerView::BuildScenePreviewText"]
-symbol = "?BuildScenePreviewText@SceneSelectControllerView@th095@@QAEXXZ"
+functions = ["th095::FrontEndControllerView::BuildScenePreviewText"]
+symbol = "?BuildScenePreviewText@FrontEndControllerView@th095@@QAEXXZ"
 target_address = 0x0044BEA0
 size = 0x7C5
 relocations = [
@@ -8247,7 +8247,7 @@ relocations = [
   { offset = 0xBA, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0xD4, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0xD9, type = "REL32", symbol = "?IsSceneGroupUnlocked@ResultSaveDataView@th095@@QAEHH@Z", target = 0x004364F0 },
-  { offset = 0xF5, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0xF5, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x10D, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x112, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x119, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
@@ -8256,12 +8256,12 @@ relocations = [
   { offset = 0x138, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0x14C, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x157, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
-  { offset = 0x179, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x179, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x191, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x196, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x19C, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x1A2, type = "REL32", symbol = "?DrawTextLeft@AnmManager@th095@@QAAXPAUAnmVm@2@KKPBDZZ", target = 0x00443CE0 },
-  { offset = 0x1BF, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x1BF, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x1D7, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x1DC, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x1E3, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
@@ -8269,7 +8269,7 @@ relocations = [
   { offset = 0x1F6, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x201, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0x206, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
-  { offset = 0x22A, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x22A, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x242, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x247, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x24D, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
@@ -8278,7 +8278,7 @@ relocations = [
   { offset = 0x26A, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x274, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x27F, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
-  { offset = 0x28B, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x28B, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x297, type = "DIR32", symbol = "??_C@_01CLKCMJKC@?5?$AA@", target = 0x0049646C },
   { offset = 0x2B2, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x2B7, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
@@ -8292,7 +8292,7 @@ relocations = [
   { offset = 0x32B, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x345, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0x34A, type = "REL32", symbol = "?IsSceneGroupUnlocked@ResultSaveDataView@th095@@QAEHH@Z", target = 0x004364F0 },
-  { offset = 0x366, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x366, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x37E, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x383, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x389, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
@@ -8301,12 +8301,12 @@ relocations = [
   { offset = 0x3A7, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0x3BB, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x3C5, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
-  { offset = 0x3E7, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x3E7, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x3FF, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x404, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x40B, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x411, type = "REL32", symbol = "?DrawTextLeft@AnmManager@th095@@QAAXPAUAnmVm@2@KKPBDZZ", target = 0x00443CE0 },
-  { offset = 0x42E, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x42E, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x446, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x44B, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x452, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
@@ -8314,7 +8314,7 @@ relocations = [
   { offset = 0x466, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x471, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0x477, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
-  { offset = 0x49B, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x49B, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x4B3, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x4B8, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x4BF, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
@@ -8323,7 +8323,7 @@ relocations = [
   { offset = 0x4DB, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x4E4, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x4F0, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
-  { offset = 0x4FC, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x4FC, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x508, type = "DIR32", symbol = "??_C@_01CLKCMJKC@?5?$AA@", target = 0x0049646C },
   { offset = 0x523, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x528, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
@@ -8337,7 +8337,7 @@ relocations = [
   { offset = 0x59C, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x5B6, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0x5BB, type = "REL32", symbol = "?IsSceneGroupUnlocked@ResultSaveDataView@th095@@QAEHH@Z", target = 0x004364F0 },
-  { offset = 0x5D7, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x5D7, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x5EF, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x5F4, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x5FB, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
@@ -8346,12 +8346,12 @@ relocations = [
   { offset = 0x619, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0x62C, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x637, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
-  { offset = 0x659, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x659, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x671, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x676, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x67D, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x683, type = "REL32", symbol = "?DrawTextLeft@AnmManager@th095@@QAAXPAUAnmVm@2@KKPBDZZ", target = 0x00443CE0 },
-  { offset = 0x6A0, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x6A0, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x6B8, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x6BD, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x6C3, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
@@ -8359,7 +8359,7 @@ relocations = [
   { offset = 0x6D7, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x6E1, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0x6E7, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
-  { offset = 0x70B, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x70B, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x723, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x728, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
   { offset = 0x72F, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
@@ -8368,7 +8368,7 @@ relocations = [
   { offset = 0x74B, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x755, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
   { offset = 0x761, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
-  { offset = 0x76D, type = "REL32", symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
+  { offset = 0x76D, type = "REL32", symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z", target = 0x0044D020 },
   { offset = 0x779, type = "DIR32", symbol = "??_C@_01CLKCMJKC@?5?$AA@", target = 0x0049646C },
   { offset = 0x794, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x799, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
@@ -8380,8 +8380,8 @@ relocations = [
 source = "src/SceneSelectController.cpp"
 object = "build/matching/SceneSelectController.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
-functions = ["th095::SceneSelectControllerView::ResolveSceneText"]
-symbol = "?ResolveSceneText@SceneSelectControllerView@th095@@QAEPADPBEHHH@Z"
+functions = ["th095::FrontEndControllerView::ResolveSceneText"]
+symbol = "?ResolveSceneText@FrontEndControllerView@th095@@QAEPADPBEHHH@Z"
 target_address = 0x0044D020
 size = 0x80
 relocations = [
@@ -9054,7 +9054,7 @@ target_address = 0x00445E80
 size = 0xB99
 compare_size = 0xBC1
 relocations = [
-  { offset = 0x37, type = "DIR32", symbol = "$L74801", target = 0x00446A19 },
+  { offset = 0x37, type = "DIR32", symbol = "$L74782", target = 0x00446A19 },
   { offset = 0x4F, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670 },
   { offset = 0x54, type = "REL32", symbol = "?StopReplayScan@Supervisor@th095@@QAEXXZ", target = 0x00425640 },
   { offset = 0x5A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x40C },
@@ -9145,16 +9145,16 @@ relocations = [
   { offset = 0xB70, type = "REL32", symbol = "?CreateVm@SceneAnmLoadedView@th095@@QAE?AUSceneAnmVmId@2@HH@Z", target = 0x00444EF0 },
   { offset = 0xB7E, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
   { offset = 0xB8C, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
-  { offset = 0xB99, type = "DIR32", symbol = "$L74193", target = 0x00445EBB },
-  { offset = 0xB9D, type = "DIR32", symbol = "$L74246", target = 0x004465C3 },
-  { offset = 0xBA1, type = "DIR32", symbol = "$L74247", target = 0x004465D3 },
-  { offset = 0xBA5, type = "DIR32", symbol = "$L74249", target = 0x004465E3 },
-  { offset = 0xBA9, type = "DIR32", symbol = "$L74285", target = 0x00446898 },
-  { offset = 0xBAD, type = "DIR32", symbol = "$L74258", target = 0x00446632 },
-  { offset = 0xBB1, type = "DIR32", symbol = "$L74271", target = 0x00446762 },
-  { offset = 0xBB5, type = "DIR32", symbol = "$L74251", target = 0x004465F3 },
-  { offset = 0xBB9, type = "DIR32", symbol = "$L74254", target = 0x00446612 },
-  { offset = 0xBBD, type = "DIR32", symbol = "$L74256", target = 0x00446622 },
+  { offset = 0xB99, type = "DIR32", symbol = "$L74174", target = 0x00445EBB },
+  { offset = 0xB9D, type = "DIR32", symbol = "$L74227", target = 0x004465C3 },
+  { offset = 0xBA1, type = "DIR32", symbol = "$L74228", target = 0x004465D3 },
+  { offset = 0xBA5, type = "DIR32", symbol = "$L74230", target = 0x004465E3 },
+  { offset = 0xBA9, type = "DIR32", symbol = "$L74266", target = 0x00446898 },
+  { offset = 0xBAD, type = "DIR32", symbol = "$L74239", target = 0x00446632 },
+  { offset = 0xBB1, type = "DIR32", symbol = "$L74252", target = 0x00446762 },
+  { offset = 0xBB5, type = "DIR32", symbol = "$L74232", target = 0x004465F3 },
+  { offset = 0xBB9, type = "DIR32", symbol = "$L74235", target = 0x00446612 },
+  { offset = 0xBBD, type = "DIR32", symbol = "$L74237", target = 0x00446622 },
 ]
 
 [units.front-end-main-menu-close]
@@ -15149,8 +15149,8 @@ relocations = [
 source = "src/SceneSelectController.cpp"
 object = "build/matching/SceneSelectController.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
-functions = ["th095::SceneSelectControllerView::RefreshSceneSelection"]
-symbol = "?RefreshSceneSelection@SceneSelectControllerView@th095@@QAEXH@Z"
+functions = ["th095::FrontEndControllerView::RefreshSceneSelection"]
+symbol = "?RefreshSceneSelection@FrontEndControllerView@th095@@QAEXH@Z"
 target_address = 0x0044BBD0
 size = 0x2CC
 relocations = [
@@ -15616,7 +15616,7 @@ target_address = 0x00451C80
 size = 0x936
 compare_size = 0x94A
 relocations = [
-  { offset = 0x28, type = "DIR32", symbol = "$L74123", target = 0x004525B6 },
+  { offset = 0x28, type = "DIR32", symbol = "$L74084", target = 0x004525B6 },
   { offset = 0x33, type = "REL32", symbol = "?Push@ResultScreenReplayCursor@th095@@QAEXXZ", target = 0x0041B660 },
   { offset = 0x4E, type = "DIR32", symbol = "?g_SceneAnmManager@th095@@3PAUSceneAnmManagerView@1@A", target = 0x004CA1B8 },
   { offset = 0x53, type = "REL32", symbol = "?SetInterrupt@SceneAnmManagerView@th095@@QAEXUSceneAnmVmId@2@H@Z", target = 0x00445170 },
@@ -15708,11 +15708,11 @@ relocations = [
   { offset = 0x90A, type = "REL32", symbol = "?SetInterrupt@SceneAnmManagerView@th095@@QAEXUSceneAnmVmId@2@H@Z", target = 0x00445170 },
   { offset = 0x922, type = "DIR32", symbol = "?g_SceneAnmManager@th095@@3PAUSceneAnmManagerView@1@A", target = 0x004CA1B8 },
   { offset = 0x927, type = "REL32", symbol = "?SetInterrupt@SceneAnmManagerView@th095@@QAEXUSceneAnmVmId@2@H@Z", target = 0x00445170 },
-  { offset = 0x936, type = "DIR32", symbol = "$L73671", target = 0x00451CAC },
-  { offset = 0x93A, type = "DIR32", symbol = "$L73947", target = 0x00451F0F },
-  { offset = 0x93E, type = "DIR32", symbol = "$L73668", target = 0x004525B0 },
-  { offset = 0x942, type = "DIR32", symbol = "$L73702", target = 0x004522FE },
-  { offset = 0x946, type = "DIR32", symbol = "$L74067", target = 0x004523AF },
+  { offset = 0x936, type = "DIR32", symbol = "$L73632", target = 0x00451CAC },
+  { offset = 0x93A, type = "DIR32", symbol = "$L73908", target = 0x00451F0F },
+  { offset = 0x93E, type = "DIR32", symbol = "$L73629", target = 0x004525B0 },
+  { offset = 0x942, type = "DIR32", symbol = "$L73663", target = 0x004522FE },
+  { offset = 0x946, type = "DIR32", symbol = "$L74028", target = 0x004523AF },
 ]
 
 [units.music-room-update]
@@ -19600,7 +19600,7 @@ relocations = [
   { offset = 0x818, type = "DIR32", symbol = "?g_PressedButtons@th095@@3GA", target = 0x004BE21E },
   { offset = 0x82E, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
   { offset = 0x833, type = "REL32", symbol = "?PlaySoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@H@Z", target = 0x00438F20 },
-  { offset = 0x868, type = "DIR32", symbol = "$L75221", target = 0x00447733 },
+  { offset = 0x868, type = "DIR32", symbol = "$L75202", target = 0x00447733 },
   { offset = 0x873, type = "REL32", symbol = "?CloseMainMenu@SceneSelectControllerView@th095@@QAEXXZ", target = 0x00447750 },
   { offset = 0x8CD, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670 },
   { offset = 0x8E4, type = "DIR32", symbol = "__imp__Sleep@4", target = 0x00495058 },
@@ -19616,12 +19616,12 @@ relocations = [
   { offset = 0xC3C, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
   { offset = 0xC41, type = "REL32", symbol = "?PlaySoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@H@Z", target = 0x00438F20 },
   { offset = 0xCD6, type = "REL32", symbol = "?UpdateMainMenuSelection@SceneSelectControllerView@th095@@QAEXXZ", target = 0x004479E0 },
-  { offset = 0xCE3, type = "DIR32", symbol = "$L74388", target = 0x004472BC },
-  { offset = 0xCE7, type = "DIR32", symbol = "$L74406", target = 0x00447467 },
-  { offset = 0xCEB, type = "DIR32", symbol = "$L74410", target = 0x0044753B },
-  { offset = 0xCEF, type = "DIR32", symbol = "$L74408", target = 0x004474D1 },
-  { offset = 0xCF3, type = "DIR32", symbol = "$L74412", target = 0x004475A5 },
-  { offset = 0xCF7, type = "DIR32", symbol = "$exitMainMenu$74415", target = 0x0044760F },
+  { offset = 0xCE3, type = "DIR32", symbol = "$L74369", target = 0x004472BC },
+  { offset = 0xCE7, type = "DIR32", symbol = "$L74387", target = 0x00447467 },
+  { offset = 0xCEB, type = "DIR32", symbol = "$L74391", target = 0x0044753B },
+  { offset = 0xCEF, type = "DIR32", symbol = "$L74389", target = 0x004474D1 },
+  { offset = 0xCF3, type = "DIR32", symbol = "$L74393", target = 0x004475A5 },
+  { offset = 0xCF7, type = "DIR32", symbol = "$exitMainMenu$74396", target = 0x0044760F },
 ]
 
 [units.result-screen-initialize-game]
@@ -20560,7 +20560,7 @@ relocations = [
   { offset = 0x1AE1, type = "REL32", symbol = "?SetInterrupt@SceneAnmManagerView@th095@@QAEXUSceneAnmVmId@2@H@Z", target = 0x00445170 },
   { offset = 0x1AFD, type = "DIR32", symbol = "?g_SceneAnmManager@th095@@3PAUSceneAnmManagerView@1@A", target = 0x004CA1B8 },
   { offset = 0x1B02, type = "REL32", symbol = "?SetInterrupt@SceneAnmManagerView@th095@@QAEXUSceneAnmVmId@2@H@Z", target = 0x00445170 },
-  { offset = 0x1B1F, type = "REL32", symbol = "?RefreshSceneSelection@SceneSelectControllerView@th095@@QAEXH@Z", target = 0x0044BBD0 },
+  { offset = 0x1B1F, type = "REL32", symbol = "?RefreshSceneSelection@FrontEndControllerView@th095@@QAEXH@Z", target = 0x0044BBD0 },
   { offset = 0x1B2B, type = "DIR32", symbol = "?g_PressedButtons@th095@@3GA", target = 0x004BE21E },
   { offset = 0x1B7C, type = "DIR32", symbol = "?g_FrontEndCurrentInput@th095@@3GA", target = 0x004BE218 },
   { offset = 0x1BA5, type = "DIR32", symbol = "?g_SceneAnmManager@th095@@3PAUSceneAnmManagerView@1@A", target = 0x004CA1B8 },
@@ -20710,7 +20710,7 @@ relocations = [
   { offset = 0x2DCF, type = "REL32", symbol = "?SetInterrupt@SceneAnmManagerView@th095@@QAEXUSceneAnmVmId@2@H@Z", target = 0x00445170 },
   { offset = 0x2DDD, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
   { offset = 0x2DE2, type = "REL32", symbol = "?PlaySoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@H@Z", target = 0x00438F20 },
-  { offset = 0x2DFA, type = "REL32", symbol = "?RefreshSceneSelection@SceneSelectControllerView@th095@@QAEXH@Z", target = 0x0044BBD0 },
+  { offset = 0x2DFA, type = "REL32", symbol = "?RefreshSceneSelection@FrontEndControllerView@th095@@QAEXH@Z", target = 0x0044BBD0 },
   { offset = 0x2E18, type = "DIR32", symbol = "?g_SceneAnmManager@th095@@3PAUSceneAnmManagerView@1@A", target = 0x004CA1B8 },
   { offset = 0x2E1D, type = "REL32", symbol = "?SetInterrupt@SceneAnmManagerView@th095@@QAEXUSceneAnmVmId@2@H@Z", target = 0x00445170 },
   { offset = 0x2E3B, type = "DIR32", symbol = "?g_SceneAnmManager@th095@@3PAUSceneAnmManagerView@1@A", target = 0x004CA1B8 },
@@ -20900,7 +20900,7 @@ relocations = [
   { offset = 0x3E2E, type = "DIR32", symbol = "?g_ResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0x3E89, type = "DIR32", symbol = "?g_SceneAnmManager@th095@@3PAUSceneAnmManagerView@1@A", target = 0x004CA1B8 },
   { offset = 0x3E8E, type = "REL32", symbol = "?SetInterrupt@SceneAnmManagerView@th095@@QAEXUSceneAnmVmId@2@H@Z", target = 0x00445170 },
-  { offset = 0x3EB4, type = "REL32", symbol = "?BuildScenePreviewText@SceneSelectControllerView@th095@@QAEXXZ", target = 0x0044BEA0 },
+  { offset = 0x3EB4, type = "REL32", symbol = "?BuildScenePreviewText@FrontEndControllerView@th095@@QAEXXZ", target = 0x0044BEA0 },
 ]
 
 # Complete TH095 1,600-slot projectile update.  The two real post-cull
