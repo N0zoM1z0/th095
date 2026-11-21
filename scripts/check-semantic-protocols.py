@@ -4548,7 +4548,7 @@ def check_anm_alignment(source_text: dict[str, str] | None = None) -> None:
 def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmBlendMode.hpp", "AnmManager.hpp", "AnmManager.cpp",
-             "AnmDrawCore.cpp", "Main.cpp", "MainExact.inl",
+             "AnmDrawCore.cpp", "Main.cpp", "MainExact.inl", "SupervisorOnUpdate.inl",
              "ScreenEffectDraw.cpp", "ecl/AnmManagerEclView.hpp")
     texts = {name: source_without_comments(overrides.get(
         name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
@@ -4567,7 +4567,7 @@ def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
             fail(f"{domain}: preserve the complete explicit destination-blend/cache domain")
     if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
         fail("ANM blend vocabulary must be profile-independent")
-    for name in ("AnmManager.hpp", "MainExact.inl", "ecl/AnmManagerEclView.hpp"):
+    for name in ("AnmManager.hpp", "ecl/AnmManagerEclView.hpp"):
         if re.search(r"\bu8\s+cachedBlendMode\s*;", texts[name]) is None:
             fail(f"{name}: blend cache storage must remain one byte")
         match = re.search(r"void\s+InvalidateBlendMode\(\)\s*\{([^}]+)\}", texts[name])
@@ -4588,7 +4588,7 @@ def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
         "AnmManager.hpp": ["ANM_BLEND_CACHE_INVALIDATED"],
         "AnmManager.cpp": ["ANM_BLEND_ALPHA"],
         "AnmDrawCore.cpp": ["vm->blendMode", "vm->blendMode"],
-        "Main.cpp": [], "MainExact.inl": ["ANM_BLEND_CACHE_INVALIDATED"],
+        "Main.cpp": [], "MainExact.inl": [], "SupervisorOnUpdate.inl": [],
         "ScreenEffectDraw.cpp": [], "ecl/AnmManagerEclView.hpp": ["ANM_BLEND_CACHE_INVALIDATED"],
     }
     for name, expected in expected_writes.items():
@@ -4622,7 +4622,7 @@ def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
 def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmDrawPath.hpp", "AnmManager.hpp", "AnmManager.cpp",
-             "AnmDrawCore.cpp", "Main.cpp", "MainExact.inl",
+             "AnmDrawCore.cpp", "Main.cpp", "MainExact.inl", "SupervisorOnUpdate.inl",
              "ScreenEffectDraw.cpp", "ecl/AnmManagerEclView.hpp")
     texts = {name: source_without_comments(overrides.get(
         name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
@@ -4641,7 +4641,7 @@ def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
         fail("ANM draw-path domain must retain its five explicit values")
     if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
         fail("ANM draw-path vocabulary must be profile-independent")
-    for name in ("AnmManager.hpp", "MainExact.inl", "ecl/AnmManagerEclView.hpp"):
+    for name in ("AnmManager.hpp", "ecl/AnmManagerEclView.hpp"):
         if re.search(r"\bu8\s+cachedDrawPath\s*;", texts[name]) is None:
             fail(f"{name}: ANM draw-path storage must remain one byte")
         match = re.search(r"void\s+InvalidateDrawPath\(\)\s*\{([^}]+)\}", texts[name])
@@ -4656,7 +4656,7 @@ def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
         "AnmManager.cpp": ["ANM_DRAW_PATH_INITIAL"],
         "AnmDrawCore.cpp": ["ANM_DRAW_PATH_BUFFERED_QUADS", "ANM_DRAW_PATH_STREAMED_QUAD",
                             "ANM_DRAW_PATH_IMMEDIATE_VERTICES", "ANM_DRAW_PATH_IMMEDIATE_VERTICES"],
-        "Main.cpp": [], "MainExact.inl": ["ANM_DRAW_PATH_INVALIDATED"],
+        "Main.cpp": [], "MainExact.inl": [], "SupervisorOnUpdate.inl": [],
         "ScreenEffectDraw.cpp": [], "ecl/AnmManagerEclView.hpp": ["ANM_DRAW_PATH_INVALIDATED"],
     }
     for name, text in texts.items():
@@ -4667,6 +4667,17 @@ def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
             writes = [value.removeprefix("th095::").strip() for value in writes]
             if writes != expected_writes[name]:
                 fail(f"{name}: draw-path writers must use the closed named domain")
+    for name in ("Main.cpp", "MainExact.inl"):
+        if texts[name].count('#include "SupervisorOnUpdate.inl"') != 1 or "Supervisor::OnUpdate(void *arg)" in texts[name]:
+            fail(f"{name}: frame update must use the shared callback")
+    update = texts["SupervisorOnUpdate.inl"]
+    invalidate = "g_AnmManager->InvalidateDrawPath();"
+    if update.count(invalidate) != 1 or not re.search(
+        r"if \(g_AnmManager->ServicePreloadedAnims\(\) != ZUN_SUCCESS\)\s*"
+        r"return 4;\s*g_AnmManager->InvalidateDrawPath\(\);",
+        update,
+    ):
+        fail("the frame update must invalidate the draw path after successful preload service")
     comparisons = re.findall(r"cachedDrawPath\s*!=\s*([^\s)]+)", texts["AnmDrawCore.cpp"])
     if comparisons != expected_writes["AnmDrawCore.cpp"]:
         fail("ANM draw-path consumers must use their named submission paths")

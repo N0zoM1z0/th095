@@ -15,7 +15,6 @@
 1	src/Main.cpp	struct	LoadMusicLocals
 1	src/Main.cpp	struct	MidiTimer
 1	src/Main.cpp	struct	OnDraw2Locals
-1	src/Main.cpp	struct	OnUpdateLocals
 1	src/Main.cpp	struct	ScreenshotCaptureLocals
 1	src/Main.cpp	struct	TextHelperView
 1	src/MusicRoom.cpp	struct	MusicCommentLocals

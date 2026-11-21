@@ -185,6 +185,8 @@ SEM-468 removes the legacy Supervisor view from SoundPlayer and
 binds both profiles to its real audio settings and window.
 SEM-469 shares the SFX filename and sound-index tables and checks all
 records and pointer relocations in both link layouts.
+SEM-470 shares the Supervisor frame callback and invalidates the ANM
+draw path after successful preload service.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

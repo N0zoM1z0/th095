@@ -19624,3 +19624,25 @@ filename on failure, and use all 47 buffer indices and volumes during
 initialization. The request probe also verifies metadata publication
 and the queued stop for each sound. Archive reads and DirectSound
 calls are stubbed. See `.analysis/pi/sound-tables/`.
+
+### SEM-470 — share the Supervisor frame update
+
+Both Main builds emit the same OnUpdate body and use the canonical
+AnmManager for render caches, per-frame counters, mix color, screen
+shake and preload service. The callback invalidates the draw path
+after preload service succeeds. The former normal body also
+invalidated before service, which changed the cache even on failure.
+
+All 48 Main strict comparisons pass. The normal callback shrinks
+from 417 bytes to the retail 400 bytes and matches all 17 relocations.
+Both links resolve the twelve manager references and the preload call
+through the canonical symbols. The 216 state combinations cover input
+and sound dispatch, close and startup gates, scene results, and the
+cache at service entry and on success or failure. The prior normal
+links exhibit the early invalidation in the same fixture.
+
+Both demo0 links match ten gameplay fields at every one of the 2,712
+input indices. The scene timer starts one frame earlier in the regular
+link and one frame later in the reordered link. The game and library
+relocation audits pass in both layouts. See
+`.analysis/pi/main-anm-update/`.

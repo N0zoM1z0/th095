@@ -51,17 +51,13 @@ Storage and semantic ownership belong to the canonical ANM manager. The enum
 provides vocabulary without widening the byte field to VC7.1's four-byte enum.
 Canonical offset/width assertions preserve that physical contract.
 
-AnmManager.cpp emits initialization/flush, AnmDrawCore.cpp emits the four
-consumers, and Main.cpp / ScreenEffectDraw.cpp emit invalidation callers. Main's
-existing exact-only SupervisorAnmManagerView uses the same vocabulary at its
-proved +0x1766 projection. The legacy ECL declaration also shares vocabulary;
-its incompatible parent layout is still emission debt and is not promoted to
-the canonical manager's layout.
-
-Normal OnUpdate invalidates twice, including before ServicePreloadedAnims;
-the exact target invalidates once after successful service. Those separately
-selected bodies retain their prior ordering. Exact replay alone does not
-accept the additional normal store. The normal code/data/EH comparison covers
-preservation of that body independently.
+AnmManager.cpp emits initialization and flush, and AnmDrawCore.cpp emits
+the four consumers. Both Main builds use the canonical manager in the
+shared frame callback. The callback invalidates the draw path after
+successful preload service. The older normal body invalidated before
+service as well. The state fixture verifies the cache at service entry
+and on success and failure in both links. See
+[SEM-470](SEMANTIC_HISTORY.md#sem-470--share-the-supervisor-frame-update).
+The legacy ECL declaration still shares the cache vocabulary.
 
 Current acceptance and the next task belong in [RE_HANDOFF.md](RE_HANDOFF.md); this document records the bounded protocol and its retained limits.

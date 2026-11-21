@@ -59,18 +59,13 @@ three target invalidation stores. The invalidation marker collides with the
 unhandled selector: invalidating then drawing selector 3 is a cache hit and
 does not force a flush or device call. No corrective behavior is introduced.
 
-Storage and semantic ownership remain canonical VM/ANM. VM storage stays a
-u32 two-bit field, and the manager cache stays u8; neither is widened to the
-compiler's four-byte enum representation. MainExact's existing projection and
-the incompatible legacy ECL declarations share vocabulary, not canonical
-layout acceptance. Old selected layouts, source splits and PhotoEffect's
-existing emission scaffolding remain debt; no new selector or padding is added.
+The VM stores the selector in a two-bit field and the manager stores the
+cache in a byte. Both Main builds invalidate the cache through the
+canonical AnmManager. The legacy ECL declarations share the vocabulary.
 
-AnmManager.cpp emits initialization/script production; the shared header emits
-the additive helper in PhotoEffect's producers. AnmDrawCore.cpp emits both
-consumers, and Main.cpp / ScreenEffectDraw.cpp emit invalidation callers.
-Exact and normal products retain their existing ownership and source routes.
-Normal-only bodies require their own evidence; exact replay does not accept
-them wholesale.
+AnmManager.cpp emits initialization and script production. The shared
+header emits the additive helper in PhotoEffect's producers.
+AnmDrawCore.cpp emits both consumers, and Main.cpp and
+ScreenEffectDraw.cpp emit the invalidation calls.
 
 The current checkpoint and validation authority belong in [RE_HANDOFF.md](RE_HANDOFF.md). This protocol does not establish GPU output, failed-device recovery, global cache coherence, thread safety or a native 64-bit/Linux/Web game ABI.

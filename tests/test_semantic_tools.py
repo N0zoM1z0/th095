@@ -776,7 +776,8 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             ("AnmManager.cpp", "vm->blendMode = currentInstr->intArgs[0];", "vm->blendMode = GET_INT_VAR(0);"),
             ("AnmDrawCore.cpp", "case ANM_BLEND_ADDITIVE_3D_ONLY:", "case ANM_BLEND_UNHANDLED:"),
             ("AnmDrawCore.cpp", "case ANM_BLEND_ALPHA:", "case 0:"),
-            ("MainExact.inl", "cachedBlendMode", "currentBlendMode"),
+            ("SupervisorOnUpdate.inl", "g_AnmManager->InvalidateBlendMode();",
+             "g_AnmManager->cachedBlendMode = 3;"),
         ]
         for name, before, after in mutations:
             source = (ROOT / "src" / name).read_text(encoding="utf-8")
@@ -795,7 +796,8 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             ("AnmManager.hpp", "this->cachedDrawPath = ANM_DRAW_PATH_INVALIDATED;", "this->cachedDrawPath = 0xff;"),
             ("AnmDrawCore.cpp", "cachedDrawPath != ANM_DRAW_PATH_BUFFERED_QUADS", "cachedDrawPath != 1"),
             ("AnmManager.cpp", "void AnmManager::FlushVertexBuffer()\n{", "void AnmManager::FlushVertexBuffer()\n{\nthis->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS;"),
-            ("MainExact.inl", "cachedDrawPath", "currentVertexShader"),
+            ("SupervisorOnUpdate.inl", "if (g_AnmManager->ServicePreloadedAnims()",
+             "g_AnmManager->InvalidateDrawPath();\n    if (g_AnmManager->ServicePreloadedAnims()"),
         ]
         for name, before, after in mutations:
             source = (ROOT / "src" / name).read_text(encoding="utf-8")
