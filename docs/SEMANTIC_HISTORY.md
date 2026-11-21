@@ -19200,3 +19200,32 @@ gameplay samples as retail. Their stage timers start at index 29,
 one index later than the retail reference. The library replay resolves
 all 7,748 code and 1,007 initialized-data relocations in both links.
 See `.analysis/pi/anm-texture-table-owner/`.
+
+### SEM-449 — share the ECL bullet pool and capture transitions
+
+Callbacks 1–5 and 21 now traverse the canonical PhotoBulletView pool.
+Callbacks 2 and 4 disable collision and capture for the selected owner,
+callback 3 re-enables them, and callback 5 applies the thirty-frame
+alpha transition only to bullets whose capture remains disabled.
+Callback 21 clears both transform masks and recomputes velocity for the
+selected owner. All six scans omit the extra cursor sentinel.
+
+Callbacks 2 and 4 use four-byte copies to restore rotation Z after VM
+initialization. VC7.1 emits the retail moves with the live local named
+`originalRotationBits`. Both builds also reset the primary-alpha timer
+in the same order. The partial bullet receiver remains on the three
+reinitialization call sites. Probes using the canonical receiver and
+removing the old stack reservation change the stack homes in callbacks
+2–4. A shared vector expression also changes the sizes of callbacks 2
+and 3 and the marker-position callback.
+
+All 22 strict exact comparisons pass. Four vector calls now use the
+bullet-vector symbol at the same retail destination. Both normal links
+match retail in 89 callback cases, including the first and last slots,
+the sentinel, ownership filtering, and exact negative-zero and NaN
+rotation bits. All 22 callback-table entries and both opcode-118
+references follow their symbols. Callback 4 accounts for all 15 changed
+instruction bytes in each normal image. Both images complete all 2,712
+demo0 indices with the ten gameplay fields matching retail. The timer
+starts one index earlier in the regular link and one index later in
+the reordered link. See `.analysis/pi/ecl-bullet-owner/`.

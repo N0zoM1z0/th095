@@ -92,8 +92,6 @@ static __forceinline AnmVmId ExtendedCanonicalAnmId(i32 value)
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "ecl/EclExtendedBulletEmission.inl"
-#else
-typedef ::th095::PhotoBulletView ExtendedBulletView;
 #endif
 
 #ifdef DIFFBUILD
@@ -128,11 +126,13 @@ __forceinline void ExtendedBulletView::ReinitializeShifted()
         TH095_EXT_BULLET_ANM, &this->vm,
         TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + 0x10 + this->color);
 }
-#define TH095_EXT_REINITIALIZE_DIRECT(bullet) (bullet)->ReinitializeDirect()
-#define TH095_EXT_REINITIALIZE_SHIFTED(bullet) (bullet)->ReinitializeShifted()
+#define TH095_EXT_REINITIALIZE_DIRECT(bullet) \
+    reinterpret_cast<ExtendedBulletView *>(bullet)->ReinitializeDirect()
+#define TH095_EXT_REINITIALIZE_SHIFTED(bullet) \
+    reinterpret_cast<ExtendedBulletView *>(bullet)->ReinitializeShifted()
 #else
 static __forceinline void ReinitializeExtendedBulletDirect(
-    ExtendedBulletView *bullet)
+    PhotoBulletView *bullet)
 {
     // The normal callback operates on the canonical BulletInf element.
     u8 compilerStorage[0x2c];
@@ -142,7 +142,7 @@ static __forceinline void ReinitializeExtendedBulletDirect(
 }
 
 static __forceinline void ReinitializeExtendedBulletShifted(
-    ExtendedBulletView *bullet)
+    PhotoBulletView *bullet)
 {
     u8 compilerStorage[0x2c];
     TH095_EXT_ANM_INITIALIZE(
@@ -155,14 +155,12 @@ static __forceinline void ReinitializeExtendedBulletShifted(
     ReinitializeExtendedBulletShifted(bullet)
 #endif
 
-#ifdef TH095_MATCH_EXACT
-static __forceinline void InitializeExtendedTimerExact(ZunTimer *timer)
+static __forceinline void ResetExtendedAlphaInterpolationTimer(ZunTimer *timer)
 {
     timer->current = 0;
     timer->subFrame = 0.0f;
     timer->previous = -999999;
 }
-#endif
 
 static __forceinline void FinalizeExtendedBulletAfterExecute(
     AnmVm *vm, i32 interpolationMode)
@@ -170,13 +168,9 @@ static __forceinline void FinalizeExtendedBulletAfterExecute(
     // Target-strict parameter order: the two inline value homes follow the
     // two timer-generated compiler temporaries. Reversing the parameters
     // changes the 145-instruction body.
-#ifdef TH095_MATCH_EXACT
-    InitializeExtendedTimerExact(&vm->interpCurrentTimers[2]);
-#else
-    vm->interpCurrentTimers[2].Initialize();
-#endif
-    vm->interpEndTimers[2] = 1;
-    vm->interpModes[2] = (u8)interpolationMode;
+    ResetExtendedAlphaInterpolationTimer(&vm->interpCurrentTimers[ANM_INTERP_ALPHA1]);
+    vm->interpEndTimers[ANM_INTERP_ALPHA1] = 1;
+    vm->interpModes[ANM_INTERP_ALPHA1] = (u8)interpolationMode;
     vm->color1Initial.a = 0xff;
     vm->color1Final.a = 0x40;
 }
@@ -356,26 +350,16 @@ void __fastcall DisablePhotoTransition(
 void __fastcall ResetOwnedBulletMotion(
     PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
-    ExtendedBulletView *bullet =
-        reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
+    PhotoBulletView *bullet = g_PhotoBulletManager->bullets;
     for (i32 i = 0; i < 0x640; ++i, ++bullet)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (bullet->state == 0)
-#else
         if (bullet->state == PHOTO_BULLET_STATE_INACTIVE)
-#endif
             continue;
         if (bullet->ownerTag ==
             enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
-#if defined(TH095_MATCH_EXACT)
-            bullet->field34c = 0;
-            bullet->field348 = 0;
-#else
             bullet->transformFlags = 0;
             bullet->activeTransformFlags = 0;
-#endif
             bullet->speed = 4.5f;
             TH095_EXTENDED_FROM_ANGLE(
                 bullet->velocity, bullet->angle, bullet->speed);
@@ -396,38 +380,30 @@ void __fastcall FadeOwnedCapturedBullets(
         ZunTimer *endTimer;
         ZunTimer *currentTimer;
         i32 i;
-        ExtendedBulletView *bullet;
+        PhotoBulletView *bullet;
     } locals;
 
-    locals.bullet = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
+    locals.bullet = g_PhotoBulletManager->bullets;
     for (locals.i = 0; locals.i < 0x640; ++locals.i, ++locals.bullet)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (locals.bullet->state == 0)
-#else
         if (locals.bullet->state == PHOTO_BULLET_STATE_INACTIVE)
-#endif
             continue;
         if (locals.bullet->ownerTag ==
             enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-            if (((locals.bullet->flags >> 4) & 1U) != 0)
-#else
             if (locals.bullet->captureDisabled != 0)
-#endif
             {
-                locals.interpolationMode = 0;
+                locals.interpolationMode = ANM_INTERP_LINEAR;
                 locals.vm = &locals.bullet->vm;
-                locals.currentTimer = &locals.vm->interpCurrentTimers[2];
+                locals.currentTimer = &locals.vm->interpCurrentTimers[ANM_INTERP_ALPHA1];
                 locals.currentTimer->current = 0;
                 locals.currentTimer->subFrame = 0.0f;
                 locals.currentTimer->previous = -999999;
-                locals.endTimer = &locals.vm->interpEndTimers[2];
+                locals.endTimer = &locals.vm->interpEndTimers[ANM_INTERP_ALPHA1];
                 locals.endTimer->current = 30;
                 locals.endTimer->subFrame = 30.0f;
                 locals.endTimer->previous = -999999;
-                locals.vm->interpModes[2] =
+                locals.vm->interpModes[ANM_INTERP_ALPHA1] =
                     static_cast<u8>(locals.interpolationMode);
                 locals.vm->color1Initial.a = 0x40;
                 locals.vm->color1Final.a = 0xff;
@@ -761,18 +737,14 @@ static __forceinline void SetExtendedBackgroundVm1State3()
 // ECL extended callback table entry 1 @ 0x00413410.
 void __fastcall Callback01(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
-    ExtendedBulletView *index;
+    PhotoBulletView *index;
     i32 bullet;
 
-    index = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
+    index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (index->state == 0 || index->vm.loadedSprite->widthPx < 64.0f)
-#else
         if (index->state == PHOTO_BULLET_STATE_INACTIVE ||
             index->vm.loadedSprite->widthPx < 64.0f)
-#endif
             continue;
 
         g_PhotoEnemyManager->Spawn(
@@ -785,37 +757,28 @@ void __fastcall Callback01(PhotoEnemyView *enemy, EclRawInstruction *instruction
 // ECL extended callback table entry 2 @ 0x004134A0.
 void __fastcall Callback02(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
-    // Exact-facing lexical name; this stores the raw bits of vm.rotation.z.
-    u32 savedActiveSprite;
-    ExtendedBulletView *index;
+    u32 originalRotationBits;
+    PhotoBulletView *index;
     i32 bullet;
 
-    index = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
+    index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (index->state == 0)
-#else
         if (index->state == PHOTO_BULLET_STATE_INACTIVE)
-#endif
             continue;
         if (index->ownerTag == enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
-            savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
+            memcpy(&originalRotationBits, &index->vm.rotation.z, sizeof(originalRotationBits));
             TH095_EXT_REINITIALIZE_SHIFTED(index);
             index->vm.rotateWithBulletAngle = 0;
             index->vm.pendingInterrupt = 2;
-            *reinterpret_cast<u32 *>(&index->vm.rotation.z) = savedActiveSprite;
+            memcpy(&index->vm.rotation.z, &originalRotationBits, sizeof(originalRotationBits));
             TH095_EXTENDED_FROM_ANGLE(
                 index->velocity,
                 enemy->activeEclContext->scriptState.extraFloatVariables[2],
                 enemy->activeEclContext->scriptState.extraFloatVariables[3]);
-            index->flags &= ~2U;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-            index->flags |= 0x10U;
-#else
+            index->collidable = 0;
             index->captureDisabled = 1;
-#endif
         }
     }
 
@@ -827,28 +790,20 @@ void __fastcall Callback02(PhotoEnemyView *enemy, EclRawInstruction *instruction
 // ECL extended callback table entry 3 @ 0x00413620.
 void __fastcall Callback03(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
-    ExtendedBulletView *index;
+    PhotoBulletView *index;
     i32 bullet;
 
-    index = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
+    index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (index->state == 0)
-#else
         if (index->state == PHOTO_BULLET_STATE_INACTIVE)
-#endif
             continue;
 
         TH095_EXT_REINITIALIZE_DIRECT(index);
         index->vm.pendingInterrupt = 2;
         TH095_EXTENDED_FROM_ANGLE(index->velocity, index->angle, index->speed);
-        index->flags |= 2U;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-        index->flags &= ~0x10U;
-#else
+        index->collidable = 1;
         index->captureDisabled = 0;
-#endif
     }
 
     SetExtendedBackgroundVm0State3();
@@ -858,27 +813,22 @@ void __fastcall Callback03(PhotoEnemyView *enemy, EclRawInstruction *instruction
 // ECL extended callback table entry 4 @ 0x00413750.
 void __fastcall Callback04(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
-    // Exact-facing lexical name; this stores the raw bits of vm.rotation.z.
-    u32 savedActiveSprite;
-    ExtendedBulletView *index;
+    u32 originalRotationBits;
+    PhotoBulletView *index;
     i32 bullet;
 
-    index = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
+    index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (index->state == 0)
-#else
         if (index->state == PHOTO_BULLET_STATE_INACTIVE)
-#endif
             continue;
         if (index->ownerTag == enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
-            savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
+            memcpy(&originalRotationBits, &index->vm.rotation.z, sizeof(originalRotationBits));
             TH095_EXT_REINITIALIZE_SHIFTED(index);
             index->vm.rotateWithBulletAngle = 0;
             index->vm.pendingInterrupt = 2;
-            *reinterpret_cast<u32 *>(&index->vm.rotation.z) = savedActiveSprite;
+            memcpy(&index->vm.rotation.z, &originalRotationBits, sizeof(originalRotationBits));
             TH095_EXTENDED_FROM_ANGLE(
                 index->velocity,
                 enemy->activeEclContext->scriptState.extraFloatVariables[2] +
@@ -886,14 +836,10 @@ void __fastcall Callback04(PhotoEnemyView *enemy, EclRawInstruction *instruction
                 enemy->activeEclContext->scriptState.extraFloatVariables[3] > -999.0f
                     ? enemy->activeEclContext->scriptState.extraFloatVariables[3]
                     : index->speed);
-            index->flags &= ~2U;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-            index->flags |= 0x10U;
-#else
+            index->collidable = 0;
             index->captureDisabled = 1;
-#endif
             TH095_EXT_ANM_EXECUTE(&index->vm);
-            FinalizeExtendedBulletAfterExecute(&index->vm, 0);
+            FinalizeExtendedBulletAfterExecute(&index->vm, ANM_INTERP_LINEAR);
         }
     }
 

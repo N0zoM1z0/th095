@@ -1,5 +1,5 @@
-// VC7 element emission for EclExtended callbacks. Both profiles locate the
-// pool through PhotoBulletManagerView.
+// VC7 member receivers for the reinitialization calls in callbacks 2, 3 and 4.
+// The callbacks traverse the canonical PhotoBulletView pool.
 struct ExtendedBulletView
 {
     u32 flags;

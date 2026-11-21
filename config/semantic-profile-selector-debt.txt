@@ -27,11 +27,10 @@
 1	src/ecl/EclOperands.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
 1	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
-7	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
-6	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+1	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+2	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 8	src/EclExtended.cpp	#ifdef DIFFBUILD
-3	src/EclExtended.cpp	#ifdef TH095_MATCH_EXACT
+1	src/EclExtended.cpp	#ifdef TH095_MATCH_EXACT
 2	src/EclExtended.cpp	#ifndef DIFFBUILD
 3	src/EclOperandsFloat.cpp	#ifdef DIFFBUILD
 1	src/EclOperandsFloat.cpp	#ifndef DIFFBUILD

@@ -142,7 +142,9 @@ surface restore copies, deferred bytes and image descriptors from a
 local projection into AnmManager. The canonical manager and VM header
 now uses the same declarations in both profiles. SEM-448 shares the
 read-only texture format and pixel-stride tables with the SceneTexture
-uploader.
+uploader. SEM-449 puts all six ECL bullet scans on the canonical pool
+and preserves the original rotation bits during VM reinitialization.
+Callbacks 2–4 still use the separate VC7.1 reinitialization receivers.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

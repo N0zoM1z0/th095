@@ -458,7 +458,6 @@ def check_ecl_extended_type_boundaries() -> None:
         "typedef AnmVmId ExtendedVmHandle;",
         "typedef AnmLoaded ExtendedAnmSpawner;",
         "typedef Float3 ExtendedVector;",
-        "typedef ::th095::PhotoBulletView ExtendedBulletView;",
         '#include "PhotoGamePlayer.hpp"',
         "g_RuntimePlayerOwner->playerPosition",
         "g_RuntimePlayerOwner->movementScale",
@@ -480,6 +479,7 @@ def check_ecl_extended_type_boundaries() -> None:
 
     for access in (
         '#include "PhotoBulletManagerLayout.hpp"',
+        "PhotoBulletView *",
         "g_PhotoBulletManager->bulletAnm",
         "g_PhotoBulletManager->bullets",
     ):
