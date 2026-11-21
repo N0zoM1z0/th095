@@ -1431,11 +1431,7 @@ finish:
     TH095_PHOTO_ANM_SET_POSITION(camera->vmIds[1].value, &screenPosition);
     TH095_PHOTO_ANM_SET_POSITION(camera->vmIds[9].value, &screenPosition);
     TH095_PHOTO_ANM_SET_POSITION(camera->vmIds[10].value, &screenPosition);
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    if (((g_PhotoStageState->flags >> 2) & 1) != 0)
-#else
     if (g_PhotoStageState->firstCaptureFrame != 0)
-#endif
     {
         TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[0].value, 5);
         TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[1].value, 5);

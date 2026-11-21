@@ -256,6 +256,9 @@ session and PhotoStage comment readers bind to the canonical declarations.
 SEM-502 shares PhotoStage capture and display. The stage reads its slots
 directly, calls the canonical ANM methods and samples the slowdown from
 Supervisor. The camera and stage share the score flags.
+SEM-503 shares HUD initialization through the ANM, Supervisor and replay
+source owners. PhotoCamera reads the capture phase through PhotoInf in
+both builds.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

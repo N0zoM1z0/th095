@@ -1,15 +1,12 @@
-#ifdef TH095_MATCH_EXACT
-#include "PhotoFrontExact.inl"
-#else
 #include "AnmManager.hpp"
 #include "FileSystem.hpp"
-#include "GameplayGlobals.hpp"
+#include "SupervisorRuntime.hpp"
+#include "SceneData.hpp"
 #include "PhotoFront.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoGamePlayer.hpp"
-#include "Main.hpp"
+#include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
-#include "SceneData.hpp"
 
 #include <string.h>
 
@@ -23,6 +20,8 @@ struct PhotoFrontUpdateLocals
     i32 displayedTime;
     i32 alpha;
 };
+
+PhotoFrontManagerView *g_PhotoFrontManager; // Retail 0x004BDDC4
 
 i32 LoadPhotoFrontAnm()
 {
@@ -71,7 +70,7 @@ static __forceinline void PhotoFrontInitializeFirstVmPhase(PhotoFrontManagerView
 
 i32 PhotoFrontManagerView::Initialize()
 {
-    AnmVmId vmIds[4];
+    PhotoAnmVmId vmIds[4];
 
     this->frontAnm = g_AnmManager->PreloadAnm(5, "front.anm");
     if (this->frontAnm == NULL)
@@ -87,17 +86,17 @@ i32 PhotoFrontManagerView::Initialize()
         return ZUN_ERROR;
     }
 
-    vmIds[0] = this->frontAnm->CreateVm(0, 7);
-    vmIds[1] = this->frontAnm->CreateVm(1, 7);
-    vmIds[2] = this->frontAnm->CreateVm(2, 7);
-    vmIds[3] = this->frontAnm->CreateVm(3, 7);
+    *reinterpret_cast<AnmVmId *>(&vmIds[0]) = this->frontAnm->CreateVm(0, 7);
+    *reinterpret_cast<AnmVmId *>(&vmIds[1]) = this->frontAnm->CreateVm(1, 7);
+    *reinterpret_cast<AnmVmId *>(&vmIds[2]) = this->frontAnm->CreateVm(2, 7);
+    *reinterpret_cast<AnmVmId *>(&vmIds[3]) = this->frontAnm->CreateVm(3, 7);
 
     if (g_Supervisor.flags.resultRestartActive != 0)
     {
-        vmIds[0].SetInterrupt(2);
-        vmIds[1].SetInterrupt(2);
-        vmIds[2].SetInterrupt(2);
-        vmIds[3].SetInterrupt(2);
+        reinterpret_cast<AnmVmId *>(&vmIds[0])->SetInterrupt(2);
+        reinterpret_cast<AnmVmId *>(&vmIds[1])->SetInterrupt(2);
+        reinterpret_cast<AnmVmId *>(&vmIds[2])->SetInterrupt(2);
+        reinterpret_cast<AnmVmId *>(&vmIds[3])->SetInterrupt(2);
     }
     else
     {
@@ -105,7 +104,7 @@ i32 PhotoFrontManagerView::Initialize()
             g_SelectedScene->frontScriptIndex + 0xd, 7);
     }
 
-    if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_ARCHIVE)
+    if (g_ReplayUsesArchive != REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
     {
         this->frontAnm->CreateVm(0x12, 7);
     }
@@ -302,10 +301,3 @@ i32 __fastcall PhotoFrontManagerView::OnDraw(PhotoFrontManagerView *front)
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT
-
-namespace th095
-{
-PhotoFrontManagerView *g_PhotoFrontManager; // Retail 0x004BDDC4
-}

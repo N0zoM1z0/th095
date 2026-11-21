@@ -20396,3 +20396,20 @@ Both link orders resolve 937 code references in the two objects. The
 original and both links agree on 64 texture capture cases, 16 comment
 and slowdown publication cases, and 180 HUD and capture phase cases.
 See `.analysis/pi/photo-stage-owner/`.
+
+### SEM-503 — share the photo HUD and capture phase check
+
+The HUD initializer stores four return values in trivial VM handles and
+uses the canonical ANM factory and interrupt methods. It reads the result
+restart bit from Supervisor at +0x444. A restart interrupts those four
+handles. Otherwise, the HUD creates the scene-specific script. The
+replay marker follows the retail nonzero test on the shared replay source
+value. The old normal path compared only to the archive enumerator.
+
+PhotoCamera now reads the first-capture phase from the shared PhotoInf
+bitfield. VC7.1 emits the original shift and test. All 22 affected units
+match in both exact and normal COFF, including the camera switch tables.
+Both link orders resolve 576 code and six initialized-data references.
+The original and both links agree on 48 HUD initialization cases,
+including preload failure, restart and nonzero replay source values.
+See `.analysis/pi/photo-front-share/`.
