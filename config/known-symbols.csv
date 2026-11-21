@@ -77,7 +77,7 @@ address,name,module,confidence,evidence
 0x00450FC0,th095::MusicRoomView::UpdateMusicRoom,MusicRoom,exact,Canonical exact 2872-byte Music Room update/parser with 76 relocations
 0x00451B00,th095::SkipMusicCommentLine,MusicRoom,exact,Canonical relocation-free music-room-skip-comment-line comparison
 0x00451B90,th095::ReadMusicCommentLine,MusicRoom,exact,Canonical relocation-free music-room-read-comment-line comparison
-0x00451C80,th095::HelpMenuView::UpdateHelpMenu,HelpMenu,exact,Canonical exact 2358-byte Help update; 2378-byte compare extent includes five-entry switch table
+0x00451C80,th095::FrontEndControllerView::UpdateHelpMenu,HelpMenu,exact,Canonical exact 2358-byte Help update; 2378-byte compare extent includes five-entry switch table
 0x004525D0,th095::LoadHelpAnm,HelpMenu,exact,Canonical help-menu-load-anm comparison with four relocations
 0x00445E40,th095::FrontEndControllerView::OnUpdate,FrontEndController,exact,Canonical ownership wrapper targeting the shared update state machine
 0x00445E60,th095::FrontEndControllerView::OnDraw,FrontEndController,exact,Canonical ownership wrapper targeting the shared draw path

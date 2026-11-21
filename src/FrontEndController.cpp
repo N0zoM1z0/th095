@@ -5,7 +5,6 @@
 #include "ReplayBrowser.hpp"
 #include "OptionsMenu.hpp"
 #include "MusicRoom.hpp"
-#include "HelpMenu.hpp"
 #include "SoundPlayer.hpp"
 #include "ZunMath.hpp"
 #include "GameplayGlobals.hpp"
@@ -111,13 +110,6 @@ static __forceinline i32 PrimaryWorkerActiveSnapshot()
 static __forceinline void FrontEndFreePoppedValue(void *block)
 {
     free(block);
-}
-
-static __forceinline void FrontEndResetTimer(ZunTimer *timer)
-{
-    timer->current = 0;
-    timer->subFrame = 0.0f;
-    timer->previous = -999999;
 }
 
 static __forceinline void FrontEndDrainQueueValue(ScenePreviewDataQueue *queue)
@@ -286,7 +278,7 @@ ChainCallbackResult FrontEndControllerView::Update()
         break;
 
     case FRONT_END_REQUESTED_STATE_HELP:
-        reinterpret_cast<HelpMenuView *>(this)->UpdateHelpMenu();
+        this->UpdateHelpMenu();
         break;
 
     case FRONT_END_REQUESTED_STATE_START_GAME:

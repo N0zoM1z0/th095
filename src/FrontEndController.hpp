@@ -22,6 +22,14 @@ enum FrontEndEntryMode
     FRONT_END_ENTRY_REPLAY_BROWSER = 2,
 };
 
+// Front-end transitions clear the fractional frame before the previous frame.
+static __forceinline void FrontEndResetTimer(ZunTimer *timer)
+{
+    timer->current = 0;
+    timer->subFrame = 0.0f;
+    timer->previous = -999999;
+}
+
 struct FrontEndControllerView
 {
     AnmLoaded *sceneAnm;
@@ -64,7 +72,9 @@ struct FrontEndControllerView
     FrontEndPendingTextureData pendingTextures;
     ChainElem *calcChain;
     ChainElem *drawChain;
-    u8 unknown6408[0x10c];
+    char helpAnmPath[260]; // Win32 MAX_PATH
+    i32 helpAnmSize;
+    u8 *helpAnmData;
 
     FrontEndControllerView();
     ~FrontEndControllerView();
@@ -75,6 +85,7 @@ struct FrontEndControllerView
     void Destroy();
     ChainCallbackResult Update();
     ChainCallbackResult UpdateMainMenu();
+    i32 UpdateHelpMenu();
     void RefreshSceneSelection(i32 selectedScoreEntryIndex);
     void BuildScenePreviewText();
     i32 GetSelectedGroup()
@@ -152,6 +163,10 @@ typedef char FrontEndLifecycleChainsAt6400[
      offsetof(FrontEndControllerView, drawChain) == 0x6404)
         ? 1
         : -1];
+typedef char FrontEndControllerHelpPageLayout[
+    (offsetof(FrontEndControllerView, helpAnmPath) == 0x6408 &&
+     offsetof(FrontEndControllerView, helpAnmSize) == 0x650c &&
+     offsetof(FrontEndControllerView, helpAnmData) == 0x6510) ? 1 : -1];
 typedef char FrontEndLifecycleSizeIs6514[
     (sizeof(FrontEndControllerView) == 0x6514) ? 1 : -1];
 

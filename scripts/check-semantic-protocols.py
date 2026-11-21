@@ -2346,7 +2346,7 @@ def check_front_end_timer_owner() -> None:
             fail(f"FrontEnd controller timer declaration drifted: {declaration}")
 
     reset_body = function_body(
-        path,
+        SRC / "FrontEndController.hpp",
         "static __forceinline void FrontEndResetTimer(ZunTimer *timer)",
     )
     reset_statements = (
@@ -2361,7 +2361,10 @@ def check_front_end_timer_owner() -> None:
         fail("FrontEnd timer reset helper lost target-observed store order")
     if text.count("FrontEndResetTimer(&this->stateTimer);") != 11:
         fail("FrontEnd state-timer reset consumers drifted from the shared helper")
-    if ".stateTimer.Reset()" in text:
+    help_menu = source_without_comments((SRC / "HelpMenu.cpp").read_text(encoding="utf-8"))
+    if help_menu.count("FrontEndResetTimer(&this->stateTimer);") != 4:
+        fail("Help menu lost the shared state-timer reset")
+    if ".stateTimer.Reset()" in text or "stateTimer.Reset()" in help_menu:
         fail("FrontEnd controller restored profile-sensitive ZunTimer::Reset calls")
     if text.count("this->stateTimer.Tick();") != 1:
         fail("FrontEnd state timer lost its canonical Tick consumer")
@@ -2602,11 +2605,12 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
     for name in (
         "OptionsMenu.cpp", "OptionsMenuExact.inl",
         "MusicRoom.cpp", "MusicRoomExact.inl",
-        "HelpMenu.cpp", "HelpMenuExact.inl",
+        "HelpMenu.cpp",
     ):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        receiver = "sceneMenu" if name == "HelpMenu.cpp" else "this"
         for interrupt in (3, 2):
-            if f"this->transitionVm.SetInterrupt({interrupt});" not in body:
+            if f"{receiver}->transitionVm.SetInterrupt({interrupt});" not in body:
                 fail(f"{name} lost transition-VM interrupt {interrupt}")
 
 
@@ -3307,7 +3311,7 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
 
     completion = "WriteWorkerSignal(g_Supervisor.replayScanWorker.active,0);WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal,1);"
     for name, count in (
-        ("HelpMenu.cpp", 1), ("HelpMenuExact.inl", 1),
+        ("HelpMenu.cpp", 1),
         ("ReplayBrowser.cpp", 1), ("ReplayBrowserExact.inl", 1),
         ("PhotoGameTask.cpp", 2), ("PhotoGameTaskExact.inl", 2),
         ("FrontEndLifecycle.cpp", 2),
@@ -3336,7 +3340,7 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
     write = re.compile(r"WriteWorkerSignal\(\s*" + word + r"\s*,\s*[01]\s*\)")
     for name in ("ReplayScanWorkerBehavior.inl", "Main.cpp", "MainExact.inl",
                  "AnmPreload.cpp", "SceneSelectAssets.cpp",
-                 "ReplayBrowser.cpp", "ReplayBrowserExact.inl", "HelpMenu.cpp", "HelpMenuExact.inl",
+                 "ReplayBrowser.cpp", "ReplayBrowserExact.inl", "HelpMenu.cpp",
                  "PhotoGameTask.cpp", "PhotoGameTaskExact.inl", "FrontEndController.cpp", "FrontEndLifecycle.cpp"):
         rest = write.sub("", read.sub("", source(name)))
         if re.search(word, rest):

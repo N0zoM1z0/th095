@@ -1025,12 +1025,12 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("ResultScreenTimer", source)
         self.assertEqual(source.count("FrontEndResetTimer(&this->stateTimer);"), 11)
         self.assertLess(
-            source.index("timer->current = 0;"),
-            source.index("timer->subFrame = 0.0f;"),
+            owner.index("timer->current = 0;"),
+            owner.index("timer->subFrame = 0.0f;"),
         )
         self.assertLess(
-            source.index("timer->subFrame = 0.0f;"),
-            source.index("timer->previous = -999999;"),
+            owner.index("timer->subFrame = 0.0f;"),
+            owner.index("timer->previous = -999999;"),
         )
 
     def test_scene_select_prefix_guard_rejects_legacy_view_and_reset(self) -> None:

@@ -1,11 +1,8 @@
-#ifdef TH095_MATCH_EXACT
-#include "HelpMenuExact.inl"
-#else
-#include "HelpMenu.hpp"
 #include "AnmManager.hpp"
+#include "ControllerInputSlot.hpp"
 #include "FileSystem.hpp"
-#include "FrontEndGlobals.hpp"
-#include "InputRuntime.hpp"
+#include "FrontEndController.hpp"
+#include "SceneSelect.hpp"
 #include "SoundPlayer.hpp"
 
 #include <stdio.h>
@@ -14,39 +11,34 @@
 namespace th095
 {
 
-static __forceinline void HelpMenuCreateVmAt(HelpMenuView *view, i32 scriptIndex)
+static __forceinline void HelpMenuCreateVmAt(SceneSelectControllerView *view, i32 scriptIndex)
 {
     view->vmIds[scriptIndex] =
         view->sceneAnm->CreateVm(scriptIndex, 7);
 }
 
-static __forceinline void HelpMenuFreeAnmData(HelpMenuView *view)
+static __forceinline void HelpMenuFreeAnmData(FrontEndControllerView *view)
 {
     u8 *data = view->helpAnmData;
     free(data);
     view->helpAnmData = NULL;
 }
 
-extern u16 g_ResultMenuInput;
-extern u16 g_PressedButtons;
-#define g_ResultMenuInput (RuntimeResultMenuInput())
-#define g_PressedButtons (RuntimePressedButtons())
-
 static __forceinline u16 GetHelpPressedButtons(u16 buttons)
 {
-    return g_PressedButtons & buttons;
+    return g_ControllerInputSlots[0].pressed & buttons;
 }
 
 static __forceinline u16 IsHelpMenuInputPressed(u16 buttons)
 {
     return (u16)((GetHelpPressedButtons(buttons) != 0) ||
-                 ((g_ResultMenuInput & buttons) != 0));
+                 ((g_ControllerInputSlots[0].repeat & buttons) != 0));
 }
 
 void __fastcall LoadHelpAnm(void *unused)
 {
-    HelpMenuView *helpMenu =
-        reinterpret_cast<HelpMenuView *>(g_ActiveMenuController);
+    FrontEndControllerView *helpMenu =
+        static_cast<FrontEndControllerView *>(g_ActiveMenuController);
 
     helpMenu->helpAnmData = FileSystem::OpenFile(
         helpMenu->helpAnmPath, &helpMenu->helpAnmSize, FALSE);
@@ -55,37 +47,39 @@ void __fastcall LoadHelpAnm(void *unused)
     WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
 }
 
-i32 HelpMenuView::UpdateHelpMenu()
+i32 FrontEndControllerView::UpdateHelpMenu()
 {
+// The animation slots still use Scene Select's POD handle overlay.
+#define sceneMenu (reinterpret_cast<SceneSelectControllerView *>(this))
     switch (this->state)
     {
     case HELP_MENU_INITIALIZE:
-        this->cursor.Push();
-        this->vmIds.SetInterrupt(0x66, 1);
-        this->vmIds.SetInterrupt(0x67, 1);
-        HelpMenuCreateVmAt(this, 0x68);
-        HelpMenuCreateVmAt(this, 0x69);
-        HelpMenuCreateVmAt(this, 0x18);
-        this->vmIds.SetInterrupt(0x19, 3);
-        this->vmIds.SetInterrupt(0x1a, 3);
-        this->transitionVm.SetInterrupt(3);
-        this->vmIds.SetInterrupt(0x1b, 3);
+        this->groupCursor.Push();
+        sceneMenu->vmIds.SetInterrupt(0x66, 1);
+        sceneMenu->vmIds.SetInterrupt(0x67, 1);
+        HelpMenuCreateVmAt(sceneMenu, 0x68);
+        HelpMenuCreateVmAt(sceneMenu, 0x69);
+        HelpMenuCreateVmAt(sceneMenu, 0x18);
+        sceneMenu->vmIds.SetInterrupt(0x19, 3);
+        sceneMenu->vmIds.SetInterrupt(0x1a, 3);
+        sceneMenu->transitionVm.SetInterrupt(3);
+        sceneMenu->vmIds.SetInterrupt(0x1b, 3);
         this->state = HELP_MENU_PAGE_SELECT;
-        this->stateTimer.Reset();
-        this->cursor.count = 9;
-        this->cursor.Set(0);
+        FrontEndResetTimer(&this->stateTimer);
+        this->groupCursor.count = 9;
+        this->groupCursor.Set(0);
 
         this->sceneAnm->textures[13].Clear();
         for (i32 i = 0; i < 9; i++)
         {
-            HelpMenuCreateVmAt(this, 0x91 + i);
-            if (this->cursor.GetCurrent() == i)
+            HelpMenuCreateVmAt(sceneMenu, 0x91 + i);
+            if (this->groupCursor.GetCurrent() == i)
             {
-                this->vmIds.SetInterrupt(0x91 + i, 2);
+                sceneMenu->vmIds.SetInterrupt(0x91 + i, 2);
             }
             else
             {
-                this->vmIds.SetInterrupt(0x91 + i, 3);
+                sceneMenu->vmIds.SetInterrupt(0x91 + i, 3);
             }
         }
         break;
@@ -96,67 +90,67 @@ i32 HelpMenuView::UpdateHelpMenu()
             break;
         }
 
-        this->cursor.SaveCurrent();
+        this->groupCursor.SaveCurrent();
         if (IsHelpMenuInputPressed(TH_BUTTON_UP))
         {
-            this->cursor.Move(-1);
+            this->groupCursor.Move(-1);
         }
         if (IsHelpMenuInputPressed(TH_BUTTON_DOWN))
         {
-            this->cursor.Move(1);
+            this->groupCursor.Move(1);
         }
-        if (this->cursor.HasChanged())
+        if (this->groupCursor.HasChanged())
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
             for (i32 i = 0; i < 9; i++)
             {
-                if (this->cursor.GetCurrent() == i)
+                if (this->groupCursor.GetCurrent() == i)
                 {
-                    this->vmIds.SetInterrupt(0x91 + i, 2);
+                    sceneMenu->vmIds.SetInterrupt(0x91 + i, 2);
                 }
                 else
                 {
-                    this->vmIds.SetInterrupt(0x91 + i, 3);
+                    sceneMenu->vmIds.SetInterrupt(0x91 + i, 3);
                 }
             }
         }
 
-        if (GetHelpPressedButtons(0x1002) != 0)
+        if (GetHelpPressedButtons(TH_BUTTON_ENTER | TH_BUTTON_BOMB) != 0)
         {
         load_page:
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
             this->state = HELP_MENU_PAGE_LOADING;
-            this->stateTimer.Reset();
+            FrontEndResetTimer(&this->stateTimer);
             sprintf(this->helpAnmPath, "help_%.2d.anm",
-                    this->cursor.GetCurrent());
+                    this->groupCursor.GetCurrent());
             g_Supervisor.StartReplayScan(LoadHelpAnm, NULL);
             for (i32 i = 0; i < 9; i++)
             {
-                this->vmIds.SetInterrupt(0x91 + i, 1);
+                sceneMenu->vmIds.SetInterrupt(0x91 + i, 1);
             }
             break;
         }
 
-        if (GetHelpPressedButtons(9) != 0)
+        if (GetHelpPressedButtons(TH_BUTTON_MENU | TH_BUTTON_SHOOT) != 0)
         {
-            this->cursor.Pop();
+            this->groupCursor.Pop();
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->vmIds.SetInterrupt(0x68, 1);
-            this->vmIds.SetInterrupt(0x69, 1);
-            HelpMenuCreateVmAt(this, 0x66);
-            HelpMenuCreateVmAt(this, 0x67);
-            this->vmIds.SetInterrupt(0x18, 1);
-            this->vmIds.SetInterrupt(0x19, 2);
-            this->vmIds.SetInterrupt(0x1a, 2);
-            this->transitionVm.SetInterrupt(2);
-            this->vmIds.SetInterrupt(0x1b, 2);
+            sceneMenu->vmIds.SetInterrupt(0x68, 1);
+            sceneMenu->vmIds.SetInterrupt(0x69, 1);
+            HelpMenuCreateVmAt(sceneMenu, 0x66);
+            HelpMenuCreateVmAt(sceneMenu, 0x67);
+            sceneMenu->vmIds.SetInterrupt(0x18, 1);
+            sceneMenu->vmIds.SetInterrupt(0x19, 2);
+            sceneMenu->vmIds.SetInterrupt(0x1a, 2);
+            sceneMenu->transitionVm.SetInterrupt(2);
+            sceneMenu->vmIds.SetInterrupt(0x1b, 2);
             for (i32 i = 0; i < 9; i++)
             {
-                this->vmIds.SetInterrupt(0x91 + i, 1);
+                sceneMenu->vmIds.SetInterrupt(0x91 + i, 1);
             }
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->state = HELP_MENU_INITIALIZE;
-            this->stateTimer.Reset();
+            FrontEndResetTimer(&this->stateTimer);
             break;
         }
         break;
@@ -171,7 +165,7 @@ i32 HelpMenuView::UpdateHelpMenu()
             this->helpAnmData, this->helpAnmSize, 1, 0, 1);
         HelpMenuFreeAnmData(this);
         this->sceneAnm->textures[13].texture->PreLoad();
-        HelpMenuCreateVmAt(this, 0x90);
+        HelpMenuCreateVmAt(sceneMenu, 0x90);
         this->state = HELP_MENU_PAGE_VIEW;
     }
 
@@ -182,48 +176,47 @@ i32 HelpMenuView::UpdateHelpMenu()
         }
 
         if (GetHelpPressedButtons(TH_BUTTON_RIGHT) != 0 &&
-            this->cursor.GetCurrent() < 8)
+            this->groupCursor.GetCurrent() < 8)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
-            this->cursor.Move(1);
-            this->vmIds.SetInterrupt(0x90, 1);
+            this->groupCursor.Move(1);
+            sceneMenu->vmIds.SetInterrupt(0x90, 1);
             goto load_page;
         }
         if (GetHelpPressedButtons(TH_BUTTON_LEFT) != 0 &&
-            this->cursor.GetCurrent() > 0)
+            this->groupCursor.GetCurrent() > 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
-            this->cursor.Move(-1);
-            this->vmIds.SetInterrupt(0x90, 1);
+            this->groupCursor.Move(-1);
+            sceneMenu->vmIds.SetInterrupt(0x90, 1);
             goto load_page;
         }
 
-        if (GetHelpPressedButtons(0x1002) != 0 ||
-            GetHelpPressedButtons(9) != 0)
+        if (GetHelpPressedButtons(TH_BUTTON_ENTER | TH_BUTTON_BOMB) != 0 ||
+            GetHelpPressedButtons(TH_BUTTON_MENU | TH_BUTTON_SHOOT) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             this->state = HELP_MENU_PAGE_SELECT;
-            this->stateTimer.Reset();
-            this->vmIds.SetInterrupt(0x90, 1);
+            FrontEndResetTimer(&this->stateTimer);
+            sceneMenu->vmIds.SetInterrupt(0x90, 1);
             for (i32 i = 0; i < 9; i++)
             {
-                HelpMenuCreateVmAt(this, 0x91 + i);
-                if (this->cursor.GetCurrent() == i)
+                HelpMenuCreateVmAt(sceneMenu, 0x91 + i);
+                if (this->groupCursor.GetCurrent() == i)
                 {
-                    this->vmIds.SetInterrupt(0x91 + i, 2);
+                    sceneMenu->vmIds.SetInterrupt(0x91 + i, 2);
                 }
                 else
                 {
-                    this->vmIds.SetInterrupt(0x91 + i, 3);
+                    sceneMenu->vmIds.SetInterrupt(0x91 + i, 3);
                 }
             }
         }
         break;
     }
 
+#undef sceneMenu
     return 0;
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

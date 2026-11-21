@@ -19967,3 +19967,26 @@ both links agree on 38 main-menu input and demo cases, including both
 physical buttons for confirmation and return, all single held-bit tests,
 and the 1,800-frame demo boundary. The title initialization and periodic
 VM checks also pass. See `.analysis/pi/front-end-anm-bindings/`.
+
+### SEM-484 — run Help on the allocated front-end controller
+
+`FrontEndControllerView::UpdateHelpMenu` and the worker use the actual
+controller's state, cursor, timer, path, file size, and buffer. The
+loader opens the requested file through the canonical active-menu
+pointer and publishes to the canonical Supervisor worker. Both builds
+share the update, loader, timer reset, and typed pressed/repeat reads.
+The Scene Select view still supplies the animation handles.
+
+The timer helper preserves the original store order. Substituting the
+ordinary `ZunTimer::Reset` reordered the previous-frame and fractional
+stores at four Help transitions. The worker and update pass their exact
+extents with the new bindings, along with all 73 affected comparisons
+across eight translation units. The normal worker also matches all
+88 bytes and four relocation targets. The update moves from
+`0x00420E70` to `0x00438EA0` with reversed object order.
+
+The original and both normal links agree on 24 Help cases. The fixtures
+cover page selection, timer gating, file publication, upload, free,
+preload, page bounds, and return to the main menu. A failed file open
+still publishes `PAGE_DATA_READY` with a null buffer. The upload expects
+valid ANM data. See `.analysis/pi/help-page-owner/`.

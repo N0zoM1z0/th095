@@ -33,9 +33,6 @@
 1	src/Global.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Global.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Global.hpp	#ifndef TH095_MATCH_EXACT
-1	src/HelpMenu.cpp	#ifdef TH095_MATCH_EXACT
-1	src/HelpMenu.hpp	#ifdef DIFFBUILD
-1	src/HelpMenu.hpp	#ifdef TH095_MATCH_EXACT
 1	src/InputRuntime.hpp	#if !defined(TH095_MATCH_EXACT)
 1	src/InputRuntime.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/InputRuntime.hpp	#if defined(TH095_MATCH_EXACT)

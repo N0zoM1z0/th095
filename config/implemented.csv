@@ -173,7 +173,7 @@ th095::SceneValueQueue::Pop
 th095::MusicRoomView::UpdateMusicRoom
 th095::SkipMusicCommentLine
 th095::ReadMusicCommentLine
-th095::HelpMenuView::UpdateHelpMenu
+th095::FrontEndControllerView::UpdateHelpMenu
 th095::LoadHelpAnm
 th095::FrontEndControllerView::OnUpdate
 th095::FrontEndControllerView::OnDraw
