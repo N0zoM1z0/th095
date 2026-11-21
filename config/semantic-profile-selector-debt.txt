@@ -115,7 +115,6 @@
 1	src/SceneSelectUpdate.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelectUpdate.cpp	#ifndef DIFFBUILD
 1	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/SoundPlayer.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/Supervisor.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Supervisor.hpp	#ifndef TH095_MATCH_EXACT
 2	src/TextRenderer.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)

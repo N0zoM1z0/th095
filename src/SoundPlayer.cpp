@@ -17,10 +17,8 @@ namespace th095
 // class identity used by every caller instead of separate struct/class symbols.
 DIFFABLE_STATIC(SoundPlayer, g_SoundPlayer);
 
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-// Target 0x004A4480: one record per public SoundIdx.  The third i16 is live
-// queue metadata consumed by Play/StopSoundByIdx, so preserve it rather than
-// treating the upper halfword as structure padding.
+// One record per SoundIdx. The signed metadata field is copied to the
+// corresponding SoundPlayer slot when a sound is requested.
 SoundBufferIdxVolume g_SoundBufferIdxVol[47] = {
     {0, -1900, 0},  {0, -2100, 0},  {1, -1200, 5},  {1, -1500, 5},
     {2, -1100, 100}, {3, -700, 100}, {4, -700, 100}, {5, -1900, 50},
@@ -50,7 +48,6 @@ char *g_SFXList[37] = {
     "se_slash.wav",    "se_shutter.wav",  "se_ch00.wav",
     "se_ch01.wav",     "se_focus.wav",    "se_nice.wav",
     "se_focusin.wav"};
-#endif
 
 #define BGM_WAV_BITS_PER_SAMPLE 16
 #define BGM_BUFFER_SIZE 0x8000

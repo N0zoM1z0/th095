@@ -19609,3 +19609,18 @@ seeding the old view's offsets with different values. It checks WAV
 pause and unpause, file-backed and memory-backed BGM calls, and both
 thread window arguments with Windows and DirectSound calls stubbed.
 See `.analysis/pi/sound-supervisor-owner/`.
+
+### SEM-469 — share the initialized sound tables
+
+SoundPlayer.cpp emits the same two tables in both profiles. The 47
+sound-index records have identical bytes in retail, both objects and
+both normal links. The 37 filename entries point to the corresponding
+retail strings. Each pointer follows its own string symbol in both
+layouts, and the ten code references follow the tables.
+
+All 27 strict SoundPlayer comparisons pass. Retail and both rebuilt
+layouts use all 37 filenames in the data loader, identify the missing
+filename on failure, and use all 47 buffer indices and volumes during
+initialization. The request probe also verifies metadata publication
+and the queued stop for each sound. Archive reads and DirectSound
+calls are stubbed. See `.analysis/pi/sound-tables/`.
