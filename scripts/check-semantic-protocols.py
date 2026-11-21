@@ -1149,7 +1149,6 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     lifecycle = supervisor_header_source("SupervisorLifecycle.cpp")
     worker_body = (SRC / "ReplayScanWorker.cpp").read_text(encoding="utf-8")
-    worker_exact = (SRC / "ReplayScanWorkerExact.inl").read_text(encoding="utf-8")
     anm_preload = (SRC / "AnmPreload.cpp").read_text(encoding="utf-8")
     manifest = (ROOT / "config" / "match-units.toml").read_text(
         encoding="utf-8"
@@ -1179,15 +1178,13 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
 
     if any(token in owner for token in PROFILE_NAMES):
         fail("worker owner restored a selected declaration/layout")
-    for name, text in (("ReplayScanWorker.cpp", worker_body),
-                       ("ReplayScanWorkerExact.inl", worker_exact)):
-        if '#include "ReplayScanWorkerBehavior.inl"' not in text:
-            fail(f"{name} lost the shared lifecycle implementation")
-        binding = 'ReplayScanWorkerWin32Emission.hpp' if name.endswith('Exact.inl') else 'ReplayScanWorkerWin32.hpp'
-        if f'#include "{binding}"' not in text:
-            fail(f"{name} lost the explicit Win32 callback boundary")
-        if re.search(r"ReplayScanWorker::(?:ReplayScanWorker|Stop|Start)\s*\(", text):
-            fail(f"{name} restored a duplicate lifecycle body")
+    if worker_body.count('#include "ReplayScanWorkerBehavior.inl"') != 1:
+        fail("ReplayScanWorker.cpp must include the shared lifecycle once")
+    for binding in ("ReplayScanWorkerWin32Emission.hpp", "ReplayScanWorkerWin32.hpp"):
+        if worker_body.count(f'#include "{binding}"') != 1:
+            fail(f"ReplayScanWorker.cpp lost the {binding} API binding")
+    if re.search(r"ReplayScanWorker::(?:ReplayScanWorker|Stop|Start)\s*\(", worker_body):
+        fail("ReplayScanWorker.cpp restored a duplicate lifecycle body")
     shared = (SRC / "ReplayScanWorkerBehavior.inl").read_text(encoding="utf-8")
     for token in ("BeginWorkerThread(this, argument)",
                   "WaitForSingleObject((HANDLE)this->threadHandle, 200) == WAIT_TIMEOUT",
@@ -1272,10 +1269,10 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
         "replayScanWorker.stopRequested",
         "replayScanStopRequested",
     )
-    exact_worker_corpus = "\n".join((worker_exact, main_exact_body, anm_preload))
+    worker_corpus = "\n".join((worker_body, shared, main_exact_body, anm_preload))
     for field_use in retired_field_uses:
-        if field_use in exact_worker_corpus:
-            fail(f"exact-facing worker logic restored a legacy field: {field_use}")
+        if field_use in worker_corpus:
+            fail(f"worker logic restored a legacy field: {field_use}")
 
     retired_identities = (
         "?g_SupervisorInputWorker@th095@@3USupervisorInputWorkerView@1@A",

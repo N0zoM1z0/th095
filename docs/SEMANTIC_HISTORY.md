@@ -20488,3 +20488,19 @@ matches in normal COFF. Twenty synthetic SHOT load cases agree across
 retail and both layouts, covering a missing file, zero power levels,
 multiple levels and signed terminators. The linked images retain the
 previous mapped bytes. See `.analysis/pi/player-sht-owner/`.
+
+### SEM-508 — share the replay-worker compilation path
+
+ReplayScanWorker.cpp includes its common lifecycle once. Its existing
+file-top selector chooses the CRT launch binding. The separate exact
+wrapper and its result aliases are removed. The target CRT entry at
+0x00485B0E pushes the saved argument before its indirect callback.
+Normal uses the typed stdcall entry and hands the argument to the
+fastcall worker through the register ABI.
+
+All seven worker and Supervisor wrapper units match exactly. Both
+normal link orders retain their mapped bytes. The PE fixtures exercise
+six retail launch cases and eight cases per normal layout, including
+null callbacks, failed creation and transport allocation failure.
+The native worker tests also pass typed dispatch, ownership and 128
+thread publication scenarios. See `.analysis/pi/replay-worker-binding/`.

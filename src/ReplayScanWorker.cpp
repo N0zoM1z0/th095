@@ -3,22 +3,15 @@
 #include "Main.hpp"
 
 #ifdef TH095_MATCH_EXACT
-#include "ReplayScanWorkerExact.inl"
+#include "ReplayScanWorkerWin32Emission.hpp"
 #else
-
 #include "ReplayScanWorkerWin32.hpp"
+#endif
 
 namespace th095
 {
 
 #include "ReplayScanWorkerBehavior.inl"
-
-} // namespace th095
-
-#endif // TH095_MATCH_EXACT
-
-namespace th095
-{
 
 i32 Supervisor::StartReplayScan(
     void (__fastcall *callback)(void *), void *argument)

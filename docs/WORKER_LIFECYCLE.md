@@ -95,16 +95,20 @@ remain open; these tests do not prove a one-item bound.
 
 ## Shared code and independent oracles
 
-ReplayScanWorkerBehavior.inl supplies constructor/destructor/RequestExit/Start/Stop
-at both normal and exact worker emission sites. WorkerCallback is the one
+`ReplayScanWorker.cpp` includes the common constructor, destructor, exit
+request, Start and Stop bodies once through `ReplayScanWorkerBehavior.inl`. WorkerCallback is the one
 void/fastcall callback contract; the class layout remains profile-independent.
 Supervisor's input/startup callbacks now take void* in all three TH095 parent
 declarations and both bodies, with their unused parameter homes and target
 instructions preserved. The two registration-side function-pointer casts are
 removed. The separate 0x364 legacy Supervisor declaration is not promoted.
 
-The existing exact include route selects ReplayScanWorkerWin32Emission.hpp.
-It retains the target's raw conversion in one selector-free emission adapter.
+The file-top selector changes only the Win32 launch binding. The exact
+binding in `ReplayScanWorkerWin32Emission.hpp` retains the target conversion.
+The retail CRT entry at 0x00485B0E pushes the stored argument from +0x50
+and calls the worker from +0x4C at 0x00485B77–0x00485B7C. This supplies
+the argument through the CRT stack convention. The worker declaration
+uses the fastcall register convention.
 Normal ReplayScanWorkerWin32.hpp instead supplies allocation, release and typed
 CRT begin bindings for WorkerThreadStart.inl. A per-launch WorkerThreadStart
 owns two native-width values: WorkerCallback and user argument. Allocation uses
