@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AnmVertex.hpp"
-#include "EclCallParameters.hpp"
+#include "EclScriptState.hpp"
 #include "PhotoBulletSpawnDescriptor.hpp"
 #include "PhotoEnemyControl.hpp"
 #include "PhotoEnemyEclAccess.hpp"
@@ -27,22 +27,13 @@ struct PhotoEnemyEclInterpolationSlotView
     }
 };
 
-struct PhotoEnemyEclScriptStateView
-{
-    i32 intVariables[8];
-    f32 floatVariables[8];
-    i32 extraIntVariables[4];
-    f32 extraFloatVariables[4];
-    EclCallParameters callParameters;
-};
-
 struct PhotoEnemyEclContextView
 {
     void *currentInstruction;
     ZunTimer time;
     EclExtendedCallback perFrameCallback;
     EclRawInstruction *perFrameInstruction;
-    PhotoEnemyEclScriptStateView scriptState; // +0x018
+    EclScriptState scriptState; // +0x018
     ZunTimer secondaryTime;
     PhotoEnemyEclInterpolationSlotView interpolationSlots[8];
     u8 unknown224[8];
@@ -224,8 +215,6 @@ struct PhotoEnemyView
 
 typedef char PhotoEnemyEclInterpolationSlotSizeIs30[
     (sizeof(PhotoEnemyEclInterpolationSlotView) == 0x30) ? 1 : -1];
-typedef char PhotoEnemyEclScriptStateSizeIs80[
-    (sizeof(PhotoEnemyEclScriptStateView) == 0x80) ? 1 : -1];
 typedef char PhotoEnemyEclContextCallbackFields[
     (offsetof(PhotoEnemyEclContextView, perFrameCallback) == 0x10 &&
      offsetof(PhotoEnemyEclContextView, perFrameInstruction) == 0x14) ? 1 : -1];
@@ -256,19 +245,7 @@ typedef char PhotoEnemyMainEclScriptStateAt2F4[
     (offsetof(PhotoEnemyView, mainEclContext) +
          offsetof(PhotoEnemyEclContextView, scriptState) == 0x2f4) ? 1 : -1];
 typedef char PhotoEnemyActiveEclContextAt280C[
-    (offsetof(PhotoEnemyView, activeEclContext) ==
-     PHOTO_ENEMY_ECL_ACTIVE_CONTEXT_OFFSET) ? 1 : -1];
-typedef char PhotoEnemyEclContextFloatVariablesAt38[
-    (offsetof(PhotoEnemyEclContextView, scriptState) +
-         offsetof(PhotoEnemyEclScriptStateView, floatVariables) ==
-     PHOTO_ENEMY_ECL_CONTEXT_FLOAT_VARIABLES_OFFSET) ? 1 : -1];
-typedef char PhotoEnemyEclContextExtraFloatVariablesAt68[
-    (offsetof(PhotoEnemyEclContextView, scriptState) +
-         offsetof(PhotoEnemyEclScriptStateView, extraFloatVariables) ==
-     PHOTO_ENEMY_ECL_CONTEXT_EXTRA_FLOAT_VARIABLES_OFFSET) ? 1 : -1];
-typedef char PhotoEnemyEclContextCallParametersAt78[
-    (offsetof(PhotoEnemyEclContextView, scriptState) +
-         offsetof(PhotoEnemyEclScriptStateView, callParameters) == 0x78) ? 1 : -1];
+    (offsetof(PhotoEnemyView, activeEclContext) == 0x280c) ? 1 : -1];
 typedef char PhotoEnemyPhotoCaptureSubroutineAt285A[
     (offsetof(PhotoEnemyView, photoCaptureEclSubroutineId) ==
      PHOTO_ENEMY_ECL_PHOTO_CAPTURE_SUBROUTINE_OFFSET) ? 1 : -1];

@@ -37,9 +37,6 @@ enum PhotoEnemyEclOperandOffset
 {
     PHOTO_ENEMY_ECL_VM_ROTATION_Z_OFFSET = 0x28,
     PHOTO_ENEMY_ECL_ANM_HANDLES_OFFSET = 0x2d4,
-    PHOTO_ENEMY_ECL_ACTIVE_CONTEXT_OFFSET = 0x280c,
-    PHOTO_ENEMY_ECL_CONTEXT_FLOAT_VARIABLES_OFFSET = 0x38,
-    PHOTO_ENEMY_ECL_CONTEXT_EXTRA_FLOAT_VARIABLES_OFFSET = 0x68,
     PHOTO_ENEMY_ECL_PHOTO_CAPTURE_SUBROUTINE_OFFSET = 0x285a,
     PHOTO_ENEMY_ECL_POSITION_OFFSET = 0x28a0,
     PHOTO_ENEMY_ECL_MOVEMENT_ANGLE_OFFSET = 0x2900,
@@ -136,21 +133,6 @@ enum PhotoEnemyEclOperandRuntimeOffset
     (*reinterpret_cast<type *>(reinterpret_cast<u8 *>(owner) + (offset)))
 #define TH095_PHOTO_ENEMY_OBJECT_PTR(owner, offset, type) \
     (reinterpret_cast<type *>(reinterpret_cast<u8 *>(owner) + (offset)))
-#define TH095_ECL_ACTIVE_CONTEXT_F32(owner, offset, index) \
-    TH095_PHOTO_ENEMY_F32( \
-        TH095_PHOTO_ENEMY_POINTER( \
-            (owner), th095::PHOTO_ENEMY_ECL_ACTIVE_CONTEXT_OFFSET, u8), \
-        (offset) + sizeof(f32) * (index))
-#define TH095_ECL_CONTEXT_FLOAT_VARIABLE(owner, index) \
-    TH095_ECL_ACTIVE_CONTEXT_F32( \
-        (owner), \
-        th095::PHOTO_ENEMY_ECL_CONTEXT_FLOAT_VARIABLES_OFFSET, \
-        (index))
-#define TH095_ECL_CONTEXT_EXTRA_FLOAT_VARIABLE(owner, index) \
-    TH095_ECL_ACTIVE_CONTEXT_F32( \
-        (owner), \
-        th095::PHOTO_ENEMY_ECL_CONTEXT_EXTRA_FLOAT_VARIABLES_OFFSET, \
-        (index))
 #define TH095_ECL_ENEMY_POSITION(owner, index) \
     TH095_PHOTO_ENEMY_F32( \
         (owner), \

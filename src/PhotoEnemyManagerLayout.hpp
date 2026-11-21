@@ -63,7 +63,7 @@ struct PhotoEnemyManagerView
         i32 life,
         i32 itemDrop,
         i32 score,
-        const i32 *contextValues);
+        const EclScriptState *scriptState);
     i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
     static void __fastcall ResetNonPhotoTargets(
         PhotoEnemyManagerView *enemyManager);

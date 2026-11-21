@@ -76,23 +76,23 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 {
     switch (operand)
     {
-    case 0x2710: return enemy->activeEclContext->intVariables[0];
-    case 0x2711: return enemy->activeEclContext->intVariables[1];
-    case 0x2712: return enemy->activeEclContext->intVariables[2];
-    case 0x2713: return enemy->activeEclContext->intVariables[3];
-    case 0x2714: return enemy->activeEclContext->intVariables[4];
-    case 0x2715: return enemy->activeEclContext->intVariables[5];
-    case 0x2716: return enemy->activeEclContext->intVariables[6];
-    case 0x2717: return enemy->activeEclContext->intVariables[7];
+    case 0x2710: return enemy->activeEclContext->scriptState.intVariables[0];
+    case 0x2711: return enemy->activeEclContext->scriptState.intVariables[1];
+    case 0x2712: return enemy->activeEclContext->scriptState.intVariables[2];
+    case 0x2713: return enemy->activeEclContext->scriptState.intVariables[3];
+    case 0x2714: return enemy->activeEclContext->scriptState.intVariables[4];
+    case 0x2715: return enemy->activeEclContext->scriptState.intVariables[5];
+    case 0x2716: return enemy->activeEclContext->scriptState.intVariables[6];
+    case 0x2717: return enemy->activeEclContext->scriptState.intVariables[7];
 
-    case ECL_CALL_PARAMETER_INT0: return enemy->activeEclContext->callParameters.ints[0];
-    case ECL_CALL_PARAMETER_INT1: return enemy->activeEclContext->callParameters.ints[1];
-    case ECL_CALL_PARAMETER_INT2: return enemy->activeEclContext->callParameters.ints[2];
-    case ECL_CALL_PARAMETER_INT3: return enemy->activeEclContext->callParameters.ints[3];
-    case 0x2724: return enemy->activeEclContext->extraIntVariables[0];
-    case 0x2725: return enemy->activeEclContext->extraIntVariables[1];
-    case 0x2726: return enemy->activeEclContext->extraIntVariables[2];
-    case 0x2727: return enemy->activeEclContext->extraIntVariables[3];
+    case ECL_CALL_PARAMETER_INT0: return enemy->activeEclContext->scriptState.callParameters.ints[0];
+    case ECL_CALL_PARAMETER_INT1: return enemy->activeEclContext->scriptState.callParameters.ints[1];
+    case ECL_CALL_PARAMETER_INT2: return enemy->activeEclContext->scriptState.callParameters.ints[2];
+    case ECL_CALL_PARAMETER_INT3: return enemy->activeEclContext->scriptState.callParameters.ints[3];
+    case 0x2724: return enemy->activeEclContext->scriptState.extraIntVariables[0];
+    case 0x2725: return enemy->activeEclContext->scriptState.extraIntVariables[1];
+    case 0x2726: return enemy->activeEclContext->scriptState.extraIntVariables[2];
+    case 0x2727: return enemy->activeEclContext->scriptState.extraIntVariables[3];
 
     case TH095_ECL_RANDOM_SELECTOR(0x2720, ECL_RANDOM_U31): return (i32)(g_Rng.GetRandomU32() & 0x7fffffff);
     case TH095_ECL_RANDOM_SELECTOR(0x2721, ECL_RANDOM_F32): return (i32)g_Rng.GetRandomF32();
@@ -101,23 +101,23 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 
     case 0x2731: return TH095_ECL_TIMER_CURRENT(enemy);
     case 0x2733: return TH095_ECL_ENEMY_LIFE(enemy);
-    case 0x275d: return (i32)enemy->activeEclContext->extraFloatVariables[0];
-    case 0x275e: return (i32)enemy->activeEclContext->extraFloatVariables[1];
-    case 0x275f: return (i32)enemy->activeEclContext->extraFloatVariables[2];
-    case 0x2760: return (i32)enemy->activeEclContext->extraFloatVariables[3];
+    case 0x275d: return (i32)enemy->activeEclContext->scriptState.extraFloatVariables[0];
+    case 0x275e: return (i32)enemy->activeEclContext->scriptState.extraFloatVariables[1];
+    case 0x275f: return (i32)enemy->activeEclContext->scriptState.extraFloatVariables[2];
+    case 0x2760: return (i32)enemy->activeEclContext->scriptState.extraFloatVariables[3];
 
-    case 0x2718: return (i32)enemy->activeEclContext->floatVariables[0];
-    case 0x2719: return (i32)enemy->activeEclContext->floatVariables[1];
-    case 0x271a: return (i32)enemy->activeEclContext->floatVariables[2];
-    case 0x271b: return (i32)enemy->activeEclContext->floatVariables[3];
-    case 0x271c: return (i32)enemy->activeEclContext->floatVariables[4];
-    case 0x271d: return (i32)enemy->activeEclContext->floatVariables[5];
-    case 0x271e: return (i32)enemy->activeEclContext->floatVariables[6];
-    case 0x271f: return (i32)enemy->activeEclContext->floatVariables[7];
-    case ECL_CALL_PARAMETER_FLOAT0: return (i32)enemy->activeEclContext->callParameters.floats[0];
-    case ECL_CALL_PARAMETER_FLOAT1: return (i32)enemy->activeEclContext->callParameters.floats[1];
-    case ECL_CALL_PARAMETER_FLOAT2: return (i32)enemy->activeEclContext->callParameters.floats[2];
-    case ECL_CALL_PARAMETER_FLOAT3: return (i32)enemy->activeEclContext->callParameters.floats[3];
+    case 0x2718: return (i32)enemy->activeEclContext->scriptState.floatVariables[0];
+    case 0x2719: return (i32)enemy->activeEclContext->scriptState.floatVariables[1];
+    case 0x271a: return (i32)enemy->activeEclContext->scriptState.floatVariables[2];
+    case 0x271b: return (i32)enemy->activeEclContext->scriptState.floatVariables[3];
+    case 0x271c: return (i32)enemy->activeEclContext->scriptState.floatVariables[4];
+    case 0x271d: return (i32)enemy->activeEclContext->scriptState.floatVariables[5];
+    case 0x271e: return (i32)enemy->activeEclContext->scriptState.floatVariables[6];
+    case 0x271f: return (i32)enemy->activeEclContext->scriptState.floatVariables[7];
+    case ECL_CALL_PARAMETER_FLOAT0: return (i32)enemy->activeEclContext->scriptState.callParameters.floats[0];
+    case ECL_CALL_PARAMETER_FLOAT1: return (i32)enemy->activeEclContext->scriptState.callParameters.floats[1];
+    case ECL_CALL_PARAMETER_FLOAT2: return (i32)enemy->activeEclContext->scriptState.callParameters.floats[2];
+    case ECL_CALL_PARAMETER_FLOAT3: return (i32)enemy->activeEclContext->scriptState.callParameters.floats[3];
 
     case ECL_MANAGER_PARAMETER_INT0: return g_PhotoEnemyManager->eclManager->callParameters.ints[0];
     case ECL_MANAGER_PARAMETER_INT1: return g_PhotoEnemyManager->eclManager->callParameters.ints[1];

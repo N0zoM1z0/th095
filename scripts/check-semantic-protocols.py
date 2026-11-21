@@ -3635,7 +3635,7 @@ def check_photo_enemy_owner() -> None:
         encoding="utf-8"
     )
     if re.search(
-        r"enemy->(?:activeEclContext\b(?!->callParameters\.floats\[)|"
+        r"enemy->(?:activeEclContext\b(?!->scriptState\.(?:callParameters\.floats|floatVariables|extraFloatVariables)\[)|"
         r"position|movementInterpolation(?:Origin|Delta)|"
         r"movementAngle|angularVelocity|speed|acceleration|orbit(?:Radius|Angle|AngularVelocity))",
         float_lvalue,

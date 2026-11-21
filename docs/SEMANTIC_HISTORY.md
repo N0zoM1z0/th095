@@ -18592,3 +18592,19 @@ Both normal link orders move the two methods and all 12 direct calls
 resolve to their new addresses. The 101 focused retail comparisons include
 negative and valid subroutine IDs, both timer resets and opcode 107 with
 stack depth and suppression controls. See `.analysis/pi/ecl-manager-methods/`.
+
+### SEM-419 — share the ECL script state
+
+Both context declarations now embed one 0x80-byte script-state record at
++0x18. The four resolvers and the extension callbacks access its typed
+fields. Opcodes 83 and 84 pass the current state to enemy spawn. Opcode 117
+initializes a child context and copies the same record, including all eight
+call parameters. The float-variable accessors no longer reparse the enemy
+and context offsets.
+
+All 167 affected exact units pass. The two spawn calls and 516 compiler
+label relocations retain their offsets, kinds and destinations. Both normal
+links move the spawn method, and both call sites follow it. The 133 focused
+retail comparisons include float lvalue gating, caller-state inheritance and
+child allocation failure. The 218 effect and extension callback comparisons
+also agree in both link orders. See `.analysis/pi/ecl-script-state/`.

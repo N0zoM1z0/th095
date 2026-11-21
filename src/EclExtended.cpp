@@ -324,18 +324,18 @@ void __fastcall DispatchContextValues(
 #ifdef DIFFBUILD
     DispatchExtendedValue(
         7,
-        enemy->activeEclContext->intVariables[0],
-        enemy->activeEclContext->intVariables[1],
-        enemy->activeEclContext->intVariables[2],
-        enemy->activeEclContext->intVariables[3],
+        enemy->activeEclContext->scriptState.intVariables[0],
+        enemy->activeEclContext->scriptState.intVariables[1],
+        enemy->activeEclContext->scriptState.intVariables[2],
+        enemy->activeEclContext->scriptState.intVariables[3],
         29);
 #else
     ScreenEffect::RegisterChain(
         SCREEN_EFFECT_SHAKE_ENVELOPE,
-        enemy->activeEclContext->intVariables[0],
-        enemy->activeEclContext->intVariables[1],
-        enemy->activeEclContext->intVariables[2],
-        enemy->activeEclContext->intVariables[3],
+        enemy->activeEclContext->scriptState.intVariables[0],
+        enemy->activeEclContext->scriptState.intVariables[1],
+        enemy->activeEclContext->scriptState.intVariables[2],
+        enemy->activeEclContext->scriptState.intVariables[3],
         29);
 #endif
 }
@@ -344,7 +344,7 @@ void __fastcall DispatchContextValues(
 void __fastcall PublishGameSpeed(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-    TH095_ECL_EXT_GAME_SPEED = enemy->activeEclContext->floatVariables[7];
+    TH095_ECL_EXT_GAME_SPEED = enemy->activeEclContext->scriptState.floatVariables[7];
 }
 
 // ECL extended callback table entry 12 @ 0x00413FC0.
@@ -442,7 +442,7 @@ void __fastcall ResetOwnedBulletMotion(
 #endif
             continue;
         if (bullet->ownerTag ==
-            enemy->activeEclContext->extraIntVariables[2])
+            enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
 #if defined(TH095_MATCH_EXACT)
             bullet->field34c = 0;
@@ -484,7 +484,7 @@ void __fastcall FadeOwnedCapturedBullets(
 #endif
             continue;
         if (locals.bullet->ownerTag ==
-            enemy->activeEclContext->extraIntVariables[2])
+            enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
             if (((locals.bullet->flags >> 4) & 1U) != 0)
@@ -548,7 +548,7 @@ void __fastcall SpawnEnemyMarkerVm(
 
     TH095_EXT_CREATE_VM_WORLD_INTO(
         reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.handle,
-        enemy->activeEclContext->extraIntVariables[2],
+        enemy->activeEclContext->scriptState.extraIntVariables[2],
         &enemy->worldPosition);
     locals.vm = TH095_EXT_HANDLE_GET_VM(locals.handle);
     TH095_EXT_HANDLE_SET_SPRITE(locals.handle, enemy->vm.activeSpriteIndex);
@@ -584,10 +584,10 @@ void __fastcall RunPhotoTransition(
         f32 zeroZ;
     } locals;
 
-    if (enemy->activeEclContext->extraIntVariables[2] != 0)
+    if (enemy->activeEclContext->scriptState.extraIntVariables[2] != 0)
     {
-        --enemy->activeEclContext->extraIntVariables[2];
-        if (enemy->activeEclContext->extraIntVariables[2] == 60)
+        --enemy->activeEclContext->scriptState.extraIntVariables[2];
+        if (enemy->activeEclContext->scriptState.extraIntVariables[2] == 60)
         {
             g_RuntimeGlobalStateOwner->photoTransitionActive = 0;
             locals.firstEndVm = TH095_EXT_ANM_GET_VM(
@@ -603,7 +603,7 @@ void __fastcall RunPhotoTransition(
     }
 
     if (!g_RuntimeGlobalStateOwner->photoTransitionActive &&
-        enemy->activeEclContext->extraIntVariables[2] == 0 &&
+        enemy->activeEclContext->scriptState.extraIntVariables[2] == 0 &&
         ExtendedCameraIsCharging(
             &TH095_EXT_PLAYER_STORAGE(g_Player)->camera) &&
         TH095_EXT_COUNT_PHOTO_TARGETS(
@@ -620,7 +620,7 @@ void __fastcall RunPhotoTransition(
         TH095_EXT_ANM_EXECUTE(locals.secondStartVm);
         TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
         TH095_ECL_EXT_GAME_SPEED = 1.0f;
-        enemy->activeEclContext->extraIntVariables[2] = 120;
+        enemy->activeEclContext->scriptState.extraIntVariables[2] = 120;
 
         if (TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x < 0.0f)
             locals.targetX =
@@ -713,8 +713,8 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
-    locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
-    locals.args.maximumLength = enemy->activeEclContext->extraFloatVariables[3];
+    locals.args.angle = enemy->activeEclContext->scriptState.extraFloatVariables[2];
+    locals.args.maximumLength = enemy->activeEclContext->scriptState.extraFloatVariables[3];
     locals.args.initialLength = locals.args.maximumLength;
     locals.args.maximumWidth = 16.0f;
     locals.args.startupDuration = 1;
@@ -730,7 +730,7 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
 
     TH095_EXT_ANM_INITIALIZE(
         reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->vm,
-        enemy->activeEclContext->extraIntVariables[2]);
+        enemy->activeEclContext->scriptState.extraIntVariables[2]);
     locals.PublishFlags();
 }
 
@@ -745,8 +745,8 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
-    locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
-    locals.args.maximumLength = enemy->activeEclContext->extraFloatVariables[3];
+    locals.args.angle = enemy->activeEclContext->scriptState.extraFloatVariables[2];
+    locals.args.maximumLength = enemy->activeEclContext->scriptState.extraFloatVariables[3];
     locals.args.initialLength = locals.args.maximumLength;
     locals.args.maximumWidth = 16.0f;
     locals.args.startupDuration = 1;
@@ -762,7 +762,7 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
 
     TH095_EXT_ANM_INITIALIZE(
         reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->vm,
-        enemy->activeEclContext->extraIntVariables[2]);
+        enemy->activeEclContext->scriptState.extraIntVariables[2]);
     locals.PublishFlags();
 }
 
@@ -777,8 +777,8 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
-    locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
-    locals.args.maximumLength = enemy->activeEclContext->extraFloatVariables[3];
+    locals.args.angle = enemy->activeEclContext->scriptState.extraFloatVariables[2];
+    locals.args.maximumLength = enemy->activeEclContext->scriptState.extraFloatVariables[3];
     locals.args.initialLength = locals.args.maximumLength;
     locals.args.maximumWidth = 16.0f;
     locals.args.startupDuration = 1;
@@ -794,7 +794,7 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
 
     TH095_EXT_ANM_INITIALIZE(
         reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoEnemyManager->enemyAnm), &locals.effect->vm,
-        enemy->activeEclContext->extraIntVariables[2]);
+        enemy->activeEclContext->scriptState.extraIntVariables[2]);
     locals.PublishFlags();
 }
 
@@ -872,7 +872,7 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
         if (index->state == PHOTO_BULLET_STATE_INACTIVE)
 #endif
             continue;
-        if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
+        if (index->ownerTag == enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
             savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
             TH095_EXT_REINITIALIZE_SHIFTED(index);
@@ -885,8 +885,8 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
             *reinterpret_cast<u32 *>(&index->vm.rotation.z) = savedActiveSprite;
             TH095_EXTENDED_FROM_ANGLE(
                 index->velocity,
-                enemy->activeEclContext->extraFloatVariables[2],
-                enemy->activeEclContext->extraFloatVariables[3]);
+                enemy->activeEclContext->scriptState.extraFloatVariables[2],
+                enemy->activeEclContext->scriptState.extraFloatVariables[3]);
             index->flags &= ~2U;
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
             index->flags |= 0x10U;
@@ -949,7 +949,7 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
         if (index->state == PHOTO_BULLET_STATE_INACTIVE)
 #endif
             continue;
-        if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
+        if (index->ownerTag == enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
             savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
             TH095_EXT_REINITIALIZE_SHIFTED(index);
@@ -962,10 +962,10 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
             *reinterpret_cast<u32 *>(&index->vm.rotation.z) = savedActiveSprite;
             TH095_EXTENDED_FROM_ANGLE(
                 index->velocity,
-                enemy->activeEclContext->extraFloatVariables[2] +
+                enemy->activeEclContext->scriptState.extraFloatVariables[2] +
                     index->angle,
-                enemy->activeEclContext->extraFloatVariables[3] > -999.0f
-                    ? enemy->activeEclContext->extraFloatVariables[3]
+                enemy->activeEclContext->scriptState.extraFloatVariables[3] > -999.0f
+                    ? enemy->activeEclContext->scriptState.extraFloatVariables[3]
                     : index->speed);
             index->flags &= ~2U;
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)

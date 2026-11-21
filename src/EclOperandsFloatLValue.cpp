@@ -22,19 +22,19 @@ f32 *__fastcall ResolveFloatLValue(
 
     switch ((i32)*operand)
     {
-    case 0x2718: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 0);
-    case 0x2719: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 1);
-    case 0x271a: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 2);
-    case 0x271b: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 3);
-    case 0x271c: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 4);
-    case 0x271d: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 5);
-    case 0x271e: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 6);
-    case 0x271f: return &TH095_ECL_CONTEXT_FLOAT_VARIABLE(enemy, 7);
+    case 0x2718: return &enemy->activeEclContext->scriptState.floatVariables[0];
+    case 0x2719: return &enemy->activeEclContext->scriptState.floatVariables[1];
+    case 0x271a: return &enemy->activeEclContext->scriptState.floatVariables[2];
+    case 0x271b: return &enemy->activeEclContext->scriptState.floatVariables[3];
+    case 0x271c: return &enemy->activeEclContext->scriptState.floatVariables[4];
+    case 0x271d: return &enemy->activeEclContext->scriptState.floatVariables[5];
+    case 0x271e: return &enemy->activeEclContext->scriptState.floatVariables[6];
+    case 0x271f: return &enemy->activeEclContext->scriptState.floatVariables[7];
 
-    case ECL_CALL_PARAMETER_FLOAT0: return &enemy->activeEclContext->callParameters.floats[0];
-    case ECL_CALL_PARAMETER_FLOAT1: return &enemy->activeEclContext->callParameters.floats[1];
-    case ECL_CALL_PARAMETER_FLOAT2: return &enemy->activeEclContext->callParameters.floats[2];
-    case ECL_CALL_PARAMETER_FLOAT3: return &enemy->activeEclContext->callParameters.floats[3];
+    case ECL_CALL_PARAMETER_FLOAT0: return &enemy->activeEclContext->scriptState.callParameters.floats[0];
+    case ECL_CALL_PARAMETER_FLOAT1: return &enemy->activeEclContext->scriptState.callParameters.floats[1];
+    case ECL_CALL_PARAMETER_FLOAT2: return &enemy->activeEclContext->scriptState.callParameters.floats[2];
+    case ECL_CALL_PARAMETER_FLOAT3: return &enemy->activeEclContext->scriptState.callParameters.floats[3];
 
     case 0x272a: return &TH095_ECL_ENEMY_POSITION(enemy, 0);
     case 0x272b: return &TH095_ECL_ENEMY_POSITION(enemy, 1);
@@ -43,10 +43,10 @@ f32 *__fastcall ResolveFloatLValue(
     case 0x272e: return &reinterpret_cast<PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)->playerPosition.y;
     case 0x272f: return &reinterpret_cast<PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)->playerPosition.z;
 
-    case 0x275d: return &TH095_ECL_CONTEXT_EXTRA_FLOAT_VARIABLE(enemy, 0);
-    case 0x275e: return &TH095_ECL_CONTEXT_EXTRA_FLOAT_VARIABLE(enemy, 1);
-    case 0x275f: return &TH095_ECL_CONTEXT_EXTRA_FLOAT_VARIABLE(enemy, 2);
-    case 0x2760: return &TH095_ECL_CONTEXT_EXTRA_FLOAT_VARIABLE(enemy, 3);
+    case 0x275d: return &enemy->activeEclContext->scriptState.extraFloatVariables[0];
+    case 0x275e: return &enemy->activeEclContext->scriptState.extraFloatVariables[1];
+    case 0x275f: return &enemy->activeEclContext->scriptState.extraFloatVariables[2];
+    case 0x2760: return &enemy->activeEclContext->scriptState.extraFloatVariables[3];
 
     case ECL_MANAGER_PARAMETER_FLOAT0: return &g_PhotoEnemyManager->eclManager->callParameters.floats[0];
     case ECL_MANAGER_PARAMETER_FLOAT1: return &g_PhotoEnemyManager->eclManager->callParameters.floats[1];

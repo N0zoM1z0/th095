@@ -70,23 +70,23 @@ f32 Enemy::ResolveFloat(f32 operand)
 {
     switch ((i32)operand)
     {
-    case 0x2710: return (f32)this->activeEclContext->intVariables[0];
-    case 0x2711: return (f32)this->activeEclContext->intVariables[1];
-    case 0x2712: return (f32)this->activeEclContext->intVariables[2];
-    case 0x2713: return (f32)this->activeEclContext->intVariables[3];
-    case 0x2714: return (f32)this->activeEclContext->intVariables[4];
-    case 0x2715: return (f32)this->activeEclContext->intVariables[5];
-    case 0x2716: return (f32)this->activeEclContext->intVariables[6];
-    case 0x2717: return (f32)this->activeEclContext->intVariables[7];
+    case 0x2710: return (f32)this->activeEclContext->scriptState.intVariables[0];
+    case 0x2711: return (f32)this->activeEclContext->scriptState.intVariables[1];
+    case 0x2712: return (f32)this->activeEclContext->scriptState.intVariables[2];
+    case 0x2713: return (f32)this->activeEclContext->scriptState.intVariables[3];
+    case 0x2714: return (f32)this->activeEclContext->scriptState.intVariables[4];
+    case 0x2715: return (f32)this->activeEclContext->scriptState.intVariables[5];
+    case 0x2716: return (f32)this->activeEclContext->scriptState.intVariables[6];
+    case 0x2717: return (f32)this->activeEclContext->scriptState.intVariables[7];
 
-    case EclOperands::ECL_CALL_PARAMETER_INT0: return (f32)this->activeEclContext->callParameters.ints[0];
-    case EclOperands::ECL_CALL_PARAMETER_INT1: return (f32)this->activeEclContext->callParameters.ints[1];
-    case EclOperands::ECL_CALL_PARAMETER_INT2: return (f32)this->activeEclContext->callParameters.ints[2];
-    case EclOperands::ECL_CALL_PARAMETER_INT3: return (f32)this->activeEclContext->callParameters.ints[3];
-    case 0x2724: return (f32)this->activeEclContext->extraIntVariables[0];
-    case 0x2725: return (f32)this->activeEclContext->extraIntVariables[1];
-    case 0x2726: return (f32)this->activeEclContext->extraIntVariables[2];
-    case 0x2727: return (f32)this->activeEclContext->extraIntVariables[3];
+    case EclOperands::ECL_CALL_PARAMETER_INT0: return (f32)this->activeEclContext->scriptState.callParameters.ints[0];
+    case EclOperands::ECL_CALL_PARAMETER_INT1: return (f32)this->activeEclContext->scriptState.callParameters.ints[1];
+    case EclOperands::ECL_CALL_PARAMETER_INT2: return (f32)this->activeEclContext->scriptState.callParameters.ints[2];
+    case EclOperands::ECL_CALL_PARAMETER_INT3: return (f32)this->activeEclContext->scriptState.callParameters.ints[3];
+    case 0x2724: return (f32)this->activeEclContext->scriptState.extraIntVariables[0];
+    case 0x2725: return (f32)this->activeEclContext->scriptState.extraIntVariables[1];
+    case 0x2726: return (f32)this->activeEclContext->scriptState.extraIntVariables[2];
+    case 0x2727: return (f32)this->activeEclContext->scriptState.extraIntVariables[3];
 
     case TH095_ECL_RANDOM_SELECTOR(0x2720, ECL_RANDOM_U31): return (f32)(g_Rng.GetRandomU32() & 0x7fffffff);
     case TH095_ECL_RANDOM_SELECTOR(0x2721, ECL_RANDOM_F32): return g_Rng.GetRandomF32();
@@ -108,18 +108,18 @@ f32 Enemy::ResolveFloat(f32 operand)
     case EclOperands::ECL_MANAGER_PARAMETER_FLOAT2: return g_PhotoEnemyManager->eclManager->callParameters.floats[2];
     case EclOperands::ECL_MANAGER_PARAMETER_FLOAT3: return g_PhotoEnemyManager->eclManager->callParameters.floats[3];
 
-    case 0x2718: return this->activeEclContext->floatVariables[0];
-    case 0x2719: return this->activeEclContext->floatVariables[1];
-    case 0x271a: return this->activeEclContext->floatVariables[2];
-    case 0x271b: return this->activeEclContext->floatVariables[3];
-    case 0x271c: return this->activeEclContext->floatVariables[4];
-    case 0x271d: return this->activeEclContext->floatVariables[5];
-    case 0x271e: return this->activeEclContext->floatVariables[6];
-    case 0x271f: return this->activeEclContext->floatVariables[7];
-    case EclOperands::ECL_CALL_PARAMETER_FLOAT0: return this->activeEclContext->callParameters.floats[0];
-    case EclOperands::ECL_CALL_PARAMETER_FLOAT1: return this->activeEclContext->callParameters.floats[1];
-    case EclOperands::ECL_CALL_PARAMETER_FLOAT2: return this->activeEclContext->callParameters.floats[2];
-    case EclOperands::ECL_CALL_PARAMETER_FLOAT3: return this->activeEclContext->callParameters.floats[3];
+    case 0x2718: return this->activeEclContext->scriptState.floatVariables[0];
+    case 0x2719: return this->activeEclContext->scriptState.floatVariables[1];
+    case 0x271a: return this->activeEclContext->scriptState.floatVariables[2];
+    case 0x271b: return this->activeEclContext->scriptState.floatVariables[3];
+    case 0x271c: return this->activeEclContext->scriptState.floatVariables[4];
+    case 0x271d: return this->activeEclContext->scriptState.floatVariables[5];
+    case 0x271e: return this->activeEclContext->scriptState.floatVariables[6];
+    case 0x271f: return this->activeEclContext->scriptState.floatVariables[7];
+    case EclOperands::ECL_CALL_PARAMETER_FLOAT0: return this->activeEclContext->scriptState.callParameters.floats[0];
+    case EclOperands::ECL_CALL_PARAMETER_FLOAT1: return this->activeEclContext->scriptState.callParameters.floats[1];
+    case EclOperands::ECL_CALL_PARAMETER_FLOAT2: return this->activeEclContext->scriptState.callParameters.floats[2];
+    case EclOperands::ECL_CALL_PARAMETER_FLOAT3: return this->activeEclContext->scriptState.callParameters.floats[3];
 
     case 0x272a: return this->worldPosition.x;
     case 0x272b: return this->worldPosition.y;
@@ -127,10 +127,10 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x272d: return TH095_ECL_FLOAT_PLAYER_POSITION.x;
     case 0x272e: return TH095_ECL_FLOAT_PLAYER_POSITION.y;
     case 0x272f: return TH095_ECL_FLOAT_PLAYER_POSITION.z;
-    case 0x275d: return this->activeEclContext->extraFloatVariables[0];
-    case 0x275e: return this->activeEclContext->extraFloatVariables[1];
-    case 0x275f: return this->activeEclContext->extraFloatVariables[2];
-    case 0x2760: return this->activeEclContext->extraFloatVariables[3];
+    case 0x275d: return this->activeEclContext->scriptState.extraFloatVariables[0];
+    case 0x275e: return this->activeEclContext->scriptState.extraFloatVariables[1];
+    case 0x275f: return this->activeEclContext->scriptState.extraFloatVariables[2];
+    case 0x2760: return this->activeEclContext->scriptState.extraFloatVariables[3];
     case 0x2749: return this->movementInterpolationOrigin.x;
     case 0x274a: return this->movementInterpolationOrigin.y;
     case 0x274b: return this->movementInterpolationOrigin.z;

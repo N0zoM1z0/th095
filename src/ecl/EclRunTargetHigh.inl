@@ -222,10 +222,9 @@ enter_subroutine:
                     TH095_ECL_CHILD_BLOCK(
                         enemy, lhsInt, EnemyChildEclBlock)->subId);
                 memcpy(
-                    TH095_ECL_CHILD_BLOCK(
-                        enemy, lhsInt, EnemyChildEclBlock)
-                            ->eclContext.intVariables,
-                    enemy->activeEclContext->intVariables, 0x80);
+                    &TH095_ECL_CHILD_BLOCK(
+                        enemy, lhsInt, EnemyChildEclBlock)->eclContext.scriptState,
+                    &enemy->activeEclContext->scriptState, sizeof(EclScriptState));
             }
         }
         break;
@@ -265,7 +264,7 @@ enter_subroutine:
                 TH08_ECL_RAW_I(ctx, 0),
                 TH095_TARGET_ENEMY_POSITION_PTR(enemy),
                 10, 0, 0,
-                enemy->activeEclContext->intVariables);
+                &enemy->activeEclContext->scriptState);
         }
         break;
 
@@ -290,7 +289,7 @@ enter_subroutine:
                 spawned =
                 g_PhotoEnemyManager->SpawnWithContext(
                     packet.eclSubroutineId, &position, 10, 0, 0,
-                    enemy->activeEclContext->intVariables);
+                    &enemy->activeEclContext->scriptState);
             }
             (void)spawned;
         }

@@ -260,7 +260,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
         reinterpret_cast<PhotoEnemyEclContextView *>(enemy->activeEclContext),
         static_cast<i16>(rawSubId));
 
-    enemy->activeEclContext->callParameters =
+    enemy->activeEclContext->scriptState.callParameters =
         g_PhotoEnemyManager->eclManager->callParameters;
 
     if (reinterpret_cast<PhotoEnemyView *>(enemy)->suppressEclCallStack == 0 &&

@@ -536,7 +536,7 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
     i32 life,
     i32 itemDrop,
     i32 score,
-    const i32 *contextValues)
+    const EclScriptState *scriptState)
 {
     struct EnemySpawnCopy
     {
@@ -564,8 +564,7 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
         this->eclManager->InitializeContext(
             &enemy->mainEclContext,
             static_cast<i16>(subroutineId));
-        enemy->mainEclContext.scriptState =
-            *reinterpret_cast<const PhotoEnemyEclScriptStateView *>(contextValues);
+        enemy->mainEclContext.scriptState = *scriptState;
         if (this->eclManager->RunEcl(reinterpret_cast<Enemy *>(enemy)) ==
             TH095_LEGACY_ZUN_ERROR)
         {

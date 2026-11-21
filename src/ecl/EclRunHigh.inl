@@ -458,10 +458,10 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
         lhsInt = TH08_ECL_READ_I(ctx, 0);
         if (TH08_ECL_LASER(ctx, lhsInt) && TH08_ECL_LASER(ctx, lhsInt)->inUse)
             TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->
-                extraIntVariables[2] = 1;
+                scriptState.extraIntVariables[2] = 1;
         else
             TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->
-                extraIntVariables[2] = 0;
+                scriptState.extraIntVariables[2] = 0;
         break;
     case 121:
         lhsInt = TH08_ECL_READ_I(ctx, 0);
@@ -579,11 +579,10 @@ enter_subroutine:
                           ->childEclBlocks[lhsInt]
                           ->eclContext),
                     TH08_ECL_CONTEXT_ENEMY(ctx)->childEclBlocks[lhsInt]->subId);
-                memcpy(TH08_ECL_CONTEXT_ENEMY(ctx)->childEclBlocks[lhsInt]
-                           ->eclContext.intVariables,
-                       TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->intVariables,
-                       offsetof(EnemyEclContext, secondaryTime) -
-                           offsetof(EnemyEclContext, intVariables));
+                memcpy(&TH08_ECL_CONTEXT_ENEMY(ctx)->childEclBlocks[lhsInt]
+                           ->eclContext.scriptState,
+                       &TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->scriptState,
+                       sizeof(EclScriptState));
             }
         }
         break;
