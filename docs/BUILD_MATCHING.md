@@ -2269,6 +2269,15 @@ an inline scope leaves the retail stack gap and keyboard register
 schedule unexplained. See
 `.analysis/controller-get-input/history-frontends/`.
 
+Eight probes change how GetInput tests the controller assignments.
+Switching on the two fixed slots emits 2,677 bytes and reserves the
+target's 0x124 frame. All seven input-index references stay at
+EBP-0x11C, while the two new slots each receive one write and two
+comparisons. Retail has no references to those slots. Switching only the
+indexed assignment emits 2,658 bytes and a 0x120 frame. The three inlined
+predicates grow the frame to 0x12C or 0x130. See
+`.analysis/controller-get-input/assignment-dispatch/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
