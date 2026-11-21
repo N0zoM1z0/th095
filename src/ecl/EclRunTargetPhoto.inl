@@ -3,11 +3,11 @@
         PhotoStraightLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
         args.position = enemy->worldPosition + enemy->shootOffset;
-        args.type = (i16)TH08_ECL_READ_I(ctx, 0);
-        args.color = (i16)TH08_ECL_READ_I(ctx, 1);
+        args.type = (i16)ECL_READ_INT(0);
+        args.color = (i16)ECL_READ_INT(1);
         TH095_ECL_ASSIGN_FLOAT(args.speed, 2);
         args.angle = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 3), 0.0f);
+            ECL_READ_FLOAT_BITS(3), 0.0f);
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 4);
         TH095_ECL_ASSIGN_FLOAT(args.width, 5);
         args.initialLength = 0;
@@ -20,11 +20,11 @@
         PhotoStraightLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
         args.position = enemy->worldPosition + enemy->shootOffset;
-        args.type = (i16)TH08_ECL_READ_I(ctx, 0);
-        args.color = (i16)TH08_ECL_READ_I(ctx, 1);
+        args.type = (i16)ECL_READ_INT(0);
+        args.color = (i16)ECL_READ_INT(1);
         TH095_ECL_ASSIGN_FLOAT(args.speed, 2);
         args.angle = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 3),
+            ECL_READ_FLOAT_BITS(3),
             TH095_ECL_PHOTO_ANGLE(&args.position));
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 4);
         TH095_ECL_ASSIGN_FLOAT(args.width, 5);
@@ -39,20 +39,20 @@
         memset(&args, 0, sizeof(args));
         args.speed = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
-        args.type = (i16)TH08_ECL_READ_I(ctx, 0);
-        args.color = (i16)TH08_ECL_READ_I(ctx, 1);
+        args.type = (i16)ECL_READ_INT(0);
+        args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 2), 0.0f);
+            ECL_READ_FLOAT_BITS(2), 0.0f);
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         args.initialLength = args.maximumLength;
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
-        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
-        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
-        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
-        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.startupDuration = ECL_READ_INT(5);
+        args.growthDuration = ECL_READ_INT(6);
+        args.sustainDuration = ECL_READ_INT(7);
+        args.fadeDuration = ECL_READ_INT(8);
         args.angularVelocity = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
+            ECL_READ_FLOAT_BITS(9), 0.0f);
+        args.followPhotoTarget = ECL_RAW_INT(10);
         g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
@@ -63,21 +63,21 @@
         memset(&args, 0, sizeof(args));
         args.speed = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
-        args.type = (i16)TH08_ECL_READ_I(ctx, 0);
-        args.color = (i16)TH08_ECL_READ_I(ctx, 1);
+        args.type = (i16)ECL_READ_INT(0);
+        args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 2),
+            ECL_READ_FLOAT_BITS(2),
             TH095_ECL_PHOTO_ANGLE(&args.position));
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         args.initialLength = args.maximumLength;
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
-        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
-        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
-        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
-        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.startupDuration = ECL_READ_INT(5);
+        args.growthDuration = ECL_READ_INT(6);
+        args.sustainDuration = ECL_READ_INT(7);
+        args.fadeDuration = ECL_READ_INT(8);
         args.angularVelocity = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
+            ECL_READ_FLOAT_BITS(9), 0.0f);
+        args.followPhotoTarget = ECL_RAW_INT(10);
         g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
@@ -88,20 +88,20 @@
         memset(&args, 0, sizeof(args));
         args.speed = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
-        args.type = (i16)TH08_ECL_READ_I(ctx, 0);
-        args.color = (i16)TH08_ECL_READ_I(ctx, 1);
+        args.type = (i16)ECL_READ_INT(0);
+        args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 2), 0.0f);
+            ECL_READ_FLOAT_BITS(2), 0.0f);
         args.initialLength = 0.0f;
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
-        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
-        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
-        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
-        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.startupDuration = ECL_READ_INT(5);
+        args.growthDuration = ECL_READ_INT(6);
+        args.sustainDuration = ECL_READ_INT(7);
+        args.fadeDuration = ECL_READ_INT(8);
         args.angularVelocity = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
+            ECL_READ_FLOAT_BITS(9), 0.0f);
+        args.followPhotoTarget = ECL_RAW_INT(10);
         g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
@@ -112,21 +112,21 @@
         memset(&args, 0, sizeof(args));
         args.speed = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
-        args.type = (i16)TH08_ECL_READ_I(ctx, 0);
-        args.color = (i16)TH08_ECL_READ_I(ctx, 1);
+        args.type = (i16)ECL_READ_INT(0);
+        args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 2),
+            ECL_READ_FLOAT_BITS(2),
             TH095_ECL_PHOTO_ANGLE(&args.position));
         args.initialLength = 0.0f;
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
-        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
-        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
-        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
-        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.startupDuration = ECL_READ_INT(5);
+        args.growthDuration = ECL_READ_INT(6);
+        args.sustainDuration = ECL_READ_INT(7);
+        args.fadeDuration = ECL_READ_INT(8);
         args.angularVelocity = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
+            ECL_READ_FLOAT_BITS(9), 0.0f);
+        args.followPhotoTarget = ECL_RAW_INT(10);
         g_PhotoEffectManager->Spawn(PHOTO_EFFECT_SPAWN_ROTATING_LASER, &args);
         break;
     }
@@ -137,20 +137,20 @@
         memset(&args, 0, sizeof(args));
         args.speed = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
-        args.type = (i16)TH08_ECL_READ_I(ctx, 0);
-        args.color = (i16)TH08_ECL_READ_I(ctx, 1);
+        args.type = (i16)ECL_READ_INT(0);
+        args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 2), 0.0f);
+            ECL_READ_FLOAT_BITS(2), 0.0f);
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         args.initialLength = args.maximumLength;
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
-        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
-        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
-        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
-        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.startupDuration = ECL_READ_INT(5);
+        args.growthDuration = ECL_READ_INT(6);
+        args.sustainDuration = ECL_READ_INT(7);
+        args.fadeDuration = ECL_READ_INT(8);
         args.angularVelocity = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
+            ECL_READ_FLOAT_BITS(9), 0.0f);
+        args.followPhotoTarget = ECL_RAW_INT(10);
         TH095_ECL_ASSIGN_FLOAT(args.velocity.x, 11);
         TH095_ECL_ASSIGN_FLOAT(args.velocity.y, 12);
         args.speed = 2.0f;
@@ -164,20 +164,20 @@
         memset(&args, 0, sizeof(args));
         args.speed = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
-        args.type = (i16)TH08_ECL_READ_I(ctx, 0);
-        args.color = (i16)TH08_ECL_READ_I(ctx, 1);
+        args.type = (i16)ECL_READ_INT(0);
+        args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 2), 0.0f);
+            ECL_READ_FLOAT_BITS(2), 0.0f);
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         args.initialLength = args.maximumLength;
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
-        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
-        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
-        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
-        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.startupDuration = ECL_READ_INT(5);
+        args.growthDuration = ECL_READ_INT(6);
+        args.sustainDuration = ECL_READ_INT(7);
+        args.fadeDuration = ECL_READ_INT(8);
         args.angularVelocity = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
+            ECL_READ_FLOAT_BITS(9), 0.0f);
+        args.followPhotoTarget = ECL_RAW_INT(10);
         TH095_ECL_ASSIGN_FLOAT(args.velocity.x, 11);
         TH095_ECL_ASSIGN_FLOAT(args.velocity.y, 12);
         args.speed = 5.0f;
@@ -191,21 +191,21 @@
         memset(&args, 0, sizeof(args));
         args.speed = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
-        args.type = (i16)TH08_ECL_READ_I(ctx, 0);
-        args.color = (i16)TH08_ECL_READ_I(ctx, 1);
+        args.type = (i16)ECL_READ_INT(0);
+        args.color = (i16)ECL_READ_INT(1);
         args.angle = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 2),
+            ECL_READ_FLOAT_BITS(2),
             TH095_ECL_PHOTO_ANGLE(&args.position));
         TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 3);
         args.initialLength = args.maximumLength;
         TH095_ECL_ASSIGN_FLOAT(args.maximumWidth, 4);
-        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
-        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
-        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
-        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.startupDuration = ECL_READ_INT(5);
+        args.growthDuration = ECL_READ_INT(6);
+        args.sustainDuration = ECL_READ_INT(7);
+        args.fadeDuration = ECL_READ_INT(8);
         args.angularVelocity = AddNormalizeAngle(
-            TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.followPhotoTarget = TH08_ECL_RAW_I(ctx, 10);
+            ECL_READ_FLOAT_BITS(9), 0.0f);
+        args.followPhotoTarget = ECL_RAW_INT(10);
         TH095_ECL_ASSIGN_FLOAT(args.velocity.x, 11);
         TH095_ECL_ASSIGN_FLOAT(args.velocity.y, 12);
         args.speed = 2.0f;
@@ -215,38 +215,38 @@
 
     case 149:
         g_PhotoStageState->scoreMultiplier =
-            TH08_ECL_READ_F_RAWARG(ctx, 0);
+            ECL_READ_FLOAT_BITS(0);
         break;
 
     case 150:
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
         TH095_ECL_ANM_SPAWN_WORLD(
-            TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, TH08_ECL_READ_I(ctx, 0), &position);
+            TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, ECL_READ_INT(0), &position);
         break;
     }
 
     case 151:
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
-        enemy->anmHandles[TH08_ECL_READ_I(ctx, 0)] =
+        enemy->anmHandles[ECL_READ_INT(0)] =
             TH095_ECL_ANM_SPAWN_WORLD(
-                TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, TH08_ECL_READ_I(ctx, 1), &position);
+                TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, ECL_READ_INT(1), &position);
         break;
     }
 
     case 152:
     {
         AnmVm *vm = TH095_ECL_ANM_GET_VM(
-            enemy->anmHandles[TH08_ECL_READ_I(ctx, 0)].value);
+            enemy->anmHandles[ECL_READ_INT(0)].value);
         if (vm)
-            vm->SetInterrupt((i16)TH08_ECL_READ_I(ctx, 1));
+            vm->SetInterrupt((i16)ECL_READ_INT(1));
         break;
     }
 
     case 158:
     {
         enemy->secondaryControl.freezeAttachedVm =
-            TH08_ECL_READ_I(ctx, 0);
+            ECL_READ_INT(0);
         break;
     }

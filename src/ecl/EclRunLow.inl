@@ -1,31 +1,11 @@
-// TH08 1.00d RunEcl low-opcode body (opcodes 1..92).
-//
-// Evidence boundary:
-//   - dispatcher: 0x004184B0, jump at 0x00418623
-//   - comparison helper: 0x004215F0
-//   - target executable: resources/th08.exe (hash-attested by verify-target.py)
-//   - .analysis/ecl-decompile.c is used only as a navigation aid
-//
-// The dispatch table indexes (opcode - 1).  Consequently Ghidra's `case 0`
-// is target opcode 1.  Opcodes 3, 84, and 85 all land on the ordinary
-// instruction-advance path in the target.
-//
-// EclRun.cpp includes the declarations once, then includes this opcode body
-// lexically inside EclManager::RunEcl.  That shared function scope is required
-// for the target's handler order, labels, locals, and stack frame.
-//
-// Every flagged scalar operand in this switch is resolved through
-// EclOperands.  Raw operands are used only where the target demonstrably does
-// so: jump times/displacements, opcode 36's slot selector, opcode 52's sub-id,
-// and opcode 88's remote sub-id.
-
-#ifndef TH08_ECL_RUN_LOW_DECLARATIONS
-#define TH08_ECL_RUN_LOW_DECLARATIONS
+// TH095 low opcode handlers. RunEcl includes the case labels in its
+// shared switch so the handlers use one frame and one jump table.
+#ifndef TH095_ECL_RUN_LOW_DECLARATIONS
+#define TH095_ECL_RUN_LOW_DECLARATIONS
 
 #include "AnmManagerEclView.hpp"
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
-#include "EnemyManager.hpp"
 #include "../PhotoEnemyLayout.hpp"
 #include "Player.hpp"
 #include "SoundPlayer.hpp"
@@ -50,26 +30,6 @@ namespace EclRunLow
 
 extern Player *g_Th095Player;
 
-
-// Observed helper ABIs for opcodes 90..92. Both spawners receive the parent in
-// ECX and the current instruction in EDX; the chain-tail lookup uses only ECX.
-Enemy *__fastcall FindAttachmentChainTail(
-    Enemy *parent);
-Enemy *__fastcall SpawnChildAtScriptPosition(
-    Enemy *parent, EclRawInstruction *instruction);
-Enemy *__fastcall SpawnChildAtParentOffset(
-    Enemy *parent, EclRawInstruction *instruction);
-void __fastcall ApplyRandomBiasedMove(
-    Enemy *enemy, EclRawInstruction *instruction);
-
-// The returned effect begins with an ANM VM.  Keep the call out-of-line: the
-// target dispatch calls AnmVm::SetInterrupt at 0x00407120 rather than inlining
-// the public header's convenience setter.
-struct SpawnedEffectAnmVm
-{
-    void SetInterrupt(i16 interrupt);
-};
-
 void __fastcall ApplyInterpolationOperation(
     PhotoEnemyView *enemy, EclRawInstruction *instruction);
 void __fastcall InstallInterpolationSlot(
@@ -82,11 +42,9 @@ void __fastcall SetPrimaryAnmScripts(
     PhotoEnemyView *enemy, EclRawInstruction *instruction,
     i32 script0, i32 script1, i32 script2, i32 script3, i32 script4,
     i32 script5);
-void __fastcall SetExtraAnmScript(Enemy *enemy,
-                                  EclRawInstruction *instruction);
 
-// Target behavior at 0x00422020 establishes Enemy in ECX and the current ECL
-// instruction in EDX for this boundary-aware movement helper.
+// The target helper at 0x00412200 receives the enemy in ECX and
+// the current instruction in EDX.
 void __fastcall BeginBoundaryAwareMove(
     PhotoEnemyView *enemy, EclRawInstruction *instruction);
 
@@ -96,24 +54,13 @@ EclRawInstruction *__fastcall CompareOperands(
 } // namespace EclRunLow
 } // namespace th095
 
-#endif // TH08_ECL_RUN_LOW_DECLARATIONS
+#endif // TH095_ECL_RUN_LOW_DECLARATIONS
 
-#if !defined(TH08_ECL_RUN_DECLARATIONS_ONLY)
+#if !defined(TH095_ECL_RUN_DECLARATIONS_ONLY)
 
-#if !defined(TH08_ECL_RUN_LOW_BODY) || !defined(TH08_ECL_RUN_SHARED_SWITCH)
-#error EclRunLow.inl opcode body must be included inside EclManager::RunEcl
+#if !defined(TH095_ECL_RUN_LOW_BODY) || !defined(TH095_ECL_RUN_SHARED_SWITCH)
+#error EclRunLow.inl opcode body must be included inside PhotoEnemyEclManagerView::RunEcl
 #endif
-
-#define TH08_ECL_RUN_LOW_YIELD_SELECT_I(controlValue) \
-    TH08_ECL_RUN_LOW_YIELD_##controlValue
-#define TH08_ECL_RUN_LOW_YIELD_SELECT(controlValue) \
-    TH08_ECL_RUN_LOW_YIELD_SELECT_I(controlValue)
-#define TH08_ECL_RUN_LOW_YIELD_LOW_RESTART_RUN_LOOP(instructionValue) \
-    do { goto restart_context; } while (0)
-#define TH08_ECL_RUN_LOW_YIELD_LOW_SELECT_NEXT_CONTEXT(instructionValue) \
-    do { goto low_select_next_context; } while (0)
-#define TH08_ECL_RUN_LOW_YIELD(controlValue, instructionValue) \
-    TH08_ECL_RUN_LOW_YIELD_SELECT(controlValue)(instructionValue)
 
 #define RawInt(insn, index) \
     ((insn)->operands[(index)].asInt)
@@ -313,18 +260,18 @@ EclRawInstruction *__fastcall CompareOperands(
     // 0x004215F0 comparison order is ==, !=, <, <=, >, >=, with integer
     // and float variants interleaved.  Successful branches use raw operands
     // 2 and 3 for the replacement time and signed bytecode displacement.
-    case TH095_ECL_COMPARE_OPCODE(40, ECL_COMPARE_INT_EQUAL):
-    case TH095_ECL_COMPARE_OPCODE(41, ECL_COMPARE_FLOAT_EQUAL):
-    case TH095_ECL_COMPARE_OPCODE(42, ECL_COMPARE_INT_NOT_EQUAL):
-    case TH095_ECL_COMPARE_OPCODE(43, ECL_COMPARE_FLOAT_NOT_EQUAL):
-    case TH095_ECL_COMPARE_OPCODE(44, ECL_COMPARE_INT_LESS):
-    case TH095_ECL_COMPARE_OPCODE(45, ECL_COMPARE_FLOAT_LESS):
-    case TH095_ECL_COMPARE_OPCODE(46, ECL_COMPARE_INT_LESS_EQUAL):
-    case TH095_ECL_COMPARE_OPCODE(47, ECL_COMPARE_FLOAT_LESS_EQUAL):
-    case TH095_ECL_COMPARE_OPCODE(48, ECL_COMPARE_INT_GREATER):
-    case TH095_ECL_COMPARE_OPCODE(49, ECL_COMPARE_FLOAT_GREATER):
-    case TH095_ECL_COMPARE_OPCODE(50, ECL_COMPARE_INT_GREATER_EQUAL):
-    case TH095_ECL_COMPARE_OPCODE(51, ECL_COMPARE_FLOAT_GREATER_EQUAL):
+    case ECL_COMPARE_INT_EQUAL:
+    case ECL_COMPARE_FLOAT_EQUAL:
+    case ECL_COMPARE_INT_NOT_EQUAL:
+    case ECL_COMPARE_FLOAT_NOT_EQUAL:
+    case ECL_COMPARE_INT_LESS:
+    case ECL_COMPARE_FLOAT_LESS:
+    case ECL_COMPARE_INT_LESS_EQUAL:
+    case ECL_COMPARE_FLOAT_LESS_EQUAL:
+    case ECL_COMPARE_INT_GREATER:
+    case ECL_COMPARE_FLOAT_GREATER:
+    case ECL_COMPARE_INT_GREATER_EQUAL:
+    case ECL_COMPARE_FLOAT_GREATER_EQUAL:
     {
         EclRawInstruction *branch = CompareOperands(
             enemy, instruction);
@@ -338,12 +285,12 @@ EclRawInstruction *__fastcall CompareOperands(
 
     case 52:
         CallSubOnEnemy(enemy, instruction, RawInt(instruction, 0));
-        TH08_ECL_RUN_LOW_YIELD(LOW_RESTART_RUN_LOOP, 0);
+        goto restart_context;
 
     case 53:
         if (!PopEclContext(enemy, instruction))
-            TH08_ECL_RUN_LOW_YIELD(LOW_RESTART_RUN_LOOP, 0);
-        TH08_ECL_RUN_LOW_YIELD(LOW_SELECT_NEXT_CONTEXT, 0);
+            goto restart_context;
+        goto low_select_next_context;
 
     case 54:
         g_PhotoEnemyManager->enemyAnm
@@ -372,12 +319,6 @@ EclRawInstruction *__fastcall CompareOperands(
         enemy->flags1 &=
             ~PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
         break;
-#if 0 // TH095: opcode 57 is the ordinary advance path.
-    case 57:
-        SetExtraAnmScript(enemy, instruction);
-        enemy->flags2 &= ~4U;
-        break;
-#endif
     case 58:
         g_PhotoEnemyManager->unknown4dfc
             ->SetAndExecuteScriptIdx(
@@ -404,12 +345,6 @@ EclRawInstruction *__fastcall CompareOperands(
         enemy->flags1 |=
             PHOTO_ENEMY_ALTERNATE_ANM_BANK_MASK;
         break;
-#if 0 // TH095: opcode 61 is the ordinary advance path.
-    case 61:
-        enemy->flags2 |= 4U;
-        SetExtraAnmScript(enemy, instruction);
-        break;
-#endif
     case 62:
         if (((enemy->flags1 >>
               PHOTO_ENEMY_ALTERNATE_ANM_BANK_SHIFT) & 1U) == 0)
@@ -625,251 +560,8 @@ EclRawInstruction *__fastcall CompareOperands(
         if (lhsInt & 0x20) enemy->flags2 &= ~8U;
         break;
 
-#if 0 // TH095: opcodes 86..92 all share the ordinary advance path.
-    case 86:
-        *WriteInt(enemy, instruction, 0) =
-            (instruction->operandFlags & 2U)
-                ? EclOperands::ResolveInt(
-                      reinterpret_cast<PhotoEnemyView *>(g_EnemyManager.bosses[ReadInt(enemy, instruction, 2)]),
-                      RawInt(instruction, 1))
-                : RawInt(instruction, 1);
-        break;
 
-    case 87:
-        if (g_EnemyManager.bosses[ReadInt(enemy, instruction, 2)])
-            *WriteFloat(enemy, instruction, 0) =
-                (instruction->operandFlags & 2U)
-                    ? reinterpret_cast<PhotoEnemyView *>(g_EnemyManager.bosses[ReadInt(enemy, instruction, 2)])->ResolveFloat(
-                          *reinterpret_cast<f32 *>(&RawInt(instruction, 1)))
-                    : *reinterpret_cast<f32 *>(&RawInt(instruction, 1));
-        break;
 
-    case 88:
-        lhsInt = ReadInt(enemy, instruction, 0);
-        CallSubOnEnemy(
-            g_EnemyManager.bosses[lhsInt],
-            g_EnemyManager.bosses[lhsInt]->activeEclContext->currentInstr,
-            RawInt(instruction, 1));
-        break;
-
-    case 89:
-        if (g_EnemyManager.bosses[ReadInt(enemy, instruction, 0)])
-        {
-            // Target resolves operand 0 a second time before the store.
-            g_EnemyManager.bosses[ReadInt(enemy, instruction, 0)]->pendingEclSubroutineIndex =
-                static_cast<i16>(ReadInt(enemy, instruction, 1));
-        }
-        break;
-
-    // Target fact map for the linked-child cluster:
-    //   90: 0x0041AF5B..0x0041B10A, standard constructor 0x0041F110
-    //   91: 0x0041B10B..0x0041B2BA, alternate constructor 0x0041F280
-    //   92: 0x0041B2BB..0x0041B4DB, standard constructor 0x0041F110
-    // Each case calls 0x0041EFC0, its constructor, IsYoukai three times when
-    // initialization is enabled, 0x00425B70 and 0x00407120 when no effect is
-    // attached, and unconditionally plays sound 0x24 through 0x0045D660.
-    // Case 92 additionally calls D3DXVECTOR3::operator+ at 0x00409080.
-    case 90:
-    {
-        Enemy *tail = FindAttachmentChainTail(enemy);
-        Enemy *child =
-            SpawnChildAtScriptPosition(enemy, instruction);
-
-        if (!g_EnemyManager.lastSpawnFailed)
-        {
-            reinterpret_cast<EnemyFlag1Bits *>(&child->flags1)->
-                linkedChild = 1;
-            reinterpret_cast<EnemyFlag1Bits *>(&child->flags1)->
-                youkaiAligned =
-                g_Player.IsYoukai();
-            child->drawGroup =
-                static_cast<u8>(((g_Player.IsYoukai()
-                                  ? -1
-                                  : 0) &
-                                 -2) +
-                                2);
-            child->flags1 &= ~ENEMY_FLAG_COLLISION;
-
-            if (child->alignmentEffect == 0)
-            {
-                child->alignmentEffect =
-                    g_EffectManager.SpawnEffectInSecondaryPool(
-                    0x20,
-                    reinterpret_cast<D3DXVECTOR3 *>(
-                        &child->position),
-                    1, -1);
-                child->alignmentEffect->vm.SetInterrupt(
-                        g_Player.IsYoukai()
-                            ? 2
-                            : 1);
-                child->alignmentEffect->vm.flag17 =
-                    reinterpret_cast<EnemyFlag1Bits *>(
-                        &child->flags1)->
-                            collision != 0;
-                if (child->enemyIndex & 1)
-                {
-                    reinterpret_cast<AnmVm *>(child->alignmentEffect)
-                        ->angleVel.z =
-                        -reinterpret_cast<AnmVm *>(child->alignmentEffect)
-                             ->angleVel.z;
-                }
-            }
-
-            child->parentEnemy =
-                enemy;
-            tail->nextInAttachmentChain =
-                child;
-            child->previousInAttachmentChain =
-                tail;
-            ++enemy->linkedChildCount;
-        }
-
-        g_SoundPlayer.PlaySoundPositionedByIdx(
-            SOUND_FAMILIAR_SPAWN,
-            enemy->position.x);
-        break;
-    }
-    case 91:
-    {
-        Enemy *tail = FindAttachmentChainTail(enemy);
-        Enemy *child =
-            SpawnChildAtParentOffset(enemy, instruction);
-
-        if (!g_EnemyManager.lastSpawnFailed)
-        {
-            reinterpret_cast<EnemyFlag1Bits *>(&child->flags1)->
-                linkedChild = 1;
-            reinterpret_cast<EnemyFlag1Bits *>(&child->flags1)->
-                youkaiAligned =
-                g_Player.IsYoukai();
-            child->drawGroup =
-                static_cast<u8>(((g_Player.IsYoukai()
-                                  ? -1
-                                  : 0) &
-                                 -2) +
-                                2);
-            child->flags1 &= ~ENEMY_FLAG_COLLISION;
-
-            if (child->alignmentEffect == 0)
-            {
-                child->alignmentEffect =
-                    g_EffectManager.SpawnEffectInSecondaryPool(
-                    0x20,
-                    reinterpret_cast<D3DXVECTOR3 *>(
-                        &child->position),
-                    1, -1);
-                child->alignmentEffect->vm.SetInterrupt(
-                        g_Player.IsYoukai()
-                            ? 2
-                            : 1);
-                child->alignmentEffect->vm.flag17 =
-                    reinterpret_cast<EnemyFlag1Bits *>(
-                        &child->flags1)->
-                            collision != 0;
-                if (child->enemyIndex & 1)
-                {
-                    reinterpret_cast<AnmVm *>(child->alignmentEffect)
-                        ->angleVel.z =
-                        -reinterpret_cast<AnmVm *>(child->alignmentEffect)
-                             ->angleVel.z;
-                }
-            }
-
-            child->parentEnemy =
-                enemy;
-            tail->nextInAttachmentChain =
-                child;
-            child->previousInAttachmentChain =
-                tail;
-            ++enemy->linkedChildCount;
-        }
-
-        g_SoundPlayer.PlaySoundPositionedByIdx(
-            SOUND_FAMILIAR_SPAWN,
-            enemy->position.x);
-        break;
-    }
-    case 92:
-    {
-        Enemy *tail = FindAttachmentChainTail(enemy);
-        Enemy *child =
-            SpawnChildAtScriptPosition(enemy, instruction);
-
-        if (!g_EnemyManager.lastSpawnFailed)
-        {
-            reinterpret_cast<EnemyFlag1Bits *>(&child->flags1)->
-                linkedChild = 1;
-            reinterpret_cast<EnemyFlag1Bits *>(&child->flags1)->
-                youkaiAligned =
-                g_Player.IsYoukai();
-            child->drawGroup =
-                static_cast<u8>(((g_Player.IsYoukai()
-                                  ? -1
-                                  : 0) &
-                                 -2) +
-                                2);
-
-            *reinterpret_cast<D3DXVECTOR3 *>(
-                &child->positionOffset) =
-                *reinterpret_cast<D3DXVECTOR3 *>(
-                    &enemy->position);
-            *reinterpret_cast<D3DXVECTOR3 *>(
-                &child->worldPosition) =
-                *reinterpret_cast<D3DXVECTOR3 *>(
-                    &child->positionOffset) +
-                *reinterpret_cast<D3DXVECTOR3 *>(
-                    &child->position);
-            child->flags1 &= ~ENEMY_FLAG_COLLISION;
-
-            if (child->alignmentEffect == 0)
-            {
-                child->alignmentEffect =
-                    g_EffectManager.SpawnEffectInSecondaryPool(
-                    0x20,
-                    reinterpret_cast<D3DXVECTOR3 *>(
-                        &child->worldPosition),
-                    1, -1);
-                child->alignmentEffect->vm.SetInterrupt(
-                        g_Player.IsYoukai()
-                            ? 2
-                            : 1);
-                child->alignmentEffect->vm.flag17 =
-                    reinterpret_cast<EnemyFlag1Bits *>(
-                        &child->flags1)->
-                            collision != 0;
-                if (child->enemyIndex & 1)
-                {
-                    reinterpret_cast<AnmVm *>(child->alignmentEffect)
-                        ->angleVel.z =
-                        -reinterpret_cast<AnmVm *>(child->alignmentEffect)
-                             ->angleVel.z;
-                }
-            }
-
-            reinterpret_cast<EnemyFlag1Bits *>(&child->flags1)->
-                inheritParentPosition = 1;
-            child->parentEnemy =
-                enemy;
-            tail->nextInAttachmentChain =
-                child;
-            child->previousInAttachmentChain =
-                tail;
-            ++enemy->linkedChildCount;
-        }
-
-        g_SoundPlayer.PlaySoundPositionedByIdx(
-            SOUND_FAMILIAR_SPAWN,
-            enemy->position.x);
-        break;
-    }
-#endif
-
-#undef TH08_ECL_RUN_LOW_YIELD
-
-#undef TH08_ECL_RUN_LOW_YIELD_LOW_SELECT_NEXT_CONTEXT
-#undef TH08_ECL_RUN_LOW_YIELD_LOW_RESTART_RUN_LOOP
-#undef TH08_ECL_RUN_LOW_YIELD_SELECT
-#undef TH08_ECL_RUN_LOW_YIELD_SELECT_I
 #undef WriteFloat
 #undef WriteInt
 #undef ReadFloat
@@ -877,4 +569,4 @@ EclRawInstruction *__fastcall CompareOperands(
 #undef RawFloat
 #undef RawInt
 
-#endif // !TH08_ECL_RUN_DECLARATIONS_ONLY
+#endif // !TH095_ECL_RUN_DECLARATIONS_ONLY

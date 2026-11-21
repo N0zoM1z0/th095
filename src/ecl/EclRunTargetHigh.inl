@@ -25,11 +25,11 @@
     case 101:
     {
         PhotoBulletTransformRecord *slot =
-            &enemy->bulletSpawnDescriptor.transforms[TH08_ECL_READ_I(ctx, 0)];
-        slot->kind = TH08_ECL_READ_I(ctx, 1);
-        slot->allowWhileActive = TH08_ECL_READ_I(ctx, 2);
-        slot->payload.int0 = TH08_ECL_READ_I(ctx, 3);
-        slot->payload.int1 = TH08_ECL_READ_I(ctx, 4);
+            &enemy->bulletSpawnDescriptor.transforms[ECL_READ_INT(0)];
+        slot->kind = ECL_READ_INT(1);
+        slot->allowWhileActive = ECL_READ_INT(2);
+        slot->payload.int0 = ECL_READ_INT(3);
+        slot->payload.int1 = ECL_READ_INT(4);
         slot->payload.float0 =
             (instruction->operandFlags & (1U << 5))
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[5])
@@ -42,13 +42,13 @@
     }
 
     case 95:
-        enemy->shootIntervalFrames = TH08_ECL_READ_I(ctx, 0);
+        enemy->shootIntervalFrames = ECL_READ_INT(0);
         if (enemy->shootIntervalFrames != 0)
             InitializeEclTargetTimer(&enemy->shootIntervalTimer);
         break;
 
     case 96:
-        enemy->shootIntervalFrames = TH08_ECL_READ_I(ctx, 0);
+        enemy->shootIntervalFrames = ECL_READ_INT(0);
         if (enemy->shootIntervalFrames != 0)
             enemy->shootIntervalTimer =
                 g_Rng.GetRandomU32InRange(
@@ -85,13 +85,13 @@
         break;
 
     case 109:
-        if (TH08_ECL_READ_I(ctx, 0) >= 0)
+        if (ECL_READ_INT(0) >= 0)
         {
-            g_PhotoEnemyManager->photoTargets[TH08_ECL_READ_I(ctx, 0)] =
+            g_PhotoEnemyManager->photoTargets[ECL_READ_INT(0)] =
                 enemy;
             enemy->flags1 |= PHOTO_ENEMY_PHOTO_TARGET_MASK;
             enemy->photoTargetSlot =
-                static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
+                static_cast<u8>(ECL_READ_INT(0));
         }
         else
         {
@@ -102,12 +102,12 @@
 
     case 132:
         enemy->drawGroup =
-            static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
+            static_cast<u8>(ECL_READ_INT(0));
         break;
 
     case 106:
         g_SoundPlayer.PlaySoundPositionedByIdx(
-            static_cast<SoundIdx>(TH08_ECL_READ_I(ctx, 0)),
+            static_cast<SoundIdx>(ECL_READ_INT(0)),
             enemy->position.x);
         break;
 
@@ -117,13 +117,13 @@
         break;
 
     case 108:
-        enemy->eclSubroutineIds[TH08_ECL_READ_I(ctx, 1)] =
-            static_cast<i16>(TH08_ECL_READ_I(ctx, 0));
+        enemy->eclSubroutineIds[ECL_READ_INT(1)] =
+            static_cast<i16>(ECL_READ_INT(0));
         break;
 
     case 107:
         enemy->pendingEclSubroutineIndex =
-            static_cast<i16>(TH08_ECL_READ_I(ctx, 0));
+            static_cast<i16>(ECL_READ_INT(0));
         goto enter_subroutine;
 
 enter_subroutine:
@@ -149,41 +149,41 @@ enter_subroutine:
         enemy->phaseStartingLife =
             enemy->life =
                 enemy->maximumLife =
-                    TH08_ECL_READ_I(ctx, 0);
+                    ECL_READ_INT(0);
         break;
 
     case 114:
     {
         g_RuntimeGlobalStateOwner->completion.timer =
             g_RuntimeGlobalStateOwner->completion.completionActive =
-                TH08_ECL_READ_I(ctx, 0);
+                ECL_READ_INT(0);
         break;
     }
 
     case 115:
-        enemy->eclSchedule.photoIndices[TH08_ECL_READ_I(ctx, 0)] =
-            TH08_ECL_READ_I(ctx, 1);
-        enemy->eclSchedule.calls[TH08_ECL_READ_I(ctx, 0)].rawValue =
-            TH08_ECL_READ_I(ctx, 2);
+        enemy->eclSchedule.photoIndices[ECL_READ_INT(0)] =
+            ECL_READ_INT(1);
+        enemy->eclSchedule.calls[ECL_READ_INT(0)].rawValue =
+            ECL_READ_INT(2);
         break;
 
     case 116:
     {
-        enemy->pendingCallbackFrame = TH08_ECL_READ_I(ctx, 0);
+        enemy->pendingCallbackFrame = ECL_READ_INT(0);
         enemy->unknown2ca8 =
-            TH08_ECL_READ_I(ctx, 1);
+            ECL_READ_INT(1);
         InitializeEclTargetTimer(&enemy->eclTimer);
         break;
     }
 
     case 117:
     {
-        lhsInt = TH08_ECL_READ_I(ctx, 0);
+        lhsInt = ECL_READ_INT(0);
         if (enemy->childEclBlocks[lhsInt])
             g_ZunMemory.Free(
                 enemy->childEclBlocks[lhsInt]);
         enemy->childEclBlocks[lhsInt] = 0;
-        if (TH08_ECL_READ_I(ctx, 1) >= 0)
+        if (ECL_READ_INT(1) >= 0)
         {
             enemy->childEclBlocks[lhsInt] =
                 static_cast<EnemyChildEclBlock *>(
@@ -193,7 +193,7 @@ enter_subroutine:
                 memset(enemy->childEclBlocks[lhsInt], 0,
                        sizeof(EnemyChildEclBlock));
                 enemy->childEclBlocks[lhsInt]->subId =
-                    TH08_ECL_READ_I(ctx, 1);
+                    ECL_READ_INT(1);
                 this->InitializeContext(
                     &enemy->childEclBlocks[lhsInt]->eclContext,
                     enemy->childEclBlocks[lhsInt]->subId);
@@ -211,14 +211,14 @@ enter_subroutine:
         break;
 
     case 118:
-        g_EclExtendedCallbacks[TH08_ECL_READ_I(ctx, 0)](enemy, instruction);
+        g_EclExtendedCallbacks[ECL_READ_INT(0)](enemy, instruction);
         break;
 
     case 119:
-        if (TH08_ECL_READ_I(ctx, 0) >= 0)
+        if (ECL_READ_INT(0) >= 0)
         {
             enemy->activeEclContext->perFrameCallback =
-                g_EclExtendedCallbacks[TH08_ECL_READ_I(ctx, 0)];
+                g_EclExtendedCallbacks[ECL_READ_INT(0)];
             enemy->activeEclContext->perFrameInstruction = instruction;
         }
         else
@@ -229,14 +229,14 @@ enter_subroutine:
 
     case 121:
         AddTimerValue(&enemy->activeEclContext->time,
-                      TH08_ECL_READ_I(ctx, 0));
+                      ECL_READ_INT(0));
         break;
 
     case 83:
         if (enemy->life > 0)
         {
             g_PhotoEnemyManager->SpawnWithContext(
-                TH08_ECL_RAW_I(ctx, 0),
+                ECL_RAW_INT(0),
                 &enemy->position,
                 10, 0, 0,
                 &enemy->activeEclContext->scriptState);
@@ -276,13 +276,13 @@ enter_subroutine:
 
     case 124:
         enemy->vm.pendingInterrupt =
-            static_cast<i16>(TH08_ECL_READ_I(ctx, 0));
+            static_cast<i16>(ECL_READ_INT(0));
         break;
 
     case 103:
-        if (TH08_ECL_READ_I(ctx, 0) >= 0)
+        if (ECL_READ_INT(0) >= 0)
         {
-            enemy->bulletSpawnDescriptor.spawnSound = TH08_ECL_READ_I(ctx, 0);
+            enemy->bulletSpawnDescriptor.spawnSound = ECL_READ_INT(0);
             enemy->bulletSpawnDescriptor.transformFlags |=
                 PHOTO_BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
         }
@@ -292,7 +292,7 @@ enter_subroutine:
                 ~PHOTO_BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
         }
         enemy->bulletSpawnDescriptor.transformSound =
-            TH08_ECL_READ_I(ctx, 1);
+            ECL_READ_INT(1);
         break;
 
     case 126:
@@ -317,13 +317,13 @@ enter_subroutine:
     case 131:
     {
         enemy->trailConfig.flags =
-            static_cast<u8>(TH08_ECL_RAW_I(ctx, 0));
+            static_cast<u8>(ECL_RAW_INT(0));
         enemy->trailConfig.length =
-            static_cast<i16>(TH08_ECL_READ_I(ctx, 1));
+            static_cast<i16>(ECL_READ_INT(1));
         enemy->trailConfig.unknown04 =
-            static_cast<i16>(TH08_ECL_READ_I(ctx, 2));
+            static_cast<i16>(ECL_READ_INT(2));
         enemy->trailConfig.sampleStride =
-            static_cast<i16>(TH08_ECL_READ_I(ctx, 3));
+            static_cast<i16>(ECL_READ_INT(3));
         if ((enemy->trailConfig.flags &
              PHOTO_ENEMY_TRAIL_INITIALIZE_STRIP) != 0)
         {
@@ -339,7 +339,7 @@ enter_subroutine:
     case 133:
     {
         enemy->timer4cac =
-            TH08_ECL_READ_I(ctx, 0);
+            ECL_READ_INT(0);
         break;
     }
 
@@ -351,12 +351,12 @@ enter_subroutine:
         break;
 
     case 136:
-        *TH08_ECL_WRITE_F(ctx, 1) =
-            sinf(TH08_ECL_READ_F_RAWARG(ctx, 2)) *
-                TH08_ECL_READ_F_RAWARG(ctx, 3);
-        *TH08_ECL_WRITE_F(ctx, 0) =
-            cosf(TH08_ECL_READ_F_RAWARG(ctx, 2)) *
-                TH08_ECL_READ_F_RAWARG(ctx, 3);
+        *ECL_WRITE_FLOAT(1) =
+            sinf(ECL_READ_FLOAT_BITS(2)) *
+                ECL_READ_FLOAT_BITS(3);
+        *ECL_WRITE_FLOAT(0) =
+            cosf(ECL_READ_FLOAT_BITS(2)) *
+                ECL_READ_FLOAT_BITS(3);
         break;
 
     case 137:
@@ -365,14 +365,14 @@ enter_subroutine:
              (enemy->position.x > 96.0f)) ||
             (enemy->position.x > 288.0f))
         {
-            *TH08_ECL_WRITE_F(ctx, 0) = AddNormalizeAngle(
+            *ECL_WRITE_FLOAT(0) = AddNormalizeAngle(
                 g_Rng.GetRandomF32() * 1.5707963705062866f +
                     2.3561944961547852f,
                 0.0f);
         }
         else
         {
-            *TH08_ECL_WRITE_F(ctx, 0) =
+            *ECL_WRITE_FLOAT(0) =
                 g_Rng.GetRandomF32() * 1.5707963705062866f -
                 0.7853981852531433f;
         }
@@ -380,29 +380,29 @@ enter_subroutine:
 
     case 138:
         enemy->control.unknown028 =
-            TH08_ECL_READ_I(ctx, 0);
+            ECL_READ_INT(0);
         break;
 
     case 82:
         enemy->minimumPlayerDistanceSquared =
-            TH08_ECL_READ_F_RAWARG(ctx, 0);
+            ECL_READ_FLOAT_BITS(0);
         enemy->minimumPlayerDistanceSquared *=
             enemy->minimumPlayerDistanceSquared;
         break;
 
     case 139:
-        enemy->phaseStartingLife = TH08_ECL_READ_I(ctx, 0);
+        enemy->phaseStartingLife = ECL_READ_INT(0);
         break;
 
     case 140:
         enemy->secondaryControl.unknown005 =
-            TH08_ECL_READ_I(ctx, 0);
+            ECL_READ_INT(0);
         break;
 
     case 141:
         AssignPhotoCameraLimit(
             &TH095_ECL_PHOTO_PLAYER_OWNER->camera,
-            TH08_ECL_READ_I(ctx, 0));
+            ECL_READ_INT(0));
         break;
 
     case 142:
@@ -412,9 +412,9 @@ enter_subroutine:
     case 143:
     {
         enemy->secondaryControl.showPhotoMarker =
-            TH08_ECL_READ_I(ctx, 0);
+            ECL_READ_INT(0);
         enemy->photoMarkerPulseTimer =
-            TH08_ECL_READ_I(ctx, 1);
+            ECL_READ_INT(1);
         break;
     }
 
@@ -463,9 +463,9 @@ enter_subroutine:
     case 144:
     {
         enemy->photoPulseTimer =
-            TH08_ECL_READ_I(ctx, 0);
+            ECL_READ_INT(0);
         enemy->photoPulseDurationTimer =
-            TH08_ECL_READ_I(ctx, 0);
+            ECL_READ_INT(0);
         enemy->photoPulseVmId =
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_BULLET_ANM_SPAWNER, 0x125,

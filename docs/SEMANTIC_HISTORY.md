@@ -18911,3 +18911,22 @@ stored callback. The 90 dispatch cases, 414 other opcode and photo callback
 cases, and 329 bullet cases agree with retail. The normal mapped sections
 match the SEM-432 replay images in both layouts. See
 `.analysis/pi/ecl-extended-owner/`.
+
+### SEM-436 — retire the inactive TH08 opcode bodies
+
+RunEcl uses its TH095 low and high handlers in one lexical switch.
+The TH08 high body and disabled low cases were never included in that
+switch. Removing them also removes the +0x2D34 enemy position macro
+and legacy helper signatures. The retained high helpers describe the
+actual lexical enemy and instruction forms, with the recovered int and
+float operand paths.
+
+Both builds use the same twelve named `EclComparisonOpcode` cases in
+the dispatcher and comparison helper. All 41 affected exact
+comparisons pass, including the full interpreter extent and jump
+tables.
+
+The normal links match the corresponding SEM-432 replay images in all
+four mapped sections. The 288 comparison cases, 90 extension dispatch
+cases, and 48 ECL-to-camera score cases agree with retail. See
+`.analysis/pi/ecl-live-dispatch/`.

@@ -117,6 +117,8 @@ fields. SEM-433 gives RunEcl and UpdateMovement the compact enemy receiver.
 SEM-434 uses the compact enemy in the context, movement, and shot helpers
 and in both interpolation callbacks. SEM-435 also gives the 22 extended
 callbacks the compact receiver and emits their shared table in both profiles.
+SEM-436 retires the dormant TH08 dispatcher and uses the named comparison
+case labels in both profiles.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

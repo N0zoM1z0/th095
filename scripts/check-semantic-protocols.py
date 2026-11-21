@@ -3685,7 +3685,7 @@ def check_photo_enemy_owner() -> None:
     restored = [name for name in retired_run_views if name in run_surfaces]
     if restored:
         fail(f"RunEcl restored compact-enemy projections: {', '.join(restored)}")
-    if "->eclSchedule.calls[TH08_ECL_READ_I(ctx, 0)].rawValue =" not in run_surfaces:
+    if "->eclSchedule.calls[ECL_READ_INT(0)].rawValue =" not in run_surfaces:
         fail("ECL opcode 115 must store the complete scheduled call word")
     for marker in (
         "g_PhotoEnemyManager->photoTargets",
@@ -4226,6 +4226,20 @@ def check_ecl_photo_player_owner() -> None:
             fail(f"photo-angle emission adapter gained runtime storage: {token}")
 
 
+def check_ecl_comparison_dispatch() -> None:
+    names = explicit_enum(
+        SRC / "ecl" / "EclManager.hpp",
+        "EclComparisonOpcode",
+        "ECL_COMPARE_",
+        list(range(40, 52)),
+    )
+    for path in (SRC / "ecl" / "EclRunLow.inl", SRC / "EclDependencies.cpp"):
+        source = path.read_text(encoding="utf-8")
+        cases = re.findall(r"\bcase\s+(ECL_COMPARE_\w+)\s*:", source)
+        if set(cases) != set(names) or len(cases) != len(names):
+            fail(f"{path.relative_to(SRC)} must dispatch all twelve named ECL comparisons")
+
+
 def check_ecl_resolver_owner() -> None:
     for filename, signature in (
         ("EclOperandsInt.cpp", "ResolveInt(PhotoEnemyView *enemy"),
@@ -4376,8 +4390,6 @@ def check_photo_rotating_laser_packet() -> None:
         fail("RunEcl high declarations must consume the canonical rotating packet")
     if target_photo.count("PhotoRotatingLaserSpawnArgs args;") != 7:
         fail("RunEcl target photo handlers must construct the canonical packet seven times")
-    if high.count("PhotoRotatingLaserSpawnArgs args;") != 7:
-        fail("RunEcl direct body must keep seven canonical rotating packets")
     for member in (
         "velocity.x",
         "angularVelocity",
@@ -4856,6 +4868,7 @@ def main() -> int:
     check_photo_card_info_owner()
     check_photo_camera_state_owner()
     check_ecl_photo_player_owner()
+    check_ecl_comparison_dispatch()
     check_ecl_resolver_owner()
     check_photo_straight_laser_packet()
     check_photo_rotating_laser_packet()

@@ -151,9 +151,6 @@ DIFFABLE_EXTERN(ChainElem, g_EffectManagerDrawChain);
 DIFFABLE_EXTERN(u32, g_EclGameTimeScaleFlags);
 namespace EclRunLow
 {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_ECL_COMPARE_OPCODE(rawValue, semanticName) rawValue
-#else
 enum EclComparisonOpcode
 {
     ECL_COMPARE_INT_EQUAL = 40,
@@ -169,9 +166,6 @@ enum EclComparisonOpcode
     ECL_COMPARE_INT_GREATER_EQUAL = 50,
     ECL_COMPARE_FLOAT_GREATER_EQUAL = 51,
 };
-#define TH095_ECL_COMPARE_OPCODE(rawValue, semanticName) \
-    ::th095::EclRunLow::semanticName
-#endif
 } // namespace EclRunLow
 
 // Only the target-observed fixed header is named here. Both pointer tables are

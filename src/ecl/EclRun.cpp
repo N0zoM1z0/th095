@@ -3,7 +3,6 @@
 #include "../ZunBool.hpp"
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
-#include "Gui.hpp"
 #include "BulletManager.hpp"
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "BackgroundEclEmission.hpp"
@@ -11,10 +10,7 @@
 #else
 #include "Background.hpp"
 #endif
-#include "GameManager.hpp"
-#include "ItemManager.hpp"
 #include "Player.hpp"
-#include "Spellcard.hpp"
 #include "../PhotoBulletManagerLayout.hpp"
 #include "../PhotoPlayerRuntime.hpp"
 
@@ -22,10 +18,10 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define TH08_ECL_RUN_DECLARATIONS_ONLY
+#define TH095_ECL_RUN_DECLARATIONS_ONLY
 #include "EclRunLow.inl"
 #include "EclRunHigh.inl"
-#undef TH08_ECL_RUN_DECLARATIONS_ONLY
+#undef TH095_ECL_RUN_DECLARATIONS_ONLY
 
 #include "../GameplayGlobals.hpp"
 #include "../PhotoEffectRuntime.hpp"
@@ -152,12 +148,6 @@ static __forceinline PhotoEnemyAnmVmIdStorage Th095EclSpawnWorld(
 
 // The low/high opcode bodies are included lexically below so VC7 can reproduce
 // RunEcl's target handler order, shared labels, locals, and stack frame.
-#undef TH08_ECL_CONTEXT_ENEMY
-#undef TH08_ECL_CONTEXT_INSTRUCTION
-#undef TH08_ECL_CONTEXT_CHILD
-#define TH08_ECL_CONTEXT_ENEMY(unusedContext) (enemy)
-#define TH08_ECL_CONTEXT_INSTRUCTION(unusedContext) (instruction)
-#define TH08_ECL_CONTEXT_CHILD(unusedContext) (activeChildContext)
 
 static __forceinline void InitializeEclTargetTimer(ZunTimer *timer)
 {
@@ -204,10 +194,8 @@ low_redispatch_instruction:
         {
             {
 #define context (enemy->activeEclContext)
-#define ctx unusedContext
-#define TH08_ECL_RUN_LOW_BODY
-#define TH08_ECL_RUN_HIGH_BODY
-#define TH08_ECL_RUN_SHARED_SWITCH
+#define TH095_ECL_RUN_LOW_BODY
+#define TH095_ECL_RUN_SHARED_SWITCH
             switch (instruction->opcode)
             {
                 {
@@ -219,10 +207,8 @@ low_redispatch_instruction:
             default:
                 break;
             }
-#undef TH08_ECL_RUN_SHARED_SWITCH
-#undef TH08_ECL_RUN_HIGH_BODY
-#undef TH08_ECL_RUN_LOW_BODY
-#undef ctx
+#undef TH095_ECL_RUN_SHARED_SWITCH
+#undef TH095_ECL_RUN_LOW_BODY
 #undef context
             }
 
@@ -341,9 +327,5 @@ low_select_next_context:
 
     return ZUN_SUCCESS;
 }
-
-#undef TH08_ECL_CONTEXT_ENEMY
-#undef TH08_ECL_CONTEXT_INSTRUCTION
-#undef TH08_ECL_CONTEXT_CHILD
 
 } // namespace th095
