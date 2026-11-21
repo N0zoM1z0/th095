@@ -989,16 +989,17 @@ def check_rng_owner() -> None:
         fail("Rng.hpp restored the selected struct declaration")
     for definition in (
         "DIFFABLE_STATIC(Rng, g_Rng);",
-        "DIFFABLE_STATIC(Rng, g_Rng2);",
         "DIFFABLE_STATIC(Rng, g_AnmAlternateRng);",
     ):
-        if definition not in global_cpp:
-            fail(f"Global.cpp lost canonical RNG storage: {definition}")
+        if global_cpp.count(definition) != 1:
+            fail(f"Global.cpp must define RNG storage once: {definition}")
 
     for path in sorted(SRC.rglob("*")):
         if path.suffix not in (".cpp", ".hpp", ".inl"):
             continue
         text = path.read_text(encoding="utf-8")
+        if re.search(r"\bg_Rng2\b", text):
+            fail(f"{path.relative_to(SRC)} restored the alternate RNG alias")
         if "TH095_MATCH_RNG_AS_STRUCT" in text:
             fail(f"{path.relative_to(SRC)} restored the RNG declaration selector")
         if path != SRC / "Rng.hpp" and re.search(
@@ -1009,6 +1010,7 @@ def check_rng_owner() -> None:
     forbidden_identities = (
         "?g_Rng@th095@@3URng@1@A",
         "?g_Rng2@th095@@3URng@1@A",
+        "?g_Rng2@th095@@3VRng@1@A",
         "?g_Rng@EclExtended@th095@@3UExtendedRng@12@A",
         "?GetRandomF32@ExtendedRng@EclExtended@th095@@QAEMXZ",
     )
@@ -1018,7 +1020,7 @@ def check_rng_owner() -> None:
 
     canonical_identities = {
         "?g_Rng@th095@@3VRng@1@A": 43,
-        "?g_Rng2@th095@@3VRng@1@A": 6,
+        "?g_AnmAlternateRng@th095@@3VRng@1@A": 6,
     }
     for identity, count in canonical_identities.items():
         if manifest.count(identity) != count:
@@ -2236,9 +2238,12 @@ def check_supervisor_startup_phase_owner() -> None:
         "SUPERVISOR_STARTUP_PHASE_FAILED",
     )
     render_body = (SRC / "GameWindowRender.inl").read_text(encoding="utf-8")
+    added_body = (SRC / "SupervisorAddedCallback.inl").read_text(encoding="utf-8")
     for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
         if '#include "GameWindowRender.inl"' in text:
             text += render_body
+        if '#include "SupervisorAddedCallback.inl"' in text:
+            text += added_body
         for constant in constants:
             if constant not in text:
                 fail(f"{path} lost canonical Supervisor startup phase: {constant}")

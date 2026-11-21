@@ -33,7 +33,7 @@
 6	src/FrontEndLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FrontEndLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameplayGlobals.hpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-2	src/Global.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+1	src/Global.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/Global.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Global.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Global.hpp	#ifndef TH095_MATCH_EXACT
@@ -102,7 +102,6 @@
 3	src/ResultScreen.cpp	#ifndef DIFFBUILD
 3	src/ResultScreen.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ResultScreenExact.inl	#ifdef TH095_MATCH_EXACT
-1	src/Rng.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/SceneControllerDraw.cpp	#ifdef DIFFBUILD
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneDetail.cpp	#ifdef TH095_MATCH_EXACT

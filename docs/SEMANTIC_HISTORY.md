@@ -19714,3 +19714,31 @@ and release, the three loading VM handles and the two hide modes,
 and FPS thresholds at 30 and 40. The fixture stubs calls into D3D,
 ASCII, ANM, and the FPS clock. See
 `.analysis/pi/supervisor-loading-screen/`.
+
+### SEM-474 — share the ANM alternate random stream
+
+Global.cpp defines the primary and ANM alternate RNG objects once.
+The exact build uses the alternate stream's semantic name at all six
+references. Both Main profiles share AddedCallback, which seeds both
+streams from the low word of the startup clock while preserving each
+backup seed and draw count.
+
+The ANM VM writes the low bit of opcode 87's operand to its alternate
+stream flag. The flag selects the random integer and float opcodes and
+all three random float variables. A zero integer bound returns zero
+without advancing the stream. A zero float multiplier still consumes
+two draws.
+
+All 647 affected strict comparisons pass across the 77 rebuilt
+translation units. Both normal links retain their pre-change mapped
+sections byte for byte. The twelve RNG operands in the startup and
+ANM paths follow their two symbols. The alternate stream precedes the
+primary in both normal layouts and follows it in retail.
+
+The original and both normal layouts agree in 30 startup cases and
+120 script cases. The startup fixture stubs external setup calls. The
+script fixture executes the random opcodes and generator, comparing
+both streams' state and output bits. The game-object link audit
+resolves 11,439 code references and 639 initialized-data references.
+The literal scan of all 88 game objects finds only six flag-mask
+immediates in the retail address range. See `.analysis/pi/shared-anm-rng/`.
