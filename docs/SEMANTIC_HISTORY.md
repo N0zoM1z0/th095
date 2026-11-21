@@ -19563,3 +19563,17 @@ to 0x004DCE20. The branch fixture exercises normal exit, error and
 restart, each with the fatal latch clear and set. In retail and both
 links, the cursor and first byte change on restart and the fatal latch
 keeps its value. See `.analysis/pi/main-error-context/`.
+
+### SEM-466 — use the canonical archive in both Main builds
+
+Main uses the same PbgArchive class for startup and shutdown. LoadDat
+calls Load and reads the version through FileSystem; DeletedCallback
+releases the same archive object. The four retail relocation operands
+retain their destinations and all 48 Main comparisons pass.
+
+The archive moves from 0x004F3354 to 0x004BCFA0 in the reordered link,
+and both Main references follow it. The load and release calls follow
+their symbols too. The fixture covers the version check's success and
+error paths with archive I/O stubbed. It executes the real Release
+method from the shutdown call site for empty and owned filenames.
+See `.analysis/pi/main-archive-owner/`.

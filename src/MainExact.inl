@@ -3,6 +3,7 @@
 #include "AsciiManager.hpp"
 #include "Controller.hpp"
 #include "PhotoGameTask.hpp"
+#include "pbg/PbgArchive.hpp"
 
 #include <direct.h>
 #include <math.h>
@@ -108,14 +109,8 @@ struct DummyMidiTimer : MidiTimer
 typedef char MainMidiTimerSizeIs10[(sizeof(MidiTimer) == 0x10) ? 1 : -1];
 typedef char MainDummyMidiTimerSizeIs14[(sizeof(DummyMidiTimer) == 0x14) ? 1 : -1];
 
-struct PbgArchiveView
-{
-    bool Load(const char *path);
-    void Release();
-};
-
 extern ReplayScanWorker g_SupervisorInputWorker;
-extern PbgArchiveView g_PbgArchive;
+extern PbgArchive g_PbgArchive;
 
 // WinMain's target has one four-byte compiler allocation class between the
 // operator-new temporaries and the lifecycle merge-result family.  Keep that

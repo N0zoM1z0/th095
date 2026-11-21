@@ -72,3 +72,4 @@ address,name,module,confidence,evidence
 0x004C4EAC,th095::g_ScreenEffectCounter,ScreenEffect,exact,Exact CalcFadeOut/Pulse/Shake/Envelope cancel-gate relocations
 0x004C493C,th095::g_Supervisor.viewportConfigurations[PLAYFIELD].screenShakeOffset.x,Supervisor,exact,Supervisor +0x2CC; shared CalcShake/Envelope producer and DrawLayer6 reset; ApplyGameplay/Background publishes to ANM +0x20
 0x004C4940,th095::g_Supervisor.viewportConfigurations[PLAYFIELD].screenShakeOffset.y,Supervisor,exact,Supervisor +0x2D0; shared CalcShake/Envelope producer and DrawLayer6 reset; ApplyGameplay/Background publishes to ANM +0x24
+0x004BE408,th095::g_PbgArchive,PbgArchive,exact,LoadDat and FileSystem use the archive that DeletedCallback releases
