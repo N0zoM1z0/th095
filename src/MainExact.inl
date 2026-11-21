@@ -367,7 +367,7 @@ void GameWindow::Present()
         for (i = 0; i < 1000; i++)
         {
             sprintf(screenshotPath, "snapshot/th%.3d.bmp", i);
-            if (!FileSystem::FileExists(screenshotPath))
+            if (!FileSystem::CheckIfFileAlreadyExists(screenshotPath))
                 break;
         }
         if (i < 1000)
@@ -870,7 +870,7 @@ i32 GameWindow::CheckForRunningGameInstance(HINSTANCE hInstance)
     if (startupInfo.lpTitle != NULL)
     {
         fileExtension = strrchr(startupInfo.lpTitle, '.');
-        if (FileSystem::FileExists(startupInfo.lpTitle) && fileExtension != NULL)
+        if (FileSystem::CheckIfFileAlreadyExists(startupInfo.lpTitle) && fileExtension != NULL)
         {
             if (_stricmp(fileExtension, ".lnk") == 0)
             {

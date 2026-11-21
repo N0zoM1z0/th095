@@ -19533,3 +19533,20 @@ both normal builds pass the append boundary, counter wraparound,
 fatal latch and flush cases with formatting and Windows calls stubbed.
 The count increments after Enter and decrements after Leave. See
 `.analysis/pi/game-error-critical-section/`.
+
+### SEM-464 — share the file API across both Main builds
+
+`FileSystemApi.hpp` is the single declaration of the file operations.
+Both Main builds use the namespace for the six operations involved in
+startup, configuration, file checks and screenshots. The eleven retagged
+call operands retain their retail destinations, including the two file
+checks at 0x0041ABA0.
+
+All 653 affected strict comparisons pass across 78 translation units.
+Each normal link has the same four mapped sections as its corresponding
+pre-change link. All eleven calls follow the six symbols to their new
+locations in the reordered executable. Retail and both layouts pass
+the screenshot write order and payload checks, the configuration
+read/write check and the archive version paths. The probe stubs Win32
+file calls, configuration I/O and archive loading. See
+`.analysis/pi/shared-file-api/`.

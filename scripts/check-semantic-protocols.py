@@ -891,16 +891,20 @@ def check_game_error_context_owner() -> None:
 
 
 def check_file_system_api_owner() -> None:
-    header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    header = (SRC / "FileSystemApi.hpp").read_text(encoding="utf-8")
     file_write = (SRC / "FileWrite.cpp").read_text(encoding="utf-8")
     manifest = (ROOT / "config" / "match-units.toml").read_text(
         encoding="utf-8"
     )
 
     if "namespace FileSystem\n{" not in header:
-        fail("Main.hpp lost the canonical FileSystem namespace API")
-    if re.search(r"\bstruct\s+FileSystem\b", header):
-        fail("Main.hpp restored the selected static-member FileSystem projection")
+        fail("FileSystemApi.hpp lost the canonical FileSystem namespace API")
+    for name in ("Main.hpp", "MainExact.hpp", "Global.hpp"):
+        caller = (SRC / name).read_text(encoding="utf-8")
+        if '#include "FileSystemApi.hpp"' not in caller:
+            fail(f"{name} lost the shared FileSystem API")
+        if re.search(r"\b(?:namespace|struct|class)\s+FileSystem\b", caller):
+            fail(f"{name} restored a separate FileSystem declaration")
     if (
         "i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)"
         not in file_write
@@ -926,8 +930,8 @@ def check_file_system_api_owner() -> None:
         if any(source in section for source in migrated_sources)
     ]
     migrated = "".join(migrated_sections)
-    if "@FileSystem@th095@@SI" in migrated:
-        fail("shared FileSystem sources restored static-member ABI identities")
+    if "@FileSystem@th095@@SI" in manifest:
+        fail("match manifest restored FileSystem static-member ABI identities")
     expected_namespace_identities = {
         "?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z": 6,
         "?WriteDataToFile@FileSystem@th095@@YIHPBDPAXI@Z": 1,
@@ -944,17 +948,17 @@ def check_file_system_api_owner() -> None:
         for section in re.split(r"(?=\n\[units\.)", manifest)
         if 'source = "src/Main.cpp"' in section
     )
-    frozen_main_identities = {
-        "?OpenFile@FileSystem@th095@@SIPAEPADPAHH@Z": 2,
-        "?WriteDataToFile@FileSystem@th095@@SIHPADPAXH@Z": 2,
-        "?FileExists@FileSystem@th095@@SIHPAD@Z": 2,
-        "?OpenWriteFile@FileSystem@th095@@SIHPAD@Z": 1,
-        "?WriteToOpenFile@FileSystem@th095@@SIHPAXI@Z": 3,
-        "?CloseWriteFile@FileSystem@th095@@SIHXZ": 1,
+    main_identities = {
+        "?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z": 2,
+        "?WriteDataToFile@FileSystem@th095@@YIHPBDPAXI@Z": 2,
+        "?CheckIfFileAlreadyExists@FileSystem@th095@@YIHPBD@Z": 2,
+        "?OpenWriteFile@FileSystem@th095@@YIHPAD@Z": 1,
+        "?WriteToOpenFile@FileSystem@th095@@YIHPAXI@Z": 3,
+        "?CloseWriteFile@FileSystem@th095@@YIHXZ": 1,
     }
-    for identity, count in frozen_main_identities.items():
+    for identity, count in main_identities.items():
         if main_sections.count(identity) != count:
-            fail(f"MainExact FileSystem boundary changed unexpectedly: {identity}")
+            fail(f"Main lost a canonical FileSystem reference: {identity}")
 
 
 def check_rng_owner() -> None:
@@ -4864,7 +4868,7 @@ def main() -> int:
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
     print("  SoundPlayer owner: one canonical class declaration and direct shared-body consumers")
     print("  GameErrorContext owner: one canonical struct declaration and global storage")
-    print("  FileSystem API: canonical namespace owner with frozen MainExact boundary")
+    print("  FileSystem API: one namespace declaration shared by both Main builds")
     print("  RNG owner: one canonical class declaration and two Global.cpp states")
     print("  MidiOutput owner: one 0x300 layout plus one shared fieldless API adapter")
     print("  ReplayScanWorker owner: one shared layout over three distinct storages")

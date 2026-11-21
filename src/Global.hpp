@@ -2,6 +2,7 @@
 
 #include "Chain.hpp"
 #include "ControllerButtonMapping.hpp"
+#include "FileSystemApi.hpp"
 #include "GameErrorContext.hpp"
 #include "Rng.hpp"
 #include "ZunResult.hpp"
@@ -95,16 +96,6 @@ u8 *GetControllerState();
 u16 GetInput();
 void ResetKeyboard();
 }; // namespace Controller
-
-namespace FileSystem
-{
-LPBYTE Decrypt(LPBYTE inData, i32 size, u8 xorValue, u8 xorValueInc, i32 chunkSize, i32 maxBytes);
-LPBYTE TryDecryptFromTable(LPBYTE inData, LPINT unused, i32 size);
-LPBYTE Encrypt(LPBYTE inData, i32 size, u8 xorValue, u8 xorValueInc, i32 chunkSize, i32 maxBytes);
-LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL loadFromDisk);
-BOOL CheckIfFileAlreadyExists(LPCSTR path);
-int WriteDataToFile(LPCSTR path, LPVOID data, size_t size);
-}; // namespace FileSystem
 
 class ZunMemory
 {

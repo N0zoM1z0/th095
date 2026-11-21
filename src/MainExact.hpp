@@ -13,6 +13,7 @@
 #include "AnmVertex.hpp"
 #include "inttypes.hpp"
 #include "Chain.hpp"
+#include "FileSystemApi.hpp"
 #include "GameWindow.hpp"
 #include "GameConfiguration.hpp"
 #include "MidiOutputApi.hpp"
@@ -82,16 +83,6 @@ struct GameErrorContext
         *g_GameErrorContextCursor = '\0';
     }
     void Flush();
-};
-
-struct FileSystem
-{
-    static u8 *OpenFile(char *path, i32 *fileSize, i32 isExternalResource);
-    static i32 WriteDataToFile(char *path, void *data, i32 size);
-    static i32 FileExists(char *path);
-    static i32 OpenWriteFile(char *path);
-    static i32 WriteToOpenFile(void *data, u32 size);
-    static i32 CloseWriteFile();
 };
 
 namespace utils
