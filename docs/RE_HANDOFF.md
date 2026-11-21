@@ -195,6 +195,7 @@ SEM-473 shares the Supervisor loading-screen and FPS callbacks. Both
 profiles call the canonical background viewport for the loading screen.
 SEM-474 shares the ANM alternate RNG symbol and the startup callback
 that seeds both streams.
+SEM-475 shares archive validation, frame calibration, and the startup worker.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

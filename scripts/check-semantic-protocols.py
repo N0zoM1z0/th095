@@ -1517,8 +1517,11 @@ def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
         if fact not in lifecycle:
             fail(f"Supervisor lifecycle lost canonical flag use: {fact}")
 
+    startup = source_without_comments((SRC / "SupervisorStartup.inl").read_text(encoding="utf-8"))
     for path in ("Main.cpp", "MainExact.inl"):
         text = source_without_comments((SRC / path).read_text(encoding="utf-8"))
+        if '#include "SupervisorStartup.inl"' in text:
+            text += startup
         if "g_Supervisor.flags.unknownBit8 = 0;" not in text or "scoreBackupPending" in text:
             fail(f"{path} restored an unproved bit-8 business name")
     for path in ("Background.cpp", "BackgroundLifecycle.cpp", "EnemyManagerUpdate.cpp"):
@@ -2239,11 +2242,14 @@ def check_supervisor_startup_phase_owner() -> None:
     )
     render_body = (SRC / "GameWindowRender.inl").read_text(encoding="utf-8")
     added_body = (SRC / "SupervisorAddedCallback.inl").read_text(encoding="utf-8")
+    startup_body = (SRC / "SupervisorStartup.inl").read_text(encoding="utf-8")
     for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
         if '#include "GameWindowRender.inl"' in text:
             text += render_body
         if '#include "SupervisorAddedCallback.inl"' in text:
             text += added_body
+        if '#include "SupervisorStartup.inl"' in text:
+            text += startup_body
         for constant in constants:
             if constant not in text:
                 fail(f"{path} lost canonical Supervisor startup phase: {constant}")
@@ -3271,12 +3277,15 @@ def check_worker_thread_start_boundary(header_text: str | None = None, body_text
         fail("normal worker restored an incompatible callback cast")
     for name in ("Main.hpp", "MainExact.hpp", "SupervisorRuntime.hpp", "Main.cpp", "MainExact.inl"):
         source = supervisor_header_source(name)
-        for callback in ("InitializeInput", "StartupThread"):
+        for callback, body in (
+            ("InitializeInput", "SupervisorInitializeInput.inl"),
+            ("StartupThread", "SupervisorStartup.inl"),
+        ):
             declaration = source
-            if callback == "InitializeInput" and name in ("Main.cpp", "MainExact.inl"):
-                if source.count('#include "SupervisorInitializeInput.inl"') != 1:
-                    fail(f"{name} lost the shared input-worker body")
-                declaration = (SRC / "SupervisorInitializeInput.inl").read_text(encoding="utf-8")
+            if name in ("Main.cpp", "MainExact.inl"):
+                if source.count(f'#include "{body}"') != 1:
+                    fail(f"{name} lost the shared {callback} worker body")
+                declaration = (SRC / body).read_text(encoding="utf-8")
             if not re.search(rf"{callback}\(void \*s\)", declaration):
                 fail(f"{name} lost the shared void-pointer callback declaration")
             if f'(void (__fastcall *)(void *))Supervisor::{callback}' in source:

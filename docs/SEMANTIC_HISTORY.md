@@ -19742,3 +19742,26 @@ both streams' state and output bits. The game-object link audit
 resolves 11,439 code references and 639 initialized-data references.
 The literal scan of all 88 game objects finds only six flag-mask
 immediates in the retail address range. See `.analysis/pi/shared-anm-rng/`.
+
+### SEM-475 — share the Supervisor startup implementation
+
+LoadDat, CheckFps, and StartupThread compile from the same source in
+both Main profiles. LoadDat publishes the version entry's pointer and
+size through the canonical Supervisor. CheckFps keeps the startup
+surface, eight accepted samples, 600-frame limit, and Present failure
+reset. StartupThread retains the independent preload and ASCII failure
+paths, the nonfatal BGM format failure, and the primary worker's
+completion stores. The existing dummy MIDI timer emission declarations
+remain in the two Main files.
+
+All 48 Main strict comparisons pass. The three normal extents also
+match retail with all 100 relocations, including the startup worker's
+exception-handler references. Both normal links retain their pre-change
+mapped section bytes. The link audit resolves 11,439 game code
+references and 639 initialized-data references in both layouts.
+
+The original and both normal links agree on four archive cases, six
+calibration schedules, and 60 worker cases. The fixture executes the
+real callback control flow, timestamp arithmetic, and attenuation
+calculation with archive, D3D, timer, and worker transport calls stubbed.
+See `.analysis/pi/supervisor-startup/`.
