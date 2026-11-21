@@ -33,14 +33,6 @@ u32 g_SceneLockedTransitionColor = 0xff8080ff;
 u32 g_SceneLockedInitialColor = 0xffffffff;
 #endif
 
-struct AnmTextVmView;
-
-struct AnmTextManagerView
-{
-    void DrawTextCentered(AnmTextVmView *vm, COLORREF textColor,
-                          COLORREF shadowColor, const char *format, ...);
-};
-
 #define g_FrontEndCurrentInput (RuntimeInputCurrent())
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
@@ -393,13 +385,11 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
                     view->sceneAnm, 1, loadedSceneLoadValue);
                 view->vmIds.SetInterrupt(0x82, 1);
                 SceneSelectCreateVmAt(view, 0x82);
-                reinterpret_cast<AnmTextManagerView *>(g_AnmManager)
-                    ->DrawTextCentered(
-                        reinterpret_cast<AnmTextVmView *>(
-                            g_AnmManager->GetVm(view->vmIds.values[0x82])),
-                        0x00efcfcf, 0,
-                        g_ResultSaveData->bestShotRecords[
-                            (&view->loadedSceneQueue)->Front()].comment);
+                g_AnmManager->DrawTextCentered(
+                    g_AnmManager->GetVm(view->vmIds.values[0x82]),
+                    0x00efcfcf, 0,
+                    g_ResultSaveData->bestShotRecords[
+                        (&view->loadedSceneQueue)->Front()].comment);
             }
         }
         g_Supervisor.EnterCriticalSectionWrapper(4);

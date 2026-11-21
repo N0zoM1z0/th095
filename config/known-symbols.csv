@@ -97,10 +97,10 @@ address,name,module,confidence,evidence
 0x00418100,th095::PhotoGameTaskView::Update,PhotoGameTask,exact,Canonical TH095 game-task runtime coordinator with twenty-eight replayed relocations
 0x00418420,th095::PhotoGameTaskView::DrawHud,PhotoGameTask,exact,Canonical TH095 photography HUD with thirty-six replayed relocations
 0x00442B40,th095::GetAnmFormat,AnmTexture,exact,Canonical forced-16-bit texture format downgrade
-0x00443C70,th095::AnmTextManagerView::DrawTextInner,AnmText,exact,Canonical TH095 large-glyph text dispatch with three relocations
-0x00443CE0,th095::AnmTextManagerView::DrawTextLeft,AnmText,exact,Exact left-aligned variadic ANM text renderer with TH08 var_order frame restored
-0x00443DD0,th095::AnmTextManagerView::DrawTextRight,AnmText,exact,Exact right-aligned variadic ANM text renderer with loaded-sprite width placement
-0x00443F80,th095::AnmTextManagerView::DrawTextCentered,AnmText,exact,Exact centered variadic ANM text renderer
+0x00443C70,th095::AnmManager::DrawTextInner,AnmText,exact,Canonical TH095 large-glyph text dispatch with three relocations
+0x00443CE0,th095::AnmManager::DrawTextLeft,AnmText,exact,Exact left-aligned variadic ANM text renderer with TH08 var_order frame restored
+0x00443DD0,th095::AnmManager::DrawTextRight,AnmText,exact,Exact right-aligned variadic ANM text renderer with loaded-sprite width placement
+0x00443F80,th095::AnmManager::DrawTextCentered,AnmText,exact,Exact centered variadic ANM text renderer
 0x0041C8F0,th095::TextHelperView::RenderTextToTextureBold,TextRenderer,exact,Canonical 560-byte persistent-font memory-to-D3D renderer with 25 relocations
 0x0041C1E0,th095::TextRenderBufferView::ApplyAlphaBleed,TextRenderer,exact,Exact text-buffer alpha bleed with semantic case-local aggregate and target scalar allocation
 0x0041C600,th095::TextRenderBufferView::InvertAlpha,TextRenderer,exact,Canonical three-format text-buffer alpha inversion

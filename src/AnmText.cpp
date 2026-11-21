@@ -1,4 +1,6 @@
-#include "AnmText.hpp"
+#include "AnmManager.hpp"
+#include "TextRenderer.hpp"
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -6,14 +8,7 @@
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_ANM_TEXT_PUBLISH_VISIBLE(vm) ((vm)->flagsWord |= 1)
-#else
-#define TH095_ANM_TEXT_PUBLISH_VISIBLE(vm) \
-    (reinterpret_cast<AnmVm *>(vm)->visible = 1)
-#endif
-
-void AnmTextManagerView::DrawTextInner(
+void AnmManager::DrawTextInner(
     IDirect3DTexture8 *texture, i32 x, i32 y, i32 width, i32 height,
     i32 glyphWidth, i32 glyphHeight, COLORREF textColor,
     COLORREF shadowColor, const char *text, f32 scaleX, f32 scaleY)
@@ -43,7 +38,7 @@ void AnmTextManagerView::DrawTextInner(
 #define textGlyphWidth averagedPanLocal12
 #define textX textXLocal00
 #pragma var_order(textBuffer, textGlyphWidth)
-void AnmTextManagerView::DrawTextLeft(AnmTextVmView *vm, COLORREF textColor,
+void AnmManager::DrawTextLeft(AnmVm *vm, COLORREF textColor,
                                      COLORREF shadowColor,
                                      const char *format, ...)
 {
@@ -70,11 +65,11 @@ void AnmTextManagerView::DrawTextLeft(AnmTextVmView *vm, COLORREF textColor,
         vm->loadedSprite->scaleFactor.x,
         vm->loadedSprite->scaleFactor.y);
 
-    TH095_ANM_TEXT_PUBLISH_VISIBLE(vm);
+    vm->visible = 1;
 }
 
 #pragma var_order(textBuffer, textGlyphWidth)
-void AnmTextManagerView::DrawTextRight(AnmTextVmView *vm,
+void AnmManager::DrawTextRight(AnmVm *vm,
                                        COLORREF textColor,
                                        COLORREF shadowColor,
                                        const char *format, ...)
@@ -101,11 +96,11 @@ void AnmTextManagerView::DrawTextRight(AnmTextVmView *vm,
         vm->loadedSprite->scaleFactor.x,
         vm->loadedSprite->scaleFactor.y);
 
-    TH095_ANM_TEXT_PUBLISH_VISIBLE(vm);
+    vm->visible = 1;
 }
 
 #pragma var_order(textBuffer, textGlyphWidth)
-void AnmTextManagerView::DrawTextCentered(AnmTextVmView *vm,
+void AnmManager::DrawTextCentered(AnmVm *vm,
                                           COLORREF textColor,
                                           COLORREF shadowColor,
                                           const char *format, ...)
@@ -132,11 +127,10 @@ void AnmTextManagerView::DrawTextCentered(AnmTextVmView *vm,
         vm->loadedSprite->scaleFactor.x,
         vm->loadedSprite->scaleFactor.y);
 
-    TH095_ANM_TEXT_PUBLISH_VISIBLE(vm);
+    vm->visible = 1;
 }
 #undef textBuffer
 #undef textGlyphWidth
 #undef textX
-#undef TH095_ANM_TEXT_PUBLISH_VISIBLE
 
 } // namespace th095

@@ -8,7 +8,7 @@
 #include "ScoreData.hpp"
 #include "SoundPlayer.hpp"
 #include "ZunMath.hpp"
-#include "AnmText.hpp"
+#include "AnmManager.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "PhotoStage.hpp"
 #include "GameplayGlobals.hpp"
@@ -413,11 +413,11 @@ static __forceinline void InitializeReplayExtraTailPhase(
     resultScreen->auxiliaryVms[0].glyphHeight = 0x12;
     resultScreen->auxiliaryVms[1].glyphWidth = 0x12;
     resultScreen->auxiliaryVms[1].glyphHeight = 0x12;
-    reinterpret_cast<AnmTextManagerView *>(g_AnmManager)->DrawTextLeft(
-        reinterpret_cast<AnmTextVmView *>(&resultScreen->auxiliaryVms[0]),
+    g_AnmManager->DrawTextLeft(
+        reinterpret_cast<AnmVm *>(&resultScreen->auxiliaryVms[0]),
         0xffe0c0, 0x300000, " ");
-    reinterpret_cast<AnmTextManagerView *>(g_AnmManager)->DrawTextLeft(
-        reinterpret_cast<AnmTextVmView *>(&resultScreen->auxiliaryVms[1]),
+    g_AnmManager->DrawTextLeft(
+        reinterpret_cast<AnmVm *>(&resultScreen->auxiliaryVms[1]),
         0xffe0c0, 0x300000, " ");
 }
 
@@ -449,14 +449,14 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
         resultScreen->auxiliaryVms[1].glyphWidth = 0x12;
         resultScreen->auxiliaryVms[1].glyphHeight = 0x12;
 
-        reinterpret_cast<AnmTextManagerView *>(g_AnmManager)->DrawTextLeft(
-            reinterpret_cast<AnmTextVmView *>(&resultScreen->auxiliaryVms[0]),
+        g_AnmManager->DrawTextLeft(
+            reinterpret_cast<AnmVm *>(&resultScreen->auxiliaryVms[0]),
             0xffe0c0, 0x300000,
             resultScreen->sceneLabels[resultScreen->selectedGroup]
                 [g_ResultSaveData->profile.nextSceneByGroup[
                     resultScreen->selectedGroup]].firstLine);
-        reinterpret_cast<AnmTextManagerView *>(g_AnmManager)->DrawTextLeft(
-            reinterpret_cast<AnmTextVmView *>(&resultScreen->auxiliaryVms[1]),
+        g_AnmManager->DrawTextLeft(
+            reinterpret_cast<AnmVm *>(&resultScreen->auxiliaryVms[1]),
             0xffe0c0, 0x300000,
             resultScreen->sceneLabels[resultScreen->selectedGroup]
                 [g_ResultSaveData->profile.nextSceneByGroup[

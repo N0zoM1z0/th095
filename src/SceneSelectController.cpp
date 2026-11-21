@@ -2,7 +2,7 @@
 #include "SceneSelectControllerExact.inl"
 #else
 #include "SceneSelect.hpp"
-#include "AnmText.hpp"
+#include "AnmManager.hpp"
 
 namespace th095
 {
@@ -15,8 +15,7 @@ void __cdecl SceneWriteText(SceneAnmManagerView *manager,
                             SceneAnmVmView *vm, u32 color, u32 shadowColor,
                             const char *text)
 {
-    reinterpret_cast<AnmTextManagerView *>(manager)->DrawTextLeft(
-        reinterpret_cast<AnmTextVmView *>(vm), color, shadowColor, "%s", text);
+    manager->DrawTextLeft(vm, color, shadowColor, "%s", text);
 }
 
 static __forceinline void RefreshSelectionQueuePush(
@@ -143,7 +142,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
 
 #endif // TH095_MATCH_EXACT
 
-#include "AnmText.hpp"
+#include "AnmManager.hpp"
 
 namespace th095
 {

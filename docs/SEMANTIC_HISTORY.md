@@ -19666,3 +19666,28 @@ records, six allocation formats, six failure and fallback paths, seven
 glyph-width selections, and the GDI cleanup order. The fixture stubs GDI
 and stops bold rendering at the first font selection. See
 `.analysis/pi/shared-text-renderer/`.
+
+### SEM-472 — use the canonical ANM text owner
+
+AnmText.cpp emits the four methods on AnmManager. Each formatted
+method reads the glyph dimensions and loaded sprite from AnmVm and
+publishes the VM's visible bit after the draw helper returns. This
+removes the three text-only ANM layouts and the profile switch for
+visibility. Result Screen and Scene Select still convert their
+legacy exact VM views at the call boundary. Scene Select's exact
+centered-text call uses the canonical manager symbol at the same
+retail address.
+
+All 515 affected strict comparisons pass, including every function
+in the 61 translation units that consume the changed header.
+Both normal links retain all four mapped sections byte for byte.
+The eleven text-related calls follow their AnmText and TextRenderer
+symbols in the two layouts. The game-object audit compares 11,439
+code references and 639 initialized-data references in each link.
+
+The original and both normal layouts agree in 168 cases covering
+text alignment, glyph defaults and scale, the small-glyph gate, and
+visibility writes that preserve every other flag. The fixture stubs
+formatted output and the bold renderer. The GDI allocation and
+font-selection fixture also passes on the new links. See
+`.analysis/pi/anm-text-owner/`.

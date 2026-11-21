@@ -11,14 +11,6 @@
 namespace th095
 {
 
-struct AnmTextVmView;
-
-struct AnmTextManagerView
-{
-    void DrawTextCentered(AnmTextVmView *vm, COLORREF textColor,
-                          COLORREF shadowColor, const char *format, ...);
-};
-
 extern u16 g_FrontEndCurrentInput;
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
@@ -371,13 +363,12 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
                     1, loadedSceneLoadValue);
                 view->vmIds.SetInterrupt(0x82, 1);
                 SceneSelectCreateVmAt(view, 0x82);
-                reinterpret_cast<AnmTextManagerView *>(g_SceneAnmManager)
-                    ->DrawTextCentered(
-                        reinterpret_cast<AnmTextVmView *>(
-                            g_SceneAnmManager->GetVm(view->vmIds.values[0x82])),
-                        0x00efcfcf, 0,
-                        g_ResultSaveData->bestShotRecords[
-                            (&view->loadedSceneQueue)->Front()].comment);
+                g_AnmManager->DrawTextCentered(
+                    reinterpret_cast<AnmVm *>(
+                        g_SceneAnmManager->GetVm(view->vmIds.values[0x82])),
+                    0x00efcfcf, 0,
+                    g_ResultSaveData->bestShotRecords[
+                        (&view->loadedSceneQueue)->Front()].comment);
             }
         }
         g_SceneSupervisor.EnterCriticalSectionWrapper(4);

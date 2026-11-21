@@ -1,4 +1,4 @@
-#include "AnmText.hpp"
+#include "AnmManager.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
@@ -105,12 +105,10 @@ i32 PhotoCardInfoView::Initialize(char *encodedText)
     CreatePhotoCardBackgroundVm(this);
     CreatePhotoCardTextVm(this);
 
-    reinterpret_cast<AnmTextManagerView *>(g_AnmManager)
-        ->DrawTextRight(
-            reinterpret_cast<AnmTextVmView *>(
-                g_AnmManager->GetVm(
-                    *reinterpret_cast<AnmVmId *>(&this->textVmId))),
-            0xffffff, 0, this->text);
+    g_AnmManager->DrawTextRight(
+        g_AnmManager->GetVm(
+            *reinterpret_cast<AnmVmId *>(&this->textVmId)),
+        0xffffff, 0, this->text);
     this->savedScreenFadeColor = g_Supervisor.backbufferClearColor;
     return 0;
 }

@@ -594,6 +594,16 @@ struct AnmManager
     void FlushVertexBuffer();
     void SetRenderStateForVm3D(AnmVm *vm);
     void SetRenderStateForVm(AnmVm *vm);
+    void DrawTextInner(IDirect3DTexture8 *texture, i32 x, i32 y, i32 width,
+                       i32 height, i32 glyphWidth, i32 glyphHeight,
+                       COLORREF textColor, COLORREF shadowColor,
+                       const char *text, f32 scaleX, f32 scaleY);
+    void DrawTextLeft(AnmVm *vm, COLORREF textColor, COLORREF shadowColor,
+                      const char *format, ...);
+    void DrawTextRight(AnmVm *vm, COLORREF textColor, COLORREF shadowColor,
+                       const char *format, ...);
+    void DrawTextCentered(AnmVm *vm, COLORREF textColor, COLORREF shadowColor,
+                          const char *format, ...);
     ZunResult DrawInner(AnmVm *vm, i32 flags);
     ZunResult AddSpriteToDrawBuffer(AnmVertex *vertices);
     void ReleaseSurfaces();

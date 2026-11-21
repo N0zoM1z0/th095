@@ -137,10 +137,10 @@ th095::SceneSelectControllerView::RefreshSceneSelection
 th095::SceneValueQueue::Push
 th095::SceneSelectControllerView::BuildScenePreviewText
 th095::SceneSelectControllerView::ResolveSceneText
-th095::AnmTextManagerView::DrawTextLeft
-th095::AnmTextManagerView::DrawTextInner
-th095::AnmTextManagerView::DrawTextRight
-th095::AnmTextManagerView::DrawTextCentered
+th095::AnmManager::DrawTextLeft
+th095::AnmManager::DrawTextInner
+th095::AnmManager::DrawTextRight
+th095::AnmManager::DrawTextCentered
 th095::TextHelperView::RenderTextToTextureBold
 th095::TextRenderBufferView::ApplyAlphaBleed
 th095::TextRenderBufferView::InvertAlpha

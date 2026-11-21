@@ -120,7 +120,6 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
 
 // Retail passes the decoded resource directly to the variadic text method.
 #define DRAW_SCENE_PREVIEW_TEXT(vm, textColor, text) \
-    reinterpret_cast<AnmTextManagerView *>(g_AnmManager)->DrawTextLeft( \
-        reinterpret_cast<AnmTextVmView *>(vm), textColor, 0, text)
+    g_AnmManager->DrawTextLeft(vm, textColor, 0, text)
 
 } // namespace th095

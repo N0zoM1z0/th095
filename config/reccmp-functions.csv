@@ -138,10 +138,10 @@ th095::SceneSelectControllerView::RefreshSceneSelection,0x0044BBD0,function
 th095::SceneValueQueue::Push,0x00450DD0,function
 th095::SceneSelectControllerView::BuildScenePreviewText,0x0044BEA0,function
 th095::SceneSelectControllerView::ResolveSceneText,0x0044D020,function
-th095::AnmTextManagerView::DrawTextInner,0x00443C70,function
-th095::AnmTextManagerView::DrawTextLeft,0x00443CE0,function
-th095::AnmTextManagerView::DrawTextRight,0x00443DD0,function
-th095::AnmTextManagerView::DrawTextCentered,0x00443F80,function
+th095::AnmManager::DrawTextInner,0x00443C70,function
+th095::AnmManager::DrawTextLeft,0x00443CE0,function
+th095::AnmManager::DrawTextRight,0x00443DD0,function
+th095::AnmManager::DrawTextCentered,0x00443F80,function
 th095::TextHelperView::RenderTextToTextureBold,0x0041C8F0,function
 th095::TextRenderBufferView::ApplyAlphaBleed,0x0041C1E0,function
 th095::TextRenderBufferView::InvertAlpha,0x0041C600,function
