@@ -42,6 +42,27 @@ enum EclRandomOperandSelector
 #define TH095_ECL_RANDOM_SELECTOR(rawValue, semanticName) EclOperands::semanticName
 #endif
 
+// Coordinate selectors read worldPosition and write position.
+enum EclEnemyMovementSelector
+{
+    ECL_ENEMY_POSITION_X = 0x272a,
+    ECL_ENEMY_POSITION_Y = 0x272b,
+    ECL_ENEMY_POSITION_Z = 0x272c,
+    ECL_ENEMY_MOVEMENT_ANGLE = 0x2744,
+    ECL_ENEMY_ANGULAR_VELOCITY = 0x2745,
+    ECL_ENEMY_SPEED = 0x2746,
+    ECL_ENEMY_ACCELERATION = 0x2747,
+    ECL_ENEMY_ORBIT_RADIUS = 0x2748,
+    ECL_ENEMY_INTERPOLATION_ORIGIN_X = 0x2749,
+    ECL_ENEMY_INTERPOLATION_ORIGIN_Y = 0x274a,
+    ECL_ENEMY_INTERPOLATION_ORIGIN_Z = 0x274b,
+    ECL_ENEMY_ORBIT_ANGLE = 0x274c,
+    ECL_ENEMY_ORBIT_ANGULAR_VELOCITY = 0x274d,
+    ECL_ENEMY_INTERPOLATION_DELTA_X = 0x274e,
+    ECL_ENEMY_INTERPOLATION_DELTA_Y = 0x274f,
+    ECL_ENEMY_INTERPOLATION_DELTA_Z = 0x2750,
+};
+
 i32 __fastcall ResolveInt(Enemy *enemy, i32 operand);
 i32 *__fastcall ResolveIntLValue(Enemy *enemy, i32 *operand, u16 flags, i32 flagIndex);
 f32 *__fastcall ResolveFloatLValue(Enemy *enemy, f32 *operand, u16 flags, i32 flagIndex);

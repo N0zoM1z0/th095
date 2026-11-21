@@ -128,15 +128,15 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case ECL_MANAGER_PARAMETER_FLOAT2: return (i32)g_PhotoEnemyManager->eclManager->callParameters.floats[2];
     case ECL_MANAGER_PARAMETER_FLOAT3: return (i32)g_PhotoEnemyManager->eclManager->callParameters.floats[3];
 
-    case 0x272a: return (i32)enemy->worldPosition.x;
-    case 0x272b: return (i32)enemy->worldPosition.y;
-    case 0x272c: return (i32)enemy->worldPosition.z;
+    case ECL_ENEMY_POSITION_X: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->worldPosition.x;
+    case ECL_ENEMY_POSITION_Y: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->worldPosition.y;
+    case ECL_ENEMY_POSITION_Z: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->worldPosition.z;
     case 0x272d: return (i32)TH095_ECL_INT_PLAYER_POSITION.x;
     case 0x272e: return (i32)TH095_ECL_INT_PLAYER_POSITION.y;
     case 0x272f: return (i32)TH095_ECL_INT_PLAYER_POSITION.z;
-    case 0x2749: return (i32)enemy->movementInterpolationOrigin.x;
-    case 0x274a: return (i32)enemy->movementInterpolationOrigin.y;
-    case 0x274b: return (i32)enemy->movementInterpolationOrigin.z;
+    case ECL_ENEMY_INTERPOLATION_ORIGIN_X: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->movementInterpolationOrigin.x;
+    case ECL_ENEMY_INTERPOLATION_ORIGIN_Y: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->movementInterpolationOrigin.y;
+    case ECL_ENEMY_INTERPOLATION_ORIGIN_Z: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->movementInterpolationOrigin.z;
     case 0x2754: return (i32)enemy->lastFrameDisplacement.x;
     case 0x2755: return (i32)enemy->lastFrameDisplacement.y;
     case 0x2756: return (i32)enemy->lastFrameDisplacement.z;
@@ -145,13 +145,13 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2758: return TH095_ECL_SCHEDULE(enemy).photoIndices[1];
     case 0x2759: return TH095_ECL_SCHEDULE(enemy).photoIndices[2];
     case 0x275a: return TH095_ECL_SCHEDULE(enemy).photoIndices[3];
-    case 0x2744: return (i32)enemy->movementAngle;
-    case 0x2745: return (i32)enemy->angularVelocity;
-    case 0x2746: return (i32)enemy->speed;
-    case 0x2747: return (i32)enemy->acceleration;
-    case 0x2748: return (i32)enemy->orbitRadius;
-    case 0x274c: return (i32)enemy->orbitAngle;
-    case 0x274d: return (i32)enemy->orbitAngularVelocity;
+    case ECL_ENEMY_MOVEMENT_ANGLE: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->movementAngle;
+    case ECL_ENEMY_ANGULAR_VELOCITY: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->angularVelocity;
+    case ECL_ENEMY_SPEED: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->speed;
+    case ECL_ENEMY_ACCELERATION: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->acceleration;
+    case ECL_ENEMY_ORBIT_RADIUS: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->orbitRadius;
+    case ECL_ENEMY_ORBIT_ANGLE: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->orbitAngle;
+    case ECL_ENEMY_ORBIT_ANGULAR_VELOCITY: return (i32)reinterpret_cast<PhotoEnemyView *>(enemy)->orbitAngularVelocity;
     case 0x2752: return TH095_PHOTO_ENEMY_I32(
         enemy, PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET);
     case 0x2753: return TH095_ECL_PHOTO_TARGET_SLOT(enemy);

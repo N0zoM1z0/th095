@@ -18629,3 +18629,18 @@ methods and all eleven calls follow them. The 196 retail comparisons
 include constructor writes, callback table entries, first-free and same
 operand slot selection, full tables and child returns. See
 `.analysis/pi/ecl-context-owner/`.
+
+### SEM-421 — bind ECL movement operands to the compact enemy
+
+The three movement resolvers share 16 named selectors and use the compact
+enemy's typed fields. The coordinate reads use world position and the
+writable addresses use local position. The integer reader returns the
+three interpolation-delta selectors unchanged. High opcode dispatch also
+takes local position directly for its spawn calls.
+
+All 167 affected exact units pass, with 516 changed private label names
+and identical relocation fields. Both normal link orders move
+`SpawnWithContext`, and its two dispatch calls follow it. The 260 focused
+retail comparisons include 64 movement cases with distinct local and
+world coordinates, writes with both operand-flag states, and spawns with
+nonzero position offsets. See `.analysis/pi/ecl-movement-operands/`.

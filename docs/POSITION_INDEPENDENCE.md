@@ -132,6 +132,13 @@ link. The only additional entry is the CRT security-cookie initializer.
 There are no mismatches in these comparisons. The section-by-section
 experiment is under `.analysis/pi/check-linked-sections.py`.
 
+The SEM-421 repeat covers 925 current game code sections and 11,474
+code references. Of these, 11,273 follow a moved symbol. It also verifies
+all 639 references in 844 initialized sections, all with moved destinations.
+The two initialization tables register the same sixteen game initializers
+and the CRT security-cookie initializer. See
+`.analysis/pi/ecl-movement-operands/whole-game-link.log`.
+
 A retail comparison checks the 548 normal functions whose complete decoded
 instruction layout matches an accepted target extent. In that set, 2,249
 paired writable operands map consistently between the retail addresses and

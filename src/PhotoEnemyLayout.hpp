@@ -210,29 +210,21 @@ typedef char PhotoEnemyPhotoCaptureSubroutineAt285A[
     (offsetof(PhotoEnemyView, photoCaptureEclSubroutineId) ==
      PHOTO_ENEMY_ECL_PHOTO_CAPTURE_SUBROUTINE_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyPositionAt28A0[
-    (offsetof(PhotoEnemyView, position) == PHOTO_ENEMY_ECL_POSITION_OFFSET)
+    (offsetof(PhotoEnemyView, position) == 0x28a0)
         ? 1 : -1];
 typedef char PhotoEnemyWorldPositionAt28F4[
     (offsetof(PhotoEnemyView, worldPosition) == 0x28f4) ? 1 : -1];
 typedef char PhotoEnemyMovementAt2900[
-    (offsetof(PhotoEnemyView, movementAngle) ==
-         PHOTO_ENEMY_ECL_MOVEMENT_ANGLE_OFFSET &&
-     offsetof(PhotoEnemyView, angularVelocity) ==
-         PHOTO_ENEMY_ECL_ANGULAR_VELOCITY_OFFSET &&
-     offsetof(PhotoEnemyView, orbitAngle) ==
-         PHOTO_ENEMY_ECL_ORBIT_ANGLE_OFFSET &&
-     offsetof(PhotoEnemyView, orbitAngularVelocity) ==
-         PHOTO_ENEMY_ECL_ORBIT_ANGULAR_VELOCITY_OFFSET &&
-     offsetof(PhotoEnemyView, speed) == PHOTO_ENEMY_ECL_SPEED_OFFSET &&
-     offsetof(PhotoEnemyView, acceleration) ==
-         PHOTO_ENEMY_ECL_ACCELERATION_OFFSET &&
-     offsetof(PhotoEnemyView, orbitRadius) ==
-         PHOTO_ENEMY_ECL_ORBIT_RADIUS_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, movementAngle) == 0x2900 &&
+     offsetof(PhotoEnemyView, angularVelocity) == 0x2904 &&
+     offsetof(PhotoEnemyView, orbitAngle) == 0x2908 &&
+     offsetof(PhotoEnemyView, orbitAngularVelocity) == 0x290c &&
+     offsetof(PhotoEnemyView, speed) == 0x2914 &&
+     offsetof(PhotoEnemyView, acceleration) == 0x2918 &&
+     offsetof(PhotoEnemyView, orbitRadius) == 0x291c) ? 1 : -1];
 typedef char PhotoEnemyMovementInterpolationAt2930[
-    (offsetof(PhotoEnemyView, movementInterpolationDelta) ==
-         PHOTO_ENEMY_ECL_INTERPOLATION_DELTA_OFFSET &&
-     offsetof(PhotoEnemyView, movementInterpolationOrigin) ==
-         PHOTO_ENEMY_ECL_INTERPOLATION_ORIGIN_OFFSET) ? 1 : -1];
+    (offsetof(PhotoEnemyView, movementInterpolationDelta) == 0x2930 &&
+     offsetof(PhotoEnemyView, movementInterpolationOrigin) == 0x293c) ? 1 : -1];
 typedef char PhotoEnemyLifeAt2958[
     (offsetof(PhotoEnemyView, life) == PHOTO_ENEMY_ECL_LIFE_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyLifeSequenceAt2958[

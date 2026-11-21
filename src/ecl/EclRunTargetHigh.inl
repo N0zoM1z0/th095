@@ -11,13 +11,6 @@
 #define TH095_TARGET_ENEMY_DRAW_GROUP(enemy)                                \
     TH095_ECL_DRAW_GROUP(enemy)
 
-#define TH095_TARGET_ENEMY_POSITION(enemy)                                  \
-    TH095_PHOTO_ENEMY_OBJECT(                                                \
-        (enemy), th095::PHOTO_ENEMY_ECL_POSITION_OFFSET, Float3)
-#define TH095_TARGET_ENEMY_POSITION_PTR(enemy)                              \
-    TH095_PHOTO_ENEMY_OBJECT_PTR(                                            \
-        (enemy), th095::PHOTO_ENEMY_ECL_POSITION_OFFSET, Float3)
-
 #define TH095_TARGET_ENEMY_VM_ROTATION_Z(enemy)                             \
     TH095_ECL_ENEMY_VM_ROTATION_Z(enemy)
 
@@ -86,7 +79,7 @@
     case 99:
         reinterpret_cast<Float3 &>(
             TH095_ECL_BULLET_DESCRIPTOR(enemy, PhotoBulletSpawnDescriptor)->position) =
-                TH095_TARGET_ENEMY_POSITION(enemy) + enemy->shootOffset;
+                reinterpret_cast<PhotoEnemyView *>(enemy)->position + enemy->shootOffset;
         g_PhotoBulletManager->SpawnBulletPattern(
             TH095_ECL_BULLET_DESCRIPTOR(enemy, PhotoBulletSpawnDescriptor));
         break;
@@ -256,7 +249,7 @@ enter_subroutine:
         {
             g_PhotoEnemyManager->SpawnWithContext(
                 TH08_ECL_RAW_I(ctx, 0),
-                TH095_TARGET_ENEMY_POSITION_PTR(enemy),
+                &reinterpret_cast<PhotoEnemyView *>(enemy)->position,
                 10, 0, 0,
                 &enemy->activeEclContext->scriptState);
         }
@@ -279,7 +272,7 @@ enter_subroutine:
                 position.z = (instruction->operandFlags & (1U << 3))
                     ? enemy->ResolveFloat(packet.position.z)
                     : packet.position.z;
-                position += TH095_TARGET_ENEMY_POSITION(enemy);
+                position += reinterpret_cast<PhotoEnemyView *>(enemy)->position;
                 spawned =
                 g_PhotoEnemyManager->SpawnWithContext(
                     packet.eclSubroutineId, &position, 10, 0, 0,
@@ -457,7 +450,7 @@ enter_subroutine:
         TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy) =
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_BULLET_ANM_SPAWNER, 0xd2,
-                TH095_TARGET_ENEMY_POSITION_PTR(enemy));
+                &reinterpret_cast<PhotoEnemyView *>(enemy)->position);
         TH095_ECL_ANM_GET_VM(
             TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy).value)->counterVar0 =
                 Th095PreserveI32(g_RuntimeGlobalStateOwner->completion.timer.current);
@@ -488,7 +481,7 @@ enter_subroutine:
         TH095_ENEMY_PHOTO_PULSE_HANDLE(enemy) =
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_BULLET_ANM_SPAWNER, 0x125,
-                TH095_TARGET_ENEMY_POSITION_PTR(enemy));
+                &reinterpret_cast<PhotoEnemyView *>(enemy)->position);
         g_SoundPlayer.PlaySoundByIdx(SOUND_PHOTO_PULSE, 0);
         break;
     }
@@ -497,5 +490,3 @@ enter_subroutine:
 
 #undef TH095_TARGET_ENEMY_LIFE
 #undef TH095_TARGET_ENEMY_ECL_TIMER
-#undef TH095_TARGET_ENEMY_POSITION
-#undef TH095_TARGET_ENEMY_POSITION_PTR
