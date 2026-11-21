@@ -12,6 +12,8 @@
 namespace th095
 {
 
+PhotoStageStateView *g_PhotoStageState;
+
 namespace utils
 {
 void DebugPrint(char *format, ...);

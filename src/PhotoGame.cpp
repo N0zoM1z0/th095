@@ -13,6 +13,8 @@
 namespace th095
 {
 
+PhotoGameUpdateView *g_RuntimePlayerOwner;
+
 struct PhotoAnmVmIdValue
 {
     i32 value;

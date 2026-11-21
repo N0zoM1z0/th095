@@ -2,30 +2,17 @@
 #define TH095_GAMEPLAY_GLOBALS_HPP
 
 #include "PhotoGameTaskOwner.hpp"
-#include "diffbuild.hpp"
 
 namespace th095
 {
 
-// The target owns one pointer at each address below.  Earlier reconstruction
-// units gave the same storage a different view-specific C++ symbol in each
-// translation unit.  Production builds must share the pointer value so that
-// lifecycle stores are visible to every consumer.  DIFFBUILD units retain
-// their target-specific extern names and relocation evidence.
-// PhotoOverlay publishes the PhotoInf allocation and clears it at teardown.
 struct PhotoStageStateView;
-extern PhotoStageStateView *g_PhotoStageState;
 struct PhotoGameUpdateView;
-extern PhotoGameUpdateView *g_RuntimePlayerOwner;
 
-// Canonical exact probes must preserve the historical target-facing extern
-// names without putting /DDIFFBUILD on the whole VC7.1 translation unit.
-// Defining DIFFBUILD here is intentionally late: diffbuild.hpp and the shared
-// ABI headers have already been parsed in their ordinary TH095 form, while
-// source-local production owner aliases below this include are still suppressed.
-#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#define DIFFBUILD
-#endif
+// Each subsystem publishes its active instance in its constructor and clears
+// the pointer during teardown.
+extern PhotoStageStateView *g_PhotoStageState;
+extern PhotoGameUpdateView *g_RuntimePlayerOwner;
 
 } // namespace th095
 

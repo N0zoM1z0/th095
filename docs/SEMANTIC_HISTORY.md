@@ -20724,3 +20724,25 @@ across 1,312 input cases and 144 L-key cases that execute GetInput and
 the Scene Select lock branch. The lock test covers held and fresh keys,
 empty and populated records, and both directions of the toggle.
 Evidence is under `.analysis/pi/controller-button-domain/`.
+
+### SEM-522 — define the PlayerInf and PhotoInf pointers at their lifecycles
+
+PhotoGame and PhotoOverlay now define the two active-instance pointers
+that their constructors publish and destructors clear. Both profiles use
+the declarations in `GameplayGlobals.hpp`. The header no longer turns on
+`DIFFBUILD` midway through a translation unit.
+
+All 371 affected exact units pass. The normal link audit resolves all
+125 PlayerInf and 169 PhotoInf operands in both object orders, including
+the constructor and destructor stores. The slots start at zero and the
+retail and linked lifetimes agree. The 413 targeted cases cover shot
+dispatch, boundary movement, Best Shot saving and preview navigation.
+
+The Wine demo0 samples agree on score, position, RNG, camera and the
+PhotoInf capture counter at all 361 input indices in each link. The
+capture counter first advances at index 276. The retail, regular and
+reversed timers start when the menu clears at indices 24, 29 and 27
+respectively. After accounting for those starts, the integer timers
+agree through the first photo. The link and fixture evidence is under
+`.analysis/pi/gameplay-pointer-owners/`. The Wine traces are under
+`build/position-independence/gameplay-pointer-owners/`.

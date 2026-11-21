@@ -18,7 +18,9 @@ The [current Windows i386 PI audit](POSITION_INDEPENDENCE.md#current-windows-i38
 covers game and library relocations, initialized data, and imports in
 both normal link orders. Both layouts complete the three built-in replays
 with the retail gameplay samples at all 8,127 input indices. In demo0
-the integer stage timer starts three indices later than retail.
+the integer stage timer starts when the menu clears. Those indices vary
+between runs. The [SEM-522 first-photo check](SEMANTIC_HISTORY.md#sem-522--define-the-playerinf-and-photoinf-pointers-at-their-lifecycles)
+confirms that the integer timers agree after accounting for their starts.
 SEM-358 and SEM-360 correct MIDI and DirectInput storage. SEM-376 makes the
 normal readers honor both controller indices. SEM-404 confirms the retail
 frame callback polls slot zero and

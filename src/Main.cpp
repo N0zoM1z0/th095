@@ -5,7 +5,6 @@
 #include "AsciiManager.hpp"
 #include "Controller.hpp"
 #include "FrontEndController.hpp"
-#include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
 #ifndef DIFFBUILD
 #include "ReplayManager.hpp"
@@ -66,12 +65,6 @@ f64 g_LastFpsTimestamp;
 char g_WindowTitle[] =
     "\x93\x8c\x95\xfb\x95\xb6\x89\xd4\x92\x9f\x81\x40\x81\x60 "
     "Shoot the Bullet. ver 1.02a";
-
-// The retail image has one pointer slot for each gameplay subsystem.  Exact
-// units keep their target-facing per-TU symbol names; the runnable build routes
-// those typed views through these single production owners.
-PhotoStageStateView *g_PhotoStageState = NULL;
-PhotoGameUpdateView *g_RuntimePlayerOwner = NULL;
 #endif
 
 // Target 0x004C4658 is a standalone 0x18-byte ReplayScanWorker. Its static
