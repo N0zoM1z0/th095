@@ -19691,3 +19691,26 @@ visibility writes that preserve every other flag. The fixture stubs
 formatted output and the bold renderer. The GDI allocation and
 font-selection fixture also passes on the new links. See
 `.analysis/pi/anm-text-owner/`.
+
+### SEM-473 — share the Supervisor startup screen callbacks
+
+OnDraw2 at `0x004235D0` uses the background viewport with index 1.
+Both profiles now bind that call to ConfigureBackgroundViewport. The
+old exact recipe paired the gameplay symbol with the background
+address. The named loading-state thresholds and startup surface
+slot 8 are shared across the draw callback, VM lifecycles,
+calibration, and teardown. Both profiles also share DrawFpsCounter.
+
+All 48 Main strict comparisons pass. The five shared methods have
+the retail extents and all 76 relocations in the normal object.
+Each operand follows its moved symbol in the reversed link,
+including ConfigureBackgroundViewport from `0x0040D250` to
+`0x0044B350`. Both normal links retain their pre-change mapped
+sections byte for byte.
+
+The original and both normal layouts agree on 84 cases covering
+prompt timing and alpha, optional clearing, startup-surface copy
+and release, the three loading VM handles and the two hide modes,
+and FPS thresholds at 30 and 40. The fixture stubs calls into D3D,
+ASCII, ANM, and the FPS clock. See
+`.analysis/pi/supervisor-loading-screen/`.

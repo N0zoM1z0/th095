@@ -191,6 +191,8 @@ SEM-471 shares the TextRenderer GDI state and uses the Win32 V4 bitmap
 header. Both normal link layouts retain identical mapped bytes.
 SEM-472 uses the canonical ANM manager, VM and loaded sprite for
 the four text methods in both profiles.
+SEM-473 shares the Supervisor loading-screen and FPS callbacks. Both
+profiles call the canonical background viewport for the loading screen.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

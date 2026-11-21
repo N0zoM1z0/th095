@@ -3,6 +3,7 @@
 #include "AsciiManager.hpp"
 #include "Controller.hpp"
 #include "PhotoGameTask.hpp"
+#include "SupervisorViewportSlot.hpp"
 #include "TextRenderer.hpp"
 #include "pbg/PbgArchive.hpp"
 
@@ -974,109 +975,7 @@ i32 Supervisor::RegisterChain()
 
 #include "SupervisorOnUpdate.inl"
 
-static __forceinline void GetSupervisorAnmSurface(
-    IDirect3DSurface8 **output, AnmManager *manager, i32 surfaceIndex)
-{
-    *output = manager->surfaces[surfaceIndex];
-}
-
-// FUNCTION: TH095 0x004235D0.
-i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
-{
-    struct OnDraw2Locals
-    {
-        IDirect3DSurface8 *surface;
-        i32 color2;
-        i32 color1;
-        Float3 position;
-    } locals;
-
-    s->ConfigureGameplayViewport(1);
-    if (g_Supervisor.backbufferClearColor != 0)
-    {
-        g_Supervisor.d3dDevice->Clear(
-            0, NULL, D3DCLEAR_TARGET, g_Supervisor.backbufferClearColor, 1.0f, 0);
-    }
-
-    if (s->loadingScreenState >= 2)
-    {
-        s->loadingScreenState++;
-        if (s->loadingScreenState >= 5)
-        {
-            locals.position.x = 288.0f;
-            locals.position.y = 454.0f;
-            locals.position.z = 0.0f;
-            g_AsciiManager.scaleX = 0.5f;
-            g_AsciiManager.scaleY = 0.5f;
-            if (s->loadingScreenState < 35)
-            {
-                locals.color1 = 255 - (((s->loadingScreenState - 5) << 7) / 30);
-                g_AsciiManager.color.a = locals.color1;
-            }
-            else
-            {
-                locals.color2 = 255 - (((65 - s->loadingScreenState) << 7) / 30);
-                g_AsciiManager.color.a = locals.color2;
-            }
-            g_AsciiManager.AddFormatText(&locals.position, "Press Shot Button");
-            g_AsciiManager.scaleX = 1.0f;
-            g_AsciiManager.scaleY = 1.0f;
-            g_AsciiManager.DrawStrings();
-            g_AsciiManager.numStrings = 0;
-            g_AsciiManager.numGuiStrings = 0;
-
-            if (s->loadingScreenState >= 65)
-            {
-                s->loadingScreenState = 5;
-            }
-        }
-    }
-
-    if (s->loadingScreenState != 0)
-    {
-        g_AnmManager->CopySurfaceToBackbuffer(8, 0, 0, 0, 0);
-    }
-    else
-    {
-        GetSupervisorAnmSurface(&locals.surface, g_AnmManager, 8);
-        if (locals.surface != NULL)
-        {
-            g_AnmManager->ReleaseSurface(8);
-        }
-    }
-    return 1;
-}
-
-// FUNCTION: TH095 0x00423790.
-i32 __fastcall Supervisor::DrawFpsCounter(Supervisor *s)
-{
-    struct DrawFpsCounterLocals
-    {
-        D3DCOLOR color;
-        Float3 position;
-        f32 currentFps;
-    } locals;
-
-    g_Supervisor.CalculateFps();
-    locals.currentFps = g_Supervisor.currentFps;
-    if (locals.currentFps < 30.0f)
-    {
-        locals.color = 0xff5050ff;
-    }
-    else
-    {
-        locals.color = locals.currentFps < 40.0f ? 0xffa0a0ff : 0xffffffff;
-    }
-
-    g_AsciiManager.color.color = locals.color;
-    locals.position.x = 288.0f;
-    locals.position.y = 0.0f;
-    locals.position.z = 0.0f;
-    g_AsciiManager.AddFormatText(
-        &locals.position, "%2.1ffps", locals.currentFps);
-    g_AsciiManager.color.color = 0xffffffff;
-    return 1;
-}
+#include "SupervisorDrawCallbacks.inl"
 
 // FUNCTION: TH095 0x00424720.
 #include "SupervisorCalculateFps.inl"
@@ -1272,7 +1171,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
 
     g_Supervisor.backbufferClearColor = 0xff000000;
     InitializeScoreData();
-    g_AnmManager->LoadSurface(8, "title/th08logo.jpg");
+    g_AnmManager->LoadSurface(SUPERVISOR_STARTUP_BACKGROUND_SURFACE, "title/th08logo.jpg");
     g_Supervisor.suppressFpsDisplay = 1;
 
     if (!g_Supervisor.disableVsync && Supervisor::CheckFps() != 0)
@@ -1370,7 +1269,7 @@ i32 Supervisor::CheckFps()
     while (frameIndex < 600 && sampleCount < 8)
     {
         g_Supervisor.d3dDevice->BeginScene();
-        g_AnmManager->CopySurfaceToBackbuffer(8, 0, 0, 0, 0);
+        g_AnmManager->CopySurfaceToBackbuffer(SUPERVISOR_STARTUP_BACKGROUND_SURFACE, 0, 0, 0, 0);
         g_Supervisor.d3dDevice->EndScene();
         if (g_Supervisor.d3dDevice->Present(NULL, NULL, NULL, NULL) < 0)
         {
@@ -1555,7 +1454,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
     ReleaseSupervisorAnmVertexBuffer();
     g_AnmManager->ReleaseAnm(0);
     g_AnmManager->ReleaseAnm(2);
-    g_AnmManager->ReleaseSurface(8);
+    g_AnmManager->ReleaseSurface(SUPERVISOR_STARTUP_BACKGROUND_SURFACE);
     AsciiManager::CutChain();
     g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
     TextHelperView::ReleaseTextBuffer();
@@ -2059,55 +1958,4 @@ void Supervisor::SetRenderState(D3DRENDERSTATETYPE state, i32 value)
     this->d3dDevice->SetRenderState(state, value);
 }
 
-// FUNCTION: TH095 0x00425660.
-void Supervisor::SetupLoadingVms(Float3 *position)
-{
-    if (this->loadingScreenState == 0)
-    {
-        g_SupervisorLoadingVms[0] = this->loadingAnm->CreateVm(0, 7);
-        g_SupervisorLoadingVms[1] = this->loadingAnm->CreateVm(1, 7);
-        g_SupervisorLoadingVms[2] = this->loadingAnm->CreateVm(2, 7);
-        this->loadingScreenState = 1;
-        g_AnmManager->SetPosition(g_SupervisorLoadingVms[0], position);
-        g_AnmManager->SetPosition(g_SupervisorLoadingVms[1], position);
-        g_AnmManager->SetPosition(g_SupervisorLoadingVms[2], position);
-    }
-}
-
-// FUNCTION: TH095 0x00425730.
-void Supervisor::HideLoadingVms()
-{
-    if (this->loadingScreenState == 1)
-    {
-        g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[0], 1);
-        g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[1], 1);
-        g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[2], 1);
-        g_SupervisorLoadingVms[0] = AnmVmId();
-        g_SupervisorLoadingVms[1] = AnmVmId();
-        g_SupervisorLoadingVms[2] = AnmVmId();
-        this->loadingScreenState = 0;
-    }
-    if (g_SupervisorScreenEffect != NULL)
-    {
-        g_SupervisorScreenEffect = NULL;
-    }
-}
-
-// FUNCTION: TH095 0x004257E0.
-void Supervisor::BeginLoadingCompletion()
-{
-    if (this->loadingScreenState == 1)
-    {
-        g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[0], 2);
-        g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[1], 2);
-        g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[2], 2);
-        g_SupervisorLoadingVms[0] = AnmVmId();
-        g_SupervisorLoadingVms[1] = AnmVmId();
-        g_SupervisorLoadingVms[2] = AnmVmId();
-        this->loadingScreenState = 2;
-    }
-    if (g_SupervisorScreenEffect != NULL)
-    {
-        g_SupervisorScreenEffect = NULL;
-    }
-}
+#include "SupervisorLoadingVms.inl"
