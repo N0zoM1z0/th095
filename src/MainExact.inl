@@ -271,7 +271,7 @@ stop:
 
 inline u16 WasPressed(u16 buttons)
 {
-    return g_PressedButtons & buttons;
+    return g_ControllerInputSlots[0].pressed & buttons;
 }
 
 #pragma var_order(i, screenshotPath)
@@ -294,7 +294,7 @@ void GameWindow::Present()
     }
 
     g_AnmManager->TakeScreenshots();
-    if (WasPressed(0x800) != 0)
+    if (WasPressed(TH_BUTTON_HOME) != 0)
     {
         _mkdir("snapshot");
         for (i = 0; i < 1000; i++)

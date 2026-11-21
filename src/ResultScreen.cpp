@@ -5,7 +5,7 @@
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
-#include "InputRuntime.hpp"
+#include "ControllerInputSlot.hpp"
 #include "Main.hpp"
 #include "PhotoStage.hpp"
 #include "PhotoGamePlayer.hpp"
@@ -33,10 +33,6 @@ static __forceinline tm *ReplayTimestampToLocalTime(i32 timestamp)
     return localtime(&timeValue);
 }
 
-extern u16 g_ResultMenuInput;
-extern u16 g_PressedButtons;
-#define g_ResultMenuInput (RuntimeResultMenuInput())
-#define g_PressedButtons (RuntimePressedButtons())
 extern f32 g_AnmGameSpeed;
 // Target 0x004C4E38 is the zero-initialized current result-screen owner; the
 // constructor publishes it and the destructor clears it.
@@ -186,13 +182,13 @@ extern void __fastcall PreparePhotoResultScreen(ResultScreen *resultScreen);
 #endif
 inline u16 GetPressedButtons(u16 buttons)
 {
-    return g_PressedButtons & buttons;
+    return g_ControllerInputSlots[0].pressed & buttons;
 }
 
 inline u16 IsResultMenuInputPressed(u16 buttons)
 {
     return (u16)((GetPressedButtons(buttons) != 0) ||
-                 ((g_ResultMenuInput & buttons) != 0));
+                 ((g_ControllerInputSlots[0].repeat & buttons) != 0));
 }
 
 inline ResultScreenAnmVm *GetResultVm(ResultScreen *resultScreen, i32 index)

@@ -6,9 +6,7 @@
 #include "SoundPlayer.hpp"
 #include "ZunMath.hpp"
 #include "GameplayGlobals.hpp"
-#ifndef DIFFBUILD
-#include "InputRuntime.hpp"
-#endif
+#include "ControllerInputSlot.hpp"
 #include "FileSystem.hpp"
 #include "PhotoGameTask.hpp"
 
@@ -73,14 +71,6 @@ typedef char FrontEndUpdateLocalsSizeIs3C[
 #endif
 
 DIFFABLE_STATIC(i32, g_MainMenuDemoWaitFrames); // 0x004CA2FC
-extern u16 g_ResultMenuInput;
-extern u16 g_PressedButtons;
-extern u16 g_FrontEndCurrentInput;
-#ifndef DIFFBUILD
-#define g_ResultMenuInput (RuntimeResultMenuInput())
-#define g_PressedButtons (RuntimePressedButtons())
-#define g_FrontEndCurrentInput (RuntimeInputCurrent())
-#endif
 DIFFABLE_STATIC(i32, g_DemoReplayIndex);
 
 static __forceinline u16 FrontEndInputAnd(u16 input, u16 mask)
@@ -529,13 +519,13 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
     }
 
     this->groupCursor.SaveCurrent();
-    if ((u16)(FrontEndInputAnd(g_PressedButtons, TH_BUTTON_UP) != 0 ||
-              (g_ResultMenuInput & FrontEndUpInputMask()) != 0) != 0)
+    if ((u16)(FrontEndInputAnd(g_ControllerInputSlots[0].pressed, TH_BUTTON_UP) != 0 ||
+              (g_ControllerInputSlots[0].repeat & FrontEndUpInputMask()) != 0) != 0)
     {
         this->groupCursor.Move(-1);
     }
-    if ((u16)(FrontEndInputAnd(g_PressedButtons, TH_BUTTON_DOWN) != 0 ||
-              (g_ResultMenuInput & FrontEndDownInputMask()) != 0) != 0)
+    if ((u16)(FrontEndInputAnd(g_ControllerInputSlots[0].pressed, TH_BUTTON_DOWN) != 0 ||
+              (g_ControllerInputSlots[0].repeat & FrontEndDownInputMask()) != 0) != 0)
     {
         this->groupCursor.Move(1);
     }
@@ -545,7 +535,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
         sceneMenu->UpdateMainMenuSelection();
     }
 
-    if (FrontEndInputAnd(g_FrontEndCurrentInput, TH_BUTTON_DEMO_INTERRUPT) != 0)
+    if (FrontEndInputAnd(g_ControllerInputSlots[0].current, TH_BUTTON_DEMO_INTERRUPT) != 0)
     {
         g_MainMenuDemoWaitFrames = 0;
     }
@@ -566,7 +556,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
         }
     }
 
-    if (FrontEndInputAnd(g_PressedButtons, TH_BUTTON_ENTER | TH_BUTTON_BOMB) != 0)
+    if (FrontEndInputAnd(g_ControllerInputSlots[0].pressed, TH_BUTTON_ENTER | TH_BUTTON_BOMB) != 0)
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
         switch (this->groupCursor.GetCurrent())
@@ -641,7 +631,7 @@ ChainCallbackResult FrontEndControllerView::UpdateMainMenu()
         }
     }
 
-    if (FrontEndInputAnd(g_PressedButtons, TH_BUTTON_MENU | TH_BUTTON_SHOOT) != 0)
+    if (FrontEndInputAnd(g_ControllerInputSlots[0].pressed, TH_BUTTON_MENU | TH_BUTTON_SHOOT) != 0)
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
         if (this->groupCursor.GetCurrent() == 5)

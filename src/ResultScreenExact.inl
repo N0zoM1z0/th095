@@ -1,4 +1,5 @@
 #include "ResultScreen.hpp"
+#include "ControllerInputSlot.hpp"
 #include "SceneData.hpp"
 
 #ifdef TH095_MATCH_EXACT
@@ -22,8 +23,6 @@
 namespace th095
 {
 
-extern u16 g_ResultMenuInput;
-extern u16 g_PressedButtons;
 extern f32 g_AnmGameSpeed;
 extern ResultScreen *g_ResultScreen;
 
@@ -90,13 +89,13 @@ extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
 extern void __fastcall PreparePhotoResultScreen(ResultScreen *resultScreen);
 inline u16 GetPressedButtons(u16 buttons)
 {
-    return g_PressedButtons & buttons;
+    return g_ControllerInputSlots[0].pressed & buttons;
 }
 
 inline u16 IsResultMenuInputPressed(u16 buttons)
 {
     return (u16)((GetPressedButtons(buttons) != 0) ||
-                 ((g_ResultMenuInput & buttons) != 0));
+                 ((g_ControllerInputSlots[0].repeat & buttons) != 0));
 }
 
 inline ResultScreenAnmVm *GetResultVm(ResultScreen *resultScreen, i32 index)

@@ -6,7 +6,6 @@
 #include "Controller.hpp"
 #include "FrontEndController.hpp"
 #include "GameplayGlobals.hpp"
-#include "InputRuntime.hpp"
 #include "PhotoGameTask.hpp"
 #ifndef DIFFBUILD
 #include "ReplayManager.hpp"
@@ -54,7 +53,6 @@ namespace th095
 #define TH095_GAME_MUSIC_MODE_COUNT GAME_MUSIC_MODE_COUNT
 #endif
 
-#define g_PressedButtons (RuntimePressedButtons())
 DIFFABLE_STATIC(GameWindow, g_GameWindow);
 // Target 0x004C45E4 is a zero-initialized process-lifetime HANDLE slot.  The
 // single-instance check owns its CreateMutexA publication and all reads.
@@ -332,7 +330,7 @@ stop:
 
 inline u16 WasPressed(u16 buttons)
 {
-    return g_PressedButtons & buttons;
+    return g_ControllerInputSlots[0].pressed & buttons;
 }
 
 #pragma var_order(i, screenshotPath)
@@ -355,7 +353,7 @@ void GameWindow::Present()
     }
 
     g_AnmManager->TakeScreenshots();
-    if (WasPressed(0x800) != 0)
+    if (WasPressed(TH_BUTTON_HOME) != 0)
     {
         _mkdir("snapshot");
         for (i = 0; i < 1000; i++)

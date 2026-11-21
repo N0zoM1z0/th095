@@ -20102,3 +20102,18 @@ last group checks upload and free order, lock 4's count, the shifted queue,
 and the two completion interrupts. The native x86-64 fixture exercises the
 shared shift with pointers above 4 GB. See
 `.analysis/pi/scene-select-update-owner/`.
+
+### SEM-490 — use the live controller slot for menu and screenshot input
+
+The main menu now reads current, repeat and pressed directly at offsets
+`+0x00`, `+0x04` and `+0x06` of slot zero. Result navigation reads the same
+repeat and pressed fields. Present tests the named Home bit in pressed
+after dispatching ANM captures. Both builds use the slot for these reads.
+
+All 76 affected strict comparisons pass in FrontEndController, Main and
+ResultScreen. Their 41 linked references to these three fields follow the
+slot from `0x004D12E0` to `0x004DF228`. The original and both normal layouts
+agree on 38 main-menu cases, 48 result cursor cases, and 24 presentation
+and screenshot cases. These cover directional repeat, ignored neighbor
+slots, device reset, and the range of candidate screenshot filenames.
+See `.analysis/pi/menu-live-input/`.
