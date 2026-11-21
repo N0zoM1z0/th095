@@ -8,11 +8,7 @@ namespace th095
 {
 
 // Replay playback selects either the loose replay file or archive-backed lane.
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-DIFFABLE_STATIC(i32, g_ReplayUsesArchive);
-#else
 DIFFABLE_STATIC(ReplayPlaybackSource, g_ReplayUsesArchive);
-#endif
 
 static __forceinline void EnterFileSystemCriticalSection(i32 id)
 {

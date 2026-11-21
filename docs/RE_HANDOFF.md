@@ -245,6 +245,9 @@ Both builds use the canonical timer and Supervisor fields.
 SEM-498 shares ReplayManager's declaration and methods. The playback and
 load-only FPS stream points into the decompressed buffer. Mode-specific
 ownership is verified in both link orders.
+SEM-499 gives the replay source and shared file handle one type and one
+symbol each across both builds. The file probes verify both I/O lanes
+and their lock lifetime.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

@@ -2,6 +2,7 @@
 #include "SceneData.hpp"
 #include "AnmVmId.hpp"
 #include "ControllerInputSlot.hpp"
+#include "FileSystem.hpp"
 #include "PhotoFront.hpp"
 #include "PhotoItemManager.hpp"
 #include "PhotoEffectRuntime.hpp"
@@ -157,7 +158,6 @@ extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoHelpMenuTaskView *g_PhotoHelpMenu;
 extern PhotoAsciiManagerTaskView g_PhotoAsciiManager;
 extern u32 g_PhotoAsciiTextColor;
-extern i32 g_ReplayUsesArchive;
 extern double g_PhotoGameClock;
 extern double g_PhotoGameClock2;
 
@@ -204,7 +204,7 @@ i32 PhotoGameTaskView::Update()
         return 1;
     }
 
-    if (g_ReplayUsesArchive != 0 &&
+    if (g_ReplayUsesArchive != REPLAY_PLAYBACK_SOURCE_LOOSE_FILE &&
         (ReadPhotoDemoInterrupt(&g_ControllerInputSlots[0], TH_BUTTON_DEMO_INTERRUPT) != 0 ||
          ((this->flags >> 4) & 1) != 0 ||
          ((this->flags >> 5) & 1) != 0 ||
@@ -548,7 +548,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     }
 
     if (g_Supervisor.flags.resultRestartActive == 0 &&
-        g_ReplayUsesArchive == 0)
+        g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
     {
         g_Supervisor.LoadMusic(
             0, g_SelectedScene->musicPath);
@@ -579,7 +579,7 @@ PhotoGameTaskView::~PhotoGameTaskView()
     g_RuntimeGlobalStateOwner = NULL;
 
     if (g_Supervisor.flags.resultRestartActive == 0 &&
-        g_ReplayUsesArchive == 0)
+        g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
     {
         g_Supervisor.StopAudio();
     }

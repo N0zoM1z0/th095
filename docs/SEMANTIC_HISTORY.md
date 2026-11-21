@@ -20308,3 +20308,21 @@ The original and both link orders agree on nine allocation and
 teardown cases, including both input sources and loose-file open failures,
 18 FPS display cases, and 16 writes. The 180 history, 43 stream and 20
 replay browser cases pass too. See `.analysis/pi/replay-manager-owner/`.
+
+### SEM-499 — share the replay source and open-file handle
+
+The replay source uses one `ReplayPlaybackSource` enum in both builds.
+The front-end writes the source for built-in demos and the return to loose
+files. ReplayManager, PhotoGameTask and PhotoFront read the same storage.
+The loose replay reader and serialized writer use one
+`g_SharedOpenFileHandle` under Supervisor lock 2. Five primitives
+reference that handle. `WriteDataToFile` uses a local handle under the
+same lock.
+
+The ten affected sources pass all 54 strict comparisons. Both link
+orders resolve all 1,191 code and 12 initialized-data references and have
+the same mapped bytes as their respective preceding builds. The retail
+image and both links agree on the loose replay read and write
+transactions, including acquisition, handle use, close and lock release.
+The replay ownership, main-menu, screenshot, configuration and archive
+version probes also pass. See `.analysis/pi/replay-file-state/`.

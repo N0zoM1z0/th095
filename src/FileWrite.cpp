@@ -4,12 +4,7 @@
 
 namespace th095
 {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-DIFFABLE_STATIC_ASSIGN(HANDLE, g_OpenWriteFileHandle) = INVALID_HANDLE_VALUE;
-#define g_SharedOpenFileHandle g_OpenWriteFileHandle
-#else
 DIFFABLE_STATIC_ASSIGN(HANDLE, g_SharedOpenFileHandle) = INVALID_HANDLE_VALUE;
-#endif
 
 static __forceinline void EnterFileCriticalSection(i32 id)
 {

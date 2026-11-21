@@ -6,9 +6,7 @@
 #include "AsciiManager.hpp"
 #include "Background.hpp"
 #include "FrontEndGlobals.hpp"
-#ifndef DIFFBUILD
 #include "FileSystem.hpp"
-#endif
 #include "GameplayGlobals.hpp"
 #include "ControllerInputSlot.hpp"
 #include "Main.hpp"
@@ -102,11 +100,6 @@ extern u32 g_PhotoAsciiTextColor;
 // Target 0x004B1FEC is g_AsciiManager @ 0x004A9F80 + 0x806C, the
 // canonical ZunColor storage used by every following AddFormatText call.
 #define g_PhotoAsciiTextColor (g_AsciiManager.color.color)
-#endif
-#ifdef DIFFBUILD
-extern i32 g_ReplayUsesArchive;
-#define REPLAY_PLAYBACK_SOURCE_LOOSE_FILE 0
-#define REPLAY_PLAYBACK_SOURCE_ARCHIVE 1
 #endif
 
 PhotoGameTaskView::PhotoGameTaskView()
