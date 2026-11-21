@@ -16,7 +16,7 @@ separate validation.
 
 ## Current Windows i386 link audit
 
-The normal build at `8718258` uses the same 88 game objects and 270
+The normal build at `d330ef8` uses the same 88 game objects and 270
 archive members in both links. The second link reverses the game objects
 and preserves the library order. The section comparison checks all 919
 game code sections, 843 initialized sections, and the table that
@@ -37,11 +37,20 @@ uses of the mask `0x00400000`.
 
 Both layouts complete the three built-in replays in Wine. At all 8,127
 input indices in each layout, the sampled score, position, RNG and
-camera fields agree with the retail traces. In demo0 both layouts start
-the integer stage timer one tick later than retail. The remaining
-integer timer samples agree. The link checks and binary digests are
-under `.analysis/pi/capture-image-audit/`. Runtime traces are under
-`build/position-independence/capture-image-audit/`.
+camera fields agree with the retail traces. Demo0 starts its integer
+stage timer at index 30 in both layouts and at index 27 in retail, before
+the first photo at index 275. The three-tick offset exceeds the earlier
+two-tick comparison threshold. Demo1 starts its timer at index 37 in
+all three traces. Demo2 starts at index 33 in the regular link and 34 in
+retail and the reversed link. Timer differences stay constant after
+both timers start.
+
+A separate normal COFF comparison covers 678 units with the retail
+instruction layout. It checks 3,471 writable references, 2,554 known
+calls and 758 floating literals. The PhotoStage store now follows the
+same window byte as WinMain in both links. The link checks and binary
+digests are under `.analysis/pi/photo-capture-redraw/`. Runtime traces
+are under `build/position-independence/photo-capture-redraw-audit/`.
 
 
 ## Checking a storage owner

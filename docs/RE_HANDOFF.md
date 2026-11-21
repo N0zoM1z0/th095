@@ -17,8 +17,8 @@ and [source ownership](SOURCE_MAP.md). Live totals come from the ledgers and
 The [current Windows i386 PI audit](POSITION_INDEPENDENCE.md#current-windows-i386-link-audit)
 covers game and library relocations, initialized data, and imports in
 both normal link orders. Both layouts complete the three built-in replays
-with the retail gameplay samples at all 8,127 input indices and integer
-stage timer differences of at most one tick.
+with the retail gameplay samples at all 8,127 input indices. In demo0
+the integer stage timer starts three indices later than retail.
 SEM-358 and SEM-360 correct MIDI and DirectInput storage. SEM-376 makes the
 normal readers honor both controller indices. SEM-404 confirms the retail
 frame callback polls slot zero and
