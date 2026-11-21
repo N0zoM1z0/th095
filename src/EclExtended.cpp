@@ -9,93 +9,35 @@
 #include "PhotoEffectRuntime.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #include "PhotoBulletManagerLayout.hpp"
-#ifndef DIFFBUILD
 #include "ScreenEffect.hpp"
-#endif
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "ecl/EclAnmHandleEmission.inl"
 #include <string.h>
 
+// Both vector receivers have the same three-float layout. Link the bullet
+// polar update to the shared implementation, which writes x and y.
+#pragma comment(linker, "/alternatename:?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z=?FromAngleMagnitude@Float3@th095@@QAEXMM@Z")
+
 namespace th095
 {
+
 extern f32 g_AnmGameSpeed;
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
-#ifndef DIFFBUILD
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
-#endif
 
 namespace EclExtended
 {
-#ifdef DIFFBUILD
-#include "ecl/EclExtendedMathEmission.inl"
-#define TH095_EXTENDED_FROM_ANGLE(vector, angle, magnitude) \
-    vector.FromAngleMagnitude(angle, magnitude)
-#else
-typedef Float3 ExtendedVector;
-#define TH095_EXTENDED_FROM_ANGLE(vector, angle, magnitude) \
-    reinterpret_cast<Float3 *>(&(vector))->FromAngleMagnitude( \
-        (angle), (magnitude))
-#endif
 
-#ifdef DIFFBUILD
-#define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
-    PhotoToScreen((output), (position))
-#else
-#define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
-    ::th095::PhotoToScreen((output), (position))
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#include "ecl/EclExtendedBulletEmission.inl"
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-__forceinline void ExtendedBulletView::ReinitializeDirect()
+static __forceinline void ReinitializeExtendedBullet(
+    PhotoBulletView *bullet, i32 scriptBankOffset)
 {
-    // Extended entries 2/3 repeat this target 0x2C InitializeVm phase.
-    u8 compilerStorage[0x2c];
-    g_PhotoBulletManager->bulletAnm->InitializeVm(
-        &this->vm,
-        GetPhotoBulletScriptBase(this->bulletType) + this->color);
-}
-
-__forceinline void ExtendedBulletView::ReinitializeShifted()
-{
-    // Entry 2 uses the same phase but selects the shifted script bank.
-    u8 compilerStorage[0x2c];
-    g_PhotoBulletManager->bulletAnm->InitializeVm(
-        &this->vm,
-        GetPhotoBulletScriptBase(this->bulletType) + 0x10 + this->color);
-}
-#define TH095_EXT_REINITIALIZE_DIRECT(bullet) \
-    reinterpret_cast<ExtendedBulletView *>(bullet)->ReinitializeDirect()
-#define TH095_EXT_REINITIALIZE_SHIFTED(bullet) \
-    reinterpret_cast<ExtendedBulletView *>(bullet)->ReinitializeShifted()
-#else
-static __forceinline void ReinitializeExtendedBulletDirect(
-    PhotoBulletView *bullet)
-{
-    // The normal callback operates on the canonical BulletInf element.
+    // Keep the existing InitializeVm frame reservation in callbacks 2-4.
     u8 compilerStorage[0x2c];
     g_PhotoBulletManager->bulletAnm->InitializeVm(
         &bullet->vm,
-        GetPhotoBulletScriptBase(bullet->bulletType) + bullet->color);
+        GetPhotoBulletScriptBase(bullet->bulletType) + scriptBankOffset + bullet->color);
 }
-
-static __forceinline void ReinitializeExtendedBulletShifted(
-    PhotoBulletView *bullet)
-{
-    u8 compilerStorage[0x2c];
-    g_PhotoBulletManager->bulletAnm->InitializeVm(
-        &bullet->vm,
-        GetPhotoBulletScriptBase(bullet->bulletType) + 0x10 + bullet->color);
-}
-#define TH095_EXT_REINITIALIZE_DIRECT(bullet) \
-    ReinitializeExtendedBulletDirect(bullet)
-#define TH095_EXT_REINITIALIZE_SHIFTED(bullet) \
-    ReinitializeExtendedBulletShifted(bullet)
-#endif
 
 static __forceinline void ResetExtendedAlphaInterpolationTimer(ZunTimer *timer)
 {
@@ -117,23 +59,6 @@ static __forceinline void FinalizeExtendedBulletAfterExecute(
     vm->color1Final.a = 0x40;
 }
 
-#define TH095_ECL_EXT_RNG ::th095::g_Rng
-#ifdef TH095_MATCH_EXACT
-extern f32 g_AnmGameSpeed;
-extern u32 g_PhotoScreenFadeColor;
-#define TH095_ECL_EXT_GAME_SPEED g_AnmGameSpeed
-#define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
-#else
-#define TH095_ECL_EXT_GAME_SPEED ::th095::g_AnmGameSpeed
-#define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
-#endif
-#define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer
-
-#ifdef DIFFBUILD
-Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
-i32 __fastcall DispatchExtendedValue(
-    i32 mode, i32 value0, i32 value1, i32 value2, i32 value3, i32 type);
-#endif
 
 // ECL extended callback table entry 0 @ 0x00413380.
 void __fastcall SpawnDeathPhotoVms(
@@ -142,8 +67,8 @@ void __fastcall SpawnDeathPhotoVms(
     g_PhotoBulletManager->bulletAnm->CreateVmAtWorld(0x123, &enemy->position);
     for (i32 i = 0; i < 32; ++i)
         g_PhotoBulletManager->bulletAnm->CreateVmAtWorld(0x122, &enemy->position);
-    TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x12, 0);
-    TH095_ECL_EXT_GAME_SPEED = 0.25f;
+    ::th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x12, 0);
+    g_AnmGameSpeed = 0.25f;
 }
 
 // ECL extended callback table entry 6 @ 0x00413AA0.
@@ -175,22 +100,13 @@ void __fastcall UpdatePlayerProximityAndMarker(
     locals.vm = TH095_ECL_ANM_GET_VM(
         enemy->anmHandles[0].value);
     if (locals.vm != NULL)
-        TH095_EXT_PHOTO_TO_SCREEN(&locals.vm->positionOffset, &enemy->position);
+        ::th095::PhotoToScreen(&locals.vm->positionOffset, &enemy->position);
 }
 
 // ECL extended callback table entry 9 @ 0x00413DA0.
 void __fastcall DispatchContextValues(
     PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
-#ifdef DIFFBUILD
-    DispatchExtendedValue(
-        7,
-        enemy->activeEclContext->scriptState.intVariables[0],
-        enemy->activeEclContext->scriptState.intVariables[1],
-        enemy->activeEclContext->scriptState.intVariables[2],
-        enemy->activeEclContext->scriptState.intVariables[3],
-        29);
-#else
     ScreenEffect::RegisterChain(
         SCREEN_EFFECT_SHAKE_ENVELOPE,
         enemy->activeEclContext->scriptState.intVariables[0],
@@ -198,14 +114,13 @@ void __fastcall DispatchContextValues(
         enemy->activeEclContext->scriptState.intVariables[2],
         enemy->activeEclContext->scriptState.intVariables[3],
         29);
-#endif
 }
 
 // ECL extended callback table entry 11 @ 0x00413F90.
 void __fastcall PublishGameSpeed(
     PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
-    TH095_ECL_EXT_GAME_SPEED = enemy->activeEclContext->scriptState.floatVariables[7];
+    g_AnmGameSpeed = enemy->activeEclContext->scriptState.floatVariables[7];
 }
 
 // ECL extended callback table entry 12 @ 0x00413FC0.
@@ -234,7 +149,7 @@ void __fastcall SetBackgroundVmsState3(
     secondVm = TH095_ECL_ANM_GET_VM(
         g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 3;
-    TH095_ECL_EXT_GAME_SPEED = 1.0f;
+    g_AnmGameSpeed = 1.0f;
 }
 
 // ECL extended callback table entry 15 @ 0x00414230.
@@ -266,8 +181,8 @@ void __fastcall EnablePhotoTransition(
         g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 2;
     AnmManager::ExecuteScript(secondVm);
-    TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
-    TH095_ECL_EXT_GAME_SPEED = 1.0f;
+    ::th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x26, 0);
+    g_AnmGameSpeed = 1.0f;
 }
 
 // ECL extended callback table entry 19 @ 0x004144E0.
@@ -285,7 +200,7 @@ void __fastcall DisablePhotoTransition(
         g_Background->spellBackgroundVmIds[1].value);
     secondVm->pendingInterrupt = 3;
     AnmManager::ExecuteScript(secondVm);
-    TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
+    ::th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x0f, 0);
 }
 
 // ECL extended callback table entry 21 @ 0x00414930.
@@ -303,12 +218,10 @@ void __fastcall ResetOwnedBulletMotion(
             bullet->transformFlags = 0;
             bullet->activeTransformFlags = 0;
             bullet->speed = 4.5f;
-            TH095_EXTENDED_FROM_ANGLE(
-                bullet->velocity, bullet->angle, bullet->speed);
+            bullet->velocity.FromAngleMagnitude(bullet->angle, bullet->speed);
         }
     }
 }
-
 
 
 // ECL extended callback table entry 5 @ 0x00413990.
@@ -360,23 +273,23 @@ void __fastcall FadeOwnedCapturedBullets(
 // offset, then as the projected first-marker position.
 void __fastcall UpdateEnemyMarkerVms(PhotoEnemyView *enemy, EclRawInstruction *instruction)
 {
-    ExtendedVector position;
+    Float3 position;
     AnmVm *firstVm;
     firstVm = TH095_ECL_ANM_GET_VM(
         enemy->anmHandles[0].value);
     if (firstVm != NULL)
     {
-        TH095_EXTENDED_FROM_ANGLE(position, enemy->movementAngle, 24.0f);
-        firstVm->positionOffset = enemy->position + *reinterpret_cast<Float3 *>(&position);
-        TH095_EXT_PHOTO_TO_SCREEN(
+        position.FromAngleMagnitude(enemy->movementAngle, 24.0f);
+        firstVm->positionOffset = enemy->position + position;
+        ::th095::PhotoToScreen(
             &firstVm->positionOffset, &firstVm->positionOffset);
         firstVm->positionOffset.x -= 128.0f;
         firstVm->positionOffset.y -= 16.0f;
         firstVm->rotation.z = enemy->movementAngle;
-        position = *reinterpret_cast<ExtendedVector *>(&firstVm->positionOffset);
+        position = firstVm->positionOffset;
         firstVm = TH095_ECL_ANM_GET_VM(
             enemy->anmHandles[1].value);
-        firstVm->positionOffset = *reinterpret_cast<Float3 *>(&position);
+        firstVm->positionOffset = position;
         firstVm->rotation.z = enemy->movementAngle;
     }
 }
@@ -436,7 +349,7 @@ void __fastcall RunPhotoTransition(
                 g_Background->spellBackgroundVmIds[1].value);
             locals.secondEndVm->pendingInterrupt = 3;
             AnmManager::ExecuteScript(locals.secondEndVm);
-            TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
+            ::th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x0f, 0);
         }
     }
 
@@ -455,8 +368,8 @@ void __fastcall RunPhotoTransition(
             g_Background->spellBackgroundVmIds[1].value);
         locals.secondStartVm->pendingInterrupt = 2;
         AnmManager::ExecuteScript(locals.secondStartVm);
-        TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
-        TH095_ECL_EXT_GAME_SPEED = 1.0f;
+        ::th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x26, 0);
+        g_AnmGameSpeed = 1.0f;
         enemy->activeEclContext->scriptState.extraIntVariables[2] = 120;
 
         if (g_RuntimePlayerOwner->camera.viewfinderPosition.x < 0.0f)
@@ -473,10 +386,10 @@ void __fastcall RunPhotoTransition(
         if (g_RuntimePlayerOwner->playerPosition.y <
             enemy->position.y)
             locals.targetY =
-                TH095_ECL_EXT_RNG.GetRandomF32() * 64.0f + enemy->position.y;
+                ::th095::g_Rng.GetRandomF32() * 64.0f + enemy->position.y;
         else
             locals.targetY =
-                enemy->position.y - TH095_ECL_EXT_RNG.GetRandomF32() * 64.0f;
+                enemy->position.y - ::th095::g_Rng.GetRandomF32() * 64.0f;
 
         locals.zeroZ = 0.0f;
         locals.worldPosition = &enemy->worldPosition;
@@ -704,13 +617,11 @@ void __fastcall Callback02(PhotoEnemyView *enemy, EclRawInstruction *instruction
         if (index->ownerTag == enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
             memcpy(&originalRotationBits, &index->vm.rotation.z, sizeof(originalRotationBits));
-            TH095_EXT_REINITIALIZE_SHIFTED(index);
+            ReinitializeExtendedBullet(index, 0x10);
             index->vm.rotateWithBulletAngle = 0;
             index->vm.pendingInterrupt = 2;
             memcpy(&index->vm.rotation.z, &originalRotationBits, sizeof(originalRotationBits));
-            TH095_EXTENDED_FROM_ANGLE(
-                index->velocity,
-                enemy->activeEclContext->scriptState.extraFloatVariables[2],
+            index->velocity.FromAngleMagnitude(enemy->activeEclContext->scriptState.extraFloatVariables[2],
                 enemy->activeEclContext->scriptState.extraFloatVariables[3]);
             index->collidable = 0;
             index->captureDisabled = 1;
@@ -719,7 +630,7 @@ void __fastcall Callback02(PhotoEnemyView *enemy, EclRawInstruction *instruction
 
     SetExtendedBackgroundVm0State2();
     SetExtendedBackgroundVm1State2();
-    TH095_ECL_EXT_FADE_COLOR = 0;
+    g_Supervisor.backbufferClearColor = 0;
 }
 
 // ECL extended callback table entry 3 @ 0x00413620.
@@ -734,9 +645,9 @@ void __fastcall Callback03(PhotoEnemyView *enemy, EclRawInstruction *instruction
         if (index->state == PHOTO_BULLET_STATE_INACTIVE)
             continue;
 
-        TH095_EXT_REINITIALIZE_DIRECT(index);
+        ReinitializeExtendedBullet(index, 0);
         index->vm.pendingInterrupt = 2;
-        TH095_EXTENDED_FROM_ANGLE(index->velocity, index->angle, index->speed);
+        index->velocity.FromAngleMagnitude(index->angle, index->speed);
         index->collidable = 1;
         index->captureDisabled = 0;
     }
@@ -760,13 +671,11 @@ void __fastcall Callback04(PhotoEnemyView *enemy, EclRawInstruction *instruction
         if (index->ownerTag == enemy->activeEclContext->scriptState.extraIntVariables[2])
         {
             memcpy(&originalRotationBits, &index->vm.rotation.z, sizeof(originalRotationBits));
-            TH095_EXT_REINITIALIZE_SHIFTED(index);
+            ReinitializeExtendedBullet(index, 0x10);
             index->vm.rotateWithBulletAngle = 0;
             index->vm.pendingInterrupt = 2;
             memcpy(&index->vm.rotation.z, &originalRotationBits, sizeof(originalRotationBits));
-            TH095_EXTENDED_FROM_ANGLE(
-                index->velocity,
-                enemy->activeEclContext->scriptState.extraFloatVariables[2] +
+            index->velocity.FromAngleMagnitude(enemy->activeEclContext->scriptState.extraFloatVariables[2] +
                     index->angle,
                 enemy->activeEclContext->scriptState.extraFloatVariables[3] > -999.0f
                     ? enemy->activeEclContext->scriptState.extraFloatVariables[3]
@@ -780,7 +689,7 @@ void __fastcall Callback04(PhotoEnemyView *enemy, EclRawInstruction *instruction
 
     SetExtendedBackgroundVm0State2();
     SetExtendedBackgroundVm1State2();
-    TH095_ECL_EXT_FADE_COLOR = 0;
+    g_Supervisor.backbufferClearColor = 0;
 }
 
 } // namespace EclExtended

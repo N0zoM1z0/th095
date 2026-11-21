@@ -19395,3 +19395,29 @@ relocations. Both normal links retain their SEM-456 loaded sections
 byte for byte. Retail and both links agree on 140 arithmetic cases,
 including mixed operand modes and negative zero, and on the movement
 and control fixtures. See `.analysis/pi/ecl-low-float-access/`.
+
+### SEM-458 — share all 22 extended ECL callback bodies
+
+The marker callback uses Float3 and calls PhotoToScreen directly.
+Four bullet polar updates use the existing PhotoBulletVector receiver,
+which the linker binds to the shared Float3 implementation. Callbacks
+2–4 use one inline reinitialization on PhotoBulletView with either the
+base or shifted script bank. Removing that inline's existing 0x2C
+frame reservation changes all three callback bodies.
+
+The shake callback calls ScreenEffect::RegisterChain with the script's
+four values. The game speed writes name the canonical global and the two
+clear-color writes bind to Supervisor+0x7B8. The latter preserves retail
+0x004C4E28 and eliminates the indirect normal-build access. The fixture
+executes the normal reference initializer to verify that both spellings
+reach the same storage.
+
+All 22 exact comparisons pass. The normal object independently matches
+all 22 extents and 181 relocations. Fifteen math, effect and state
+references follow their destinations in both links. The 22 callback
+entries and two interpreter references also follow the relocated table.
+Retail and both normal links agree on 89 bullet cases and 20 marker and
+shake cases. Both demo0 traces match all ten gameplay fields at all
+2,712 indices. The reverse link's timer advances one frame earlier.
+The game and library relocation checks pass in both layouts. See
+`.analysis/pi/ecl-extended-canonical-calls/`.

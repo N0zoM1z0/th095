@@ -162,6 +162,8 @@ SEM-456 shares the four-byte lookup and deferred-delete calls between
 RunEcl and EclExtended. RunEcl has no remaining profile selectors.
 SEM-457 gives all low-opcode float reads the same typed operand
 expression.
+SEM-458 removes the remaining profile selectors from EclExtended.
+The normal callbacks match all 22 target extents and 181 relocations.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

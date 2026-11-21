@@ -401,6 +401,13 @@ at the first timer advance and stay within two ticks. See
 [SEM-456](SEMANTIC_HISTORY.md#sem-456--share-ecl-anm-lookup-and-deferred-deletion)
 and `build/position-independence/ecl-shared-handle-cycle/`.
 
+SEM-458 moves both extended-callback clear-color writes directly onto
+Supervisor+0x7B8. The linked field moves from 0x004DB210 to 0x004D58B0.
+Both layouts execute the same writes and retain the same color storage
+as the other clients that use the initialized reference. The normal
+callback object matches all 22 target extents and 181 relocations.
+See [SEM-458](SEMANTIC_HISTORY.md#sem-458--share-all-22-extended-ecl-callback-bodies).
+
 ## ANM VM lifetime and handles
 
 SEM-445 uses AnmManager for insertion, lookup and unlinking, and

@@ -455,7 +455,7 @@ def check_ecl_type_boundaries() -> None:
 def check_ecl_extended_type_boundaries() -> None:
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
     required_normal_bindings = (
-        "typedef Float3 ExtendedVector;",
+        "Float3 position;",
         '#include "PhotoGamePlayer.hpp"',
         "g_RuntimePlayerOwner->playerPosition",
         "g_RuntimePlayerOwner->movementScale",
@@ -504,8 +504,6 @@ def check_ecl_extended_type_boundaries() -> None:
 
     emission_requirements = {
         "EclAnmHandleEmission.inl": ("struct EclAnmHandleEmission",),
-        "EclExtendedMathEmission.inl": ("struct ExtendedVector",),
-        "EclExtendedBulletEmission.inl": ("struct ExtendedBulletView",),
     }
     for name, required_tokens in emission_requirements.items():
         text = (SRC / "ecl" / name).read_text(encoding="utf-8")
@@ -826,9 +824,7 @@ def check_sound_player_consumer_owners() -> None:
     ):
         if retired in extended:
             fail(f"EclExtended restored duplicate SoundPlayer ABI: {retired}")
-    if "#define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer" not in extended:
-        fail("EclExtended lost its canonical SoundPlayer route")
-    if extended.count("TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx(") != 5:
+    if extended.count("::th095::g_SoundPlayer.PlaySoundByIdx(") != 5:
         fail("EclExtended sound calls escaped the canonical SoundPlayer route")
 
     for retired in (
