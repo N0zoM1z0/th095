@@ -253,6 +253,9 @@ construction and subsystem lifetimes. The authored ledger includes the
 95-byte Background destroy wrapper used by task teardown.
 SEM-501 shares CardInf's layout and code. The animation owners, scripted
 session and PhotoStage comment readers bind to the canonical declarations.
+SEM-502 shares PhotoStage capture and display. The stage reads its slots
+directly, calls the canonical ANM methods and samples the slowdown from
+Supervisor. The camera and stage share the score flags.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

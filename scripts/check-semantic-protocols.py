@@ -3778,12 +3778,11 @@ def check_photo_card_info_owner() -> None:
         if re.search(r"\bstruct\s+PhotoCardInfoView\s*\{", text):
             fail(f"{path.relative_to(SRC)} restored a duplicate CardInf projection")
 
-    for name in ("PhotoStage.cpp", "PhotoStageExact.inl"):
-        stage = (SRC / name).read_text(encoding="utf-8")
-        if "PhotoStageRuntimeView" in stage:
-            fail(f"{name} restored the retired CardInf text projection")
-        if "g_PhotoCardInfo->text" not in stage:
-            fail(f"{name} lost canonical CardInf text access")
+    stage = (SRC / "PhotoStage.cpp").read_text(encoding="utf-8")
+    if "PhotoStageRuntimeView" in stage:
+        fail("PhotoStage.cpp restored the retired CardInf text projection")
+    if "g_PhotoCardInfo->text" not in stage:
+        fail("PhotoStage.cpp lost canonical CardInf text access")
 
     enemy_manager = (SRC / "PhotoEnemyManagerLayout.hpp").read_text(encoding="utf-8")
     if "PhotoCardInfoView *eclPhotoCardSession" not in enemy_manager:
@@ -3974,7 +3973,7 @@ def check_photo_camera_state_owner() -> None:
     exact_sources = (
         source,
         (SRC / "PhotoGameExact.inl").read_text(encoding="utf-8"),
-        (SRC / "PhotoStageExact.inl").read_text(encoding="utf-8"),
+        (SRC / "PhotoStage.cpp").read_text(encoding="utf-8"),
     )
     if any("PhotoAnmVmId::operator==" in text for text in exact_sources):
         fail("Photo ANM handle restored the historical proxy comparison method")
@@ -4064,7 +4063,7 @@ def check_ecl_photo_player_owner() -> None:
     if "f32 AngleFromPoint(Float3 *position);" not in allocation:
         fail("PlayerInf lost its reverse angle method")
 
-    for name in ("PhotoCamera.cpp", "PhotoStage.cpp", "PhotoStageExact.inl"):
+    for name in ("PhotoCamera.cpp", "PhotoStage.cpp"):
         source = (SRC / name).read_text(encoding="utf-8")
         if '#include "PhotoGamePlayer.hpp"' not in source or "g_RuntimePlayerOwner" not in source:
             fail(f"{name} must consume the typed PlayerInf owner")

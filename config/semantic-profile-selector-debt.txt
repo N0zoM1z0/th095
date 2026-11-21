@@ -36,16 +36,11 @@
 1	src/pbg/Lzss.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/pbg/PbgArchive.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/pbg/PbgFile.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/PhotoCamera.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-2	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
+1	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoFront.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoGame.cpp	#if defined(DIFFBUILD)
 1	src/PhotoGame.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoItemManager.cpp	#ifdef TH095_MATCH_EXACT
-1	src/PhotoStage.cpp	#ifdef DIFFBUILD
-1	src/PhotoStage.cpp	#ifdef TH095_MATCH_EXACT
-1	src/PhotoStage.cpp	#ifndef DIFFBUILD
 1	src/ReplayBrowser.cpp	#ifndef DIFFBUILD
 1	src/ReplayScanWorker.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT
@@ -53,7 +48,6 @@
 1	src/SceneSelectController.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelectUpdate.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelectUpdate.cpp	#ifndef DIFFBUILD
-1	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Supervisor.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Supervisor.hpp	#ifndef TH095_MATCH_EXACT
 1	src/zwave.cpp	#ifndef TH095_MATCH_EXACT

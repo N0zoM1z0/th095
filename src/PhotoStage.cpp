@@ -1,28 +1,33 @@
-#ifdef TH095_MATCH_EXACT
-#include "PhotoStageExact.inl"
-#else
-#include "PhotoGamePlayer.hpp"
-#include "PhotoBulletManager.hpp"
-#include "PhotoCardInfo.hpp"
 #include "PhotoStage.hpp"
+#include "PhotoCardInfo.hpp"
 #include "PhotoFront.hpp"
+#include "PhotoEffectRuntime.hpp"
+#include "PhotoBulletManager.hpp"
+#include "SceneData.hpp"
+#include "ScoreData.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTask.hpp"
-#include "Main.hpp"
-#include "ScoreData.hpp"
-#include "SceneData.hpp"
-#include "PhotoEffectRuntime.hpp"
+#include "PhotoScoreFlags.hpp"
+#include "FrontEndLocalTime.hpp"
 #include "ScreenEffect.hpp"
-#ifndef DIFFBUILD
-#include "ReplayManager.hpp"
-#endif
+#include "ZunMath.hpp"
 
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 namespace th095
 {
+
+struct PhotoAnmVmIdValue
+{
+    i32 value;
+
+    PhotoAnmVmIdValue(i32 value)
+    {
+        this->value = value;
+    }
+};
 
 enum PhotoStageFlags
 {
@@ -31,8 +36,6 @@ enum PhotoStageFlags
     PHOTO_STAGE_FIRST_CAPTURE_FRAME = 1 << 2,
     PHOTO_STAGE_PLAYER_PASSED = 1 << 3,
 };
-
-typedef AnmLoaded PhotoStageAnmLoadedView;
 
 struct PhotoStageSaveLocals
 {
@@ -55,37 +58,28 @@ struct PhotoStageCaptureLocals
     IDirect3DSurface8 *surface;
 };
 
-typedef char PhotoStageScoreEntryTailSizeIs48[
-    (sizeof(ResultScoreEntryView) - offsetof(ResultScoreEntryView, detailScore) ==
-     0x48)
-        ? 1
-        : -1];
-
-// Target 0x004C45F8 is an independent zero-initialized byte published when a
-// captured texture becomes ready.
 DIFFABLE_STATIC(u8, g_PhotoCaptureCountdown);
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
-static __forceinline AnmVmId PhotoStageAnmId(i32 value)
+// VC7.1 preserves the camera-read temporary homes through these inline calls.
+static inline i32 ReadPhotoLimit(const PhotoCameraState *camera)
 {
-    AnmVmId id;
-    id.value = value;
-    return id;
+    return camera->photoLimit;
 }
 
-#define TH095_PHOTO_STAGE_ANM_GET_VM(id)     g_AnmManager->GetVm(PhotoStageAnmId(id))
-#define TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(id, interrupt)     g_AnmManager->SetInterrupt(PhotoStageAnmId(id), (interrupt))
-#define TH095_PHOTO_STAGE_ANM_MARK_DELETE(id)     g_AnmManager->MarkVmForDeletion(PhotoStageAnmId(id))
-#define TH095_PHOTO_STAGE_ANM_SET_POSITION(id, position)     g_AnmManager->SetPosition(PhotoStageAnmId(id), (position))
+static inline i32 ReadPhotoIndex(const PhotoCameraState *camera)
+{
+    return camera->photoIndex;
+}
 
 static __forceinline void PhotoStageInterruptCurrentEntryPhase(
     PhotoStageStateView *state, i32 &entryIndex)
 {
     u8 compilerStorage[8];
-    entryIndex = g_RuntimePlayerOwner->camera.photoIndex - 1;
-    TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
-        state->capture.entryVms[entryIndex].value, 1);
+    entryIndex = ReadPhotoIndex(&g_RuntimePlayerOwner->camera) - 1;
+    g_AnmManager->SetInterrupt(
+        *reinterpret_cast<AnmVmId *>(&state->capture.entryVms[entryIndex]), 1);
 }
 
 static inline ResultScoreEntryView *GetPhotoStageScoreEntry(i32 index)
@@ -121,10 +115,8 @@ void __fastcall InitializePhotoStageDisplayVm(
 {
     u8 unknownStack[0x2c];
 
-    reinterpret_cast<PhotoStageAnmLoadedView *>(g_PhotoStageState->anm)
-        ->InitializeVm(vm, 0x23);
-    reinterpret_cast<PhotoStageAnmLoadedView *>(g_PhotoStageState->anm)
-        ->SetSprite(vm, spriteIndex);
+    g_PhotoStageState->anm->InitializeVm(vm, 0x23);
+    g_PhotoStageState->anm->SetSprite(vm, spriteIndex);
     vm->positionOffset = *position;
     vm->intVar0 = renderMode;
     vm->counterVar1 = 1;
@@ -134,52 +126,6 @@ static inline u32 GetPhotoStagePixelCount(u32 width, u32 height)
 {
     return width * height;
 }
-
-#ifdef DIFFBUILD
-enum PhotoStageScoreFlags
-{
-    PHOTO_STAGE_SCORE_ENEMY = 1 << 0,
-    PHOTO_STAGE_SCORE_SELF = 1 << 1,
-    PHOTO_STAGE_SCORE_TWO_SHOT = 1 << 2,
-    PHOTO_STAGE_SCORE_BOSS_RATE = 1 << 3,
-    PHOTO_STAGE_SCORE_NEARBY = 1 << 4,
-    PHOTO_STAGE_SCORE_UNKNOWN_5 = 1 << 5,
-    PHOTO_STAGE_SCORE_COLOR_1 = 1 << 6,
-    PHOTO_STAGE_SCORE_COLOR_2 = 1 << 7,
-    PHOTO_STAGE_SCORE_COLOR_3 = 1 << 8,
-    PHOTO_STAGE_SCORE_COLOR_4 = 1 << 9,
-    PHOTO_STAGE_SCORE_COLOR_5 = 1 << 10,
-    PHOTO_STAGE_SCORE_COLOR_6 = 1 << 11,
-    PHOTO_STAGE_SCORE_COLOR_7 = 1 << 12,
-    PHOTO_STAGE_SCORE_COLORFUL = 1 << 13,
-    PHOTO_STAGE_SCORE_RAINBOW = 1 << 14,
-    PHOTO_STAGE_SCORE_EMPTY = 1 << 15,
-    PHOTO_STAGE_SCORE_NO_BULLETS = 1 << 16,
-    PHOTO_STAGE_SCORE_UNKNOWN_17 = 1 << 17,
-    PHOTO_STAGE_SCORE_UNKNOWN_18 = 1 << 18,
-    PHOTO_STAGE_SCORE_UNKNOWN_19 = 1 << 19,
-};
-#define PHOTO_SCORE_ENEMY PHOTO_STAGE_SCORE_ENEMY
-#define PHOTO_SCORE_SELF PHOTO_STAGE_SCORE_SELF
-#define PHOTO_SCORE_TWO_SHOT PHOTO_STAGE_SCORE_TWO_SHOT
-#define PHOTO_SCORE_BOSS_RATE PHOTO_STAGE_SCORE_BOSS_RATE
-#define PHOTO_SCORE_NEARBY PHOTO_STAGE_SCORE_NEARBY
-#define PHOTO_SCORE_UNKNOWN_5 PHOTO_STAGE_SCORE_UNKNOWN_5
-#define PHOTO_SCORE_COLOR_1 PHOTO_STAGE_SCORE_COLOR_1
-#define PHOTO_SCORE_COLOR_2 PHOTO_STAGE_SCORE_COLOR_2
-#define PHOTO_SCORE_COLOR_3 PHOTO_STAGE_SCORE_COLOR_3
-#define PHOTO_SCORE_COLOR_4 PHOTO_STAGE_SCORE_COLOR_4
-#define PHOTO_SCORE_COLOR_5 PHOTO_STAGE_SCORE_COLOR_5
-#define PHOTO_SCORE_COLOR_6 PHOTO_STAGE_SCORE_COLOR_6
-#define PHOTO_SCORE_COLOR_7 PHOTO_STAGE_SCORE_COLOR_7
-#define PHOTO_SCORE_COLORFUL PHOTO_STAGE_SCORE_COLORFUL
-#define PHOTO_SCORE_RAINBOW PHOTO_STAGE_SCORE_RAINBOW
-#define PHOTO_SCORE_EMPTY PHOTO_STAGE_SCORE_EMPTY
-#define PHOTO_SCORE_NO_BULLETS PHOTO_STAGE_SCORE_NO_BULLETS
-#define PHOTO_SCORE_UNKNOWN_17 PHOTO_STAGE_SCORE_UNKNOWN_17
-#define PHOTO_SCORE_UNKNOWN_18 PHOTO_STAGE_SCORE_UNKNOWN_18
-#define PHOTO_SCORE_UNKNOWN_19 PHOTO_STAGE_SCORE_UNKNOWN_19
-#endif
 
 #define ADD_PHOTO_STAGE_DISPLAY_VM(spriteIndex)                              \
     {                                                                        \
@@ -214,6 +160,7 @@ enum PhotoStageScoreFlags
 // Stock VC7.1 hash buckets recovered from the exact ResultScreen::Draw oracle.
 // Both backing objects are fully live; the aliases only select their physical
 // stack rank without changing the semantic names used by Build.
+
 #define digitPosition resultDrawBacking000
 #define displayVmCount resultDrawBacking022
 
@@ -324,70 +271,70 @@ void PhotoStageSlot::Build(
         // while 0x100+4 gives the target this -> tv chronology exactly.
         u8 compilerStorage[0x100];
         u8 compilerStorage4[4];
-        if ((scoreData->scoringFlags & PHOTO_SCORE_UNKNOWN_5) != 0)
+        if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_UNKNOWN_5))
         {
             ADD_PHOTO_STAGE_DISPLAY_VM(0x24);
             renderMode += 4;
             displayPosition.y += 12.0f;
         }
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_1) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_COLOR_1))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x25, 300);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_2) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_COLOR_2))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x26, 300);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_3) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_COLOR_3))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x27, 300);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_4) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_COLOR_4))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x28, 300);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_5) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_COLOR_5))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x29, 300);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_6) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_COLOR_6))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2a, 300);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_COLOR_7) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_COLOR_7))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2b, 300);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_COLORFUL) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_COLORFUL))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2c, 900);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_RAINBOW) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_RAINBOW))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2d, 2100);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_EMPTY) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_EMPTY))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2e, 0);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_NO_BULLETS) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_NO_BULLETS))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2f, 100);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_UNKNOWN_17) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_UNKNOWN_17))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x30, 100);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_UNKNOWN_18) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_UNKNOWN_18))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x31, 0);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_UNKNOWN_19) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_UNKNOWN_19))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x32, 0);
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_NEARBY) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_NEARBY))
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x23, scoreData->nearbyTargetBonus);
     }
@@ -409,7 +356,7 @@ void PhotoStageSlot::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_SELF) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_SELF))
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x20);
         displayPosition.x += 99.0f;
@@ -422,7 +369,7 @@ void PhotoStageSlot::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_TWO_SHOT) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_TWO_SHOT))
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x21);
         displayPosition.x += 99.0f;
@@ -435,7 +382,7 @@ void PhotoStageSlot::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if ((scoreData->scoringFlags & PHOTO_SCORE_BOSS_RATE) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_BOSS_RATE))
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x22);
         displayPosition.x += 99.0f;
@@ -469,8 +416,7 @@ void PhotoStageSlot::Build(
 
 static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView *state)
 {
-    if ((state->slots[state->capture.slot].scoreBreakdown.scoringFlags &
-         PHOTO_SCORE_ENEMY) != 0)
+    if ((state->slots[state->capture.slot].scoreBreakdown.scoringFlags & PHOTO_SCORE_ENEMY) != 0)
     {
         PhotoGameTaskView *globalState;
         i32 bgmFormatIndexLocal05 =
@@ -488,19 +434,6 @@ static __forceinline void PhotoStagePublishSlowRate(PhotoStageStateView *state)
             (f32)(g_Supervisor.lagNumerator / g_Supervisor.lagDenominator) * 100.0f;
 }
 
-struct PhotoStageDisplayRowView
-{
-    AnmVm primaryVms[6];
-    AnmVm overlayVms[6];
-    u8 trailing[0x2214 - 0x10c8 - 6 * sizeof(AnmVm)];
-};
-typedef char PhotoStageDisplayRowViewSizeIs2214[
-    (sizeof(PhotoStageDisplayRowView) == 0x2214) ? 1 : -1];
-struct PhotoStageStateDisplayAccessorView
-{
-    u8 unknown000[0x44];
-    PhotoStageDisplayRowView rows[11];
-};
 struct PhotoStageAlphaPhaseLocals
 {
     i32 interpolationMode;
@@ -552,7 +485,7 @@ static __forceinline f32 PhotoStageEntryXValue(i32 index)
 
 static __forceinline i32 PhotoStageEntryVmIsZero(const PhotoAnmVmId &id)
 {
-    return id == 0;
+    return id.value == PhotoAnmVmIdValue(0).value;
 }
 
 static __forceinline void PhotoStageInitFrame35Position(Float3 *position, f32 y)
@@ -562,6 +495,7 @@ static __forceinline void PhotoStageInitFrame35Position(Float3 *position, f32 y)
     position->z = 0.0f;
 }
 
+// The pinned compiler uses local identifier buckets when allocating this frame.
 #define i resultDrawBacking157
 #define j resultDrawBacking153
 #define k resultDrawBacking146
@@ -613,26 +547,21 @@ i32 PhotoStageStateView::Update()
     {
         for (j = 0; j < 6; j++)
         {
-            AnmManager::ExecuteScript(
-                &reinterpret_cast<PhotoStageStateDisplayAccessorView *>(this)
-                     ->rows[i].primaryVms[j]);
-            AnmManager::ExecuteScript(
-                &reinterpret_cast<PhotoStageStateDisplayAccessorView *>(this)
-                     ->rows[i].overlayVms[j]);
+            AnmManager::ExecuteScript(&this->slots[i].primaryVms[j]);
+            AnmManager::ExecuteScript(&this->slots[i].overlayVms[j]);
         }
     }
 
     if (PhotoStageEntryVmIsZero(this->capture.entryVms[0]) &&
-        g_RuntimePlayerOwner->camera.photoLimit > 0)
+        ReadPhotoLimit(&g_RuntimePlayerOwner->camera) > 0)
     {
-        for (k = 0; k < g_RuntimePlayerOwner->camera.photoLimit; k++)
+        for (k = 0; k < ReadPhotoLimit(&g_RuntimePlayerOwner->camera); k++)
         {
             entryPosition.x = PhotoStageEntryXValue(k);
             entryPosition.y = 400.0f - (f32)(k % 5) * 80.0f;
             entryPosition.z = 0.0f;
-            this->capture.entryVms[k] =
-                g_PhotoFrontManager->frontAnm->CreateVmAtScreen(
-                    12, &entryPosition);
+            *reinterpret_cast<AnmVmId *>(&this->capture.entryVms[k]) =
+                g_PhotoFrontManager->frontAnm->CreateVmAtScreen(12, &entryPosition);
         }
     }
 
@@ -755,24 +684,22 @@ i32 PhotoStageStateView::Update()
 
             if (this->capturedPhotoVms[this->capture.slot] != 0)
             {
-                TH095_PHOTO_STAGE_ANM_MARK_DELETE(
-                    this->capturedPhotoVms[this->capture.slot].value);
+                g_AnmManager->MarkVmForDeletion(
+                    *reinterpret_cast<AnmVmId *>(&this->capturedPhotoVms[this->capture.slot]));
             }
-            this->capturedPhotoVms[this->capture.slot] =
-                reinterpret_cast<PhotoStageAnmLoadedView *>(this->anm)->CreateVm(
-                    this->capture.slot * 2, 0);
+            *reinterpret_cast<AnmVmId *>(&this->capturedPhotoVms[this->capture.slot]) =
+                this->anm->CreateVm(this->capture.slot * 2, 0);
 
-            captureVm =
-                TH095_PHOTO_STAGE_ANM_GET_VM(
-                    this->capturedPhotoVms[this->capture.slot].value);
+            captureVm = g_AnmManager->GetVm(
+                *reinterpret_cast<AnmVmId *>(&this->capturedPhotoVms[this->capture.slot]));
             captureVm->loadedSprite->uvEnd.x =
                 (f32)this->capture.width / 256.0f;
             captureVm->loadedSprite->uvEnd.y =
                 (f32)this->capture.height / 256.0f;
             captureVm->spriteSize.x = (f32)this->capture.width;
             captureVm->spriteSize.y = (f32)this->capture.height;
-            TH095_PHOTO_STAGE_ANM_SET_POSITION(
-                this->capturedPhotoVms[this->capture.slot].value,
+            g_AnmManager->SetPosition(
+                *reinterpret_cast<AnmVmId *>(&this->capturedPhotoVms[this->capture.slot]),
                 &resultDrawBacking012);
 
             ClearPhotoStageGlobalCaptureActive(g_RuntimeGlobalStateOwner);
@@ -799,8 +726,7 @@ i32 PhotoStageStateView::Update()
                             ->attemptCount++;
                     }
 
-                    this->slots[this->capture.slot].timestamp =
-                        (i32)time(NULL);
+                    StoreCurrentTimestamp(&this->slots[this->capture.slot].timestamp);
 
                     PhotoStagePublishSlowRate(this);
                     this->slots[this->capture.slot].width =
@@ -929,25 +855,21 @@ i32 PhotoStageStateView::Update()
             if (this->waitingForTexture == 0 &&
                 this->capture.slot != 10)
             {
-                entryIndex = g_RuntimePlayerOwner->camera.photoIndex - 1;
-                TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
-                    this->capture.entryVms[entryIndex].value, 1);
+                entryIndex = ReadPhotoIndex(&g_RuntimePlayerOwner->camera) - 1;
+                g_AnmManager->SetInterrupt(
+                    *reinterpret_cast<AnmVmId *>(&this->capture.entryVms[entryIndex]), 1);
 
-                frame35Vm =
-                    TH095_PHOTO_STAGE_ANM_GET_VM(
-                        this->capturedPhotoVms[this->capture.slot]
-                            .value);
+                frame35Vm = g_AnmManager->GetVm(
+                    *reinterpret_cast<AnmVmId *>(&this->capturedPhotoVms[this->capture.slot]));
                 PhotoStageInitFrame35Position(
                     &frame35Position,
                     (-frame35Vm->spriteSize.y * 0.4f) / 2.0f);
                 Rotate(&frame35Position, &frame35Position, frame35Vm->rotation.z);
                 frame35Position += frame35Vm->position;
-                this->capture.entryVms[entryIndex] =
-                    g_PhotoFrontManager->frontAnm->CreateVmAtScreen(
-                        10, &frame35Position);
+                *reinterpret_cast<AnmVmId *>(&this->capture.entryVms[entryIndex]) =
+                    g_PhotoFrontManager->frontAnm->CreateVmAtScreen(10, &frame35Position);
                 frame35Position.y -= 6.0f;
-                g_PhotoFrontManager->frontAnm->CreateVmAtScreen(
-                    11, &frame35Position);
+                g_PhotoFrontManager->frontAnm->CreateVmAtScreen(11, &frame35Position);
             }
 
             ClearPhotoStageGlobalCapturedPhotoActive(
@@ -1185,5 +1107,3 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

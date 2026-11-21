@@ -6,13 +6,13 @@
 #include "PhotoEnemyManager.hpp"
 #include "PhotoGameTask.hpp"
 #include "GameplayGlobals.hpp"
+#include "Global.hpp"
 #include "ControllerInputSlot.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "SoundPlayer.hpp"
 #include "PhotoStage.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#include "ScoreData.hpp"
-#endif
+#include "PhotoScoreFlags.hpp"
+
 namespace th095
 {
 
@@ -80,28 +80,6 @@ enum PhotoCameraFlags
 #define PHOTO_CAMERA_FOCUSED(flags) (((flags) >> 1) & 1)
 #define PHOTO_CAMERA_TARGET_FRAME_ACTIVE(flags) (((flags) >> 2) & 1)
 #define PHOTO_CAMERA_TARGET_SOUND_PLAYED(flags) (((flags) >> 6) & 1)
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-enum PhotoScoreFlags
-{
-    PHOTO_SCORE_ENEMY = 1 << 0,
-    PHOTO_SCORE_SELF = 1 << 1,
-    PHOTO_SCORE_TWO_SHOT = 1 << 2,
-    PHOTO_SCORE_BOSS_RATE = 1 << 3,
-    PHOTO_SCORE_NEARBY = 1 << 4,
-    PHOTO_SCORE_COLOR_1 = 1 << 6,
-    PHOTO_SCORE_COLOR_2 = 1 << 7,
-    PHOTO_SCORE_COLOR_3 = 1 << 8,
-    PHOTO_SCORE_COLOR_4 = 1 << 9,
-    PHOTO_SCORE_COLOR_5 = 1 << 10,
-    PHOTO_SCORE_COLOR_6 = 1 << 11,
-    PHOTO_SCORE_COLOR_7 = 1 << 12,
-    PHOTO_SCORE_COLORFUL = 1 << 13,
-    PHOTO_SCORE_RAINBOW = 1 << 14,
-    PHOTO_SCORE_EMPTY = 1 << 15,
-    PHOTO_SCORE_NO_BULLETS = 1 << 16,
-};
-#endif
 
 enum PhotoViewfinderDirection
 {
@@ -223,26 +201,6 @@ void PhotoCameraState::BeginCapture()
     }
 }
 
-#ifdef TH095_MATCH_EXACT
-#define TH095_PHOTO_INPUT_UP 0x10
-#define TH095_PHOTO_INPUT_DOWN 0x20
-#define TH095_PHOTO_INPUT_LEFT 0x40
-#define TH095_PHOTO_INPUT_RIGHT 0x80
-#define TH095_PHOTO_INPUT_UP_LEFT 0x50
-#define TH095_PHOTO_INPUT_DOWN_LEFT 0x60
-#define TH095_PHOTO_INPUT_UP_RIGHT 0x90
-#define TH095_PHOTO_INPUT_DOWN_RIGHT 0xa0
-#else
-#define TH095_PHOTO_INPUT_UP TH_BUTTON_UP
-#define TH095_PHOTO_INPUT_DOWN TH_BUTTON_DOWN
-#define TH095_PHOTO_INPUT_LEFT TH_BUTTON_LEFT
-#define TH095_PHOTO_INPUT_RIGHT TH_BUTTON_RIGHT
-#define TH095_PHOTO_INPUT_UP_LEFT TH_BUTTON_UP_LEFT
-#define TH095_PHOTO_INPUT_DOWN_LEFT TH_BUTTON_DOWN_LEFT
-#define TH095_PHOTO_INPUT_UP_RIGHT TH_BUTTON_UP_RIGHT
-#define TH095_PHOTO_INPUT_DOWN_RIGHT TH_BUTTON_DOWN_RIGHT
-#endif
-
 void PhotoCameraState::UpdateViewfinder()
 {
     struct ViewfinderLocals
@@ -258,35 +216,35 @@ void PhotoCameraState::UpdateViewfinder()
     locals.offsetX = 0.0f;
     locals.offsetY = 0.0f;
 
-    if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_UP_LEFT) == TH095_PHOTO_INPUT_UP_LEFT)
+    if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_UP_LEFT) == TH_BUTTON_UP_LEFT)
     {
         locals.direction = PHOTO_DIRECTION_UP_LEFT;
     }
-    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_DOWN_LEFT) == TH095_PHOTO_INPUT_DOWN_LEFT)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_DOWN_LEFT) == TH_BUTTON_DOWN_LEFT)
     {
         locals.direction = PHOTO_DIRECTION_DOWN_LEFT;
     }
-    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_UP_RIGHT) == TH095_PHOTO_INPUT_UP_RIGHT)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_UP_RIGHT) == TH_BUTTON_UP_RIGHT)
     {
         locals.direction = PHOTO_DIRECTION_UP_RIGHT;
     }
-    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_DOWN_RIGHT) == TH095_PHOTO_INPUT_DOWN_RIGHT)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_DOWN_RIGHT) == TH_BUTTON_DOWN_RIGHT)
     {
         locals.direction = PHOTO_DIRECTION_DOWN_RIGHT;
     }
-    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_DOWN) != 0)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_DOWN) != 0)
     {
         locals.direction = PHOTO_DIRECTION_DOWN;
     }
-    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_UP) != 0)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_UP) != 0)
     {
         locals.direction = PHOTO_DIRECTION_UP;
     }
-    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_LEFT) != 0)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_LEFT) != 0)
     {
         locals.direction = PHOTO_DIRECTION_LEFT;
     }
-    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH095_PHOTO_INPUT_RIGHT) != 0)
+    else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_RIGHT) != 0)
     {
         locals.direction = PHOTO_DIRECTION_RIGHT;
     }
@@ -389,14 +347,14 @@ void PhotoCameraState::UpdateViewfinder()
         this->vmIds[6].value,
         PhotoToScreen(&locals.screenPosition, &this->viewfinderPosition));
 }
-#undef TH095_PHOTO_INPUT_DOWN_RIGHT
-#undef TH095_PHOTO_INPUT_UP_RIGHT
-#undef TH095_PHOTO_INPUT_DOWN_LEFT
-#undef TH095_PHOTO_INPUT_UP_LEFT
-#undef TH095_PHOTO_INPUT_RIGHT
-#undef TH095_PHOTO_INPUT_LEFT
-#undef TH095_PHOTO_INPUT_DOWN
-#undef TH095_PHOTO_INPUT_UP
+#undef TH_BUTTON_DOWN_RIGHT
+#undef TH_BUTTON_UP_RIGHT
+#undef TH_BUTTON_DOWN_LEFT
+#undef TH_BUTTON_UP_LEFT
+#undef TH_BUTTON_RIGHT
+#undef TH_BUTTON_LEFT
+#undef TH_BUTTON_DOWN
+#undef TH_BUTTON_UP
 
 u32 PhotoCameraState::TakePhoto()
 {
@@ -616,12 +574,12 @@ i32 PhotoCameraState::CalculatePhotoScore(
         scoreData->scoringFlags |= PHOTO_SCORE_SELF;
     }
 
-    if (((static_cast<u32>(scoreData->scoringFlags) >> 0) & 1) != 0 &&
-        ((static_cast<u32>(scoreData->scoringFlags) >> 1) & 1) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_ENEMY) &&
+        PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_SELF))
     {
         goto score_flag_done;
     }
-    if (((static_cast<u32>(scoreData->scoringFlags) >> 0) & 1) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_ENEMY))
     {
         if (scoreData->capturedBulletCount == 0)
         {
@@ -629,7 +587,7 @@ i32 PhotoCameraState::CalculatePhotoScore(
             locals.totalScore += 100;
         }
     }
-    else if (((static_cast<u32>(scoreData->scoringFlags) >> 1) & 1) != 0)
+    else if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_SELF))
     {
         if (scoreData->capturedBulletCount == 0)
         {
@@ -684,37 +642,37 @@ score_flag_done:
 
     if (locals.colorCounts[0] >= 100)
     {
-        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_1 << 0;
+        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_1;
         locals.totalScore += 300;
     }
     if (locals.colorCounts[1] >= 100)
     {
-        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_1 << 1;
+        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_2;
         locals.totalScore += 300;
     }
     if (locals.colorCounts[2] >= 100)
     {
-        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_1 << 2;
+        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_3;
         locals.totalScore += 300;
     }
     if (locals.colorCounts[3] >= 100)
     {
-        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_1 << 3;
+        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_4;
         locals.totalScore += 300;
     }
     if (locals.colorCounts[4] >= 100)
     {
-        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_1 << 4;
+        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_5;
         locals.totalScore += 300;
     }
     if (locals.colorCounts[5] >= 100)
     {
-        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_1 << 5;
+        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_6;
         locals.totalScore += 300;
     }
     if (locals.colorCounts[6] >= 100)
     {
-        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_1 << 6;
+        scoreData->scoringFlags |= PHOTO_SCORE_COLOR_7;
         locals.totalScore += 300;
     }
 
@@ -744,24 +702,24 @@ score_flag_done:
         locals.totalScore += 2100;
     }
 
-    if (((static_cast<u32>(scoreData->scoringFlags) >> 0) & 1) != 0 &&
-        ((static_cast<u32>(scoreData->scoringFlags) >> 1) & 1) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_ENEMY) &&
+        PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_SELF))
     {
         scoreData->scoringFlags |= PHOTO_SCORE_TWO_SHOT;
         locals.totalScore = (i32)(
             (f32)locals.totalScore *
             scoreData->enemyDistanceMultiplier * 1.5f * 1.2f);
     }
-    else if (((static_cast<u32>(scoreData->scoringFlags) >> 0) & 1) != 0)
+    else if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_ENEMY))
     {
         locals.totalScore = (i32)((f32)locals.totalScore *
             scoreData->enemyDistanceMultiplier);
     }
-    else if (((static_cast<u32>(scoreData->scoringFlags) >> 1) & 1) != 0)
+    else if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_SELF))
     {
         locals.totalScore = (i32)((f32)locals.totalScore * 1.2f);
     }
-    if (((static_cast<u32>(scoreData->scoringFlags) >> 3) & 1) != 0)
+    if (PHOTO_SCORE_FLAG_SET(scoreData->scoringFlags, PHOTO_SCORE_BOSS_RATE))
     {
         locals.totalScore = (i32)((f32)locals.totalScore *
             scoreData->bossRateMultiplier);
@@ -859,8 +817,8 @@ void PhotoCameraState::UpdateCharge()
     {
         if (this->charge < 1.0f)
         {
-            if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) != 0 &&
-                PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) != 0)
+            if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_BOMB) != 0 &&
+                PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_SHOOT) != 0)
             {
                 this->focusChargeFrames++;
                 if (this->focusChargeFrames >= 5)
@@ -884,7 +842,7 @@ void PhotoCameraState::UpdateCharge()
             }
         }
 
-        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) == 0)
+        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_SHOOT) == 0)
         {
             this->focusHeldFrames++;
             this->flags &= ~PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
@@ -926,8 +884,8 @@ normalCharge:
         this->focusChargeFrames++;
         this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
         this->focusHeldFrames = 0;
-        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) == 0 ||
-            PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) == 0)
+        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_BOMB) == 0 ||
+            PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_SHOOT) == 0)
         {
             this->flags &= ~PHOTO_FLAG_FOCUSED;
             this->focusChargeFrames = 0;
@@ -1265,21 +1223,21 @@ updateCharge:
             }
         }
 
-        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.pressed, 2) != 0)
+        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.pressed, TH_BUTTON_BOMB) != 0)
             camera->captureRequested = 1;
-        else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) == 0)
+        else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_BOMB) == 0)
             camera->captureRequested = 0;
-        else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) != 0 &&
-                 PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) != 0)
+        else if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_SHOOT) != 0 &&
+                 PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_BOMB) != 0)
             camera->captureRequested = 1;
 
         if (PHOTO_CAMERA_FOCUSED(camera->flags) == 0 &&
             camera->charge >= 1.0f &&
-            PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) != 0 &&
-            PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 1) == 0 &&
+            PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_BOMB) != 0 &&
+            PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_SHOOT) == 0 &&
             camera->captureRequested != 0 &&
             (camera->focusHeldFrames > 4 ||
-             PhotoInputMask(g_ControllerInputSlots[0].replayHistory.pressed, 2) != 0))
+             PhotoInputMask(g_ControllerInputSlots[0].replayHistory.pressed, TH_BUTTON_BOMB) != 0))
         {
             camera->BeginCapture();
             camera->flags |= PHOTO_FLAG_TARGET_FRAME_ACTIVE;
@@ -1289,7 +1247,7 @@ updateCharge:
 
     case PHOTO_CAMERA_CHARGING:
         camera->UpdateViewfinder();
-        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, 2) == 0)
+        if (PhotoInputMask(g_ControllerInputSlots[0].replayHistory.current, TH_BUTTON_BOMB) == 0)
         {
             camera->TakePhoto();
             break;

@@ -20371,3 +20371,28 @@ resolve 1,404 code and four initialized-data references in the affected
 objects. The original and both links agree on the card lifecycle, 192
 update cases, 16 capture comment cases and three scripted session cases.
 See `.analysis/pi/photo-card-owner/`.
+
+### SEM-502 — share photo stage capture and scoring
+
+PhotoStage now executes the two six-VM arrays directly from each
+`PhotoStageSlot`. The stage creates capture and HUD VMs through
+`AnmLoaded`, and updates them through `AnmManager`. The arcade pulse and
+frame-35 rotation call their canonical functions. The two slowdown
+operands resolve to `g_Supervisor` plus 0x78C and 0x794, the same
+destinations used by the original instructions. Slot timestamps use the
+existing CRT adapter for the signed 32-bit storage.
+
+`PhotoScoreFlags.hpp` shares the camera producer's flags with the score
+display. Dividing the unsigned flag word by a single-bit mask preserves
+the target's shift and low-bit test in VC7.1. The viewfinder reads the
+canonical controller masks in both builds. Direct camera-field reads
+shortened the stage update by 49 bytes. Renaming the existing local
+aliases changed their stack slots, so the shared implementation retains
+the inline camera readers and the original local allocation order.
+
+All 159 affected strict comparisons pass. The normal build also
+reproduces the six PhotoStage units and the camera score calculation.
+Both link orders resolve 937 code references in the two objects. The
+original and both links agree on 64 texture capture cases, 16 comment
+and slowdown publication cases, and 180 HUD and capture phase cases.
+See `.analysis/pi/photo-stage-owner/`.
