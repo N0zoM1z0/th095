@@ -76,6 +76,10 @@ struct PhotoCameraState
     i32 CountPhotoTargets(f32 *score, f32 *rate);
     void UpdateCharge();
     void Draw();
+
+    // VC7.1 materializes these return values in the ECL operand readers.
+    i32 GetPhotoIndex() const { return this->photoIndex; }
+    i32 GetPhotosTaken() const { return this->photosTaken; }
 };
 
 typedef char PhotoCameraVmsAt03C[

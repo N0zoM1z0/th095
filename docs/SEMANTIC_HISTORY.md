@@ -20517,3 +20517,34 @@ All 22 EnemyManagerUpdate units pass strict comparison. Movement
 and teardown also match in normal COFF. The original and both links
 agree on 40 movement and six teardown cases. Both normal links retain
 their previous mapped bytes. See `.analysis/pi/enemy-game-speed/`.
+
+### SEM-510 — share PlayerInf across the ECL operand resolvers
+
+The two ECL value readers and the float lvalue resolver now include the
+canonical ANM and PlayerInf declarations. This retires two local PlayerInf
+layouts, their camera and counter overlays, one lvalue cast, and eight
+profile selectors. The integer and float readers bind their references to
+the same PlayerInf publication and `AngleFromPoint` symbol at the
+established retail destinations.
+
+The player position selectors expose the same coordinates to float writes
+and both value readers. The distance uses all three coordinates. The
+float-only shot angle measures from enemy world position plus the shot
+offset. `PhotoCameraState::TakePhoto` advances the photo index on the
+indexed save path and increments the shot count on either completed shot
+path. The two ECL counters read those fields as signed integers.
+
+Direct field returns compiled 12 bytes short in each value reader. The
+canonical inline getters reproduce the retail register loads and stack
+temporaries, including the float reader's signed x87 conversion.
+PhotoStage uses the same photo-index getter at its two read sites.
+All 285 exact units in the affected header closure pass, including the
+three operand switch tables and their relocation destinations. The three
+operand units and the PhotoStage update also match in normal COFF.
+
+The normal builds use the same objects in standard and reversed order.
+All 812 code references in the three operand objects and PhotoStage land
+at their linked destinations in both orders. PlayerInf publication moves
+from `0x004D6574` to `0x004DBDDC`. Both layouts agree with retail on
+576 operand reads and 24 float lvalue cases, including writing a coordinate
+and reading it back. Evidence is under `.analysis/pi/ecl-player-operands/`.

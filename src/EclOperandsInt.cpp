@@ -1,69 +1,14 @@
-#include "EnemyManager.hpp"
+#include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyEclManager.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
-#ifndef DIFFBUILD
 #include "PhotoGamePlayer.hpp"
-#endif
 #include "ecl/EclOperands.hpp"
 
 #include <d3dx8.h>
 
 namespace th095
 {
-
-struct EclPhotoCounterView
-{
-    i32 value;
-
-    operator i32() const
-    {
-        return this->value;
-    }
-};
-
-struct EclOperandCameraView
-{
-    u8 unknown000[0xba8];
-    EclPhotoCounterView photoIndex;
-    EclPhotoCounterView photosTaken;
-};
-
-struct EclOperandPlayerView
-{
-    u8 unknown0000[0x1e30];
-    Float3 position;
-    EclOperandCameraView camera;
-
-    f32 AngleFromPoint(Float3 *point);
-};
-
-extern EclOperandPlayerView *g_EclOperandPlayer;
-
-
-#ifdef DIFFBUILD
-#define TH095_ECL_INT_PLAYER_ANGLE(point) g_EclOperandPlayer->AngleFromPoint(point)
-#else
-#define TH095_ECL_INT_PLAYER_ANGLE(point) \
-    g_RuntimePlayerOwner->AngleFromPoint(point)
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_ECL_INT_PLAYER_POSITION (g_EclOperandPlayer->position)
-#else
-#define TH095_ECL_INT_PLAYER_POSITION \
-    (g_RuntimePlayerOwner->playerPosition)
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_ECL_INT_PHOTO_INDEX (g_EclOperandPlayer->camera.photoIndex)
-#define TH095_ECL_INT_PHOTOS_TAKEN (g_EclOperandPlayer->camera.photosTaken)
-#else
-#define TH095_ECL_INT_PHOTO_INDEX \
-    (g_RuntimePlayerOwner->camera.photoIndex)
-#define TH095_ECL_INT_PHOTOS_TAKEN \
-    (g_RuntimePlayerOwner->camera.photosTaken)
-#endif
 
 namespace EclOperands
 {
@@ -130,9 +75,9 @@ i32 __fastcall ResolveInt(PhotoEnemyView *enemy, i32 operand)
     case ECL_ENEMY_POSITION_X: return (i32)enemy->worldPosition.x;
     case ECL_ENEMY_POSITION_Y: return (i32)enemy->worldPosition.y;
     case ECL_ENEMY_POSITION_Z: return (i32)enemy->worldPosition.z;
-    case 0x272d: return (i32)TH095_ECL_INT_PLAYER_POSITION.x;
-    case 0x272e: return (i32)TH095_ECL_INT_PLAYER_POSITION.y;
-    case 0x272f: return (i32)TH095_ECL_INT_PLAYER_POSITION.z;
+    case ECL_PLAYER_POSITION_X: return (i32)g_RuntimePlayerOwner->playerPosition.x;
+    case ECL_PLAYER_POSITION_Y: return (i32)g_RuntimePlayerOwner->playerPosition.y;
+    case ECL_PLAYER_POSITION_Z: return (i32)g_RuntimePlayerOwner->playerPosition.z;
     case ECL_ENEMY_INTERPOLATION_ORIGIN_X: return (i32)enemy->movementInterpolationOrigin.x;
     case ECL_ENEMY_INTERPOLATION_ORIGIN_Y: return (i32)enemy->movementInterpolationOrigin.y;
     case ECL_ENEMY_INTERPOLATION_ORIGIN_Z: return (i32)enemy->movementInterpolationOrigin.z;
@@ -156,17 +101,17 @@ i32 __fastcall ResolveInt(PhotoEnemyView *enemy, i32 operand)
     case ECL_ENEMY_ITEM_DROP_TYPE: return enemy->itemDropType;
     case ECL_ENEMY_SCORE: return enemy->score;
 
-    case 0x2730:
-        return (i32)TH095_ECL_INT_PLAYER_ANGLE(&enemy->worldPosition);
-    case 0x2732:
+    case ECL_ANGLE_TO_PLAYER:
+        return (i32)g_RuntimePlayerOwner->AngleFromPoint(&enemy->worldPosition);
+    case ECL_DISTANCE_TO_PLAYER:
     {
-        Float3 delta = TH095_ECL_INT_PLAYER_POSITION - enemy->worldPosition;
+        Float3 delta = g_RuntimePlayerOwner->playerPosition - enemy->worldPosition;
         return (i32)D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&delta));
     }
-    case 0x2761:
-        return TH095_ECL_INT_PHOTO_INDEX;
-    case 0x2764:
-        return TH095_ECL_INT_PHOTOS_TAKEN;
+    case ECL_PLAYER_PHOTO_INDEX:
+        return g_RuntimePlayerOwner->camera.GetPhotoIndex();
+    case ECL_PLAYER_PHOTOS_TAKEN:
+        return g_RuntimePlayerOwner->camera.GetPhotosTaken();
     case ECL_FIRST_PHOTO_TARGET_WORLD_X: return (i32)g_PhotoEnemyManager->photoTargets[0]->worldPosition.x;
     case ECL_FIRST_PHOTO_TARGET_WORLD_Y: return (i32)g_PhotoEnemyManager->photoTargets[0]->worldPosition.y;
     default: return operand;
@@ -174,9 +119,5 @@ i32 __fastcall ResolveInt(PhotoEnemyView *enemy, i32 operand)
 }
 
 } // namespace EclOperands
-
-#undef TH095_ECL_INT_PHOTOS_TAKEN
-#undef TH095_ECL_INT_PHOTO_INDEX
-#undef TH095_ECL_INT_PLAYER_POSITION
 
 } // namespace th095

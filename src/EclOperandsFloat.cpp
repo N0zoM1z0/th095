@@ -1,67 +1,12 @@
-#include "EnemyManager.hpp"
+#include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyEclManager.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #include "ecl/EclOperands.hpp"
-#ifndef DIFFBUILD
 #include "PhotoGamePlayer.hpp"
-#endif
 
 namespace th095
 {
-
-struct EclFloatPhotoCounterView
-{
-    i32 value;
-
-    operator i32() const
-    {
-        return this->value;
-    }
-};
-
-struct EclFloatOperandCameraView
-{
-    u8 unknown000[0xba8];
-    EclFloatPhotoCounterView photoIndex;
-    EclFloatPhotoCounterView photosTaken;
-};
-
-struct EclFloatOperandPlayerView
-{
-    u8 unknown0000[0x1e30];
-    Float3 position;
-    EclFloatOperandCameraView camera;
-
-    f32 AngleFromPoint(Float3 *point);
-};
-
-extern EclFloatOperandPlayerView *g_EclFloatOperandPlayer;
-
-
-#ifdef DIFFBUILD
-#define TH095_ECL_FLOAT_PLAYER_ANGLE(point) g_EclFloatOperandPlayer->AngleFromPoint(point)
-#else
-#define TH095_ECL_FLOAT_PLAYER_ANGLE(point) \
-    g_RuntimePlayerOwner->AngleFromPoint(point)
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_ECL_FLOAT_PLAYER_POSITION (g_EclFloatOperandPlayer->position)
-#else
-#define TH095_ECL_FLOAT_PLAYER_POSITION \
-    (g_RuntimePlayerOwner->playerPosition)
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_ECL_FLOAT_PHOTO_INDEX (g_EclFloatOperandPlayer->camera.photoIndex)
-#define TH095_ECL_FLOAT_PHOTOS_TAKEN (g_EclFloatOperandPlayer->camera.photosTaken)
-#else
-#define TH095_ECL_FLOAT_PHOTO_INDEX \
-    (g_RuntimePlayerOwner->camera.photoIndex)
-#define TH095_ECL_FLOAT_PHOTOS_TAKEN \
-    (g_RuntimePlayerOwner->camera.photosTaken)
-#endif
 
 // FUNCTION: TH095 0x004105A0.  This is the float half of TH095's operand
 // resolver pair, including photography counters and the active boss slots.
@@ -123,9 +68,9 @@ f32 PhotoEnemyView::ResolveFloat(f32 operand)
     case EclOperands::ECL_ENEMY_POSITION_X: return this->worldPosition.x;
     case EclOperands::ECL_ENEMY_POSITION_Y: return this->worldPosition.y;
     case EclOperands::ECL_ENEMY_POSITION_Z: return this->worldPosition.z;
-    case 0x272d: return TH095_ECL_FLOAT_PLAYER_POSITION.x;
-    case 0x272e: return TH095_ECL_FLOAT_PLAYER_POSITION.y;
-    case 0x272f: return TH095_ECL_FLOAT_PLAYER_POSITION.z;
+    case EclOperands::ECL_PLAYER_POSITION_X: return g_RuntimePlayerOwner->playerPosition.x;
+    case EclOperands::ECL_PLAYER_POSITION_Y: return g_RuntimePlayerOwner->playerPosition.y;
+    case EclOperands::ECL_PLAYER_POSITION_Z: return g_RuntimePlayerOwner->playerPosition.z;
     case 0x275d: return this->activeEclContext->scriptState.extraFloatVariables[0];
     case 0x275e: return this->activeEclContext->scriptState.extraFloatVariables[1];
     case 0x275f: return this->activeEclContext->scriptState.extraFloatVariables[2];
@@ -144,11 +89,11 @@ f32 PhotoEnemyView::ResolveFloat(f32 operand)
     case EclOperands::ECL_SCHEDULED_PHOTO_INDEX1: return (f32)this->eclSchedule.photoIndices[1];
     case EclOperands::ECL_SCHEDULED_PHOTO_INDEX2: return (f32)this->eclSchedule.photoIndices[2];
     case EclOperands::ECL_SCHEDULED_PHOTO_INDEX3: return (f32)this->eclSchedule.photoIndices[3];
-    case 0x2730: return TH095_ECL_FLOAT_PLAYER_ANGLE(&this->worldPosition);
-    case 0x2765:
+    case EclOperands::ECL_ANGLE_TO_PLAYER: return g_RuntimePlayerOwner->AngleFromPoint(&this->worldPosition);
+    case EclOperands::ECL_SHOT_ANGLE_TO_PLAYER:
     {
         Float3 position = this->worldPosition + this->shootOffset;
-        return TH095_ECL_FLOAT_PLAYER_ANGLE(&position);
+        return g_RuntimePlayerOwner->AngleFromPoint(&position);
     }
 
     case EclOperands::ECL_ENEMY_MOVEMENT_ANGLE: return this->movementAngle;
@@ -160,23 +105,19 @@ f32 PhotoEnemyView::ResolveFloat(f32 operand)
     case EclOperands::ECL_ENEMY_ORBIT_ANGULAR_VELOCITY: return this->orbitAngularVelocity;
     case EclOperands::ECL_PHOTO_TARGET_SLOT: return (f32)this->photoTargetSlot;
     case 0x2752: return (f32)this->unknown2c50;
-    case 0x2732:
+    case EclOperands::ECL_DISTANCE_TO_PLAYER:
     {
-        Float3 delta = TH095_ECL_FLOAT_PLAYER_POSITION - this->worldPosition;
+        Float3 delta = g_RuntimePlayerOwner->playerPosition - this->worldPosition;
         return D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&delta));
     }
-    case 0x2761:
-        return (f32)(i32)TH095_ECL_FLOAT_PHOTO_INDEX;
-    case 0x2764:
-        return (f32)(i32)TH095_ECL_FLOAT_PHOTOS_TAKEN;
+    case EclOperands::ECL_PLAYER_PHOTO_INDEX:
+        return (f32)g_RuntimePlayerOwner->camera.GetPhotoIndex();
+    case EclOperands::ECL_PLAYER_PHOTOS_TAKEN:
+        return (f32)g_RuntimePlayerOwner->camera.GetPhotosTaken();
     case EclOperands::ECL_FIRST_PHOTO_TARGET_WORLD_X: return g_PhotoEnemyManager->photoTargets[0]->worldPosition.x;
     case EclOperands::ECL_FIRST_PHOTO_TARGET_WORLD_Y: return g_PhotoEnemyManager->photoTargets[0]->worldPosition.y;
     default: return operand;
     }
 }
-
-#undef TH095_ECL_FLOAT_PHOTOS_TAKEN
-#undef TH095_ECL_FLOAT_PHOTO_INDEX
-#undef TH095_ECL_FLOAT_PLAYER_POSITION
 
 } // namespace th095

@@ -62,22 +62,17 @@ DIFFABLE_STATIC(u8, g_PhotoCaptureCountdown);
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
-// VC7.1 preserves the camera-read temporary homes through these inline calls.
+// VC7.1 preserves the camera-limit read temporary through this inline call.
 static inline i32 ReadPhotoLimit(const PhotoCameraState *camera)
 {
     return camera->photoLimit;
-}
-
-static inline i32 ReadPhotoIndex(const PhotoCameraState *camera)
-{
-    return camera->photoIndex;
 }
 
 static __forceinline void PhotoStageInterruptCurrentEntryPhase(
     PhotoStageStateView *state, i32 &entryIndex)
 {
     u8 compilerStorage[8];
-    entryIndex = ReadPhotoIndex(&g_RuntimePlayerOwner->camera) - 1;
+    entryIndex = g_RuntimePlayerOwner->camera.GetPhotoIndex() - 1;
     g_AnmManager->SetInterrupt(
         *reinterpret_cast<AnmVmId *>(&state->capture.entryVms[entryIndex]), 1);
 }
@@ -855,7 +850,7 @@ i32 PhotoStageStateView::Update()
             if (this->waitingForTexture == 0 &&
                 this->capture.slot != 10)
             {
-                entryIndex = ReadPhotoIndex(&g_RuntimePlayerOwner->camera) - 1;
+                entryIndex = g_RuntimePlayerOwner->camera.GetPhotoIndex() - 1;
                 g_AnmManager->SetInterrupt(
                     *reinterpret_cast<AnmVmId *>(&this->capture.entryVms[entryIndex]), 1);
 

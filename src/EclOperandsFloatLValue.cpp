@@ -1,8 +1,8 @@
-#include "EnemyManager.hpp"
+#include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyEclManager.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
-#include "PhotoPlayerRuntime.hpp"
+#include "PhotoGamePlayer.hpp"
 #include "ecl/EclOperands.hpp"
 
 namespace th095
@@ -38,9 +38,9 @@ f32 *__fastcall ResolveFloatLValue(
     case ECL_ENEMY_POSITION_X: return &enemy->position.x;
     case ECL_ENEMY_POSITION_Y: return &enemy->position.y;
     case ECL_ENEMY_POSITION_Z: return &enemy->position.z;
-    case 0x272d: return &reinterpret_cast<PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)->playerPosition.x;
-    case 0x272e: return &reinterpret_cast<PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)->playerPosition.y;
-    case 0x272f: return &reinterpret_cast<PhotoPlayerRuntimeView *>(g_RuntimePlayerOwner)->playerPosition.z;
+    case ECL_PLAYER_POSITION_X: return &g_RuntimePlayerOwner->playerPosition.x;
+    case ECL_PLAYER_POSITION_Y: return &g_RuntimePlayerOwner->playerPosition.y;
+    case ECL_PLAYER_POSITION_Z: return &g_RuntimePlayerOwner->playerPosition.z;
 
     case 0x275d: return &enemy->activeEclContext->scriptState.extraFloatVariables[0];
     case 0x275e: return &enemy->activeEclContext->scriptState.extraFloatVariables[1];

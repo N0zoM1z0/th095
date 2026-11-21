@@ -271,8 +271,9 @@ rebase and signed interval scan.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
-normal PhotoInf pointer projections with one typed singleton. ECL still has
-recorded exact emission views.
+normal PhotoInf pointer projections with one typed singleton. SEM-510
+shares PlayerInf position, aiming and camera counters across both ECL
+value readers and routes float position writes to that same owner.
 SEM-382 shares the PlayerInf allocation declaration and typed publication
 across PhotoGame and PhotoEffect. The normal photo task uses the same type.
 SEM-383 removes PlayerInf projections in the HUD, card, foreground and
