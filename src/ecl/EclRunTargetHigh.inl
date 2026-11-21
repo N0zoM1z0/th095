@@ -109,7 +109,7 @@
 
     case 112:
         enemy->photoCaptureEclSubroutineId =
-            *reinterpret_cast<i16 *>(instruction->operands);
+            instruction->operands[0].lowWord;
         break;
 
     case 108:
@@ -202,7 +202,7 @@ enter_subroutine:
 
     case 120:
         enemy->control.unknown023 =
-            reinterpret_cast<u8 *>(instruction->operands)[0];
+            instruction->operands[0].lowByte;
         break;
 
     case 118:
@@ -292,7 +292,7 @@ enter_subroutine:
 
     case 126:
         enemy->control.suppressEclCallStack =
-            reinterpret_cast<u8 *>(instruction->operands)[0];
+            instruction->operands[0].lowByte;
         break;
 
     case 128:
@@ -305,7 +305,7 @@ enter_subroutine:
 
     case 130:
         enemy->control.unknown007 =
-            reinterpret_cast<u8 *>(instruction->operands)[0];
+            instruction->operands[0].lowByte;
         enemy->drawGroup = 2;
         break;
 

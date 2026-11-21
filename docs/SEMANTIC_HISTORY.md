@@ -19303,3 +19303,17 @@ respective SEM-451 builds. The retail executable and both normal links
 agree on 988 focused cases, including all 64 operand combinations for
 each of opcodes 79–81 with both initial flag states and both operand
 modes. See `.analysis/pi/ecl-control-expressions/`.
+
+### SEM-453 — read narrow ECL immediates from the operand union
+
+Opcode 112 copies the signed low word into the photo-capture subroutine
+slot. Opcodes 120, 126 and 130 read the low byte and store its least
+significant bit in the compact enemy control word. All four read the
+encoded value even when the first operand is flagged as indirect. The
+four-byte ECL operand union now exposes these narrow views directly.
+
+All 167 exact comparisons in the header's 19 consuming translation
+units pass. Both normal links retain their SEM-451 loaded section
+addresses and bytes. The original and both links agree on 128 narrow
+operand cases covering signed boundaries, nonzero upper bytes and both
+operand flag settings. See `.analysis/pi/ecl-narrow-operands/`.

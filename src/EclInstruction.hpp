@@ -30,6 +30,8 @@ union EclRawOperand
 {
     i32 asInt;
     f32 asFloat;
+    i16 lowWord;
+    u8 lowByte;
 };
 
 struct EclInstructionHeader
@@ -70,6 +72,7 @@ struct EclShotInstruction
 
 typedef char EclInstructionHeaderSizeIsC[
     (sizeof(EclInstructionHeader) == 0xc) ? 1 : -1];
+typedef char EclRawOperandSizeIs4[(sizeof(EclRawOperand) == 4) ? 1 : -1];
 typedef char EclRawInstructionSizeIs10[
     (sizeof(EclRawInstruction) == 0x10) ? 1 : -1];
 typedef char EclShotOperandsOffsetIsC[
