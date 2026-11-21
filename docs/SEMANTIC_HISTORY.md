@@ -19159,3 +19159,26 @@ units. Both normal links retain all four mapped sections of their
 SEM-445 replay images. They agree with retail on 36 opcode 82 cases,
 48 bullet angle and bucket cases, eight radial-trail lifetimes and
 16 ECL callback transitions. See `.analysis/pi/anm-vm-render-state/`.
+
+### SEM-447 — use the canonical ANM surface owner
+
+AnmManager declares all five indexed surface arrays in both profiles.
+The primary and restore pointers are at +0x11DC and +0x125C, deferred
+bytes and sizes are at +0x12DC and +0x135C, and the 32 image
+descriptors start at +0x13DC. Loading, capture, blit and per-slot
+release access those members directly. The local cast view and the
+last profile selectors in AnmManager.hpp are retired.
+
+The device-reset routine releases and clears the primary surfaces.
+The next blit recreates a primary surface at the stored dimensions,
+copies the restore surface into it and then blits the requested
+rectangle. Per-slot release frees both surfaces and any deferred
+bytes. The reviewed target accesses establish the deferred-data
+consumers. A live producer for the deferred array remains unknown.
+
+All 515 affected strict exact comparisons pass across 61 translation
+units. The two normal images agree with retail in 91 surface cases
+covering load, reset, lazy restoration, capture and release. In each
+layout, 48 checked surface references follow their symbols. The two
+images retain the four mapped sections of their SEM-445 replay images.
+See `.analysis/pi/anm-surface-owner/`.

@@ -522,13 +522,10 @@ struct AnmManager
     AnmVm primaryVm;                         // +0x000f0c
     u8 unknown11d8[4];
     IDirect3DSurface8 *surfaces[32];         // +0x0011dc
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    u8 unknown125c[0x175c - 0x125c];
-#else
     IDirect3DSurface8 *surfaceRestoreCopies[32]; // +0x00125c
-    u8 unknown12dc[0x100];                   // +0x0012dc
+    u8 *deferredSurfaceData[32];             // +0x0012dc
+    i32 deferredSurfaceDataSizes[32];        // +0x00135c
     D3DXIMAGE_INFO surfaceInfo[32];           // +0x0013dc
-#endif
     u32 currentTextureFactor;                // +0x00175c
     IDirect3DTexture8 *currentTexture;       // +0x001760
     u8 cachedBlendMode;                     // +0x001764
@@ -688,12 +685,14 @@ typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) ==
 typedef char AnmManagerBatchCountAt17C4[(offsetof(AnmManager, spritesToDraw) == 0x17c4) ? 1 : -1];
 typedef char AnmManagerBatchEndAt3817C8[(offsetof(AnmManager, vertexBufferEndPtr) == 0x3817c8) ? 1 : -1];
 typedef char AnmManagerBatchStartAt3817CC[(offsetof(AnmManager, vertexBufferStartPtr) == 0x3817cc) ? 1 : -1];
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 typedef char AnmManagerSurfaceRestoreCopiesAt125C[
     (offsetof(AnmManager, surfaceRestoreCopies) == 0x125c) ? 1 : -1];
+typedef char AnmManagerDeferredSurfaceDataAt12DC[
+    (offsetof(AnmManager, deferredSurfaceData) == 0x12dc) ? 1 : -1];
+typedef char AnmManagerDeferredSurfaceDataSizesAt135C[
+    (offsetof(AnmManager, deferredSurfaceDataSizes) == 0x135c) ? 1 : -1];
 typedef char AnmManagerSurfaceInfoAt13DC[
     (offsetof(AnmManager, surfaceInfo) == 0x13dc) ? 1 : -1];
-#endif
 typedef char AnmManagerTextureCaptureSourceAt3817D0[
     (offsetof(AnmManager, captureSourceX) == 0x3817d0) ? 1 : -1];
 typedef char AnmManagerTextureCaptureEntryIndexAt3817F0[

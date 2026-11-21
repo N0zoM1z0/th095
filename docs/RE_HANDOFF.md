@@ -137,7 +137,10 @@ lookup, marking and unlinking on those same owners. The generation counter
 wraps as an unsigned dword and skips the null handle. The four-byte return
 copy still uses the pinned x86 handle representation. SEM-446 shares the
 VM render allocation and bullet-rotation flag across the interpreter,
-drawing, deletion and the two ECL bullet callbacks.
+drawing, deletion and the two ECL bullet callbacks. SEM-447 moves the
+surface restore copies, deferred bytes and image descriptors from a
+local projection into AnmManager. The canonical manager and VM header
+now uses the same declarations in both profiles.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

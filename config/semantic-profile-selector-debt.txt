@@ -3,11 +3,8 @@
 # Format: count<TAB>repository path<TAB>normalized directive
 # This file is an exact closed baseline: remove or lower entries when debt is
 # retired; never add or increase an entry to admit a new selector directive.
-1	src/AnmManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/AnmManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 7	src/AnmPreload.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/AnmPreload.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/AnmSurface.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/AnmText.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/AsciiManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/Background.cpp	#elif defined(DIFFBUILD)
