@@ -3,7 +3,6 @@
 # Format: count<TAB>repository path<TAB>kind<TAB>name
 # This file is an exact closed baseline: remove entries when debt is retired;
 # never add or increase an entry to admit a new declaration.
-1	src/AsciiManager.cpp	struct	AsciiBackgroundSupervisorView
 1	src/Main.cpp	struct	DummyMidiTimer
 1	src/Main.cpp	struct	LoadMusicLocals
 1	src/Main.cpp	struct	MidiTimer

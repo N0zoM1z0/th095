@@ -20645,3 +20645,17 @@ All five affected exact units pass. COFF and the two linked layouts
 hold the same initial data as retail. Nine code references follow the
 five symbols across both link orders. The two links retain their mapped
 bytes. Evidence is under `.analysis/pi/menu-data-owners/`.
+
+### SEM-517 — bind ASCII drawing to the Supervisor viewport selector
+
+Both ASCII queues now call `Supervisor::ConfigureBackgroundViewport`
+directly. The six calls still reach `0x00401B70` on the retail Supervisor
+at `0x004C4670`. The queues flush vertices before switching between
+playfield and full window, and restore the full window after drawing
+playfield text.
+
+All 17 AsciiManager units pass strict comparison. The two draw methods
+also match in normal COFF. Retail and both link orders agree on the
+viewport, flush and glyph call sequence in 60 cases, including an empty
+queue and scaled GUI text. Both links retain their mapped bytes. Evidence
+is under `.analysis/pi/ascii-viewport-owner/`.

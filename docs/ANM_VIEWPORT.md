@@ -99,9 +99,10 @@ invalid alignment values. Their fixed-camera binding is supported separately
 by target reads, exact/normal comparisons and unchanged normal graphs. The
 thirteen native component programs remain separate.
 
-SEM-349 and MAIN-059 record this bounded closure. ANM lifecycle/ScreenEffect shake
-projections, the ASCII selection-call facade, other Supervisor views, legacy declaration
-families and complete game ports remain debt.
+SEM-349 and MAIN-059 record the projection checks. SEM-517 binds both
+ASCII queues to `Supervisor::ConfigureBackgroundViewport`. ANM lifecycle
+and ScreenEffect have separate shake consumers, and legacy declarations
+and game ports remain open.
 
 SEM-352 separately exercises four actual DrawMode7 photograph-color cases,
 including both color sources and the manager stream's U-as-W input. Its
