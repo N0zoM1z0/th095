@@ -3412,16 +3412,11 @@ def check_front_end_pending_texture_owner(header_text: str | None = None) -> Non
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemyLayout.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
-    operand_access = (SRC / "PhotoEnemyEclAccess.hpp").read_text(
-        encoding="utf-8"
-    )
     manager = (SRC / "PhotoEnemyManagerLayout.hpp").read_text(encoding="utf-8")
     if any(name in element for name in PROFILE_NAMES):
         fail("canonical PhotoEnemy.hpp must not select a build-profile layout")
     if any(name in control for name in PROFILE_NAMES):
         fail("canonical PhotoEnemyControl.hpp must be profile-independent")
-    if any(name in operand_access for name in PROFILE_NAMES):
-        fail("PhotoEnemy ECL operand access must be profile-independent")
     if any(name in manager for name in PROFILE_NAMES):
         fail("canonical PhotoEnemyManager.hpp must not select a build-profile layout")
     if len(re.findall(r"\bstruct\s+PhotoEnemyView\s*\{", element)) != 1:
@@ -3452,15 +3447,13 @@ def check_photo_enemy_owner() -> None:
         "PhotoEnemyChildEclBlocksAt2CAC",
         "offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac",
         "PhotoEnemyAttachedVmAt4CBC",
-        "PHOTO_ENEMY_ECL_ATTACHED_VM_OFFSET",
+        "offsetof(PhotoEnemyView, attachedVmId) == 0x4cbc",
     )
     for fact in required_element_layout:
         if fact not in element:
             fail(f"canonical compact enemy layout lost assertion: {fact}")
     if '#include "PhotoBulletSpawnDescriptor.hpp"' not in element:
         fail("PhotoEnemy.hpp must consume the dependency-light bullet descriptor")
-    if '#include "PhotoEnemyEclAccess.hpp"' not in element:
-        fail("PhotoEnemy.hpp must pin the legacy ECL access boundary")
     if '#include "PhotoBulletManager.hpp"' in element:
         fail("PhotoEnemy.hpp must not import the complete BulletInf owner")
 
@@ -3584,8 +3577,6 @@ def check_photo_enemy_owner() -> None:
             fail(f"exact-unit manifest lost canonical EnemyInf ABI: {symbol}")
 
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
-    if '#include "PhotoEnemyEclAccess.hpp"' not in extended:
-        fail("EclExtended must route inherited Enemy* control access through the shared bridge")
     for retired in ("EXT_MOVEMENT_FLAGS", "reinterpret_cast<u8 *>(enemy) + 0x2bf4"):
         if retired in extended:
             fail(f"EclExtended restored raw compact-enemy control access: {retired}")
@@ -3630,8 +3621,6 @@ def check_photo_enemy_owner() -> None:
     )
     for path in operand_consumers:
         text = path.read_text(encoding="utf-8")
-        if '#include "PhotoEnemyEclAccess.hpp"' not in text:
-            fail(f"{path.relative_to(SRC)} lost shared compact-enemy operand access")
         if retired_operand_views.search(text):
             fail(f"{path.relative_to(SRC)} restored a duplicate operand field view")
         if re.search(r"\bstruct\s+Ecl\w*OperandRuntimeView\b", text):
@@ -3713,7 +3702,7 @@ def check_photo_enemy_owner() -> None:
         "reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks",
         "reinterpret_cast<PhotoEnemyView *>(enemy)->control",
         "reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl",
-        "TH095_ECL_PHOTO_PULSE_TIMER",
+        "reinterpret_cast<PhotoEnemyView *>(enemy)->photoPulseTimer",
     ):
         if marker not in run_surfaces:
             fail(f"RunEcl lost shared compact-enemy access: {marker}")
@@ -4941,7 +4930,7 @@ def main() -> int:
     print("  Raw front-end queue: one 18-word owner with explicit count/capacity metadata")
     print("  FrontEnd pending texture data: shared native-pointer columns and shift transition")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
-    print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
+    print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended use typed fields")
     print("  ECL task state: canonical profile-independent 0x124 owner shared by both ECL profiles")
     print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  CardInf: canonical profile-independent 0x68 owner")

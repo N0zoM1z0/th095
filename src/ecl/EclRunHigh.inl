@@ -1,3 +1,4 @@
+#include "../PhotoEnemyAnmVmIdStorage.hpp"
 #include "../PhotoStraightLaserArgs.hpp"
 #include "../PhotoRotatingLaserArgs.hpp"
 
@@ -111,14 +112,9 @@ inline void AssignPhotoCameraLimit(Camera *camera, i32 value)
     camera->photoLimit = value;
 }
 
-struct PhotoAnmHandle
-{
-    i32 value;
-};
-
 struct PhotoAnmSpawner
 {
-    PhotoAnmHandle Spawn(i32 script, Float3 *position);
+    PhotoEnemyAnmVmIdStorage Spawn(i32 script, Float3 *position);
 };
 
 struct AnmManagerLookup
@@ -157,21 +153,6 @@ inline i32 Th095PreserveI32(i32 value)
 {
     return *reinterpret_cast<volatile i32 *>(&value);
 }
-
-#define TH095_ENEMY_ANM_HANDLE_SLOT(enemy, slot) \
-    TH095_PHOTO_ENEMY_I32( \
-        (enemy), th095::PHOTO_ENEMY_ECL_ANM_HANDLES_OFFSET + \
-            sizeof(i32) * (slot))
-#define TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) \
-    (reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl.showPhotoMarker)
-#define TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) \
-    TH095_ECL_PHOTO_MARKER_TIMER(enemy)
-#define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
-    (reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl.freezeAttachedVm)
-#define TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy) \
-    TH095_ECL_ATTACHED_VM((enemy), PhotoAnmHandle)
-#define TH095_ENEMY_PHOTO_PULSE_HANDLE(enemy) \
-    TH095_ECL_PHOTO_PULSE_VM((enemy), PhotoAnmHandle)
 
 extern u8 *g_Th095StageState;
 extern AnmManagerLookup *g_Th095AnmManager;
@@ -826,7 +807,7 @@ enter_subroutine:
     {
         Float3 position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                           TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
-        PhotoAnmHandle result;
+        PhotoEnemyAnmVmIdStorage result;
         TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER
             ->Spawn(&result, TH08_ECL_READ_I(ctx, 0), &position);
         break;
@@ -835,25 +816,26 @@ enter_subroutine:
     {
         Float3 position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                           TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
-        PhotoAnmHandle result;
+        PhotoEnemyAnmVmIdStorage result;
         i32 slot = TH08_ECL_READ_I(ctx, 0);
-        TH095_ENEMY_ANM_HANDLE_SLOT(TH08_ECL_CONTEXT_ENEMY(ctx), slot) =
-            TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER
-                ->Spawn(&result, TH08_ECL_READ_I(ctx, 1), &position)->value;
+        reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->anmHandles[slot] =
+            *TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER
+                 ->Spawn(&result, TH08_ECL_READ_I(ctx, 1), &position);
         break;
     }
     case 152:
     {
         i32 slot = TH08_ECL_READ_I(ctx, 0);
         AnmVm *vm = reinterpret_cast<AnmManagerLookup *>(g_AnmManager)->FindVm(
-            TH095_ENEMY_ANM_HANDLE_SLOT(TH08_ECL_CONTEXT_ENEMY(ctx), slot));
+            reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->anmHandles[slot].value);
         if (vm)
             vm->SetInterrupt((i16)TH08_ECL_READ_I(ctx, 1));
         break;
     }
     case 158:
     {
-        TH095_ENEMY_FREEZE_ATTACHED_VM(TH08_ECL_CONTEXT_ENEMY(ctx)) =
+        reinterpret_cast<PhotoEnemyView *>(TH08_ECL_CONTEXT_ENEMY(ctx))->secondaryControl
+            .freezeAttachedVm =
             TH08_ECL_READ_I(ctx, 0);
         break;
     }

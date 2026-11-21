@@ -229,8 +229,7 @@
     case 151:
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
-        TH095_ECL_ENEMY_ANM_HANDLE(
-            enemy, TH08_ECL_READ_I(ctx, 0), PhotoAnmHandle) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->anmHandles[TH08_ECL_READ_I(ctx, 0)] =
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, TH08_ECL_READ_I(ctx, 1), &position);
         break;
@@ -239,8 +238,7 @@
     case 152:
     {
         AnmVm *vm = TH095_ECL_ANM_GET_VM(
-            TH095_ECL_ENEMY_ANM_HANDLE(
-                enemy, TH08_ECL_READ_I(ctx, 0), PhotoAnmHandle).value);
+            reinterpret_cast<PhotoEnemyView *>(enemy)->anmHandles[TH08_ECL_READ_I(ctx, 0)].value);
         if (vm)
             vm->SetInterrupt((i16)TH08_ECL_READ_I(ctx, 1));
         break;
@@ -248,6 +246,7 @@
 
     case 158:
     {
-        TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) = TH08_ECL_READ_I(ctx, 0);
+        reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl.freezeAttachedVm =
+            TH08_ECL_READ_I(ctx, 0);
         break;
     }

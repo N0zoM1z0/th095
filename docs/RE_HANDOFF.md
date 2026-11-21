@@ -104,7 +104,9 @@ steering and the movement clamp. SEM-427 retires the duplicate enemy
 control layouts and binds ECL, update, capture and drawing to both typed
 control words. SEM-428 puts the animation updater and six script numbers
 on the compact enemy. The second ANM field has its observed pointer type
-and keeps its unknown name.
+and keeps its unknown name. SEM-429 replaces the remaining compact-enemy
+offset macros with fields and shares the POD handle used by ECL spawns
+and the retained VM slots. The legacy `Enemy *` entry points remain.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

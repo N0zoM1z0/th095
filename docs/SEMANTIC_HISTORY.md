@@ -18764,3 +18764,26 @@ comparisons agree with retail, including 28 script and bank opcode cases
 and 86 direction cases. The animation fixture supplies each bank and
 observes the actual receiver and script pointer. See
 `.analysis/pi/enemy-primary-anm/`.
+
+### SEM-429 — retire the compact enemy offset bridge
+
+RunEcl writes the compact enemy's draw group, VM Z rotation, trail config,
+marker state, pulse timers, and attached and retained VM handles directly.
+EnemyInf update consumes the draw group, attached VM and pulse state.
+Extended callbacks 6 and 7 read the retained handles at +0x2D4 and +0x2D8
+through the compact record.
+
+The ANM spawn result and the enemy handle slots share one four-byte
+aggregate. In the pinned VC7.1 probe, scalar stores from the result changed
+register order after the three spawn calls, and the interpreter grew by one
+byte. Copying the aggregate restored the complete interpreter extent. The
+four spawn relocation spellings changed and still resolve to 0x00445060.
+The timer set by opcode 133 and the role of opcode 131's third operand
+remain unresolved.
+
+All 167 affected exact units pass, including the RunEcl switch tables and
+their relocations. The 78 focused cases agree with retail in both normal
+link orders, covering VM retention and interrupt delivery, attachment
+creation and cleanup, pulse state, the trail initializer call, and drawing
+fields. The related opcode, callback and enemy-state cases also pass.
+See `.analysis/pi/enemy-visual-fields/`.

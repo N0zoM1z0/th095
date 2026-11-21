@@ -25,7 +25,6 @@
 #include "AnmManagerEclView.hpp"
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
-#include "../PhotoEnemyEclAccess.hpp"
 #include "EnemyManager.hpp"
 #include "Player.hpp"
 #include "SoundPlayer.hpp"

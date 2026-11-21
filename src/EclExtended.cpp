@@ -5,7 +5,6 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #include "PhotoEnemyControl.hpp"
-#include "PhotoEnemyEclAccess.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
@@ -312,7 +311,7 @@ void __fastcall UpdatePlayerProximityAndMarker(
             (locals.distanceSquared - 1024.0f) / 3072.0f * 0.75f + 0.25f;
 
     locals.vm = TH095_EXT_ANM_GET_VM(
-        enemy->anmHandles[0]);
+        reinterpret_cast<PhotoEnemyView *>(enemy)->anmHandles[0].value);
     if (locals.vm != NULL)
         TH095_EXT_PHOTO_TO_SCREEN(&locals.vm->positionOffset, &enemy->position);
 }
@@ -519,7 +518,8 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
 {
     ExtendedVector position;
     AnmVm *firstVm;
-    firstVm = TH095_EXT_ANM_GET_VM(enemy->anmHandles[0]);
+    firstVm = TH095_EXT_ANM_GET_VM(
+        reinterpret_cast<PhotoEnemyView *>(enemy)->anmHandles[0].value);
     if (firstVm != NULL)
     {
         TH095_EXTENDED_FROM_ANGLE(position, enemy->movementAngle, 24.0f);
@@ -530,7 +530,8 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
         firstVm->positionOffset.y -= 16.0f;
         firstVm->rotation.z = enemy->movementAngle;
         position = *reinterpret_cast<ExtendedVector *>(&firstVm->positionOffset);
-        firstVm = TH095_EXT_ANM_GET_VM(enemy->anmHandles[1]);
+        firstVm = TH095_EXT_ANM_GET_VM(
+            reinterpret_cast<PhotoEnemyView *>(enemy)->anmHandles[1].value);
         firstVm->positionOffset = *reinterpret_cast<Float3 *>(&position);
         firstVm->rotation.z = enemy->movementAngle;
     }

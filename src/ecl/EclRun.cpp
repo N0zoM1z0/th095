@@ -3,7 +3,6 @@
 #include "../ZunBool.hpp"
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
-#include "../PhotoEnemyEclAccess.hpp"
 #include "Gui.hpp"
 #include "BulletManager.hpp"
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -154,12 +153,12 @@ static __forceinline AnmVmId Th095EclAnmId(i32 value)
     id.value = value;
     return id;
 }
-static __forceinline EclRunHigh::PhotoAnmHandle Th095EclSpawnWorld(
+static __forceinline PhotoEnemyAnmVmIdStorage Th095EclSpawnWorld(
     EclRunHigh::PhotoAnmSpawner *spawner, i32 script, Float3 *position)
 {
     AnmVmId id = reinterpret_cast<AnmLoaded *>(spawner)
         ->CreateVmAtWorld(script, position);
-    EclRunHigh::PhotoAnmHandle result;
+    PhotoEnemyAnmVmIdStorage result;
     result.value = id.value;
     return result;
 }

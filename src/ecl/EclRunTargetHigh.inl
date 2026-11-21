@@ -1,11 +1,5 @@
 // TH095 target-order high opcode body.  This file is included lexically
 // inside PhotoEnemyEclManagerView::RunEcl so VC7 owns one shared frame and jump table.
-#define TH095_TARGET_ENEMY_DRAW_GROUP(enemy)                                \
-    TH095_ECL_DRAW_GROUP(enemy)
-
-#define TH095_TARGET_ENEMY_VM_ROTATION_Z(enemy)                             \
-    TH095_ECL_ENEMY_VM_ROTATION_Z(enemy)
-
     case 86:
     case 87:
     case 88:
@@ -107,7 +101,7 @@
         break;
 
     case 132:
-        TH095_TARGET_ENEMY_DRAW_GROUP(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->drawGroup =
             static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
         break;
 
@@ -317,42 +311,40 @@ enter_subroutine:
     case 130:
         reinterpret_cast<PhotoEnemyView *>(enemy)->control.unknown007 =
             reinterpret_cast<u8 *>(instruction->operands)[0];
-        TH095_TARGET_ENEMY_DRAW_GROUP(enemy) = 2;
+        reinterpret_cast<PhotoEnemyView *>(enemy)->drawGroup = 2;
         break;
 
     case 131:
     {
-        TH095_ECL_TRAIL_CONFIG(enemy).flags =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.flags =
             static_cast<u8>(TH08_ECL_RAW_I(ctx, 0));
-        TH095_ECL_TRAIL_CONFIG(enemy).length =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.length =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 1));
-        TH095_ECL_TRAIL_CONFIG(enemy).unknown04 =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.unknown04 =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 2));
-        TH095_ECL_TRAIL_CONFIG(enemy).sampleStride =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.sampleStride =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 3));
-        if ((TH095_ECL_TRAIL_CONFIG(enemy).flags &
+        if ((reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.flags &
              PHOTO_ENEMY_TRAIL_INITIALIZE_STRIP) != 0)
         {
             TH095_ECL_CONFIGURE_PHOTO_ANM(
                 &enemy->vm,
-                TH095_PHOTO_ENEMY_OBJECT_PTR(
-                    enemy, PHOTO_ENEMY_ECL_TRAIL_VERTICES_OFFSET, AnmVertex),
-                (TH095_ECL_TRAIL_CONFIG(enemy).length /
-                 TH095_ECL_TRAIL_CONFIG(enemy).sampleStride) << 1);
+                reinterpret_cast<PhotoEnemyView *>(enemy)->trailVertices,
+                (reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.length /
+                 reinterpret_cast<PhotoEnemyView *>(enemy)->trailConfig.sampleStride) << 1);
         }
         break;
     }
 
     case 133:
     {
-        TH095_PHOTO_ENEMY_OBJECT(
-            enemy, PHOTO_ENEMY_ECL_TIMER_4CAC_OFFSET, ZunTimer) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->timer4cac =
             TH08_ECL_READ_I(ctx, 0);
         break;
     }
 
     case 135:
-        TH095_TARGET_ENEMY_VM_ROTATION_Z(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->vm.rotation.z =
             (instruction->operandFlags & 1U)
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[0])
                 : *reinterpret_cast<f32 *>(&instruction->operands[0].asInt);
@@ -419,8 +411,10 @@ enter_subroutine:
 
     case 143:
     {
-        TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) = TH08_ECL_READ_I(ctx, 0);
-        TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) = TH08_ECL_READ_I(ctx, 1);
+        reinterpret_cast<PhotoEnemyView *>(enemy)->secondaryControl.showPhotoMarker =
+            TH08_ECL_READ_I(ctx, 0);
+        reinterpret_cast<PhotoEnemyView *>(enemy)->photoMarkerPulseTimer =
+            TH08_ECL_READ_I(ctx, 1);
         break;
     }
 
@@ -441,13 +435,13 @@ enter_subroutine:
         TH095_ECL_PHOTO_MODE_BEGIN();
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0xe), 0);
 
-        TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->attachedVmId =
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_BULLET_ANM_SPAWNER, 0xd2,
                 &reinterpret_cast<PhotoEnemyView *>(enemy)->position);
         TH095_ECL_ANM_GET_VM(
-            TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy).value)->counterVar0 =
-                Th095PreserveI32(g_RuntimeGlobalStateOwner->completion.timer.current);
+            reinterpret_cast<PhotoEnemyView *>(enemy)->attachedVmId.value)
+            ->counterVar0 = Th095PreserveI32(g_RuntimeGlobalStateOwner->completion.timer.current);
         break;
     }
 
@@ -459,8 +453,8 @@ enter_subroutine:
             TH095_ECL_PHOTO_CARD_SESSION = 0;
             TH095_ECL_PHOTO_MODE_END();
             TH095_ECL_ANM_MARK_DELETE(
-                TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy).value);
-            TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy).value =
+                reinterpret_cast<PhotoEnemyView *>(enemy)->attachedVmId.value);
+            reinterpret_cast<PhotoEnemyView *>(enemy)->attachedVmId.value =
                 Th095PreserveI32(0);
         }
         break;
@@ -468,11 +462,11 @@ enter_subroutine:
 
     case 144:
     {
-        TH095_ECL_PHOTO_PULSE_TIMER(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->photoPulseTimer =
             TH08_ECL_READ_I(ctx, 0);
-        TH095_ECL_PHOTO_PULSE_DURATION_TIMER(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->photoPulseDurationTimer =
             TH08_ECL_READ_I(ctx, 0);
-        TH095_ENEMY_PHOTO_PULSE_HANDLE(enemy) =
+        reinterpret_cast<PhotoEnemyView *>(enemy)->photoPulseVmId =
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_BULLET_ANM_SPAWNER, 0x125,
                 &reinterpret_cast<PhotoEnemyView *>(enemy)->position);

@@ -1,7 +1,6 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyEclManager.hpp"
-#include "PhotoEnemyEclAccess.hpp"
 #include "PhotoEnemyManagerLayout.hpp"
 #include "ecl/EclOperands.hpp"
 #ifndef DIFFBUILD
