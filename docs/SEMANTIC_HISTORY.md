@@ -18964,8 +18964,14 @@ the interpreter operand temporary from EBP−0x564 to a deep stack slot
 and made the frame four bytes larger. A direct narrow field store still
 used a deep slot. Passing the value through a signed 16-bit inline
 parameter restored the target's full stack layout and instructions.
-The direct spawn, lookup and deletion experiment with the nontrivial
-`AnmVmId` conversion changed RunEcl's extent. Those adapters remain.
+The existing `AnmVmId` value conversion added 142 bytes when used for
+only lookup and deletion. Calling the canonical spawn method directly
+and copying its result into the embedded storage added 108 bytes with
+the old lookup and deletion calls unchanged. Both probes used the
+27,747-byte RunEcl comparison extent and the pinned build 3077 profile.
+The target passes the stored dword directly and uses a hidden result
+pointer for VM creation. The separate probes are under
+`.analysis/pi/ecl-anm-id/`.
 
 All 167 affected strict exact comparisons pass. RunEcl's 20 renamed
 relocations retain their original destinations, and 23 references to
