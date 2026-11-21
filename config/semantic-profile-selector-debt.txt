@@ -23,10 +23,6 @@
 1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
 2	src/Main.cpp	#ifndef DIFFBUILD
 1	src/OptionsMenu.hpp	#ifdef TH095_MATCH_EXACT
-1	src/pbg/Lzss.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/pbg/Lzss.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/pbg/PbgArchive.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/pbg/PbgFile.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/ReplayScanWorker.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelect.hpp	#ifdef TH095_MATCH_EXACT

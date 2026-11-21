@@ -102,10 +102,9 @@ so validation cannot modify the source installation.
 - Title menu routing: row 2 opens Music Room/state 8 and row 3 opens
   Options/state 7. The source block order and private-label manifest preserve
   both target code order and linked jump-table meaning.
-- LZSS dictionary ownership: exact-facing `Lzss::m_Dict` and
-  `g_DecompressionRing` both resolve to target `0x004E24A8`. Production tree
-  helpers now use that shared ring instead of a duplicate zeroed array, so
-  saved replay streams round-trip and can be scanned immediately.
+- The LZSS encoder, tree helpers and decoder share the
+  `g_LzssDictionary` ring at retail `0x004E24A8` in both builds. This
+  binding preserves replay stream round trips.
 
 The complete relocation-equivalence and Chain-lifetime review is in
 `docs/OWNER_AUDIT.md`, and issue-level history is in

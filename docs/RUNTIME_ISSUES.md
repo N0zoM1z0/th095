@@ -120,10 +120,10 @@ at `0x004E24A8`. The former production map instead placed them at
 the separate dictionary. The encoder therefore chose matches against zeroed
 data rather than its input.
 
-Production `Lzss.cpp` now maps its dictionary accesses to
-`g_DecompressionRing`; DIFFBUILD/`TH095_MATCH_EXACT` retain the original class
-static spelling and exact relocations. A cold 88-TU build succeeds and all nine
-compression-family exact units replay without a label refresh.
+The initial repair redirected the production tree to the decompression
+ring. SEM-518 gives the normal and exact builds the same
+`g_LzssDictionary` definition. The encoder, tree and decoder all reach
+this array, and the retail relocation destinations agree.
 
 The paired `replay-save-finish` scenario is a direct negative/positive oracle:
 before the repair, the original returned from Finish to the slot list while

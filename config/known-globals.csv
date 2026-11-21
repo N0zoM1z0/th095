@@ -33,7 +33,7 @@ address,name,module,confidence,evidence
 0x004C4CC0,th095::g_Supervisor.replayScanWorker.stopRequested,Supervisor,exact,Exact help/photo/replay completion relocations and hash-attested writes place one shared field at replayScanWorker +0x08
 0x004C4CC4,th095::g_Supervisor.replayScanWorker.active,Supervisor,exact,Exact help/photo/replay active relocations and hash-attested writes place one shared field at replayScanWorker +0x0C
 0x004CA2F4,th095::g_ActiveMenuController,FrontEnd,exact,Shared active Help/Options/pause controller slot; exact Help loader and menu relocations use typed partial views
-0x004E24A8,th095::g_DecompressionRing,Compression,high,Target-local 8192-byte history ring used by DecompressData
+0x004E24A8,th095::g_LzssDictionary,Compression,high,Shared 8192-byte LZSS history ring for encoding and decoding
 0x00496F10,th095::g_TextureFormatD3D8Mapping,AnmTexture,exact,Canonical GetAnmFormat and LoadTexture DIR32 relocations
 0x00496F28,th095::g_TextureFormatBytesPerPixel,AnmTexture,exact,Canonical LoadTexture DIR32 relocations
 0x004C44A8,th095::g_TextFontWidth19,TextRenderer,high,Target persistent 36-pixel Japanese text font

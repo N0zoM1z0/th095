@@ -1,11 +1,12 @@
 #include "Decompress.hpp"
+#include "pbg/Lzss.hpp"
 
 #include <stdlib.h>
 
 namespace th095
 {
 
-DIFFABLE_STATIC_ARRAY(u8, 0x2000, g_DecompressionRing);
+u8 g_LzssDictionary[LZSS_DICTSIZE];
 
 // TH08's source records a patched var_order for this decoder. TH095 retains
 // that live-local order, including the otherwise discarded input checksum.
@@ -25,13 +26,6 @@ DIFFABLE_STATIC_ARRAY(u8, 0x2000, g_DecompressionRing);
 #define outBitMask reopenedBufferLocal01
 #define dictHead volumeScaleLocal00
 
-#define LZSS_OFFSET_BITS 13
-#define LZSS_LENGTH_BITS 4
-#define LZSS_BREAKEVEN 3
-#define LZSS_DICTSIZE (1 << LZSS_OFFSET_BITS)
-#define LZSS_DICTSIZE_MASK (LZSS_DICTSIZE - 1)
-#define LZSS_DICTPOS_MOD(pos, amount) (((pos) + (amount)) & LZSS_DICTSIZE_MASK)
-
 #define DECODE_ADVANCE_READ_HEAD                                                                                       \
     inBitMask >>= 1;                                                                                                   \
     if (inBitMask == 0)                                                                                                \
@@ -41,7 +35,7 @@ DIFFABLE_STATIC_ARRAY(u8, 0x2000, g_DecompressionRing);
 
 #define DECODE_WRITE_BYTE(data)                                                                                        \
     *outCursor++ = (u8)(data);                                                                                         \
-    g_DecompressionRing[dictHead] = (u8)(data);                                                                        \
+    g_LzssDictionary[dictHead] = (u8)(data);                                                                        \
     dictHead = LZSS_DICTPOS_MOD(dictHead, 1);
 
 #define DECODE_HANDLE_FETCH                                                                                            \
@@ -120,16 +114,16 @@ u8 *__fastcall DecompressData(u8 *in, i32 inSize, u8 *out, size_t outSize)
         }
         else
         {
-            DECODE_UNPACK_BITS(13);
+            DECODE_UNPACK_BITS(LZSS_OFFSET_BITS);
             matchOffset = inBits;
             if (matchOffset == 0)
                 break;
 
-            DECODE_UNPACK_BITS(4);
-            matchLength = inBits + 2;
+            DECODE_UNPACK_BITS(LZSS_LENGTH_BITS);
+            matchLength = inBits + (LZSS_BREAKEVEN - 1);
             for (i = 0; i <= matchLength; i++)
             {
-                dictValue = g_DecompressionRing[LZSS_DICTPOS_MOD(matchOffset, i)];
+                dictValue = g_LzssDictionary[LZSS_DICTPOS_MOD(matchOffset, i)];
                 DECODE_WRITE_BYTE(dictValue);
             }
         }
@@ -149,12 +143,6 @@ u8 *__fastcall DecompressData(u8 *in, i32 inSize, u8 *out, size_t outSize)
 #undef DECODE_HANDLE_FETCH
 #undef DECODE_UNPACK_BIT
 #undef DECODE_UNPACK_BITS
-#undef LZSS_DICTPOS_MOD
-#undef LZSS_DICTSIZE_MASK
-#undef LZSS_DICTSIZE
-#undef LZSS_BREAKEVEN
-#undef LZSS_LENGTH_BITS
-#undef LZSS_OFFSET_BITS
 #undef currByte
 #undef outCursor
 #undef matchOffset

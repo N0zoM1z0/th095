@@ -5,9 +5,16 @@
 #define LZSS_OFFSET_BITS 13
 #define LZSS_LENGTH_BITS 4
 #define LZSS_DICTSIZE (1 << LZSS_OFFSET_BITS)
+#define LZSS_BREAKEVEN 3
+#define LZSS_LOOKAHEAD_MAX ((1 << LZSS_LENGTH_BITS) + LZSS_BREAKEVEN - 1)
+#define LZSS_DICTSIZE_MASK (LZSS_DICTSIZE - 1)
+#define LZSS_DICTPOS_MOD(pos, amount) (((pos) + (amount)) & LZSS_DICTSIZE_MASK)
 
 namespace th095
 {
+// Shared history ring used by compression, tree matching and decompression.
+extern u8 g_LzssDictionary[LZSS_DICTSIZE];
+
 class Lzss
 {
   public:
@@ -28,6 +35,5 @@ class Lzss
     };
 
     static TreeNode m_Tree[LZSS_DICTSIZE + 1];
-    static u8 m_Dict[LZSS_DICTSIZE];
 };
 } // namespace th095

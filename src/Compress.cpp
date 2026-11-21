@@ -1,11 +1,5 @@
 #include "pbg/Lzss.hpp"
-#include "Decompress.hpp"
 #include <stdlib.h>
-
-#define LZSS_BREAKEVEN 3
-#define LZSS_LOOKAHEAD_MAX ((1 << LZSS_LENGTH_BITS) + LZSS_BREAKEVEN - 1)
-#define LZSS_DICTSIZE_MASK (LZSS_DICTSIZE - 1)
-#define LZSS_DICTPOS_MOD(pos, amount) ((pos + amount) & LZSS_DICTSIZE_MASK)
 
 namespace th095
 {
@@ -121,7 +115,7 @@ u8 *__fastcall CompressData(u8 *in, i32 inSize, i32 *outSize)
             break;
         }
 
-        g_DecompressionRing[dictHead + i] = dictValue;
+        g_LzssDictionary[dictHead + i] = dictValue;
     }
 
     maxMatchLength = i;
@@ -150,7 +144,7 @@ u8 *__fastcall CompressData(u8 *in, i32 inSize, i32 *outSize)
             bytesToCopyToDict = 1;
 
             ENCODE_PACK_BIT(1);
-            ENCODE_PACK_BITS(8, (bitfieldMask & g_DecompressionRing[dictHead]) != 0);
+            ENCODE_PACK_BITS(8, (bitfieldMask & g_LzssDictionary[dictHead]) != 0);
         }
         // Otherwise, encode length/offset pair
         else
@@ -186,7 +180,7 @@ u8 *__fastcall CompressData(u8 *in, i32 inSize, i32 *outSize)
             // Else, copy previous byte in input data to the dictionary
             else
             {
-                g_DecompressionRing[LZSS_DICTPOS_MOD(dictHead, LZSS_LOOKAHEAD_MAX)] = dictValue;
+                g_LzssDictionary[LZSS_DICTPOS_MOD(dictHead, LZSS_LOOKAHEAD_MAX)] = dictValue;
             }
 
             dictHead = LZSS_DICTPOS_MOD(dictHead, 1);

@@ -13,7 +13,7 @@ th095::g_SelectedScene,0x004CA2F0,data
 th095::g_HelpLoadComplete,0x004C4CC0,data
 th095::g_HelpLoadActive,0x004C4CC4,data
 th095::g_ActiveMenuController,0x004CA2F4,data
-th095::g_DecompressionRing,0x004E24A8,data
+th095::g_LzssDictionary,0x004E24A8,data
 th095::g_TextureFormatD3D8Mapping,0x00496F10,data
 th095::g_TextureFormatBytesPerPixel,0x00496F28,data
 th095::g_TextFont19,0x004C44A8,data

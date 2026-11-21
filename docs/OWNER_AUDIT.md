@@ -84,7 +84,7 @@ this table while exact builds retain their target-facing symbol spellings.
 | `0x004CA1B8` | ANM manager | real `g_AnmManager` pointer | shared |
 | `0x004CA2F0` | Selected scene record | real selected-scene pointer | shared |
 | `0x004CA2F4` | Active front-end/pause controller | `g_ActiveMenuController` | neutral shared pointer |
-| `0x004E24A8` | 8 KiB LZSS compression/decompression dictionary | `g_DecompressionRing`; production `Lzss::m_Dict` accesses route here | shared array |
+| `0x004E24A8` | 8 KiB LZSS compression/decompression dictionary | `g_LzssDictionary` in both builds | shared array |
 
 The remaining mutable relocation groups are scalars, arrays, tables, or fields
 with a single production owner. Important examples include the replay path at

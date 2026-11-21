@@ -20659,3 +20659,20 @@ also match in normal COFF. Retail and both link orders agree on the
 viewport, flush and glyph call sequence in 60 cases, including an empty
 queue and scaled GUI text. Both links retain their mapped bytes. Evidence
 is under `.analysis/pi/ascii-viewport-owner/`.
+
+### SEM-518 — share the LZSS dictionary and PBG tables
+
+Encoding, tree matching and decoding all address the same 8 KiB
+dictionary at `0x004E24A8` in retail. Both builds now bind the array
+as `g_LzssDictionary` and share the encoded offset and length constants.
+PbgArchive and CPbgFile also emit their table definitions in both
+builds, preserving the eight 12-byte profile records, seek origins
+and three file mode strings.
+
+All 47 affected exact units pass. The eight targeted normal COFF
+units match, and four data symbols with 19 code references follow
+both link orders. Retail and both links emit the same compressed
+bytes for 39 streams. They agree on 78 decompression cases, including
+history wraparound and both output allocation paths, and on two
+allocation failures. The normal links retain their mapped bytes.
+Evidence is under `.analysis/pi/pbg-owners/`.

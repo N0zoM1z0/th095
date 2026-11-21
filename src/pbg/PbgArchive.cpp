@@ -21,7 +21,6 @@ struct PbgDecryptProfile
     i32 maxBytes;
 };
 typedef char PbgDecryptProfileSizeIs0C[(sizeof(PbgDecryptProfile) == 0x0c) ? 1 : -1];
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 // Target .data 0x004A42C8..0x004A4327 contains eight 12-byte filename-
 // checksum-selected decrypt profiles.  Preserve the two otherwise-unused
 // bytes as observed so the complete records remain documented.
@@ -35,9 +34,6 @@ PbgDecryptProfile g_PbgDecryptProfiles[8] = {
     {0x35, 0x97, {0x11, 0x00}, 0x0080, 0x2800},
     {0x99, 0x37, {0x77, 0x00}, 0x0400, 0x2000},
 };
-#else
-extern PbgDecryptProfile g_PbgDecryptProfiles[8];
-#endif
 
 struct PbgParseLocals
 {
