@@ -12,23 +12,6 @@
 namespace th095
 {
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_BACKGROUND_STAGE_OPCODE_HALT 0
-#define TH095_BACKGROUND_STAGE_OPCODE_JUMP 1
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_POSITION 2
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION 3
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_LOOK_AT 4
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT 5
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_UP 6
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_FIELD_OF_VIEW 7
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_PHOTO_BLEND 8
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_PHOTO_BLEND 9
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION_HERMITE 10
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT_HERMITE 11
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_MOTION_MODE 12
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_BACKBUFFER_CLEAR_COLOR 13
-#define TH095_BACKGROUND_STAGE_OPCODE_CONFIGURE_STAGE_VM 14
-#else
 typedef i16 BackgroundStageOpcode;
 enum BackgroundStageOpcodeValue
 {
@@ -48,34 +31,26 @@ enum BackgroundStageOpcodeValue
     BACKGROUND_STAGE_OPCODE_SET_BACKBUFFER_CLEAR_COLOR = 13,
     BACKGROUND_STAGE_OPCODE_CONFIGURE_STAGE_VM = 14,
 };
-#define TH095_BACKGROUND_STAGE_OPCODE_HALT BACKGROUND_STAGE_OPCODE_HALT
-#define TH095_BACKGROUND_STAGE_OPCODE_JUMP BACKGROUND_STAGE_OPCODE_JUMP
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_POSITION BACKGROUND_STAGE_OPCODE_SET_CAMERA_POSITION
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_LOOK_AT BACKGROUND_STAGE_OPCODE_SET_CAMERA_LOOK_AT
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_UP BACKGROUND_STAGE_OPCODE_SET_CAMERA_UP
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_FIELD_OF_VIEW BACKGROUND_STAGE_OPCODE_SET_FIELD_OF_VIEW
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_PHOTO_BLEND BACKGROUND_STAGE_OPCODE_SET_PHOTO_BLEND
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_PHOTO_BLEND BACKGROUND_STAGE_OPCODE_INTERPOLATE_PHOTO_BLEND
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION_HERMITE BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION_HERMITE
-#define TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT_HERMITE BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT_HERMITE
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_MOTION_MODE BACKGROUND_STAGE_OPCODE_SET_CAMERA_MOTION_MODE
-#define TH095_BACKGROUND_STAGE_OPCODE_SET_BACKBUFFER_CLEAR_COLOR BACKGROUND_STAGE_OPCODE_SET_BACKBUFFER_CLEAR_COLOR
-#define TH095_BACKGROUND_STAGE_OPCODE_CONFIGURE_STAGE_VM BACKGROUND_STAGE_OPCODE_CONFIGURE_STAGE_VM
-#endif
+
+union BackgroundStageOperand
+{
+    i32 asInt;
+    f32 asFloat;
+    u8 lowByte;
+};
 
 struct BackgroundStageInstruction
 {
     i32 time;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    i16 opcode;
-#else
     BackgroundStageOpcode opcode;
-#endif
     i16 size;
-    i32 args[1];
+    BackgroundStageOperand args[1];
 };
+
+typedef char BackgroundStageOperandSizeIs4[
+    (sizeof(BackgroundStageOperand) == 4) ? 1 : -1];
+typedef char BackgroundStageInstructionArgsAt8[
+    (offsetof(BackgroundStageInstruction, args) == 8) ? 1 : -1];
 
 struct BackgroundStageHeader
 {
@@ -117,14 +92,6 @@ struct BackgroundStageObjectInstance
     Float3 position;
 };
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_BACKGROUND_CAMERA_MOTION_NONE 0
-#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_X 1
-#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X 2
-#define TH095_BACKGROUND_CAMERA_MOTION_UP_XZ 3
-#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X 4
-#else
-typedef u8 BackgroundCameraMotionMode;
 enum BackgroundCameraMotionModeValue
 {
     BACKGROUND_CAMERA_MOTION_NONE = 0,
@@ -133,32 +100,11 @@ enum BackgroundCameraMotionModeValue
     BACKGROUND_CAMERA_MOTION_UP_XZ = 3,
     BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X = 4,
 };
-#define TH095_BACKGROUND_CAMERA_MOTION_NONE BACKGROUND_CAMERA_MOTION_NONE
-#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_X BACKGROUND_CAMERA_MOTION_POSITION_X
-#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X \
-    BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X
-#define TH095_BACKGROUND_CAMERA_MOTION_UP_XZ BACKGROUND_CAMERA_MOTION_UP_XZ
-#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X \
-    BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X
-#endif
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_BACKGROUND_INTERPOLATION_CURVE_MASK 0xff
-#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC 1
-#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_CUBIC 2
-#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC 3
-#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC 4
-#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC 5
-#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC 6
-#define TH095_BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH 0x800
-#define TH095_BACKGROUND_INTERPOLATION_USES_LINEAR_PATH(mode) \
-    (((mode) >> 8) & 0xff) == 0
-#else
-typedef u16 BackgroundInterpolationMode;
 enum BackgroundInterpolationModeValue
 {
     BACKGROUND_INTERPOLATION_CURVE_MASK = 0x00ff,
-    BACKGROUND_INTERPOLATION_PATH_MASK = 0xff00,
+    BACKGROUND_INTERPOLATION_PATH_SHIFT = 8,
     BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC = 1,
     BACKGROUND_INTERPOLATION_EASE_IN_CUBIC = 2,
     BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC = 3,
@@ -167,25 +113,6 @@ enum BackgroundInterpolationModeValue
     BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC = 6,
     BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH = 0x0800,
 };
-#define TH095_BACKGROUND_INTERPOLATION_CURVE_MASK \
-    BACKGROUND_INTERPOLATION_CURVE_MASK
-#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC \
-    BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC
-#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_CUBIC \
-    BACKGROUND_INTERPOLATION_EASE_IN_CUBIC
-#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC \
-    BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC
-#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC \
-    BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC
-#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC \
-    BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC
-#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC \
-    BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC
-#define TH095_BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH \
-    BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH
-#define TH095_BACKGROUND_INTERPOLATION_USES_LINEAR_PATH(mode) \
-    (((mode) & BACKGROUND_INTERPOLATION_PATH_MASK) == 0)
-#endif
 
 #ifdef TH095_MATCH_EXACT
 struct BackgroundAnmSpawnerView
@@ -1005,155 +932,155 @@ read_instruction:
     {
         switch (instruction->opcode)
         {
-        case TH095_BACKGROUND_STAGE_OPCODE_HALT:
+        case BACKGROUND_STAGE_OPCODE_HALT:
             goto interpolate;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_JUMP:
-            background->stageScriptTimer = instruction->args[1];
+        case BACKGROUND_STAGE_OPCODE_JUMP:
+            background->stageScriptTimer = instruction->args[1].asInt;
             background->stageInstruction =
                 reinterpret_cast<BackgroundStageInstruction *>(
-                    background->stageScript + instruction->args[0]);
+                    background->stageScript + instruction->args[0].asInt);
             goto read_instruction;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_POSITION:
-            g_BackgroundCameraPosition.x = *reinterpret_cast<f32 *>(&instruction->args[0]);
-            g_BackgroundCameraPosition.y = *reinterpret_cast<f32 *>(&instruction->args[1]);
-            g_BackgroundCameraPosition.z = *reinterpret_cast<f32 *>(&instruction->args[2]);
+        case BACKGROUND_STAGE_OPCODE_SET_CAMERA_POSITION:
+            g_BackgroundCameraPosition.x = instruction->args[0].asFloat;
+            g_BackgroundCameraPosition.y = instruction->args[1].asFloat;
+            g_BackgroundCameraPosition.z = instruction->args[2].asFloat;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION:
+        case BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION:
             BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[0]);
-            background->interpolationEndTimers[0] = instruction->args[0];
-            background->interpolationModes[0] = instruction->args[1];
+            background->interpolationEndTimers[0] = instruction->args[0].asInt;
+            background->interpolationModes[0] = instruction->args[1].asInt;
             background->cameraPositionInitial = g_BackgroundCameraPosition;
-            background->cameraPositionFinal.x = *reinterpret_cast<f32 *>(&instruction->args[2]);
-            background->cameraPositionFinal.y = *reinterpret_cast<f32 *>(&instruction->args[3]);
-            background->cameraPositionFinal.z = *reinterpret_cast<f32 *>(&instruction->args[4]);
+            background->cameraPositionFinal.x = instruction->args[2].asFloat;
+            background->cameraPositionFinal.y = instruction->args[3].asFloat;
+            background->cameraPositionFinal.z = instruction->args[4].asFloat;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_LOOK_AT:
-            g_BackgroundCameraLookAt.x = *reinterpret_cast<f32 *>(&instruction->args[0]);
-            g_BackgroundCameraLookAt.y = *reinterpret_cast<f32 *>(&instruction->args[1]);
-            g_BackgroundCameraLookAt.z = *reinterpret_cast<f32 *>(&instruction->args[2]);
+        case BACKGROUND_STAGE_OPCODE_SET_CAMERA_LOOK_AT:
+            g_BackgroundCameraLookAt.x = instruction->args[0].asFloat;
+            g_BackgroundCameraLookAt.y = instruction->args[1].asFloat;
+            g_BackgroundCameraLookAt.z = instruction->args[2].asFloat;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT:
+        case BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT:
             BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[1]);
-            background->interpolationEndTimers[1] = instruction->args[0];
-            background->interpolationModes[1] = instruction->args[1];
+            background->interpolationEndTimers[1] = instruction->args[0].asInt;
+            background->interpolationModes[1] = instruction->args[1].asInt;
             background->cameraLookAtInitial = g_BackgroundCameraLookAt;
-            background->cameraLookAtFinal.x = *reinterpret_cast<f32 *>(&instruction->args[2]);
-            background->cameraLookAtFinal.y = *reinterpret_cast<f32 *>(&instruction->args[3]);
-            background->cameraLookAtFinal.z = *reinterpret_cast<f32 *>(&instruction->args[4]);
+            background->cameraLookAtFinal.x = instruction->args[2].asFloat;
+            background->cameraLookAtFinal.y = instruction->args[3].asFloat;
+            background->cameraLookAtFinal.z = instruction->args[4].asFloat;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_UP:
+        case BACKGROUND_STAGE_OPCODE_SET_CAMERA_UP:
             g_BackgroundCameraValue0 =
-                *reinterpret_cast<f32 *>(&instruction->args[0]);
+                instruction->args[0].asFloat;
             g_BackgroundCameraValue1 =
-                *reinterpret_cast<f32 *>(&instruction->args[1]);
+                instruction->args[1].asFloat;
             g_BackgroundCameraValue2 =
-                *reinterpret_cast<f32 *>(&instruction->args[2]);
+                instruction->args[2].asFloat;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_SET_FIELD_OF_VIEW:
-            g_BackgroundFieldOfView = *reinterpret_cast<f32 *>(&instruction->args[0]);
+        case BACKGROUND_STAGE_OPCODE_SET_FIELD_OF_VIEW:
+            g_BackgroundFieldOfView = instruction->args[0].asFloat;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_SET_PHOTO_BLEND:
-            background->photoBlendCurrent.color.color = instruction->args[0];
+        case BACKGROUND_STAGE_OPCODE_SET_PHOTO_BLEND:
+            background->photoBlendCurrent.color.color = instruction->args[0].asInt;
             background->photoBlendCurrent.nearDistance =
-                *reinterpret_cast<f32 *>(&instruction->args[1]);
+                instruction->args[1].asFloat;
             background->photoBlendCurrent.farDistance =
-                *reinterpret_cast<f32 *>(&instruction->args[2]);
+                instruction->args[2].asFloat;
             background->photoBlendFinal = background->photoBlendCurrent;
             g_Supervisor.backbufferClearColor = background->photoBlendCurrent.color.color;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_PHOTO_BLEND:
+        case BACKGROUND_STAGE_OPCODE_INTERPOLATE_PHOTO_BLEND:
             BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[2]);
-            background->interpolationEndTimers[2] = instruction->args[0];
-            background->interpolationModes[2] = instruction->args[1];
+            background->interpolationEndTimers[2] = instruction->args[0].asInt;
+            background->interpolationModes[2] = instruction->args[1].asInt;
             background->photoBlendInitial = background->photoBlendCurrent;
-            background->photoBlendFinal.color.color = instruction->args[2];
+            background->photoBlendFinal.color.color = instruction->args[2].asInt;
             background->photoBlendFinal.nearDistance =
-                *reinterpret_cast<f32 *>(&instruction->args[3]);
+                instruction->args[3].asFloat;
             background->photoBlendFinal.farDistance =
-                *reinterpret_cast<f32 *>(&instruction->args[4]);
+                instruction->args[4].asFloat;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION_HERMITE:
+        case BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_POSITION_HERMITE:
             BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[0]);
-            background->interpolationEndTimers[0] = instruction->args[0];
+            background->interpolationEndTimers[0] = instruction->args[0].asInt;
             background->interpolationModes[0] =
-                instruction->args[1] | TH095_BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH;
+                instruction->args[1].asInt | BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH;
             background->cameraPositionInitial = g_BackgroundCameraPosition;
             background->cameraPositionTangentInitial.x =
-                *reinterpret_cast<f32 *>(&instruction->args[2]);
+                instruction->args[2].asFloat;
             background->cameraPositionTangentInitial.y =
-                *reinterpret_cast<f32 *>(&instruction->args[3]);
+                instruction->args[3].asFloat;
             background->cameraPositionTangentInitial.z =
-                *reinterpret_cast<f32 *>(&instruction->args[4]);
+                instruction->args[4].asFloat;
             background->cameraPositionFinal.x =
-                *reinterpret_cast<f32 *>(&instruction->args[5]);
+                instruction->args[5].asFloat;
             background->cameraPositionFinal.y =
-                *reinterpret_cast<f32 *>(&instruction->args[6]);
+                instruction->args[6].asFloat;
             background->cameraPositionFinal.z =
-                *reinterpret_cast<f32 *>(&instruction->args[7]);
+                instruction->args[7].asFloat;
             background->cameraPositionTangentFinal.x =
-                *reinterpret_cast<f32 *>(&instruction->args[8]);
+                instruction->args[8].asFloat;
             background->cameraPositionTangentFinal.y =
-                *reinterpret_cast<f32 *>(&instruction->args[9]);
+                instruction->args[9].asFloat;
             background->cameraPositionTangentFinal.z =
-                *reinterpret_cast<f32 *>(&instruction->args[10]);
+                instruction->args[10].asFloat;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT_HERMITE:
+        case BACKGROUND_STAGE_OPCODE_INTERPOLATE_CAMERA_LOOK_AT_HERMITE:
             BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[1]);
-            background->interpolationEndTimers[1] = instruction->args[0];
+            background->interpolationEndTimers[1] = instruction->args[0].asInt;
             background->interpolationModes[1] =
-                instruction->args[1] | TH095_BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH;
+                instruction->args[1].asInt | BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH;
             background->cameraLookAtInitial = g_BackgroundCameraLookAt;
             background->cameraLookAtTangentInitial.x =
-                *reinterpret_cast<f32 *>(&instruction->args[2]);
+                instruction->args[2].asFloat;
             background->cameraLookAtTangentInitial.y =
-                *reinterpret_cast<f32 *>(&instruction->args[3]);
+                instruction->args[3].asFloat;
             background->cameraLookAtTangentInitial.z =
-                *reinterpret_cast<f32 *>(&instruction->args[4]);
+                instruction->args[4].asFloat;
             background->cameraLookAtFinal.x =
-                *reinterpret_cast<f32 *>(&instruction->args[5]);
+                instruction->args[5].asFloat;
             background->cameraLookAtFinal.y =
-                *reinterpret_cast<f32 *>(&instruction->args[6]);
+                instruction->args[6].asFloat;
             background->cameraLookAtFinal.z =
-                *reinterpret_cast<f32 *>(&instruction->args[7]);
+                instruction->args[7].asFloat;
             background->cameraLookAtTangentFinal.x =
-                *reinterpret_cast<f32 *>(&instruction->args[8]);
+                instruction->args[8].asFloat;
             background->cameraLookAtTangentFinal.y =
-                *reinterpret_cast<f32 *>(&instruction->args[9]);
+                instruction->args[9].asFloat;
             background->cameraLookAtTangentFinal.z =
-                *reinterpret_cast<f32 *>(&instruction->args[10]);
+                instruction->args[10].asFloat;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_SET_CAMERA_MOTION_MODE:
+        case BACKGROUND_STAGE_OPCODE_SET_CAMERA_MOTION_MODE:
             background->cameraMotionMode =
-                *reinterpret_cast<u8 *>(&instruction->args[0]);
+                instruction->args[0].lowByte;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_SET_BACKBUFFER_CLEAR_COLOR:
-            g_Supervisor.backbufferClearColor = instruction->args[0];
+        case BACKGROUND_STAGE_OPCODE_SET_BACKBUFFER_CLEAR_COLOR:
+            g_Supervisor.backbufferClearColor = instruction->args[0].asInt;
             break;
 
-        case TH095_BACKGROUND_STAGE_OPCODE_CONFIGURE_STAGE_VM:
-            if (instruction->args[1] >= 0)
+        case BACKGROUND_STAGE_OPCODE_CONFIGURE_STAGE_VM:
+            if (instruction->args[1].asInt >= 0)
             {
                 background->anm->InitializeVm(
-                    &background->stageVms[instruction->args[0]],
-                    instruction->args[1]);
+                    &background->stageVms[instruction->args[0].asInt],
+                    instruction->args[1].asInt);
             }
             else
             {
                 BackgroundDisableStageVmPhase(
-                    &background->stageVms[instruction->args[0]]);
+                    &background->stageVms[instruction->args[0].asInt]);
             }
             break;
         }
@@ -1187,29 +1114,29 @@ interpolate:
                     (f32)background->interpolationEndTimers[interpolationSlotIndex];
             }
 
-            switch (background->interpolationModes[interpolationSlotIndex] & TH095_BACKGROUND_INTERPOLATION_CURVE_MASK)
+            switch (background->interpolationModes[interpolationSlotIndex] & BACKGROUND_INTERPOLATION_CURVE_MASK)
             {
-            case TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC:
+            case BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC:
                 interpolationTime *= interpolationTime;
                 break;
-            case TH095_BACKGROUND_INTERPOLATION_EASE_IN_CUBIC:
+            case BACKGROUND_INTERPOLATION_EASE_IN_CUBIC:
                 interpolationTime *= interpolationTime * interpolationTime;
                 break;
-            case TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC:
+            case BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC:
                 interpolationTime *= interpolationTime;
                 interpolationTime *= interpolationTime;
                 break;
-            case TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC:
+            case BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC:
                 interpolationTime = 1.0f - interpolationTime;
                 interpolationTime *= interpolationTime;
                 interpolationTime = 1.0f - interpolationTime;
                 break;
-            case TH095_BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC:
+            case BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC:
                 interpolationTime = 1.0f - interpolationTime;
                 interpolationTime *= interpolationTime * interpolationTime;
                 interpolationTime = 1.0f - interpolationTime;
                 break;
-            case TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC:
+            case BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC:
                 interpolationTime = 1.0f - interpolationTime;
                 interpolationTime *= interpolationTime;
                 interpolationTime *= interpolationTime;
@@ -1217,8 +1144,8 @@ interpolate:
                 break;
             }
 
-            if (TH095_BACKGROUND_INTERPOLATION_USES_LINEAR_PATH(
-                    background->interpolationModes[interpolationSlotIndex]))
+            if (((background->interpolationModes[interpolationSlotIndex] >>
+                  BACKGROUND_INTERPOLATION_PATH_SHIFT) & 0xff) == 0)
             {
                 switch (interpolationSlotIndex)
                 {
@@ -1322,11 +1249,11 @@ interpolate:
         }
     }
 
-    if (background->cameraMotionMode != TH095_BACKGROUND_CAMERA_MOTION_NONE)
+    if (background->cameraMotionMode != BACKGROUND_CAMERA_MOTION_NONE)
     {
         switch (background->cameraMotionMode)
         {
-        case TH095_BACKGROUND_CAMERA_MOTION_POSITION_X:
+        case BACKGROUND_CAMERA_MOTION_POSITION_X:
         {
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 480.0f -
@@ -1337,7 +1264,7 @@ interpolate:
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
-        case TH095_BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X:
+        case BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X:
         {
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 480.0f -
@@ -1349,7 +1276,7 @@ interpolate:
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
-        case TH095_BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X:
+        case BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X:
         {
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 2048.0f -
@@ -1362,7 +1289,7 @@ interpolate:
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
-        case TH095_BACKGROUND_CAMERA_MOTION_UP_XZ:
+        case BACKGROUND_CAMERA_MOTION_UP_XZ:
         {
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 4800.0f -

@@ -80,11 +80,11 @@ Private compiler labels are checked separately. The whole-normal comparison
 records both changed bodies and compares all other emitted functions and their
 recursive code/data/EH references.
 
-RunStageScript's normal COFF extent remains 5,230 bytes against the configured
-5,229-byte target span. It is unchanged from the accepted normal baseline, but
-has no whole-body normal exactness claim. An extent difference does not prove
-that only one byte differs. Existing selected bodies and historical compiler
-locals remain debt.
+SEM-461 gives both profiles the same RunStageScript body. The normal
+object matches the complete 5,229-byte target comparison extent and
+all 117 relocations. Both links agree with retail on stage commands,
+camera interpolation and stage VM operations. See
+[SEM-461](SEMANTIC_HISTORY.md#sem-461--share-the-background-stage-instruction-protocol).
 
 ## Actual normal Win32 oracle
 

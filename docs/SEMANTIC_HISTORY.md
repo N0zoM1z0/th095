@@ -19476,3 +19476,23 @@ removed. In both demo0 runs all ten gameplay fields match retail across
 link and two frames later in the reversed link. The library audit matches
 7,748 code references and 1,007 initialized-data references in both
 layouts. See `.analysis/pi/supervisor-clear-color/`.
+
+### SEM-461 — share the Background stage instruction protocol
+
+Both profiles dispatch the same 15 stage opcodes and use the same
+names for the camera-motion and interpolation values. The four-byte
+wire operand exposes integer, float and low-byte fields directly.
+The compile-time checks retain the operand width and confirm that the
+arguments start at byte eight of the stage record.
+
+Testing the high-byte path with a mask emits a 5,226-byte comparison
+extent. The shift and mask used by the exact source reproduce retail's
+5,229 bytes, including the jump tables, and all 117 relocations in
+both builds. The full Background object matches all 20 configured
+extents with 327 relocation destinations. The two links pass the
+game-object relocation check.
+
+Retail and both normal links agree in 48 stage-script cases plus the
+photo-color pipeline. The cases exercise the timer jump, six easing
+curves, linear and Hermite endpoints, the camera-motion wraparound,
+and both stage VM commands. See `.analysis/pi/background-stage-protocol/`.

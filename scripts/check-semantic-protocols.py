@@ -377,7 +377,7 @@ def check_background_protocol() -> None:
         fail("could not find Background stage opcode switch")
     dispatch_body = braced_body_after(body, switch_start, "Background stage opcode switch")
     dispatched = re.findall(
-        r"\bcase\s+TH095_(BACKGROUND_STAGE_OPCODE_[A-Z0-9_]+)\s*:", dispatch_body
+        r"\bcase\s+(BACKGROUND_STAGE_OPCODE_[A-Z0-9_]+)\s*:", dispatch_body
     )
     if len(dispatched) != 15 or set(dispatched) != set(names):
         fail("Background stage dispatch must reference every named opcode exactly once")
@@ -1976,7 +1976,7 @@ def check_background_viewport_owner(overrides: dict[str, str] | None = None) -> 
         fail("Background lost its fixed camera slot or shared current pointer")
     if re.search(r"(?:DIFFABLE_STATIC|extern)[^;]*(?:g_BackgroundCamera|g_BackgroundWave|g_BackgroundFieldOfView|g_CurrentBackgroundViewport)", source):
         fail("Background restored independent camera/current-pointer storage")
-    if "g_BackgroundFieldOfView = *reinterpret_cast<f32 *>(&instruction->args[0]);" not in source:
+    if "g_BackgroundFieldOfView = instruction->args[0].asFloat;" not in source:
         fail("Background FOV producer lost typed serialized-float publication")
     bodies = {}
     for name in ("ApplyBackgroundViewport", "ConfigureBackgroundViewport"):
